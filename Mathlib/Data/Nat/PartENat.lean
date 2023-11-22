@@ -687,20 +687,18 @@ example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_none : ofENat Option.none = ⊤ := rfl
+lemma ofENat_top : ofENat ⊤ = ⊤ := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
+lemma ofENat_coe (n : ℕ) : ofENat n = n := rfl
 
 -- Porting note : new
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
-  induction n with
-  | none => simp; rfl
-  | some n =>
-    simp only [toWithTop_natCast', ofENat_some]
-    rfl
+  cases n using ENat.recTopCoe with
+  | top => simp
+  | coe n => simp
 
 section WithTopEquiv
 
@@ -728,8 +726,7 @@ noncomputable def withTopEquiv : PartENat ≃ ℕ∞ where
   left_inv x := by
     induction x using PartENat.casesOn <;>
     intros <;>
-    simp <;>
-    rfl
+    simp
   right_inv x := by
     simp [toWithTop_ofENat]
 #align part_enat.with_top_equiv PartENat.withTopEquiv
