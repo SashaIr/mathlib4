@@ -584,10 +584,10 @@ lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
        _ ≤ asympBound g a b n    := by
                     simp only [asympBound_def']
                     gcongr n^p a b * (1 + ?_)
-                    have := R.g_nonneg
-                    aesop (add safe Real.rpow_nonneg,
-                               safe div_nonneg,
-                               safe Finset.sum_nonneg)
+                    -- TODO: check after  #9365 whether `have := R.g_nonneg` suffices
+                    refine Finset.sum_nonneg fun i _ => ?_
+                    have : 0 ≤ g i := R.g_nonneg _ i.cast_nonneg
+                    positivity
 
 lemma eventually_asympBound_pos : ∀ᶠ (n:ℕ) in atTop, 0 < asympBound g a b n := by
   filter_upwards [eventually_gt_atTop 0] with n hn
