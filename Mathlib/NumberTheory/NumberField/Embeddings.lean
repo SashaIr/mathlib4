@@ -276,9 +276,12 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
-{ coe := fun w x => w.1 x
-  coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
+instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
+  coe w x := w.1 x
+  coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+
+@[simp]
+lemma infinitePlace_apply (f : InfinitePlace K) (x : K) : f.1 x = f x := rfl
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
@@ -650,7 +653,6 @@ lemma card_mono [NumberField k] [NumberField K] :
 variable {k K}
 
 /-- The action of the galois group on infinite places. -/
-@[simps! smul_coe_apply]
 instance : MulAction (K ≃ₐ[k] K) (InfinitePlace K) where
   smul := fun σ w ↦ w.comap σ.symm
   one_smul := fun _ ↦ rfl
