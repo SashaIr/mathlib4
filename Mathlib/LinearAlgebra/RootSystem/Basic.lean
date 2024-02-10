@@ -135,11 +135,13 @@ lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
   set f : ℕ → M := fun n ↦ β + (2 * n : ℤ) • (α - β)
   have hf : ∀ n : ℕ, (sαβ^[n]) β = f n := by
     intro n
-    induction' n with n ih; simp
-    simp only [iterate_succ', ih, hα, hβ, two_smul, smul_add, mul_add, add_smul, comp_apply,
-      map_zsmul, zsmul_sub, map_add, neg_sub, map_neg, smul_neg, map_sub, Nat.cast_succ, mul_one,
-      LinearEquiv.trans_apply, reflection_apply_self]
-    abel
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      simp only [iterate_succ', ih, hα, hβ, two_smul, smul_add, mul_add, add_smul, comp_apply,
+        map_zsmul, zsmul_sub, map_add, neg_sub, map_neg, smul_neg, map_sub, Nat.cast_succ, mul_one,
+        LinearEquiv.trans_apply, reflection_apply_self]
+      abel
   set f' : ℕ → range P.root := fun n ↦ ⟨f n, by
     rw [← IsFixedPt.image_iterate hb.image_eq n, ← hf]; exact mem_image_of_mem _ (mem_range_self j)⟩
   have : ¬ Injective f' := not_injective_infinite_finite f'
