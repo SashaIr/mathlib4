@@ -7,6 +7,20 @@ import Mathlib.Analysis.NormedSpace.Star.CFC.CFCRestricts
 
 section Basic
 
+/-- A star `R`-algebra `A` has *continuous functional calculus* for elements satisfying the
+property `p : A → Prop` if
+
++ for every such element `a : A` there is a star algebra homomorphism
+  `cfcSpec : C(spectrum R a, R) →⋆ₐ[R] A` sending the (restriction of) the identity map to `a`.
++ `cfcSpec` is a closed embedding for which the spectrum of the image of function `f` is its range.
++ `cfcSpec` preserves the property `p`.
+
+The property `p` is marked as an `outParam` so that the user need not specify it. In practice,
+
++ for `R := ℂ`, we choose `p := IsStarNormal`,
++ for `R := ℝ`, we choose `p := IsSelfAdjoint`,
++ for `R := ℝ≥0`, we choose `p := (0 ≤ ·)`.
+-/
 class CFC (R : Type*) {A : Type*} (p : outParam (A → Prop)) [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] where
@@ -100,16 +114,13 @@ def ContinuousMap.evalStarAlgHom (r : R) : C(R, R) →⋆ₐ[R] R where
 
 section Bare
 
-open Lean Elab Tactic in
-elab "defer" : tactic => liftMetaTactic1 fun _ => return none
-
 syntax (name := cfcTac) "cfc_tac" : tactic
 macro_rules
-  | `(tactic| cfc_tac) => `(tactic| (try (first | assumption | infer_instance | aesop)) <;> defer)
+  | `(tactic| cfc_tac) => `(tactic| (try (first | assumption | infer_instance | aesop)))
 
 syntax (name := cfcContTac) "cfc_cont_tac" : tactic
 macro_rules
-  | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop | assumption) <;> defer)
+  | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop | assumption))
 
 /- This is a version of the continuous functional calculus for bare functions. It is most useful
 when one prefers unbundled objects. For instance, the most general version of the composition
@@ -176,6 +187,12 @@ lemma cfcBare_eqOn_of_eq {f g : R → R} (h : cfcBare a f = cfcBare a g) (ha : p
   congrm($(this) ⟨x, hx⟩)
 
 attribute [fun_prop] continuous_one continuous_zero
+
+lemma cfcBare_map_const (r : R) (ha : p a := by cfc_tac) :
+    cfcBare a (fun _ ↦ r) = algebraMap R A r := by
+  have h₁ := cfcBare_apply a (fun _ : R ↦ r)
+  have h₂ := AlgHomClass.commutes (cfcSpec ha (p := p)) r
+  exact h₁.trans <| Eq.trans (by congr) h₂
 
 variable (R) in
 lemma cfcBare_map_one (ha : p a := by cfc_tac) : cfcBare a (1 : R → R) = 1 :=
@@ -257,6 +274,54 @@ lemma cfcBare_map_pow (f : R → R) (n : ℕ) (hn : n ≠ 0)
     congr
   · simp [cfcBare_apply_of_not a ha, zero_pow hn]
 
+section Polynomial
+open Polynomial
+
+lemma cfcBare_eval_X (ha : p a := by cfc_tac) :
+    cfcBare a (X : R[X]).eval = a := by
+  simpa using cfcBare_id R a
+
+lemma cfcBare_eval_C (r : R) (ha : p a := by cfc_tac) :
+    cfcBare a (C r).eval = algebraMap R A r := by
+  simp [cfcBare_map_const a r]
+
+attribute [fun_prop]
+  Polynomial.continuous
+  --Polynomial.continuousOn
+
+@[fun_prop]
+theorem Continuous.comp_continuousOn'
+    {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {g : β → γ}
+    {f : α → β} {s : Set α} (hg : Continuous g) (hf : ContinuousOn f s) :
+    ContinuousOn (fun x ↦ g (f x)) s :=
+  hg.comp_continuousOn hf
+
+-- can we get a better proof of this by using the underlying `StarAlgHom`?
+lemma cfcBare_map_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
+    cfcBare a (fun x ↦ q.eval (f x)) = aeval (cfcBare a f) q := by
+  induction q using Polynomial.induction_on with
+  | h_C r => simp [cfcBare_map_const a r]
+  | h_add q₁ q₂ hq₁ hq₂ =>
+    simp only [eval_add, map_add, ← hq₁, ← hq₂]
+    refine cfcBare_map_add a (fun x ↦ q₁.eval (f x)) (fun x ↦ q₂.eval (f x)) ?_ ?_
+    · exact Continuous.comp_continuousOn' (g := fun x ↦ q₁.eval x) (by fun_prop) hf
+    · exact Continuous.comp_continuousOn' (g := fun x ↦ q₂.eval x) (by fun_prop) hf
+  | h_monomial n r _ =>
+    simp only [eval_mul, eval_C, eval_pow, eval_X, map_mul, aeval_C, map_pow, aeval_X]
+    simp_rw [← smul_eq_mul, ← Pi.smul_def, ← Pi.pow_def]
+    rw [cfcBare_map_smul a r (f ^ (n + 1)) _,
+      cfcBare_map_pow a (fun x ↦ f x) (n + 1) n.succ_ne_zero, algebraMap_smul]
+    exact Continuous.comp_continuousOn' (g := (· ^ (n + 1))) (by fun_prop) hf
+
+lemma cfcBare_polynomial (q : R[X]) (ha : p a := by cfc_tac) :
+    cfcBare a q.eval = aeval a q := by
+  rw [cfcBare_map_polynomial a q (fun x : R ↦ x)]
+  congr
+  exact cfcBare_id R a
+
+end Polynomial
+
 variable [∀ a : A, Subsingleton (CFCCore (spectrum R a) a)]
 
 lemma cfcBare_comp' (g f : R → R) (ha : p a := by cfc_tac)
@@ -297,6 +362,12 @@ lemma cfcBare_comp_star (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (star '' (spectrum R a)) := by cfc_cont_tac) :
     cfcBare a (fun x ↦ f (star x)) = cfcBare (star a) f := by
   rw [cfcBare_comp a f star, cfcBare_star a]
+
+open Polynomial in
+lemma cfcBare_comp_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
+    (hf : ContinuousOn f (q.eval '' (spectrum R a)) := by cfc_cont_tac) :
+    cfcBare a (fun x ↦ f (q.eval x)) = cfcBare (aeval a q) f := by
+  rw [cfcBare_comp a f q.eval, cfcBare_polynomial a]
 
 end Bare
 
@@ -351,6 +422,13 @@ lemma cfcBare_inv (a : Aˣ) (ha : p a := by cfc_tac) :
   · exact (cfcBare_id R (a : A)).symm
   · rintro x hx rfl
     exact spectrum.zero_not_mem R a.isUnit hx
+
+lemma cfcBare_map_div (a : A) (f g : R → R) (hg' : ∀ x ∈ spectrum R a, g x ≠ 0)
+    (ha : p a := by cfc_tac) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+    (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
+    cfcBare a (f / g) = cfcBare a f * Ring.inverse (cfcBare a g) := by
+  rw [div_eq_mul_inv, cfcBare_map_mul a f g⁻¹ (by cfc_cont_tac) (hg.inv₀ hg'),
+    cfcBare_map_inv a g hg']
 
 variable [∀ a : A, Subsingleton (CFCCore (spectrum R a) a)]
 
@@ -438,7 +516,7 @@ lemma cfcBare_neg (a : A) (ha : p a := by cfc_tac) :
 variable [∀ a : A, Subsingleton (CFCCore (spectrum R a) a)]
 
 lemma cfcBare_comp_neg (a : A) (f : R → R) (ha : p a := by cfc_tac)
-    (hf : ContinuousOn f ((-·) '' (spectrum R (a : A))) := by cfc_cont_tac) :
+    (hf : ContinuousOn f ((- ·) '' (spectrum R (a : A))) := by cfc_cont_tac) :
     cfcBare (a : A) (fun x ↦ f (-x)) = cfcBare (-a) f := by
   rw [cfcBare_comp .., cfcBare_neg _]
 
