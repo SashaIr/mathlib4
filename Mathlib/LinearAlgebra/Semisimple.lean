@@ -80,11 +80,12 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   nontriviality M
   set k := nilpotencyClass f
-  wlog hk : 2 ≤ k
-  · replace hk : k = 0 ∨ k = 1 := by omega
+  suffices hk : k < 2 by
+    replace hk : k = 0 ∨ k = 1 := by omega
     rcases hk with (hk₀ : nilpotencyClass f = 0) | (hk₁ : nilpotencyClass f = 1)
     · rw [← pos_nilpotencyClass_iff, hk₀] at hn; contradiction
     · exact eq_zero_of_nilpotencyClass_eq_one hk₁
+  by_contra! hk
   let p := LinearMap.ker (f ^ (k - 1))
   have hp : p ≤ p.comap f := fun x hx ↦ by
     rw [Submodule.mem_comap, LinearMap.mem_ker, ← LinearMap.mul_apply, ← pow_succ', add_comm,
@@ -94,7 +95,6 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
     fun contra ↦ pow_pred_nilpotencyClass hn <| LinearMap.ker_eq_top.mp contra
   obtain ⟨m, hm₁ : m ∈ q, hm₀ : m ≠ 0⟩ := q.ne_bot_iff.mp hq₂
   suffices m ∈ p by
-    exfalso
     apply hm₀
     rw [← Submodule.mem_bot (R := R), ← hq₁.eq_bot]
     exact ⟨this, hm₁⟩
