@@ -154,6 +154,7 @@ variable (R) in
 lemma cfcBare_id (ha : p a := by cfc_tac) : cfcBare a (id : R → R) = a :=
   cfcBare_apply a (id : R → R) ▸ cfcSpec_map_id (p := p) ha
 
+variable (R) in
 lemma cfcBare_id' (ha : p a := by cfc_tac) : cfcBare a (fun x : R ↦ x) = a :=
   cfcBare_id R a
 
@@ -307,7 +308,8 @@ lemma cfcBare_eval_C (r : R) (ha : p a := by cfc_tac) :
 
 attribute [fun_prop]
   Polynomial.continuous
-  --Polynomial.continuousOn
+  Polynomial.continuousOn
+  Polynomial.continuousAt
 
 @[fun_prop]
 theorem Continuous.comp_continuousOn'
