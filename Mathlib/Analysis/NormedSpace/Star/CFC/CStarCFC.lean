@@ -280,14 +280,23 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
     refine le_of_smul_le_smul_left ?_ (inv_pos.mpr <| lt_of_le_of_ne hr <| ne_comm.mpr hr')
     simpa [Units.smul_def] using ha _ hx
 
+set_option trace.Meta.Tactic.fun_prop true
+
 lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b), 0 ≤ x := by
   set a := star b * b
+  have a_def : a = star b * b := rfl
   let a_neg : A := cfc a (- ContinuousMap.id ℝ ⊔ 0)
   set c := b * a_neg
   have h_eq_a_neg : - (star c * c) = a_neg ^ 3 := by
     simp (config := { zeta := false }) only [c, a_neg, star_mul]
-    rw [← mul_assoc, mul_assoc _ _ b, ← cfc_map_star, ← cfc_id (star b * b) (R := ℝ),
-      ← map_mul, ← map_mul, ← map_pow, ← map_neg]
+    rw [← mul_assoc, mul_assoc _ _ b, ← cfc_map_star, ← cfc_id ℝ (star b * b), a_def, ← neg_mul]
+    rw [← cfc_map_mul (star b * b) _ _ _ _]
+    swap
+    fun_prop (disch := aesop)
+    --  ← map_mul, ← map_mul, ← map_pow, ← map_neg]
+    sorry
+  sorry
+  #exit
     congr
     ext x
     by_cases hx : x ≤ 0
