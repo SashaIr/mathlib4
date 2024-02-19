@@ -128,7 +128,7 @@ variant `cfc_comp`.
 This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0`. -/
 class UniqueContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra R A] where
+    [TopologicalSpace A] [Algebra R A] : Prop where
   eq_of_continuous_of_map_id (a : A) (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A)
     (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (.restrict (spectrum R a) <| .id R) = ψ (.restrict (spectrum R a) <| .id R)) :
@@ -221,7 +221,7 @@ syntax (name := cfcContTac) "cfc_cont_tac" : tactic
 macro_rules
   | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop (disch := aesop) | assumption))
 
-/- This is the *continuous functional calculus* of an element `a : A` applied to bare functions.
+/-- This is the *continuous functional calculus* of an element `a : A` applied to bare functions.
 When either `a` does not satisfy the predicate `p` (i.e., `a` is not `IsStarNormal`,
 `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when `f : R → R` is
 not continuous on the spectrum of `a`, then `cfc a f` returns the junk value `0`.
@@ -532,6 +532,7 @@ lemma cfc_isUnit_iff (a : A) (f : R → R) (ha : p a := by cfc_tac)
 
 alias ⟨_, cfc_isUnit⟩ := cfc_isUnit_iff
 
+/-- Bundle `cfc a f` into a unit given a proof that `f` is nonzero on the spectrum of `a`. -/
 @[simps]
 noncomputable def cfc_units (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (ha : p a := by cfc_tac) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) : Aˣ where
@@ -674,10 +675,12 @@ variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [Con
 
 -- Note: we may be able to get rid of the compactness and isometry conditions below in favor of
 -- something weaker, but they hold in the situations we care about, so we leave them for now.
+/-- Given a `ContinuousFunctionalCalculus S q`. If we form the predicate `p` for characterized by
+`q a` and the spectrum of `a` restricts to the scalar subring `R` via `f : C(S, R)`, then we can
+get a restricted functional calculus `ContinuousFunctionalCalculus R p`. -/
 @[reducible]
-def cfc_of_spectrumRestricts [CompleteSpace R]
-    (f : C(S, R)) (h_isom : Isometry (algebraMap R S)) (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f)
-    (h_cpct : ∀ a, q a → CompactSpace (spectrum S a)) :
+def cfc_of_spectrumRestricts [CompleteSpace R] (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
+    (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) (h_cpct : ∀ a, q a → CompactSpace (spectrum S a)) :
     ContinuousFunctionalCalculus R p where
   toStarAlgHom {a} ha := ((h a).mp ha).2.starAlgHom (cfcSpec ((h a).mp ha).1 (R := S)) f
   hom_closedEmbedding {a} ha := by
