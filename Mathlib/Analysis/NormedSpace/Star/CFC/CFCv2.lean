@@ -731,4 +731,3 @@ def cfc_of_spectrumRestricts [CompleteSpace R] (f : C(S, R)) (h_isom : Isometry 
 
 
 end Restrict
-#lint
