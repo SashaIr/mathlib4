@@ -1,5 +1,8 @@
-import Mathlib.Analysis.NormedSpace.Spectrum
-
+import Mathlib.Algebra.Algebra.Spectrum
+-- these are only needed for the last three declarations, and I think maybe we only need the last
+-- one?
+import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousFunction.Algebra
 /-!
 ## Restriction of the spectrum
 
@@ -19,11 +22,11 @@ over the ring `R`.
 /-- Given an element `a : A` of an `S`-algebra, where `S` is itself an `R`-algebra, we say that
 the spectrum of `a` restricts via a function `f : S → R` if `f` is a left inverse of
 `algebraMap R S`, and `f` is a right inverse of `algebraMap R S` on `spectrum S a`.
-This is the predicate which allows us to restrict a continuous functional calculus on over `S` to a
+
+This is property allows us to restrict a continuous functional calculus over `S` to a
 continuous functional calculus over `R`. -/
-class SpectrumRestricts {R : Type*} {S : semiOutParam (Type*)} {A : Type*} [CommSemiring R]
-    [CommSemiring S] [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] (a : A) (f : S → R) :
-    Prop where
+structure SpectrumRestricts {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
+    [Algebra R S] [Algebra R A] [Algebra S A] (a : A) (f : S → R) : Prop where
   /-- `f` is a right inverse of `algebraMap R S` when restricted to `spectrum S a`. -/
   rightInvOn : (spectrum S a).RightInvOn f (algebraMap R S)
   /-- `f` is a left inverse of `algebraMap R S`. -/
@@ -32,7 +35,6 @@ class SpectrumRestricts {R : Type*} {S : semiOutParam (Type*)} {A : Type*} [Comm
 variable {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A]
 
--- not an instance because reasons.
 theorem spectrumRestricts_of_subset_range_algebraMap (a : A) (f : S → R)
     (hf : Function.LeftInverse f (algebraMap R S)) (h : spectrum S a ⊆ Set.range (algebraMap R S)) :
     SpectrumRestricts a f where
@@ -50,21 +52,17 @@ theorem SpectrumRestricts.algebraMap_image : algebraMap R S '' spectrum R a = sp
 theorem SpectrumRestricts.image : f '' spectrum S a = spectrum R a := by
   simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
 
-theorem SpectrumRestricts.isCompact [TopologicalSpace R] [TopologicalSpace S] (hf : Continuous f)
-    (ha : IsCompact (spectrum S a)) : IsCompact (spectrum R a) :=
-  h.image ▸ ha.image hf
-
--- not an instance because there is no good synthesization order
-lemma SpectrumRestricts.compactSpace [TopologicalSpace R] [TopologicalSpace S] (f : C(S, R))
-    [h : SpectrumRestricts a f] [h' : CompactSpace (spectrum S a)] : CompactSpace (spectrum R a) :=
-  isCompact_iff_compactSpace.mp <| h.isCompact (map_continuous f) <|
-    isCompact_iff_compactSpace.mpr h'
-
 theorem SpectrumRestricts.apply_mem {s : S} (hs : s ∈ spectrum S a) : f s ∈ spectrum R a :=
   h.image ▸ ⟨s, hs, rfl⟩
 
 theorem SpectrumRestricts.subset_preimage : spectrum S a ⊆ f ⁻¹' spectrum R a :=
   h.image ▸ (spectrum S a).subset_preimage_image f
+
+lemma SpectrumRestricts.compactSpace [TopologicalSpace R] [TopologicalSpace S] (f : C(S, R))
+    (h : SpectrumRestricts a f) [h_cpct : CompactSpace (spectrum S a)] :
+    CompactSpace (spectrum R a) := by
+  rw [← isCompact_iff_compactSpace] at h_cpct ⊢
+  exact h.image ▸ h_cpct.image (map_continuous f)
 
 universe u v w
 
@@ -79,8 +77,7 @@ def SpectrumRestricts.starAlgHom {R : Type u} {S : Type v} {A : Type w} [CommSem
     (φ : C(spectrum S a, S) →⋆ₐ[S] A) (f : C(S, R)) (h : SpectrumRestricts a f) :
     C(spectrum R a, R) →⋆ₐ[R] A :=
   (φ.restrictScalars R).comp <|
-    (ContinuousMap.compStarAlgHom (spectrum S a) (StarAlgHom.ofId R S)
-          (algebraMapCLM R S).continuous).comp
-      (ContinuousMap.compStarAlgHom' R R
-        ⟨Subtype.map f h.subset_preimage,
-          (map_continuous f).subtype_map fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩)
+    (ContinuousMap.compStarAlgHom (spectrum S a) (.ofId R S) (algebraMapCLM R S).continuous).comp <|
+      ContinuousMap.compStarAlgHom' R R
+        ⟨Subtype.map f h.subset_preimage, (map_continuous f).subtype_map
+          fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩
