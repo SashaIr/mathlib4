@@ -1,4 +1,3 @@
---import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.CFC.CFCRestricts
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Polynomial
@@ -207,10 +206,17 @@ end cfcSpec
 
 section CFC
 
+-- right now these tactics are just wrappers, but potentially in the future they could be more
+-- sophisticated.
+/-- a tactic used to automatically discharge goals relating to the continuous functional calculus,
+specifically whether the element satisfies the predicate. -/
 syntax (name := cfcTac) "cfc_tac" : tactic
 macro_rules
   | `(tactic| cfc_tac) => `(tactic| (try (first | assumption | infer_instance | aesop)))
 
+-- if `fun_prop` is good enough, we'll just use that everywhere instead of this.
+/-- a tactic used to automatically discharge goals relating to the continuous functional calculus,
+specifically concerning coninuity of the functions involved. -/
 syntax (name := cfcContTac) "cfc_cont_tac" : tactic
 macro_rules
   | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop (disch := aesop) | assumption))
@@ -309,7 +315,7 @@ lemma cfc_zero : cfc a (0 : R → R) = 0 := by
   · exact cfc_apply a (0 : R → R) ▸ map_zero (cfcSpec ha)
   · rw [cfc_apply_of_not a ha]
 
-lemma cfc_zero' : cfc a (0 : R → R) = 0 :=
+lemma cfc_zero' : cfc a (fun _ : R ↦ 0) = 0 :=
   cfc_zero R a
 
 variable {R}
@@ -722,3 +728,4 @@ def cfc_of_spectrumRestricts [CompleteSpace R]
 
 
 end Restrict
+#lint
