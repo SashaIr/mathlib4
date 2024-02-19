@@ -1667,6 +1667,7 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
+import Mathlib.Data.Greedoid.Basic
 import Mathlib.Data.Greedoid.Predefs
 import Mathlib.Data.HashMap
 import Mathlib.Data.Holor
