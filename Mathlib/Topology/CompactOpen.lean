@@ -77,7 +77,7 @@ theorem gen_empty_right {s : Set X} (h : s.Nonempty) : CompactOpen.gen s (∅ : 
 -- The compact-open topology on the space of continuous maps X → Y.
 instance compactOpen : TopologicalSpace C(X, Y) :=
   TopologicalSpace.generateFrom
-    { m | ∃ (s : Set X) (_ : IsCompact s) (u : Set Y) (_ : IsOpen u), m = CompactOpen.gen s u }
+    { m | ∃ s : Set X, IsCompact s ∧ ∃ u : Set Y, IsOpen u ∧ m = CompactOpen.gen s u }
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
 /-- Definition of `ContinuousMap.compactOpen` in terms of `Set.image2`. -/

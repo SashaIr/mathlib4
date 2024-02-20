@@ -218,10 +218,10 @@ compact-open topology.
 Since `ContinuousMap.compactConvNhd K V f` are a neighbourhood basis at `f` for each `f`, it follows
 that the compact-open topology is at least as fine as the topology of compact convergence. -/
 theorem iInter_compactOpen_gen_subset_compactConvNhd (hK : IsCompact K) (hV : V ∈ 𝓤 β) :
-    ∃ (ι : Sort (u₁ + 1)) (_ : Fintype ι) (C : ι → Set α) (_hC : ∀ i, IsCompact (C i))
-      (U : ι → Set β) (_hU : ∀ i, IsOpen (U i)),
-      (f ∈ ⋂ i, CompactOpen.gen (C i) (U i)) ∧
-        ⋂ i, CompactOpen.gen (C i) (U i) ⊆ compactConvNhd K V f := by
+    ∃ (ι : Sort (u₁ + 1)) (_ : Fintype ι) (C : ι → Set α), (∀ i, IsCompact (C i)) ∧
+      ∃ (U : ι → Set β) (_hU : ∀ i, IsOpen (U i)),
+        (f ∈ ⋂ i, CompactOpen.gen (C i) (U i)) ∧
+          ⋂ i, CompactOpen.gen (C i) (U i) ⊆ compactConvNhd K V f := by
   obtain ⟨W, hW₁, hW₄, hW₂, hW₃⟩ := comp_open_symm_mem_uniformity_sets hV
   obtain ⟨Z, hZ₁, hZ₄, hZ₂, hZ₃⟩ := comp_open_symm_mem_uniformity_sets hW₁
   let U : α → Set α := fun x => f ⁻¹' ball (f x) Z
