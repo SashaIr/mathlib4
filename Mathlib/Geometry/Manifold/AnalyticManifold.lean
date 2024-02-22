@@ -23,7 +23,7 @@ open Set Filter Function
 
 open scoped Manifold Filter Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
@@ -171,8 +171,7 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
 /-- `f ∈ analyticGroupoid` iff it is in the `contDiffGroupoid`, and it and its inverse are analytic
 in the interior, and map interior to interior. -/
 lemma mem_analyticGroupoid {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [TopologicalSpace A] [CompleteSpace E] {I : ModelWithCorners 𝕜 E A}
-    {f : PartialHomeomorph A A} :
+    [TopologicalSpace A] {I : ModelWithCorners 𝕜 E A} {f : PartialHomeomorph A A} :
     f ∈ analyticGroupoid I ↔ f ∈ contDiffGroupoid ∞ I ∧
       (AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' f.source ∩ interior (range I)) ∧
         (I.symm ⁻¹' f.source ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)) ∧
@@ -201,8 +200,8 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
 
 /-- `analyticGroupoid` is closed under products -/
 theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [TopologicalSpace A] [CompleteSpace E] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [TopologicalSpace B] [CompleteSpace F] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
+    [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
     {f : PartialHomeomorph A A} {g : PartialHomeomorph B B}
     (fa : f ∈ analyticGroupoid I) (ga : g ∈ analyticGroupoid J) :
     f.prod g ∈ analyticGroupoid (I.prod J) := by
@@ -287,8 +286,8 @@ instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where
 
 /-- `M × N` is a analytic manifold if `M` and `N` are -/
 instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [TopologicalSpace A] [CompleteSpace E] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [TopologicalSpace B] [CompleteSpace F] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
+    [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
     {M : Type} [TopologicalSpace M] [ChartedSpace A M] [m : AnalyticManifold I M]
     {N : Type} [TopologicalSpace N] [ChartedSpace B N] [n : AnalyticManifold J N] :
     AnalyticManifold (I.prod J) (M × N) where
