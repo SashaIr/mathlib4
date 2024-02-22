@@ -293,7 +293,7 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
     AnalyticManifold (I.prod J) (M × N) where
   compatible := by
     intro f g ⟨f1, f2, hf1, hf2, fe⟩ ⟨g1, g2, hg1, hg2, ge⟩
-    rw [←fe, ←ge, PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
+    rw [← fe, ← ge, PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
     exact analyticGroupoid_prod (m.toHasGroupoid.compatible f2 g2)
       (n.toHasGroupoid.compatible hf2 hg2)
 
