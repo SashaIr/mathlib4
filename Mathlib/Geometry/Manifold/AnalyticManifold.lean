@@ -176,8 +176,8 @@ lemma mem_analyticGroupoid {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜
       (AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' f.source ∩ interior (range I)) ∧
         (I.symm ⁻¹' f.source ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)) ∧
       (AnalyticOn 𝕜 (I ∘ f.symm ∘ I.symm) (I.symm ⁻¹' f.target ∩ interior (range I)) ∧
-        (I.symm ⁻¹' f.target ∩ interior (range I)).image (I ∘ f.symm ∘ I.symm) ⊆ interior (range I))
-    := by
+        (I.symm ⁻¹' f.target ∩ interior (range I)).image (I ∘ f.symm ∘ I.symm) ⊆
+          interior (range I)) := by
   rfl
 
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
