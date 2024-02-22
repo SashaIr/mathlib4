@@ -1,0 +1,161 @@
+/-
+Copyright (c) 2024 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+
+import Mathlib.NumberTheory.ZetaFunctions.HurwitzZetaEven
+import Mathlib.NumberTheory.ZetaFunctions.HurwitzZetaOdd
+import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+
+/-!
+# The Hurwitz zeta function
+
+This file gives the definition and properties of the functions which are the meromorphic
+continuations to all `s ∈ ℂ` of the Dirichlet series
+
+`∑' n, 1 / (n + a) ^ s`
+
+(for `a ∈ ℝ`, with the sum taken over all `n` such that `n + a > 0`) and the related sum, which we
+call an "exponential zeta function" (does it have a name?)
+
+`∑' n : ℕ, exp (2 * π * I * n * a) / n ^ s`.
+
+## Main definitions and results
+
+* `hurwitzZeta`: the Hurwitz zeta function (defined to be periodic in `a` with period 1)
+* `expZeta`: the exponential zeta function
+* `hasSum_hurwitzZeta_of_one_lt_re` and `hasSum_expZeta_of_one_lt_re`:
+  relation to Dirichlet series for `1 < re s`
+* `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
+* `hurwitzZeta_one_sub` and `expZeta_one_sub`: functional equations `s ↔ 1 - s`.
+-/
+
+open Set Real Complex Filter Topology
+
+/-!
+## The Hurwitz zeta function
+-/
+
+/-- The Hurwitz zeta function, which is the meromorphic continuation of
+`∑ (n : ℕ), 1 / (n + a) ^ s` if `0 ≤ a ≤ 1`. See `hasSum_hurwitzZeta_of_one_lt_re` for the relation
+to the Dirichlet series in the convergence range. -/
+noncomputable def hurwitzZeta (a : UnitAddCircle) (s : ℂ) :=
+  hurwitzZetaEven a s + hurwitzZetaOdd a s
+
+lemma hurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
+    hurwitzZetaEven a s = (hurwitzZeta a s + hurwitzZeta (-a) s) / 2 := by
+  simp_rw [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
+  ring_nf
+
+lemma hurwitzZetaOdd_eq (a : UnitAddCircle) (s : ℂ) :
+    hurwitzZetaOdd a s = (hurwitzZeta a s - hurwitzZeta (-a) s) / 2 := by
+  simp_rw [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
+  ring_nf
+
+/-- The Hurwitz zeta function is differentiable away from `s = 1`. -/
+lemma differentiableAt_hurwitzZeta (a : UnitAddCircle) {s : ℂ} (hs : s ≠ 1) :
+    DifferentiableAt ℂ (hurwitzZeta a) s :=
+  (differentiableAt_hurwitzZetaEven a hs).add (differentiable_hurwitzZetaOdd a s)
+
+/-- Formula for `hurwitzZeta s` as a Dirichlet series in the convergence range. We
+restrict to `a ∈ Icc 0 1` to simplify the statement. -/
+lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
+    HasSum (fun n : ℕ ↦ 1 / (n + a : ℂ) ^ s) (hurwitzZeta a s) := by
+  have h0 : (0 : ℂ) ^ s = 0 := zero_cpow ((not_lt.mpr one_pos.le) ∘ (zero_re ▸ · ▸ hs))
+  convert (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add
+      (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs) using 1
+  · ext1 n
+    rcases eq_or_lt_of_le ha.1 with rfl | ha'
+    · -- case `a = 0`
+      simp_rw [ofReal_zero, add_zero, sub_zero, Real.sign_of_pos (by positivity : 0 < (n : ℝ) + 1)]
+      rcases Nat.eq_zero_or_pos n with rfl | hn
+      · simp_rw [ofReal_one, Nat.cast_zero, zero_add, Real.sign_zero, ofReal_zero, one_cpow, h0]
+        ring_nf
+      · rw [Real.sign_of_pos (Nat.cast_pos.mpr hn), ofReal_one]
+        ring_nf
+    · simp_rw [← ofReal_nat_cast, ← ofReal_add, ofReal_nat_cast,
+        Real.sign_of_pos (by positivity : 0 < n + a)]
+      rcases eq_or_lt_of_le ha.2 with rfl | ha''
+      · -- case `a = 1`
+        simp_rw [ofReal_one, add_sub_cancel]
+        rcases Nat.eq_zero_or_pos n with rfl | hn
+        · simp_rw [Nat.cast_zero, zero_add, Real.sign_zero, ofReal_zero, ofReal_one, one_cpow, h0]
+          ring_nf
+        · rw [Real.sign_of_pos (Nat.cast_pos.mpr hn), ofReal_one]
+          ring_nf
+      · -- case `0 < a` and `a < 1`
+        rw [Real.sign_of_pos (by linarith), ofReal_one]
+        ring_nf
+
+/-- The residue of the Hurwitz zeta function at `s = 1` is `1`. -/
+lemma hurwitzZeta_residue_one (a : UnitAddCircle) :
+    Tendsto (fun s ↦ (s - 1) * hurwitzZeta a s) (𝓝[≠] 1) (𝓝 1) := by
+  simp_rw [hurwitzZeta, mul_add, (by simp : 𝓝 (1 : ℂ) = 𝓝 (1 + (1 - 1) * hurwitzZetaOdd a 1))]
+  refine (hurwitzZetaEven_residue_one a).add ((Tendsto.mul ?_ ?_).mono_left nhdsWithin_le_nhds)
+  exacts [tendsto_id.sub_const _, (differentiable_hurwitzZetaOdd a).continuous.tendsto _]
+
+/-!
+## The exponential zeta function
+-/
+
+/-- Meromorphic continuation of the series `∑' (n : ℕ), exp (2 * π * I * a * n) / n ^ s`.  See
+`hasSum_expZeta_of_one_lt_re` for the relation to the Dirichlet series. -/
+noncomputable def expZeta (a : UnitAddCircle) (s : ℂ) :=
+  cosZeta a s + I * sinZeta a s
+
+lemma cosZeta_eq (a : UnitAddCircle) (s : ℂ) :
+    cosZeta a s = (expZeta a s + expZeta (-a) s) / 2 := by
+  rw [expZeta, expZeta, cosZeta_neg, sinZeta_neg]
+  ring_nf
+
+lemma sinZeta_eq (a : UnitAddCircle) (s : ℂ) :
+    sinZeta a s = (expZeta a s - expZeta (-a) s) / (2 * I) := by
+  rw [expZeta, expZeta, cosZeta_neg, sinZeta_neg]
+  field_simp
+  ring_nf
+
+lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
+    HasSum (fun n : ℕ ↦ cexp (2 * π * I * a * n) / n ^ s) (expZeta a s) := by
+  convert (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
+  ext1 n
+  simp only [push_cast, ← mul_div_assoc, ← add_div, mul_comm I _, cos_add_sin_I]
+  ring_nf
+
+lemma differentiableAt_expZeta (a : UnitAddCircle) (s : ℂ) (hs : s ≠ 1 ∨ a ≠ 0) :
+    DifferentiableAt ℂ (expZeta a) s := by
+  apply DifferentiableAt.add
+  · exact differentiableAt_cosZeta a hs
+  · apply (differentiableAt_const _).mul (differentiableAt_sinZeta a s)
+
+/-- If `a ≠ 0` then the exponential zeta function is analytic everywhere. -/
+lemma differentiable_expZeta_of_ne_zero {a : UnitAddCircle} (ha : a ≠ 0) :
+    Differentiable ℂ (expZeta a) :=
+  (differentiableAt_expZeta a · (Or.inr ha))
+
+/-!
+## The functional equation
+-/
+
+/-- Functional equation for Hurwitz zeta function. -/
+lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}
+    (hs : ∀ (n : ℕ), s ≠ -n) (hs' : a ≠ 0 ∨ s ≠ 1) :
+    hurwitzZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *
+    (exp (-π * I * s / 2) * expZeta a s + exp (π * I * s / 2) * expZeta (-a) s) := by
+  rw [hurwitzZeta, hurwitzZetaEven_one_sub a hs hs', hurwitzZetaOdd_one_sub a hs,
+    expZeta, expZeta, Complex.cos, Complex.sin, sinZeta_neg, cosZeta_neg]
+  ring_nf
+
+/-- Functional equation for exponential zeta function. -/
+lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1 - n) :
+    expZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *
+    (exp (π * I * s / 2) * hurwitzZeta a s + exp (-π * I * s / 2) * hurwitzZeta (-a) s) := by
+  have hs' (n : ℕ) : s ≠ -↑n := by
+    convert hs (n + 1) using 1
+    push_cast
+    ring
+  rw [expZeta, cosZeta_one_sub a hs, sinZeta_one_sub a hs', hurwitzZeta, hurwitzZeta,
+    hurwitzZetaEven_neg, hurwitzZetaOdd_neg, Complex.cos, Complex.sin]
+  ring_nf
+  rw [I_sq]
+  ring_nf
