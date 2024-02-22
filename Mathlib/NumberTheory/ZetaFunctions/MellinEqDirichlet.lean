@@ -202,9 +202,9 @@ lemma summable_int_iff_summable_nat {α : Type*}
 
 lemma summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
-  suffices : ∀ (b c : ℝ),
-      Summable (fun n : ℕ ↦ 1 / |n + b| ^ s) → Summable (fun n : ℕ ↦ 1 / |n + c| ^ s)
-  · simp_rw [← summable_one_div_nat_rpow, Iff.intro (this a 0) (this 0 a), add_zero, Nat.abs_cast]
+  suffices ∀ (b c : ℝ), Summable (fun n : ℕ ↦ 1 / |n + b| ^ s) →
+      Summable (fun n : ℕ ↦ 1 / |n + c| ^ s) by
+    simp_rw [← summable_one_div_nat_rpow, Iff.intro (this a 0) (this 0 a), add_zero, Nat.abs_cast]
   refine fun b c h ↦ summable_of_isBigO_nat h (isBigO_of_div_tendsto_nhds ?_ 1 ?_)
   · filter_upwards [eventually_gt_atTop (Nat.ceil |b|)] with n hn hx
     have hna : 0 < n + b := by linarith [lt_of_abs_lt ((abs_neg b).symm ▸ Nat.lt_of_ceil_lt hn)]
@@ -214,10 +214,10 @@ lemma summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
   · simp_rw [Pi.div_def, div_div, mul_one_div, one_div_div]
     refine (?_ : Tendsto (fun x : ℝ ↦ |x + b| ^ s / |x + c| ^ s) atTop (𝓝 1)).comp
       tendsto_nat_cast_atTop_atTop
-    have : Tendsto (fun x : ℝ ↦ 1 + (b - c) / x) atTop (𝓝 1)
-    · simpa using tendsto_const_nhds.add ((tendsto_const_nhds (X := ℝ)).div_atTop tendsto_id)
-    have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1)
-    · refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
+    have : Tendsto (fun x : ℝ ↦ 1 + (b - c) / x) atTop (𝓝 1) := by
+      simpa using tendsto_const_nhds.add ((tendsto_const_nhds (X := ℝ)).div_atTop tendsto_id)
+    have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
+      refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
       filter_upwards [eventually_gt_atTop (-c)] with x hx
       field_simp [(by linarith : 0 < x + c).ne']
     apply (one_rpow s ▸ (continuousAt_rpow_const _ s (by simp)).tendsto.comp this).congr'

@@ -217,8 +217,8 @@ lemma functional_equation (s : ℂ) :
   refine set_integral_congr measurableSet_Ioi (fun t ht ↦ ?_)
   simp_rw [P.h_feq' t ht, ← mul_smul]
   rw [cpow_neg, ofReal_cpow (le_of_lt ht)]
-  have : (t : ℂ) ^ (P.k : ℂ) ≠ 0
-  · simpa only [← ofReal_cpow (le_of_lt ht), ofReal_ne_zero] using (rpow_pos_of_pos ht _).ne'
+  have : (t : ℂ) ^ (P.k : ℂ) ≠ 0 := by
+    simpa only [← ofReal_cpow (le_of_lt ht), ofReal_ne_zero] using (rpow_pos_of_pos ht _).ne'
   field_simp [P.hε]
 
 end StrongFEPair
@@ -245,8 +245,8 @@ def g_mod : ℝ → E :=
 
 lemma hf_mod_int :
     LocallyIntegrableOn P.f_mod (Ioi 0) := by
-  have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0)
-  · refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
+  have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
+    refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
     refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
     refine (continuousAt_const.mul ?_).smul continuousAt_const
     exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
@@ -265,8 +265,7 @@ lemma hf_mod_int :
 lemma hf_mod_FE (x : ℝ) (hx : 0 < x) :
     P.f_mod (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_mod x := by
   rcases lt_trichotomy 1 x with hx' | rfl | hx'
-  · have : 1 / x < 1
-    · rwa [one_div_lt hx one_pos, div_one]
+  · have : 1 / x < 1 := by rwa [one_div_lt hx one_pos, div_one]
     rw [f_mod, Pi.add_apply, indicator_of_not_mem (not_mem_Ioi.mpr this.le),
       zero_add, indicator_of_mem (mem_Ioo.mpr ⟨div_pos one_pos hx, this⟩), g_mod, Pi.add_apply,
       indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_not_mem

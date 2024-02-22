@@ -57,9 +57,8 @@ completed Hurwit zeta function). See `evenKernel_def` for the defining formula, 
     (fun ξ : ℝ ↦ rexp (-π * ξ ^ 2 * x) * re (jacobiTheta₂ (ξ * I * x) (I * x))) 1 by
       intro ξ
       simp_rw [ofReal_add, ofReal_one, add_mul, one_mul, jacobiTheta₂_add_left']
-      have : cexp (-↑π * I * ((I * ↑x) + 2 * (↑ξ * I * ↑x))) =
-        rexp (π * (x + 2 * ξ * x))
-      · simp_rw [ofReal_exp, push_cast]
+      have : cexp (-↑π * I * ((I * ↑x) + 2 * (↑ξ * I * ↑x))) = rexp (π * (x + 2 * ξ * x)) := by
+        simp_rw [ofReal_exp, push_cast]
         ring_nf
         rw [I_sq]
         ring_nf
@@ -141,20 +140,20 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     exact div_nonpos_of_nonneg_of_nonpos zero_le_one hx
   induction' a using QuotientAddGroup.induction_on' with a'
   rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def,
-    jacobiTheta₂_functional_equation]
-  have : I * ↑(1 / x) = -1 / (I * ↑x)
-  · push_cast; field_simp [hx.ne']; ring_nf; rw [I_sq]; ring_nf
+      jacobiTheta₂_functional_equation]
+  have : I * ↑(1 / x) = -1 / (I * ↑x) := by
+    push_cast; field_simp [hx.ne']; ring_nf; rw [I_sq]; ring_nf
   rw [this]
   have : (a' * I * x / (I * x)) = a' := by { field_simp [hx.ne']; ring_nf }
   rw [this]
-  have : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x  ^ (1 / 2 : ℝ))
-  · rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,
-      ofReal_cpow hx.le, ofReal_div, ofReal_one, ofReal_ofNat]
+  have : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x  ^ (1 / 2 : ℝ)) := by
+    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,
+        ofReal_cpow hx.le, ofReal_div, ofReal_one, ofReal_ofNat]
   rw [this]
-  have : -↑π * I * (↑a' * I * ↑x) ^ 2 / (I * ↑x) = - (-π * a' ^ 2 * x)
-  · rw [mul_pow, mul_pow, I_sq]; field_simp [hx.ne']; ring_nf
+  have : -↑π * I * (↑a' * I * ↑x) ^ 2 / (I * ↑x) = - (-π * a' ^ 2 * x) := by
+    rw [mul_pow, mul_pow, I_sq]; field_simp [hx.ne']; ring_nf
   rw [this, ← mul_assoc, mul_comm (cexp _), mul_assoc _ (cexp _) (cexp _), ← Complex.exp_add,
-    neg_add_self, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
+      neg_add_self, Complex.exp_zero, mul_one, ofReal_div, ofReal_one]
 
 end kernel_defs
 
@@ -194,7 +193,7 @@ lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
   · obtain ⟨k, rfl⟩ := h
     simp_rw [← Int.cast_add, Int.cast_eq_zero, add_eq_zero_iff_eq_neg]
     simpa using hasSum_ite_sub_hasSum (hasSum_int_evenKernel (k : ℝ) ht) (-k)
-  · suffices : ∀ (n : ℤ), n + a ≠ 0; simpa [this] using hasSum_int_evenKernel a ht
+  · suffices ∀ (n : ℤ), n + a ≠ 0 by simpa [this] using hasSum_int_evenKernel a ht
     contrapose! h
     let ⟨n, hn⟩ := h
     exact ⟨-n, by rwa [Int.cast_neg, neg_eq_iff_add_eq_zero]⟩
@@ -489,8 +488,8 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     (completedCosZeta a s) := by
   let c (n : ℤ) : ℂ := cexp (2 * π * I * a * n) / 2
   have hF t (ht : 0 < t) : HasSum (fun n : ℤ ↦ if n = 0 then 0 else c n * rexp (-π * n ^ 2 * t))
-      ((cosKernel a t - 1) / 2)
-  · convert (hasSum_int_cosKernel₀ a ht).div_const 2 using 2 with n
+      ((cosKernel a t - 1) / 2) := by
+    convert (hasSum_int_cosKernel₀ a ht).div_const 2 using 2 with n
     split_ifs with h <;> ring_nf
   simp_rw [← Int.cast_eq_zero (α := ℝ)] at hF
   convert hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_ using 1
@@ -697,8 +696,8 @@ lemma hasSum_nat_cosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 lemma hurwitzZetaEven_one_sub (a : UnitAddCircle) {s : ℂ}
     (hs : ∀ (n : ℕ), s ≠ -n) (hs' : a ≠ 0 ∨ s ≠ 1) :
     hurwitzZetaEven a (1 - s) = 2 * (2 * π) ^ (-s) * Gamma s * cos (π * s / 2) * cosZeta a s := by
-  have : hurwitzZetaEven a (1 - s) = completedHurwitzZetaEven a (1 - s) * (Gammaℝ (1 - s))⁻¹
-  · rw [hurwitzZetaEven_def_of_ne_or_ne, div_eq_mul_inv]
+  have : hurwitzZetaEven a (1 - s) = completedHurwitzZetaEven a (1 - s) * (Gammaℝ (1 - s))⁻¹ := by
+    rw [hurwitzZetaEven_def_of_ne_or_ne, div_eq_mul_inv]
     simpa [sub_eq_zero, eq_comm (a := s)] using hs'
   rw [this, completedHurwitzZetaEven_one_sub, inv_Gammaℝ_one_sub hs, cosZeta,
     Function.update_noteq (by simpa using hs 0), Gammaℂ]
@@ -709,8 +708,8 @@ multiple of `hurwitzZetaEven s`. -/
 lemma cosZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1 - n) :
     cosZeta a (1 - s) = 2 * (2 * π) ^ (-s) * Gamma s * cos (π * s / 2) * hurwitzZetaEven a s := by
   rw [← Gammaℂ]
-  have : cosZeta a (1 - s) = completedCosZeta a (1 - s) * (Gammaℝ (1 - s))⁻¹
-  · rw [cosZeta, Function.update_noteq, div_eq_mul_inv]
+  have : cosZeta a (1 - s) = completedCosZeta a (1 - s) * (Gammaℝ (1 - s))⁻¹ := by
+    rw [cosZeta, Function.update_noteq, div_eq_mul_inv]
     simpa [sub_eq_zero] using (hs 0).symm
   rw [this, completedCosZeta_one_sub, inv_Gammaℝ_one_sub (fun n ↦ by simpa using hs (n + 1)),
     hurwitzZetaEven_def_of_ne_or_ne (Or.inr (by simpa using hs 1)), Gammaℂ]

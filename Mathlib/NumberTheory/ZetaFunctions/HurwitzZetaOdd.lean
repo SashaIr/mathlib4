@@ -203,29 +203,29 @@ lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   generalize jacobiTheta₂ (↑a * I * ↑x) (I * ↑x) = J
   generalize jacobiTheta₂' (↑a * I * ↑x) (I * ↑x) = J'
   -- *Second step*: get rid of the complex exponential.
-  have : -π * I * a ^ 2 / (I * ↑(1 / x)) = -π * a ^ 2 * x
-  · push_cast; field_simp; ring_nf; rw [I_sq]; ring_nf
+  have : -π * I * a ^ 2 / (I * ↑(1 / x)) = -π * a ^ 2 * x := by
+    push_cast; field_simp; ring_nf; rw [I_sq]; ring_nf
   rw [this]
   generalize cexp (-π * a ^ 2 * x) = C
   -- *Third step*: rewrite all the powers in terms of `y = ↑(x ^ (1 / 2))`.
   generalize hy : (↑(x ^ (1 / 2 : ℝ)) : ℂ) = y
-  have : ↑(1 / x ^ (3 / 2 : ℝ)) = 1 / y ^ 3
-  · rw [← hy, ← ofReal_pow, ← rpow_mul_natCast hx.le]; norm_num
+  have : ↑(1 / x ^ (3 / 2 : ℝ)) = 1 / y ^ 3 := by
+    rw [← hy, ← ofReal_pow, ← rpow_mul_natCast hx.le]; norm_num
   rw [this]
-  have : 1 / (-I * (I * ↑(1 / x))) ^ (1 / 2 : ℂ) = y
-  · rw [← hy]
+  have : 1 / (-I * (I * ↑(1 / x))) ^ (1 / 2 : ℂ) = y := by
+    rw [← hy]
     push_cast; field_simp; rw [one_div, one_div, inv_cpow, inv_inv, ofReal_cpow hx.le]; norm_num
     rw [arg_ofReal_of_nonneg hx.le]
     exact pi_pos.ne
   rw [this]
-  have : ↑(1 / x) = 1 / y ^ 2
-  · rw [← hy, one_div, one_div, ofReal_inv, inv_inj, ← ofReal_pow, ofReal_inj,
+  have : ↑(1 / x) = 1 / y ^ 2 := by
+    rw [← hy, one_div, one_div, ofReal_inv, inv_inj, ← ofReal_pow, ofReal_inj,
       ← rpow_mul_natCast hx.le]; norm_num
   rw [this]
   -- *Fourth step*: use `field_simp` and `ring_nf` (twice, because we first need to bring the
   -- powers of `I` together)
-  have hy' : y ≠ 0
-  · rw [← hy]; exact ofReal_ne_zero.mpr (rpow_pos_of_pos hx _).ne'
+  have hy' : y ≠ 0 := by
+    rw [← hy]; exact ofReal_ne_zero.mpr (rpow_pos_of_pos hx _).ne'
   field_simp [pi_ne_zero]
   ring_nf
   rw [(by norm_num : I ^ 3 = I ^ (2 + 1)), pow_add, I_sq]
@@ -363,8 +363,9 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have hc (n : ℤ) : ‖c n‖ = 1 / 2 := by
     simp_rw [(by { push_cast; ring } : 2 * π * I * a * n = ↑(2 * π * a * n) * I), norm_div,
       IsROrC.norm_ofNat, norm_mul, norm_neg, norm_I, one_mul, Complex.norm_exp_ofReal_mul_I]
-  have hF t (ht : 0 < t) : HasSum (fun n ↦ c n * n * rexp (-π * n ^ 2 * t)) (sinKernel a t / 2)
-  · convert (hasSum_int_sinKernel a ht).div_const 2 using 2 with n
+  have hF t (ht : 0 < t) :
+      HasSum (fun n ↦ c n * n * rexp (-π * n ^ 2 * t)) (sinKernel a t / 2) := by
+    convert (hasSum_int_sinKernel a ht).div_const 2 using 2 with n
     ring_nf
   convert hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF ?_ using 1
   · ext1 n
@@ -401,8 +402,8 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   let r (n : ℤ) : ℝ := n + a
   let c (n : ℤ) : ℂ := 1 / 2
   have hF t (ht : 0 < t) : HasSum (fun n ↦ c n * r n * rexp (-π * (r n) ^ 2 * t))
-      (oddKernel a t / 2)
-  · convert (hasSum_ofReal.mpr (hasSum_int_oddKernel a ht)).div_const 2 using 2 with n
+      (oddKernel a t / 2) := by
+    convert (hasSum_ofReal.mpr (hasSum_int_oddKernel a ht)).div_const 2 using 2 with n
     push_cast
     ring_nf
   convert hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF ?_ using 1
