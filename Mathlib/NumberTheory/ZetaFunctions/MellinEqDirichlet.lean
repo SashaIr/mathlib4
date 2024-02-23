@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-import Mathlib.Data.Real.Sign
 import Mathlib.Analysis.PSeries
 import Mathlib.NumberTheory.ZetaFunctions.SillySumLemma
 /-!
@@ -17,21 +16,6 @@ a Dirichlet series".
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex hiding abs_of_nonneg
-
-section sign
-
-lemma Real.sign_eq_cast_sign (x : ℝ) : sign x = SignType.sign x := by
-  rcases lt_trichotomy x 0 with h | h | h <;>
-  simp [h, sign_of_pos, sign_of_neg]
-
-lemma Int.sign_eq_cast_sign (x : ℤ) : sign x = SignType.sign x := by
-  rcases lt_trichotomy x 0 with h | h | h <;>
-  simp [h, sign_eq_one_iff_pos, sign_eq_neg_one_iff_neg]
-
-lemma Real.sign_mul_abs (x : ℝ) : sign x * |x| = x := by
-  rw [sign_eq_cast_sign, _root_.sign_mul_abs]
-
-end sign
 
 section Gammaℝ
 

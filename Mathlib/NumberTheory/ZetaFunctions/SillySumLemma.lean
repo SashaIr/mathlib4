@@ -5,10 +5,13 @@ Authors: David Loeffler
 -/
 
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Data.Real.Sign
 
 /-!
 # Forward-port of PR #10614
 -/
+
+section PR10614
 
 open MeasureTheory
 
@@ -30,3 +33,20 @@ lemma hasSum_integral_of_summable_norm {F : ι → α → E}
   · apply ENNReal.coe_ne_top
   · simp_rw [← NNReal.summable_coe, coe_nnnorm]
     exact hF_sum'.abs
+
+end PR10614
+
+section sign
+
+lemma Real.sign_eq_cast_sign (x : ℝ) : sign x = SignType.sign x := by
+  rcases lt_trichotomy x 0 with h | h | h <;>
+  simp [h, sign_of_pos, sign_of_neg]
+
+lemma Int.sign_eq_cast_sign (x : ℤ) : sign x = SignType.sign x := by
+  rcases lt_trichotomy x 0 with h | h | h <;>
+  simp [h, sign_eq_one_iff_pos, sign_eq_neg_one_iff_neg]
+
+lemma Real.sign_mul_abs (x : ℝ) : sign x * |x| = x := by
+  rw [sign_eq_cast_sign, _root_.sign_mul_abs]
+
+end sign
