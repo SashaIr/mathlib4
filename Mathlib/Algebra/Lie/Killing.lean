@@ -45,6 +45,9 @@ We define the trace / Killing form in this file and prove some basic properties.
  * `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
    finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
    dual space of `H`.
+ * `LieAlgebra.IsKilling.isCompl_ker_weight_rootSpaceProductNegSelf`: given a root `α` with respect
+   to a Cartan subalgebra `H`, we have a natural decomposition of `H` which we write informally as:
+   `H = ker α ⊕ ⁅H(α), H(-α)⁆`, where `H(±α)` are the root spaces of `±α`.
 
 ## TODO
 
@@ -536,6 +539,22 @@ namespace IsKilling
 
 variable [IsKilling K L]
 
+/-- The Killing form as a linear equivalence to the dual. -/
+@[simps!]
+noncomputable def killingEquiv :
+    L ≃ₗ[K] Module.Dual K L :=
+  LinearMap.linearEquivOfInjective (killingForm K L) (by simp [← LinearMap.ker_eq_bot])
+    Subspace.dual_finrank_eq.symm
+
+variable {K L} in
+/-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the
+dual. -/
+@[simps!]
+noncomputable def killingEquivCartan :
+    H ≃ₗ[K] Module.Dual K H :=
+  LinearMap.linearEquivOfInjective (traceForm K H L) (by simp [← LinearMap.ker_eq_bot])
+    Subspace.dual_finrank_eq.symm
+
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
 @[simp]
@@ -565,12 +584,15 @@ lemma rootSpaceProductNegSelf_zero_eq_bot :
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
   simp
 
+section CharZero
+
 variable {K H L}
+variable [CharZero K]
 
 /-- The contrapositive of this result is very useful, taking `x` to be the element of `H`
 corresponding to a root `α` under the identification between `H` and `H^*` provided by the Killing
 form. -/
-lemma eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf [CharZero K]
+lemma eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf
     (x : H) (α : H → K) (hαx : α x = 0) (hx : x ∈ (rootSpaceProductNegSelf α).range) :
     x = 0 := by
   rcases eq_or_ne α 0 with rfl | hα; · simpa using hx
@@ -581,14 +603,62 @@ lemma eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf [CharZero K]
     simpa [hαx, hb.ne'] using hab _ hx
   simpa using hx
 
--- When `α ≠ 0`, this can be upgraded to `IsCompl`; moreover these complements are orthogonal with
--- respect to the Killing form. TODO prove this!
-lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K H L) :
+/-- See also `LieAlgebra.IsKilling.isCompl_ker_weight_rootSpaceProductNegSelf`. -/
+lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot (α : weight K H L) :
     LinearMap.ker (weight.toLinear K H L α) ⊓ (rootSpaceProductNegSelf (α : H → K)).range = ⊥ := by
   rw [LieIdeal.coe_to_lieSubalgebra_to_submodule, LieModuleHom.coeSubmodule_range]
   refine (Submodule.eq_bot_iff _).mpr fun x ⟨hαx, hx⟩ ↦ ?_
   replace hαx : (α : H → K) x = 0 := by simpa using hαx
   exact eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf x α hαx hx
+
+lemma rootSpaceProductNegSelf_eq_span_singleton (α : weight K H L) :
+    (rootSpaceProductNegSelf (α : H → K)).range =
+    K ∙ (killingEquivCartan H).symm (weight.toLinear K H L α) := by
+  rcases eq_or_ne (α : H → K) 0 with hα | hα
+  · -- Trivial
+    sorry
+  suffices (K ∙ (killingEquivCartan H).symm (weight.toLinear K H L α) : Submodule K H) ≤
+      (rootSpaceProductNegSelf (α : H → K)).range by
+    /- Trivial linear algebra: by `ker_weight_inf_rootSpaceProductNegSelf_eq_bot`,
+       `(rootSpaceProductNegSelf (α : H → K)).range` is at most one-dimensional. Since
+       `weight.toLinear K H L α` is non-zero, the result follows. -/
+    sorry
+  let α' := (killingEquivCartan H).symm (weight.toLinear K H L α)
+  suffices α' ∈ (rootSpaceProductNegSelf (α : H → K)).range by
+    simpa only [Submodule.span_singleton_le_iff_mem]
+  -- Proposition 4.18 from [carter2005] except we use
+  -- `exists_forall_lie_eq_smul_of_weightSpace_ne_bot` instead of his result about irreducible reps
+  have hα : rootSpace H (α : H → K) ≠ ⊥ := by aesop -- Missing API for `weight`
+  obtain ⟨e, he₀, he⟩ := exists_forall_lie_eq_smul_of_weightSpace_ne_bot K H L α hα
+  sorry
+
+/-- Given a root `α` with respect to a Cartan subalgebra `H`, we have a natural decomposition of
+`H` which we write informally as: `H = ker α ⊕ ⁅H(α), H(-α)⁆`, where `H(±α)` are the root spaces
+of `±α`.
+
+This is a non-trivial and important result since it allows us to define the _coroot_ of `α` as the
+unique element of `⁅H(α), H(-α)⁆` on which `α` takes value `2`.
+
+In fact these complementary spaces are orthogonal (wrt the Killing form). TODO (easy) prove this. -/
+lemma isCompl_ker_weight_rootSpaceProductNegSelf (α : weight K H L) (hα : (α : H → K) ≠ 0) :
+    IsCompl
+      (LinearMap.ker (weight.toLinear K H L α))
+      (rootSpaceProductNegSelf (α : H → K)).range := by
+  suffices (rootSpaceProductNegSelf (α : H → K)).range ≠ ⊥ by
+    /- Trivial linear algebra: since `LinearMap.ker (weight.toLinear K H L α)` has codimension one,
+       the result follows from `this` and `ker_weight_inf_rootSpaceProductNegSelf_eq_bot α`. -/
+    sorry
+  contrapose! hα
+  rw [← LieSubmodule.coeSubmodule_eq_bot_iff] at hα
+  change ((rootSpaceProductNegSelf (α : H → K)).range : Submodule K H) = _ at hα --Fix bad coercion?
+  rw [rootSpaceProductNegSelf_eq_span_singleton α, killingEquivCartan_symm_apply,
+    Submodule.span_singleton_eq_bot, AddEquivClass.map_eq_zero_iff,
+    AddEquivClass.map_eq_zero_iff] at hα
+  -- Missing API for `weight.toLinear`
+  ext x
+  simpa using LinearMap.congr_fun hα x
+
+end CharZero
 
 end IsKilling
 
