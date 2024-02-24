@@ -1858,6 +1858,11 @@ theorem prod_update_of_mem [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ 
 #align finset.prod_update_of_mem Finset.prod_update_of_mem
 #align finset.sum_update_of_mem Finset.sum_update_of_mem
 
+@[to_additive]
+theorem prod_update_one_of_mem [DecidableEq α] {s : Finset α} {i : α} (hi : i ∈ s) (f : α → β) :
+    ∏ j in s, Function.update f i 1 j = ∏ j in s \ singleton i, f j := by
+  simp [prod_update_of_mem hi]
+
 /-- If a product of a `Finset` of size at most 1 has a given value, so
 do the terms in that product. -/
 @[to_additive eq_of_card_le_one_of_sum_eq "If a sum of a `Finset` of size at most 1 has a given
@@ -2330,6 +2335,18 @@ lemma prod_attach_univ (f : {i // i ∈ @univ ι _} → α) :
   Fintype.prod_equiv (Equiv.subtypeUnivEquiv mem_univ) _ _ $ by simp
 #align finset.prod_attach_univ Finset.prod_attach_univ
 #align finset.sum_attach_univ Finset.sum_attach_univ
+
+@[to_additive]
+theorem prod_erase_attach [DecidableEq ι] {s : Finset ι} (f : ι → α) (i : ↑s) :
+    ∏ j in s.attach.erase i, f ↑j = ∏ j in s.erase ↑i, f j := by
+  simp only [erase_eq]
+  rw [← prod_update_one_of_mem i.prop, ← prod_update_one_of_mem (mem_attach s i)]
+  rw [← prod_coe_sort s]
+  refine prod_congr rfl ?_
+  intro j _
+  simp only [← Function.comp_apply (g := Subtype.val) (x := j)]
+  rw [Function.update_comp_eq_of_injective _ Subtype.val_injective]
+  rfl
 
 end Finset
 
