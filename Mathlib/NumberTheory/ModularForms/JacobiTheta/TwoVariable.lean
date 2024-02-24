@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Analysis.Calculus.SmoothSeries
+import Mathlib.NumberTheory.ZetaFunctions.LemmasToBeMoved
 
 /-!
 # The two-variable Jacobi theta function
@@ -23,30 +24,6 @@ $$\theta'(z, τ) = \sum_{n \in \mathbb{Z}} 2 \pi i n \exp (2 i \pi n z + i \pi n
 (Note that the Mellin transform of `θ` will give us functional equations for `L`-functions
 of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichlet characters.)
 -/
-
-/-- The operator of the first projection `E × F → E` is at most 1. (It is 0 if `E` is zero, so
-the inequality cannot be improved without further assumptions.) -/
-lemma ContinuousLinearMap.norm_fst_le
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] (E F : Type*)
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
-    ‖ContinuousLinearMap.fst 𝕜 E F‖ ≤ 1 := by
-  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ ?_)
-  simpa only [one_mul] using le_max_left ‖e‖ ‖f‖
-
-/-- The operator of the first projection `E × F → F` is at most 1. (It is 0 if `F` is zero, so
-the inequality cannot be improved without further assumptions.) -/
-lemma ContinuousLinearMap.norm_snd_le
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] (E F : Type*)
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
-    ‖ContinuousLinearMap.snd 𝕜 E F‖ ≤ 1 := by
-  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ ?_)
-  simpa only [one_mul] using le_max_right ‖e‖ ‖f‖
-
-lemma Real.summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
-    Summable fun n : ℕ ↦ n ^ k * Real.exp (-r * n) := by
-  simp_rw [mul_comm (-r), Real.exp_nat_mul]
-  apply summable_pow_mul_geometric_of_norm_lt_one
-  rwa [norm_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero]
 
 open Complex Real Asymptotics Filter Topology
 

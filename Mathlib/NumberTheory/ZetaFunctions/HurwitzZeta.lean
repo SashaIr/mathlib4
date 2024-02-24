@@ -25,7 +25,7 @@ call an "exponential zeta function" (does it have a name?)
 
 * `hurwitzZeta`: the Hurwitz zeta function (defined to be periodic in `a` with period 1)
 * `expZeta`: the exponential zeta function
-* `hasSum_hurwitzZeta_of_one_lt_re` and `hasSum_expZeta_of_one_lt_re`:
+* `hasSum_nat_hurwitzZeta_of_mem_Icc` and `hasSum_expZeta_of_one_lt_re`:
   relation to Dirichlet series for `1 < re s`
 * `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
 * `hurwitzZeta_one_sub` and `expZeta_one_sub`: functional equations `s ↔ 1 - s`.
@@ -60,33 +60,12 @@ lemma differentiableAt_hurwitzZeta (a : UnitAddCircle) {s : ℂ} (hs : s ≠ 1) 
 
 /-- Formula for `hurwitzZeta s` as a Dirichlet series in the convergence range. We
 restrict to `a ∈ Icc 0 1` to simplify the statement. -/
-lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
+lemma hasSum_nat_hurwitzZeta_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ 1 / (n + a : ℂ) ^ s) (hurwitzZeta a s) := by
-  have h0 : (0 : ℂ) ^ s = 0 := zero_cpow ((not_lt.mpr one_pos.le) ∘ (zero_re ▸ · ▸ hs))
   convert (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add
       (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs) using 1
-  · ext1 n
-    rcases eq_or_lt_of_le ha.1 with rfl | ha'
-    · -- case `a = 0`
-      simp_rw [ofReal_zero, add_zero, sub_zero, Real.sign_of_pos (by positivity : 0 < (n : ℝ) + 1)]
-      rcases Nat.eq_zero_or_pos n with rfl | hn
-      · simp_rw [ofReal_one, Nat.cast_zero, zero_add, Real.sign_zero, ofReal_zero, one_cpow, h0]
-        ring_nf
-      · rw [Real.sign_of_pos (Nat.cast_pos.mpr hn), ofReal_one]
-        ring_nf
-    · simp_rw [← ofReal_nat_cast, ← ofReal_add, ofReal_nat_cast,
-        Real.sign_of_pos (by positivity : 0 < n + a)]
-      rcases eq_or_lt_of_le ha.2 with rfl | ha''
-      · -- case `a = 1`
-        simp_rw [ofReal_one, add_sub_cancel]
-        rcases Nat.eq_zero_or_pos n with rfl | hn
-        · simp_rw [Nat.cast_zero, zero_add, Real.sign_zero, ofReal_zero, ofReal_one, one_cpow, h0]
-          ring_nf
-        · rw [Real.sign_of_pos (Nat.cast_pos.mpr hn), ofReal_one]
-          ring_nf
-      · -- case `0 < a` and `a < 1`
-        rw [Real.sign_of_pos (by linarith), ofReal_one]
-        ring_nf
+  ext1 n
+  ring_nf
 
 /-- The residue of the Hurwitz zeta function at `s = 1` is `1`. -/
 lemma hurwitzZeta_residue_one (a : UnitAddCircle) :

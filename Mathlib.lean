@@ -2940,9 +2940,9 @@ import Mathlib.NumberTheory.ZetaFunctions.HurwitzZeta
 import Mathlib.NumberTheory.ZetaFunctions.HurwitzZetaEven
 import Mathlib.NumberTheory.ZetaFunctions.HurwitzZetaOdd
 import Mathlib.NumberTheory.ZetaFunctions.KernelBounds
+import Mathlib.NumberTheory.ZetaFunctions.LemmasToBeMoved
 import Mathlib.NumberTheory.ZetaFunctions.MellinEqDirichlet
 import Mathlib.NumberTheory.ZetaFunctions.RiemannZeta
-import Mathlib.NumberTheory.ZetaFunctions.SillySumLemma
 import Mathlib.NumberTheory.ZetaFunctions.SpecialValues
 import Mathlib.NumberTheory.ZetaValues
 import Mathlib.NumberTheory.Zsqrtd.Basic

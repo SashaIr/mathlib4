@@ -357,7 +357,7 @@ lemma completedSinZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
 (first version, with sum over `ℤ`). -/
 lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    HasSum (fun n : ℤ ↦ Gammaℝ (s + 1) * (-I) * n.sign *
+    HasSum (fun n : ℤ ↦ Gammaℝ (s + 1) * (-I) * Int.sign n *
     cexp (2 * π * I * a * n) / (↑|n| : ℂ) ^ s / 2) (completedSinZeta a s) := by
   let c (n : ℤ) : ℂ := -I * cexp (2 * π * I * a * n) / 2
   have hc (n : ℤ) : ‖c n‖ = 1 / 2 := by
@@ -369,7 +369,14 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     ring_nf
   convert hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF ?_ using 1
   · ext1 n
-    rw [Real.sign_int_cast, ← Int.cast_abs, ofReal_int_cast, ofReal_int_cast]
+    rw [← Int.cast_abs, ofReal_int_cast]
+    have : (Int.sign n : ℂ) = SignType.sign (n : ℝ) := by
+      rcases lt_trichotomy 0 n with h | rfl | h
+      · rw [Int.sign_eq_one_of_pos h, Int.cast_one, sign_pos (Int.cast_pos.mpr h), SignType.coe_one]
+      · rw [Int.sign_zero, Int.cast_zero, Int.cast_zero, sign_zero, SignType.coe_zero]
+      · rw [Int.sign_eq_neg_one_of_neg h, Int.cast_neg, Int.cast_one,
+            sign_neg (Int.cast_lt_zero.mpr h), SignType.coe_neg_one]
+    rw [this]
     ring_nf
   · rw [mellin_div_const]
     rfl
@@ -397,7 +404,7 @@ lemma hasSum_nat_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 
 /-- Formula for `completedHurwitzZetaOdd` as a Dirichlet series in the convergence range. -/
 lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    HasSum (fun n : ℤ ↦ Gammaℝ (s + 1) * Real.sign (n + a) / (↑|n + a| : ℂ) ^ s / 2)
+    HasSum (fun n : ℤ ↦ Gammaℝ (s + 1) * SignType.sign (n + a) / (↑|n + a| : ℂ) ^ s / 2)
     (completedHurwitzZetaOdd a s) := by
   let r (n : ℤ) : ℝ := n + a
   let c (n : ℤ) : ℂ := 1 / 2
@@ -451,7 +458,7 @@ lemma differentiableAt_sinZeta (a : UnitAddCircle) :
 
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range (sum over `ℤ`). -/
 lemma hasSum_int_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    HasSum (fun n : ℤ ↦ sign (n + a) / (↑|n + a| : ℂ) ^ s / 2) (hurwitzZetaOdd a s) := by
+    HasSum (fun n : ℤ ↦ SignType.sign (n + a) / (↑|n + a| : ℂ) ^ s / 2) (hurwitzZetaOdd a s) := by
   rw [hurwitzZetaOdd]
   convert (hasSum_int_completedHurwitzZetaOdd a hs).div_const (Gammaℝ (s + 1)) using 2 with n
   simp_rw [div_right_comm _ _ (Gammaℝ _)]
@@ -459,25 +466,30 @@ lemma hasSum_int_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   rw [add_re, one_re]
   positivity
 
-
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`
 (version with absolute values) -/
 lemma hasSum_nat_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    HasSum (fun n : ℕ ↦ (sign (n + a) / (↑|n + a| : ℂ) ^ s
-      - sign (n + 1 - a) / (↑|n + 1 - a| : ℂ) ^ s) / 2) (hurwitzZetaOdd a s) := by
+    HasSum (fun n : ℕ ↦ (SignType.sign (n + a) / (↑|n + a| : ℂ) ^ s
+      - SignType.sign (n + 1 - a) / (↑|n + 1 - a| : ℂ) ^ s) / 2) (hurwitzZetaOdd a s) := by
   convert (hasSum_int_hurwitzZetaOdd a hs).sum_nat_of_sum_int' using 2 with n
   rw [Int.cast_ofNat, Int.cast_negSucc, sub_div, sub_eq_add_neg]
   have : -↑(n + 1) + a = -(n + 1 - a) := by { push_cast; ring_nf }
-  rw [this, Real.sign_neg, abs_neg, ofReal_neg, neg_div, neg_div]
+  rw [this, Left.sign_neg, abs_neg, SignType.coe_neg, neg_div, neg_div]
 
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`
 (version without absolute values, assuming `a ∈ Icc 0 1`) -/
 lemma hasSum_nat_hurwitzZetaOdd_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
-    HasSum (fun n : ℕ ↦ (sign (n + a) / (n + a : ℂ) ^ s
-      - sign (n + 1 - a) / (n + 1 - a : ℂ) ^ s) / 2) (hurwitzZetaOdd a s) := by
-  convert (hasSum_nat_hurwitzZetaOdd a hs) <;>
-  rw [_root_.abs_of_nonneg (by linarith [ha.1, ha.2])] <;>
-  simp
+    HasSum (fun n : ℕ ↦ (1 / (n + a : ℂ) ^ s - 1 / (n + 1 - a : ℂ) ^ s) / 2)
+    (hurwitzZetaOdd a s) := by
+  convert (hasSum_nat_hurwitzZetaOdd a hs) using 2 with n
+  suffices ∀ (b : ℝ) (_ : 0 ≤ b), SignType.sign (n + b) / (↑|n + b| : ℂ) ^ s = 1 / (n + b) ^ s by
+    simp only [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), push_cast]
+  intro b hb
+  rw [abs_of_nonneg (by positivity), (by simp : (n : ℂ) + b = ↑(n + b))]
+  rcases lt_or_eq_of_le (by positivity : 0 ≤ n + b) with hb | hb
+  · rw [sign_pos hb, SignType.coe_one]
+  · rw [← hb, ofReal_zero, zero_cpow ((not_lt.mpr zero_le_one) ∘ (zero_re ▸ · ▸ hs)),
+      div_zero, div_zero]
 
 /-- Formula for `cosZeta` as a Dirichlet series in the convergence range, with sum over `ℤ`. -/
 lemma hasSum_int_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :

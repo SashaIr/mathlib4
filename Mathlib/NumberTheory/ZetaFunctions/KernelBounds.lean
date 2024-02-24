@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+import Mathlib.NumberTheory.ZetaFunctions.LemmasToBeMoved
 
 /-!
 # Asymptotic bounds for Jacobi theta functions
@@ -22,48 +23,9 @@ Here `k : ℕ` and `a : ℝ` are fixed, and we are interested in asymptotics as
 but the other sums are only useful as upper bounds.
 -/
 
-lemma Int.negSucc_injective : Function.Injective Int.negSucc := fun _ _  h ↦ Int.negSucc_inj.mp h
-
-open Finset BigOperators in
-/-- Variant of `HasSum.sum_nat_of_sum_int` directly using the two constructors of `ℤ`. Note
-we do not need `[ContinuousAdd α]` for this. -/
-theorem HasSum.sum_nat_of_sum_int' {α : Type*} [AddCommMonoid α] [TopologicalSpace α]
-    {a : α} {f : ℤ → α} (hf : HasSum f a) :
-    HasSum (fun n : ℕ ↦ f n + f (Int.negSucc n)) a := by
-  refine hf.hasSum_of_sum_eq fun u ↦ ?_
-  refine ⟨u.preimage _ (Nat.cast_injective.injOn _) ∪ u.preimage _ (Int.negSucc_injective.injOn _),
-      fun v' hv' ↦ ⟨v'.image (↑) ∪ v'.image Int.negSucc, fun x hx ↦ ?_, ?_⟩⟩
-  · simp only [mem_union, mem_image]
-    cases' x with y y
-    · exact Or.inl ⟨y, hv' (by simpa only [mem_union, mem_preimage] using Or.inl hx), rfl⟩
-    · exact Or.inr ⟨y, hv' (by simpa only [mem_union, mem_preimage] using Or.inr hx), rfl⟩
-  · simp [sum_image (Nat.cast_injective.injOn _), sum_image (Int.negSucc_injective.injOn _),
-      sum_add_distrib, sum_union, disjoint_iff_ne]
-
 open Set Filter Topology Asymptotics Real Classical
 
 noncomputable section
-
-/-- to be re-homed -/
-lemma tendsto_div_one_sub_exp (a : ℝ) (ha : a ≠ 0) :
-    Tendsto (fun x ↦ x / (1 - exp (a * x))) (𝓝[≠] 0) (𝓝 (-a⁻¹)) := by
-  have : Tendsto (fun x ↦ log (x + 1) / x) (𝓝[≠] 0) (𝓝 1) := by
-    convert (hasDerivAt_log one_ne_zero).tendsto_slope_zero using 2 with x
-    · rw [log_one, sub_zero, smul_eq_mul, div_eq_inv_mul, add_comm]
-    · rw [inv_one]
-  convert (this.mul_const (-a⁻¹)).comp (f := fun x ↦ (exp (a * x) - 1)) ?_ using 2 with x
-  · simp only [Function.comp_apply, sub_add_cancel, log_exp]
-    rw [mul_neg, ← neg_mul, ← div_neg, neg_sub, mul_comm _ a⁻¹, ← mul_div_assoc, ← mul_assoc,
-      inv_mul_cancel ha, one_mul]
-  · rw [one_mul]
-  · rw [tendsto_nhdsWithin_iff]
-    constructor
-    · apply Tendsto.mono_left _ nhdsWithin_le_nhds
-      simpa using (by continuity : Continuous fun x ↦ (exp (a * x) - 1)).tendsto 0
-    · filter_upwards [self_mem_nhdsWithin] with x hx
-      contrapose! hx
-      simpa only [not_mem_compl_iff, mem_singleton_iff, sub_eq_zero, exp_eq_one_iff, mul_eq_zero,
-        eq_false_intro ha, false_or] using hx
 
 namespace HurwitzKernelBounds
 
