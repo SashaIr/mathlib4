@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 #align_import analysis.mellin_transform from "leanprover-community/mathlib"@"917c3c072e487b3cccdbfeff17e75b40e45f66cb"
@@ -43,7 +44,7 @@ open Real
 
 open Complex hiding exp log abs_of_nonneg
 
-open scoped Topology
+open scoped Topology FourierTransform
 
 noncomputable section
 
@@ -104,6 +105,11 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
 def mellin (f : ℝ → E) (s : ℂ) : E :=
   ∫ t : ℝ in Ioi 0, (t : ℂ) ^ (s - 1) • f t
 #align mellin mellin
+
+/-- The Mellin inverse transform of a function `f`, defined as `1 / (2 * π)` times
+the integral of `x ^ (σ - y * I) • f` over `y` in `ℝ`. -/
+def mellin_inv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
+  (1 / (2 * π * I)) • ∫ y : ℝ, (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)
 
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
 theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
