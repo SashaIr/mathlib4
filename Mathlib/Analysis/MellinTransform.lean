@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 #align_import analysis.mellin_transform from "leanprover-community/mathlib"@"917c3c072e487b3cccdbfeff17e75b40e45f66cb"
@@ -44,7 +43,7 @@ open Real
 
 open Complex hiding exp log abs_of_nonneg
 
-open scoped Topology FourierTransform
+open scoped Topology
 
 noncomputable section
 

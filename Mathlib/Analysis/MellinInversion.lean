@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.Analysis.Fourier.Inversion
-import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 
 /-!
 # Mellin inversion formula
@@ -25,10 +24,34 @@ def VerticalIntegrable (f : ℂ → E) (σ : ℝ) (μ : Measure ℝ := by volume
 
 open scoped FourierTransform
 
+private theorem drexp_neg : ∀ x ∈ univ, HasDerivWithinAt (rexp ∘ Neg.neg) (-rexp (-x)) univ x := by
+  intro x _
+  rw [← neg_one_mul, mul_comm]
+  exact ((Real.hasDerivAt_exp (-x)).comp x (hasDerivAt_neg x)).hasDerivWithinAt
+
+private theorem rexp_neg_image : rexp ∘ Neg.neg '' univ = Ioi 0 := by
+  rw [Set.image_comp, Set.image_univ_of_surjective neg_surjective, Set.image_univ, Real.range_exp]
+
+private theorem rexp_neg_injOn : univ.InjOn (rexp ∘ Neg.neg) :=
+  (Real.exp_injective.injOn _).comp (neg_injective.injOn _) (univ.mapsTo_univ _)
+
+private theorem rexp_cexp (x : ℝ) (s : ℂ) (f : E) :
+    rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by
+  show (rexp (-x) : ℂ) • _ = _ • f
+  rw [← smul_assoc, smul_eq_mul]
+  push_cast
+  conv in cexp _ * _ => lhs; rw [← cpow_one (cexp _)]
+  rw [← cpow_add _ _ (Complex.exp_ne_zero _), cpow_def_of_ne_zero (Complex.exp_ne_zero _),
+    Complex.log_exp (by norm_num; exact pi_pos) (by simpa using pi_nonneg)]
+  ring_nf
+
 theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
     mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
   calc
-    _ = ∫ (u : ℝ), Complex.exp (-s * u) • f (Real.exp (-u)) := sorry -- u-substitution
+    _ = ∫ (u : ℝ), Complex.exp (-s * u) • f (Real.exp (-u)) := by
+      rw [mellin, ← rexp_neg_image,
+        integral_image_eq_integral_abs_deriv_smul MeasurableSet.univ drexp_neg rexp_neg_injOn]
+      simp [rexp_cexp]
     _ = ∫ (u : ℝ), Complex.exp (-s.im * u * I) • (Real.exp (-s.re * u) • f (Real.exp (-u))) := by
       congr
       ext
@@ -78,9 +101,11 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
     mellin_inv σ (mellin f) x = f x := by
   let g := fun (u : ℝ) => Real.exp (-σ * u) • f (Real.exp (-u))
   replace hf : Integrable g := by
-    unfold_let g
-    unfold MellinConvergent at hf
-    sorry -- u-substitution at hf
+    rw [MellinConvergent, ← rexp_neg_image, integrableOn_image_iff_integrableOn_abs_deriv_smul
+      MeasurableSet.univ drexp_neg rexp_neg_injOn] at hf
+    replace hf : Integrable fun (x : ℝ) ↦ cexp (-↑σ * ↑x) • f (rexp (-x)) := by
+      simpa [rexp_cexp] using hf
+    norm_cast at hf
   replace hFf : Integrable (𝓕 g) := by
     change Integrable (fun (y : ℝ) ↦ mellin f (σ + y * I)) volume at hFf
     have hp : 2 * π ≠ 0 := by norm_num; exact pi_ne_zero
