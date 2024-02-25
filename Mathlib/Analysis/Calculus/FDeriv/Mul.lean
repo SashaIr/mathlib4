@@ -771,9 +771,9 @@ theorem fderivWithin_finset_prod [DecidableEq ι] {x : E} (hxs : UniqueDiffWithi
   (HasFDerivWithinAt.finset_prod (fun i hi ↦ (hg i hi).hasFDerivWithinAt)).fderivWithin hxs
 
 -- TODO: Implement using `list_prod'`? Eliminate?
-theorem HasFDerivAt.func_list_prod' {l : List (E → 𝔸')} {l' : List (E →L[𝕜] 𝔸')} {x : E}
+theorem HasFDerivAt.func_list_prod' {l : List (E → 𝔸)} {l' : List (E →L[𝕜] 𝔸)} {x : E}
     -- TODO: Not sure how to cleanly formulate the lists of derivatives.
-    -- Maybe better to use `List ((E → 𝔸') × (E →L[𝕜] 𝔸'))` (avoids `Fin.cast`)?
+    -- Maybe better to use `List ((E → 𝔸) × (E →L[𝕜] 𝔸))` (avoids `Fin.cast`)?
     (hll' : l.length = l'.length)
     -- (hl : (l.zip l').Forall fun a ↦ HasFDerivAt a.1 a.2 x) :
     (h : ∀ i : Fin l.length, HasFDerivAt (fun x ↦ l.get i x) (l'.get (i.cast hll')) x) :
