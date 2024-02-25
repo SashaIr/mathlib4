@@ -2339,14 +2339,8 @@ lemma prod_attach_univ [Fintype ι] (f : {i // i ∈ @univ ι _} → α) :
 @[to_additive]
 theorem prod_erase_attach [DecidableEq ι] {s : Finset ι} (f : ι → α) (i : ↑s) :
     ∏ j in s.attach.erase i, f ↑j = ∏ j in s.erase ↑i, f j := by
-  simp only [erase_eq]
-  rw [← prod_update_one_of_mem i.prop, ← prod_update_one_of_mem (mem_attach s i)]
-  rw [← prod_coe_sort s]
-  refine prod_congr rfl ?_
-  intro j _
-  simp only [← Function.comp_apply (g := Subtype.val) (x := j)]
-  rw [Function.update_comp_eq_of_injective _ Subtype.val_injective]
-  rfl
+  rw [← Function.Embedding.coe_subtype, ← prod_map]
+  simp [attach_map_val]
 
 end Finset
 
