@@ -2327,10 +2327,10 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 end Fintype
 
 namespace Finset
-variable [Fintype ι] [CommMonoid α]
+variable [CommMonoid α]
 
 @[to_additive (attr := simp)]
-lemma prod_attach_univ (f : {i // i ∈ @univ ι _} → α) :
+lemma prod_attach_univ [Fintype ι] (f : {i // i ∈ @univ ι _} → α) :
     ∏ i in univ.attach, f i = ∏ i, f ⟨i, mem_univ _⟩ :=
   Fintype.prod_equiv (Equiv.subtypeUnivEquiv mem_univ) _ _ $ by simp
 #align finset.prod_attach_univ Finset.prod_attach_univ
