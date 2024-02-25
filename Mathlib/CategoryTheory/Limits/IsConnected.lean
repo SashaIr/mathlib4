@@ -7,16 +7,24 @@ Authors: Paul Reichert
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Conj
 
 /-!
 # Colimits of connected index categories
 
-This file proves that a category $\mathsf{C}$ is connected if and only if
-$\operatorname{colim}_{c \in \mathsf{C}} \{*\} \cong \{*\}$ in the category
-$\mathsf{Set}$ (i.e. `Type v`).
+This file proves theorems about connected categories related to limits.
 
-See `connected_iff_colimit_const_pUnit_iso_pUnit` for the proof of this characterization and
-`unitValuedFunctor` for the definition of the constant functor used in the statement.
+## Main definitions
+
+See `unitValuedFunctor` for the definition of the constant functor used in the statement.
+
+## Main theorems
+
+* `connected_iff_colimit_const_pUnit_iso_pUnit` proves that a category $\mathsf{C}$  is connected
+  if and only if $\operatorname{colim}_{c \in \mathsf{C}} \{*\} \cong \{*\}$ in the category
+$\mathsf{Set}$ (i.e. `Type v`).
+* `isConnected_iff_of_final` proves that the source of a final functor is connected if and only if
+  the target is connected.
 
 ## Tags
 
@@ -78,15 +86,15 @@ theorem connected_iff_colimit_const_pUnit_iso_pUnit :
   refine zigzag_of_eqvGen_quot_rel _ (unitValuedFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
 
+
 variable {C D : Type u} [Category.{v} C] [Category.{v} D]
 
-theorem iso_congr_left {α β γ : C} (f: α ≅ β) : (α ≅ γ) ≃ (β ≅ γ) :=
-  ⟨ f.symm.trans, f.trans, by aesop_cat, by aesop_cat ⟩
-
-theorem irgendwas (F : C ⥤ D) [CategoryTheory.Functor.Final F] : IsConnected C ↔ IsConnected D := by
+/-- The source of a final functor is connected if and only if the target is connected. -/
+theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
+    IsConnected C ↔ IsConnected D := by
   refine Iff.trans (connected_iff_colimit_const_pUnit_iso_pUnit C) ?_
   refine Iff.trans ?_ (connected_iff_colimit_const_pUnit_iso_pUnit D).symm
-  exact Equiv.nonempty_congr <| iso_congr_left
-    <| CategoryTheory.Functor.Final.colimitIso F (unitValuedFunctor D)
+  exact Equiv.nonempty_congr <| Iso.isoCongrLeft
+    <| CategoryTheory.Functor.Final.colimitIso F <| unitValuedFunctor D
 
 end CategoryTheory.Limits.Types
