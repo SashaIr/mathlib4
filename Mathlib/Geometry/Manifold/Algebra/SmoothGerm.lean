@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.Germ
+import Mathlib.Order.Filter.Germ
 
 /-! # Germs of smooth functions
 
