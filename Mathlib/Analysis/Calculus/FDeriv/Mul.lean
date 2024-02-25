@@ -576,6 +576,7 @@ variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing �
   [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
   {g' : ι → E →L[𝕜] 𝔸'}
 
+/-- Variant of `hasStrictFDerivAt_finset_prod` for non-commutative multiplication. -/
 theorem hasStrictFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
@@ -590,15 +591,22 @@ theorem hasStrictFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸
     rw [add_comm]
     simp [Finset.mul_sum, mul_assoc]
 
-theorem hasStrictFDerivAt_list_prod'_finRange {n : ℕ} {x : Fin n → 𝔸} :
+theorem hasStrictFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ ((List.finRange n).map x).prod)
       (∑ i : Fin n, (((List.finRange n).take i).map x).prod •
-        smulRight (proj i) (((List.finRange n).drop (.succ i)).map x).prod) x := by
-  refine .congr_fderiv hasStrictFDerivAt_list_prod' ?_
-  refine Finset.sum_equiv (Fin.castIso (List.length_finRange n)) (by simp) ?_
-  intro i _
-  rw [List.get_finRange]
-  rfl
+        smulRight (proj i) (((List.finRange n).drop (.succ i)).map x).prod) x :=
+  hasStrictFDerivAt_list_prod'.congr_fderiv <|
+    Finset.sum_equiv (Fin.castIso (List.length_finRange n)) (by simp) fun i _ ↦ by
+      rw [List.get_finRange]
+      rfl
+
+theorem hasStrictFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
+    HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
+      (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
+        smulRight (proj (l.attach.get (i.cast l.length_attach.symm)))
+          ((l.attach.drop (.succ i)).map x).prod) x :=
+  hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|
+    Finset.sum_equiv (Fin.castIso l.length_attach.symm) (by simp) (by simp)
 
 theorem hasFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
@@ -606,12 +614,30 @@ theorem hasFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
         smulRight (proj (l.get i)) ((l.drop (.succ i)).map x).prod) x :=
   hasStrictFDerivAt_list_prod'.hasFDerivAt
 
-theorem hasFDerivAt_list_prod'_finRange {n : ℕ} {x : Fin n → 𝔸} :
+theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ ((List.finRange n).map x).prod)
       (∑ i : Fin n, (((List.finRange n).take i).map x).prod •
         smulRight (proj i) (((List.finRange n).drop (.succ i)).map x).prod) x :=
-  (hasStrictFDerivAt_list_prod'_finRange).hasFDerivAt
+  (hasStrictFDerivAt_list_prod_finRange').hasFDerivAt
 
+theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
+    HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
+      (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
+        smulRight (proj (l.attach.get (i.cast l.length_attach.symm)))
+          ((l.attach.drop (.succ i)).map x).prod) x :=
+  hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
+
+-- TODO: Move?
+theorem Multiset.prod_ofList {l : List 𝔸'} : (Multiset.ofList l).prod = l.prod := by
+  rw [← Multiset.prod_toList]
+  refine List.Perm.prod_eq ?_
+  rw [← coe_eq_coe, coe_toList]
+
+/--
+Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.
+
+For commutative multiplication, can rewrite as `Multiset` using `Multiset.prod_ofList`.
+-/
 theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (l.map fun i ↦ ((l.erase i).map x).prod • proj i).sum x := by
@@ -631,8 +657,13 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} 
 
 theorem hasStrictFDerivAt_multiset_prod [DecidableEq ι] [Fintype ι] {u : Multiset ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
-      (Multiset.sum (u.map (fun i ↦ ((u.erase i).map x).prod • proj i))) x :=
+      (u.map (fun i ↦ ((u.erase i).map x).prod • proj i)).sum x :=
   u.inductionOn fun l ↦ by simpa using hasStrictFDerivAt_list_prod
+
+theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Fintype ι] {u : Multiset ι} {x : ι → 𝔸'} :
+    HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
+      (Multiset.sum (u.map (fun i ↦ ((u.erase i).map x).prod • proj i))) x :=
+  hasStrictFDerivAt_multiset_prod.hasFDerivAt
 
 theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (∏ i in u, · i) (∑ i in u, (∏ j in u.erase i, x j) • proj i) x := by
@@ -645,18 +676,80 @@ theorem hasFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'}
 
 section Comp
 
-theorem HasFDerivAt.finset_prod [DecidableEq ι] {x : E}
-    (hg : ∀ i ∈ u, HasFDerivAt (g i) (g' i) x) :
-    HasFDerivAt (∏ i in u, g i ·) (∑ i in u, (∏ j in u.erase i, g j x) • g' i) x := by
-  simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasFDerivAt_finset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg i i.prop)
-    (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
+theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
+    (h : ∀ i ∈ l, HasStrictFDerivAt (fun x ↦ f i x) (f' i) x) :
+    HasStrictFDerivAt (fun x ↦ (l.map fun i ↦ f i x).prod)
+      (∑ i : Fin l.length, ((l.take i).map (fun i ↦ f i x)).prod •
+        smulRight (f' (l.get i)) ((l.drop (.succ i)).map fun i ↦ f i x).prod) x := by
+  simp only [← List.finRange_map_get l, List.map_map]
+  refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
+    (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+  ext m
+  simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
+
+/-- Variant of `HasFDerivAt.finset_prod` for non-commutative multiplication. -/
+theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
+    (h : ∀ i ∈ l, HasFDerivAt (fun x ↦ f i x) (f' i) x) :
+    HasFDerivAt (fun x ↦ (l.map fun i ↦ f i x).prod)
+      (∑ i : Fin l.length, ((l.take i).map (fun i ↦ f i x)).prod •
+        smulRight (f' (l.get i)) ((l.drop (.succ i)).map fun i ↦ f i x).prod) x := by
+  simp only [← List.finRange_map_get l, List.map_map]
+  refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
+    (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+  ext m
+  simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
+
+theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
+    (h : ∀ i ∈ l, HasFDerivWithinAt (fun x ↦ f i x) (f' i) s x) :
+    HasFDerivWithinAt (fun x ↦ (l.map fun i ↦ f i x).prod)
+      (∑ i : Fin l.length, ((l.take i).map (fun i ↦ f i x)).prod •
+        smulRight (f' (l.get i)) ((l.drop (.succ i)).map fun i ↦ f i x).prod) s x := by
+  simp only [← List.finRange_map_get l, List.map_map]
+  refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
+    (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+  ext m
+  simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
+
+theorem fderiv_list_prod' {l : List ι} {x : E}
+    (h : ∀ i ∈ l, DifferentiableAt 𝕜 (fun x ↦ f i x) x) :
+    fderiv 𝕜 (fun x ↦ (l.map fun i ↦ f i x).prod) x =
+      ∑ i : Fin l.length, ((l.take i).map (fun i ↦ f i x)).prod •
+        smulRight (fderiv 𝕜 (fun x ↦ f (l.get i) x) x)
+          ((l.drop (.succ i)).map fun i ↦ f i x).prod :=
+  (HasFDerivAt.list_prod' fun i hi ↦ (h i hi).hasFDerivAt).fderiv
+
+theorem fderivWithin_list_prod' {l : List ι} {x : E}
+    (h : ∀ i ∈ l, DifferentiableWithinAt 𝕜 (fun x ↦ f i x) s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (fun x ↦ (l.map fun i ↦ f i x).prod) s x =
+      ∑ i : Fin l.length, ((l.take i).map (fun i ↦ f i x)).prod •
+        smulRight (fderivWithin 𝕜 (fun x ↦ f (l.get i) x) s x)
+          ((l.drop (.succ i)).map fun i ↦ f i x).prod :=
+  (HasFDerivWithinAt.list_prod' fun i hi ↦ (h i hi).hasFDerivWithinAt).fderivWithin hxs
+
+-- theorem HasStrictFDerivAt.multiset_prod {u : Multiset ι} {x : E}
+--     (h : ∀ i ∈ u, HasStrictFDerivAt (fun x ↦ g i x) (g' i) x) :
+--     HasStrictFDerivAt (fun x ↦ (u.map fun i ↦ g i x).prod)
+--       (u.map fun i ↦ ((u.erase i).map (fun j ↦ g j x)).prod • g' i).sum x := by
+--   simp only [← Multiset.attach_map_val u, Multiset.map_map, Function.comp_apply]
+--   refine .congr_fderiv
+--     (hasStrictFDerivAt_multiset_prod.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ h i i.prop) ?_
+--   ext m
+--   simp
+--   -- Needs e.g. `ContinuousLinearMap.multiset_sum_apply`.
+--   sorry
 
 theorem HasStrictFDerivAt.finset_prod [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasStrictFDerivAt (g i) (g' i) x) :
     HasStrictFDerivAt (∏ i in u, g i ·) (∑ i in u, (∏ j in u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
     (hasStrictFDerivAt_finset_prod.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ hg i i.prop)
+    (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
+
+theorem HasFDerivAt.finset_prod [DecidableEq ι] {x : E}
+    (hg : ∀ i ∈ u, HasFDerivAt (g i) (g' i) x) :
+    HasFDerivAt (∏ i in u, g i ·) (∑ i in u, (∏ j in u.erase i, g j x) • g' i) x := by
+  simpa [← Finset.prod_attach u] using .congr_fderiv
+    (hasFDerivAt_finset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg i i.prop)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 theorem HasFDerivWithinAt.finset_prod [DecidableEq ι] {x : E}
@@ -677,23 +770,7 @@ theorem fderivWithin_finset_prod [DecidableEq ι] {x : E} (hxs : UniqueDiffWithi
       ∑ i in u, (∏ j in u.erase i, (g j x)) • fderivWithin 𝕜 (g i) s x :=
   (HasFDerivWithinAt.finset_prod (fun i hi ↦ (hg i hi).hasFDerivWithinAt)).fderivWithin hxs
 
-theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
-    (h : ∀ i ∈ l, HasFDerivAt (fun x ↦ g i x) (g' i) x) :
-    HasFDerivAt (fun x ↦ (l.map fun i ↦ g i x).prod)
-      (∑ i : Fin l.length, ((l.take i).map (fun i ↦ g i x)).prod •
-        smulRight (g' (l.get i)) ((l.drop (.succ i)).map fun i ↦ g i x).prod) x := by
-  conv => arg 1; simp only [← List.finRange_map_get l]
-  simp only [List.map_map, Function.comp_def]
-  rw [← Function.comp_def (fun y ↦ ((List.finRange l.length).map y).prod)]
-  refine .congr_fderiv (.comp x (hasStrictFDerivAt_list_prod'_finRange.hasFDerivAt)
-    (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.prop))) ?_
-  ext m
-  simp only [comp_apply, sum_apply]
-  refine Finset.sum_congr rfl ?_
-  intro i _
-  simp [List.map_take, List.map_drop, ← Function.comp_def (g · x) (l.get ·), ← List.map_map]
-
--- TODO: Implement using `list_prod'`.
+-- TODO: Implement using `list_prod'`? Eliminate?
 theorem HasFDerivAt.func_list_prod' {l : List (E → 𝔸')} {l' : List (E →L[𝕜] 𝔸')} {x : E}
     -- TODO: Not sure how to cleanly formulate the lists of derivatives.
     -- Maybe better to use `List ((E → 𝔸') × (E →L[𝕜] 𝔸'))` (avoids `Fin.cast`)?
@@ -706,8 +783,7 @@ theorem HasFDerivAt.func_list_prod' {l : List (E → 𝔸')} {l' : List (E →L[
   conv => arg 1; simp only [← List.finRange_map_get l]
   simp only [List.map_map, Function.comp_def]
   rw [← Function.comp_def (f := fun x ↦ ((List.finRange l.length).map x).prod)]
-  refine .congr_fderiv
-    (.comp _ (hasStrictFDerivAt_list_prod'_finRange.hasFDerivAt) (hasFDerivAt_pi.mpr h)) ?_
+  refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x (hasFDerivAt_pi.mpr h)) ?_
   ext m
   -- TODO: Clean up below.
   simp only [coe_comp', coe_sum', coe_smul', coe_pi', Function.comp_apply, Finset.sum_apply,
