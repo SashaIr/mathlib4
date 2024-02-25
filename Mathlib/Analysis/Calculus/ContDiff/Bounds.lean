@@ -348,7 +348,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     intro p hp
     refine le_of_eq ?_
     rw [Finset.prod_insert hi]
-    have hip : i ∉ p := fun h ↦ hi <| hp i h
+    have hip : i ∉ p := mt (hp i) hi
     rw [Sym.count_coe_fill_self_of_not_mem hip, Sym.multinomial_coe_fill_of_not_mem hip]
     suffices ∏ j in u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j p) (f j) s x‖ =
         ∏ j in u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j (Sym.fill i m p)) (f j) s x‖ by
@@ -356,7 +356,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       ring
     refine Finset.prod_congr rfl ?_
     intro j hj
-    have hji : j ≠ i := fun h ↦ hi <| by simpa [h] using hj
+    have hji : j ≠ i := mt (· ▸ hj) hi
     rw [Sym.count_coe_fill_of_ne hji]
 
 theorem norm_iteratedFDeriv_prod_le [DecidableEq ι] [NormOneClass A'] {u : Finset ι}

@@ -330,7 +330,7 @@ theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) :
       rw [nodup_cons] at hl
       rw [erase_cons_tail]
       · simp [IH hl.2]
-      · exact fun h ↦ hl.1 <| by simpa [h] using l.get_mem i i.isLt
+      · exact mt (· ▸ l.get_mem i i.isLt) hl.1
 
 theorem Nodup.diff [DecidableEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
   Nodup.sublist <| diff_sublist _ _
