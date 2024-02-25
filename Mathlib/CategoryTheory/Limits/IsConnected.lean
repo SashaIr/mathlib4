@@ -6,6 +6,7 @@ Authors: Paul Reichert
 
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Colimits of connected index categories
@@ -29,6 +30,7 @@ namespace CategoryTheory.Limits.Types
 
 open CategoryTheory.Limits
 open CategoryTheory.Limits.Types
+open CategoryTheory.Functor.Final
 
 variable (C : Type u) [Category.{v} C]
 
@@ -75,5 +77,16 @@ theorem connected_iff_colimit_const_pUnit_iso_pUnit :
   refine zigzag_isConnected <| fun c d => ?_
   refine zigzag_of_eqvGen_quot_rel _ (unitValuedFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
+
+variable {C D : Type u} [Category.{v} C] [Category.{v} D]
+
+theorem iso_congr_left {α β γ : C} (f: α ≅ β) : (α ≅ γ) ≃ (β ≅ γ) :=
+  ⟨ f.symm.trans, f.trans, by aesop_cat, by aesop_cat ⟩
+
+theorem irgendwas (F : C ⥤ D) [CategoryTheory.Functor.Final F] : IsConnected C ↔ IsConnected D := by
+  refine Iff.trans (connected_iff_colimit_const_pUnit_iso_pUnit C) ?_
+  refine Iff.trans ?_ (connected_iff_colimit_const_pUnit_iso_pUnit D).symm
+  exact Equiv.nonempty_congr <| iso_congr_left
+    <| CategoryTheory.Functor.Final.colimitIso F (unitValuedFunctor D)
 
 end CategoryTheory.Limits.Types
