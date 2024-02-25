@@ -612,43 +612,6 @@ theorem hasFDerivAt_list_prod'_finRange {n : ℕ} {x : Fin n → 𝔸} :
         smulRight (proj i) (((List.finRange n).drop (.succ i)).map x).prod) x :=
   (hasStrictFDerivAt_list_prod'_finRange).hasFDerivAt
 
--- TODO: Move to `Mathlib.Data.List.Basic`.
-
-theorem List.take_drop_succ_eq_eraseIdx {l : List ι} {i : ℕ} :
-    l.take i ++ l.drop i.succ = l.eraseIdx i := by
-  induction l generalizing i with
-  | nil => simp
-  | cons a l IH =>
-    cases i with
-    | zero => simp
-    | succ i => simp [IH]
-
-theorem List.Nodup.erase_get [DecidableEq ι] {l : List ι} (hl : l.Nodup) :
-    ∀ i : Fin l.length, l.erase (l.get i) = l.eraseIdx ↑i := by
-  induction l with
-  | nil => simp
-  | cons a l IH =>
-    intro i
-    cases i using Fin.cases with
-    | zero => simp
-    | succ i =>
-      rw [nodup_cons] at hl
-      rw [erase_cons_tail _ fun h ↦ hl.1 <| by simpa [h] using l.get_mem i i.prop]
-      simp [IH hl.2]
-
-theorem List.erase_get [DecidableEq ι] {l : List ι} :
-    ∀ i : Fin l.length, Perm (l.erase (l.get i)) (l.eraseIdx ↑i) := by
-  induction l with
-  | nil => simp
-  | cons a l IH =>
-    intro i
-    cases i using Fin.cases with
-    | zero => simp
-    | succ i =>
-      by_cases ha : a = l.get i
-      · simpa [ha] using .trans (perm_cons_erase (l.get_mem i _)) (.cons _ (IH i))
-      · simpa [ha] using IH i
-
 theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (l.map fun i ↦ ((l.erase i).map x).prod • proj i).sum x := by
@@ -662,7 +625,7 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} 
   rw [← mul_assoc, ← mul_rotate]
   refine congrArg₂ _ ?_ rfl
   rw [mul_comm]
-  rw [← List.prod_append, ← List.map_append, List.take_drop_succ_eq_eraseIdx]
+  rw [← List.prod_append, ← List.map_append, ← List.eraseIdx_eq_take_drop_succ]
   refine List.Perm.prod_eq (List.Perm.map _ ?_)
   exact (List.erase_get i).symm
 
