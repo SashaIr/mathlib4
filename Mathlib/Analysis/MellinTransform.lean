@@ -107,9 +107,9 @@ def mellin (f : ℝ → E) (s : ℂ) : E :=
 #align mellin mellin
 
 /-- The Mellin inverse transform of a function `f`, defined as `1 / (2 * π)` times
-the integral of `x ^ (σ - y * I) • f` over `y` in `ℝ`. -/
+the integral of `x ^ -(σ + y * I) • f (σ + y * I)` over `y` in `ℝ`. -/
 def mellin_inv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
-  (1 / (2 * π * I)) • ∫ y : ℝ, (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)
+  (1 / (2 * π)) • ∫ y : ℝ, (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)
 
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
 theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :

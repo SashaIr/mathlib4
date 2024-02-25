@@ -1,80 +1,105 @@
+/-
+Copyright (c) 2024 Lawrence Wu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Lawrence Wu
+-/
 import Mathlib.Analysis.Fourier.Inversion
+import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
+
+/-!
+# Mellin inversion formula
+
+We derive the Mellin inversion formula as a consequence of the Fourier inversion formula.
+
+## Main results
+- `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
+-/
 
 open Real Complex Set MeasureTheory
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+
+-- TODO: move elsewhere
+def VerticalIntegrable (f : ℂ → E) (σ : ℝ) (μ : Measure ℝ := by volume_tac) : Prop :=
+  Integrable (fun (y : ℝ) ↦ f (σ + y * I)) μ
+
 open scoped FourierTransform
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
-
-def mellin_eq_fourierIntegral_exp (f : ℝ → E) {s : ℂ} :
-    mellin f s = 𝓕 (fun (u : ℝ) ↦ Real.exp (-s.re * u) • f (Real.exp (-u))) (s.im / (2 * π)) := by
-  unfold mellin
-  sorry
-
-def mellin_inv_eq_fourierIntegral_inv_log (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x):
-  mellin_inv σ f x = -I • x ^ σ • 𝓕⁻ (fun (u : ℝ) ↦ f (σ + 2 * π * u * I)) (-Real.log x) := by
-  have : (fun (y : ℝ) ↦ (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)) =
-      fun (u : ℝ) ↦ (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I) := by
-    sorry
-  show _ • ∫ (y : ℝ), (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I) = _
-  stop
-  suffices (I • ((↑π)⁻¹ * 2⁻¹ : ℂ)) • ∫ (y : ℝ), (x : ℂ) ^ (-↑σ - ↑y * I) • f (↑σ + ↑y * I) =
-      I • x ^ σ • ∫ (v : ℝ), cexp (-(2 * π * (↑v * ↑(Real.log x)) * I)) • f (σ + 2 * ↑π * ↑v * I) by
-    simpa [mellin_inv, fourierIntegralInv_eq']
-  rw [smul_assoc]
-  congr 1
-  sorry
-
-lemma foo {a b : ℂ} (ha : a ≠ 0) : a * b / a = b := by exact mul_div_cancel_left b ha
-
-def mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) : mellin_inv σ (mellin f) x = f x := by
-  stop
-  let g (u : ℝ) := rexp (-σ * u) • f (rexp (-u))
+theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
+    mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
   calc
-    _ = mellin_inv σ (fun s ↦ 𝓕 g (s.im / (2 * π))) x := by
-      simp [mellin_inv, mellin_eq_fourierIntegral_exp]
-    _ = -I • x ^ σ • g (-Real.log x) := by
-      rw [mellin_inv_eq_fourierIntegral_inv_log, ← fourier_inversion (f := g)]
+    _ = ∫ (u : ℝ), Complex.exp (-s * u) • f (Real.exp (-u)) := sorry -- u-substitution
+    _ = ∫ (u : ℝ), Complex.exp (-s.im * u * I) • (Real.exp (-s.re * u) • f (Real.exp (-u))) := by
+      congr
+      ext
+      conv => lhs; rw [← re_add_im s]
+      rw [neg_add, add_mul, Complex.exp_add, mul_comm, ← smul_eq_mul, smul_assoc]
+      norm_cast
+      push_cast
+      ring_nf
+    _ = ∫ (u : ℝ), Complex.exp (↑(-2 * π * (u * (s.im / (2 * π)))) * I) •
+        (Real.exp (-s.re * u) • f (Real.exp (-u))) := by
       congr
       ext u
-      have : 2 * π ≠ 0 := sorry
-      simp [mul_div_cancel_left _ this]
-      stop
-      sorry
+      congr
+      rw [mul_comm (-s.im : ℂ) (u : ℂ), mul_comm (-2 * π)]
+      have : 2 * (π : ℂ) ≠ 0 := by norm_num; exact pi_ne_zero
+      field_simp
     _ = _ := by
-      simp
-      sorry
-  stop
-  have : f x = (f ∘ Real.exp) (Real.log x) := sorry
-  rw [mellin_inv_eq_fourierIntegral_inv_log, mellin_eq_fourierIntegral_exp, this,
-    ← fourier_inversion (f := f ∘ Real.exp), Function.comp_apply]
-  congr
-  ext y
-  have : 2 * π * I ≠ 0 := sorry
-  simp [mul_div_cancel _ this, fourierIntegral_eq']
-  sorry
-  stop
+      simp [fourierIntegral_eq']
+
+theorem mellin_inv_eq_fourierIntegral_inv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
+    mellin_inv σ f x =
+    (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
+  have hx0 : (x : ℂ) ≠ 0 := (ofReal_ne_zero.mpr (ne_of_gt hx))
   calc
-    _ = (1 / (2 * π)) • ((2 * π) • 𝓕⁻ (𝓕 (f ∘ Complex.re ∘ Complex.exp)) (Complex.log x)) := sorry
+    _ = (x : ℂ) ^ (-σ : ℂ) • (|(2 * π)⁻¹| •
+        ∫ (y : ℝ), (x : ℂ) ^ (-y * I) • f (σ + y * I)) := by
+      rw [mellin_inv, one_div, abs_of_pos (by norm_num; exact pi_pos)]
+      simp_rw [neg_add, cpow_add _ _ hx0, mul_smul, integral_smul, neg_mul]
+      exact smul_comm _ _ _
+    _ = (x : ℂ) ^ (-σ : ℂ) •
+        (∫ (y : ℝ), (x : ℂ) ^ (-2 * π * y * I) • f (σ + 2 * π * y * I)) := by
+      rw [← Measure.integral_comp_mul_left]
+      simp
+    _ = (x : ℂ) ^ (-σ : ℂ) •
+        (∫ (y : ℝ), Complex.exp (2 * π * (y * (-Real.log x)) * I) • f (σ + 2 * π * y * I)) := by
+      congr
+      ext
+      rw [cpow_def_of_ne_zero hx0, Complex.ofReal_log hx.le]
+      ring_nf
+    _ = _ := by simp [fourierIntegralInv_eq']
+
+variable [CompleteSpace E]
+
+/-- The inverse Mellin transform of the Mellin transform applied to `x > 0` is x. -/
+theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
+    (hFf : VerticalIntegrable (mellin f) σ) (hfx : ContinuousAt f x) :
+    mellin_inv σ (mellin f) x = f x := by
+  let g := fun (u : ℝ) => Real.exp (-σ * u) • f (Real.exp (-u))
+  replace hf : Integrable g := by
+    unfold_let g
+    unfold MellinConvergent at hf
+    sorry -- u-substitution at hf
+  replace hFf : Integrable (𝓕 g) := by
+    change Integrable (fun (y : ℝ) ↦ mellin f (σ + y * I)) volume at hFf
+    have hp : 2 * π ≠ 0 := by norm_num; exact pi_ne_zero
+    simpa [mellin_eq_fourierIntegral, mul_div_cancel _ hp] using hFf.comp_mul_right' hp
+  replace hfx : ContinuousAt g (-Real.log x) := by
+    refine ContinuousAt.smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
+    simpa [Real.exp_log hx] using hfx
+  calc
+    _ = mellin_inv σ (fun s ↦ 𝓕 g (s.im / (2 * π))) x := by
+      simp [mellin_inv, mellin_eq_fourierIntegral]
+    _ = (x : ℂ) ^ (-σ : ℂ) • g (-Real.log x) := by
+      rw [mellin_inv_eq_fourierIntegral_inv _ _ hx, ← fourier_inversion hf hFf hfx]
+      congr
+      ext
+      simp [mul_div_cancel_left _ (show 2 * π ≠ 0 by norm_num; exact pi_ne_zero)]
     _ = _ := by
-      rw [fourier_inversion]
-      sorry
-  stop
-  conv in _ • f _ =>
-    rw [Real.rpow_def_of_pos]
-    rfl
-  conv in (x : ℂ) ^ _ =>
-    rw []
-    rfl
-  sorry
--- lemma fourierIntegral_eq' (f : V → E) (w : V) :
---     𝓕 f w = ∫ v, Complex.exp ((↑(-2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
---   simp_rw [fourierIntegral_eq, Real.fourierChar_apply, mul_neg, neg_mul]
-
--- lemma fourierIntegralInv_eq (f : V → E) (w : V) :
---     𝓕⁻ f w = ∫ v, 𝐞[⟪v, w⟫] • f v := by
---   simp [fourierIntegralInv, VectorFourier.fourierIntegral]
-
--- lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
---     𝓕⁻ f w = ∫ v, Complex.exp ((↑(2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
---   simp_rw [fourierIntegralInv_eq, Real.fourierChar_apply]
+      suffices (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) = f x by simpa
+      norm_cast
+      rw [mul_comm σ, ← rpow_def_of_pos hx, Real.exp_log hx, ← Complex.ofReal_cpow hx.le]
+      norm_cast
+      rw [← smul_assoc, smul_eq_mul, Real.rpow_neg hx.le,
+        inv_mul_cancel (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]
