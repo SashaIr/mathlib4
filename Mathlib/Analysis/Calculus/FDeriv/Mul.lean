@@ -594,7 +594,7 @@ theorem hasStrictFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
   hasStrictFDerivAt_list_prod'.congr_fderiv <|
     Finset.sum_equiv (Fin.castIso (List.length_finRange n)) (by simp) (by simp [Fin.forall_iff])
 
-theorem hasStrictFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
+theorem hasStrictFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         smulRight (proj (l.attach.get (i.cast l.length_attach.symm)))
@@ -614,7 +614,7 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
         smulRight (proj i) (((List.finRange n).drop (.succ i)).map x).prod) x :=
   (hasStrictFDerivAt_list_prod_finRange').hasFDerivAt
 
-theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
+theorem hasFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         smulRight (proj (l.attach.get (i.cast l.length_attach.symm)))
@@ -710,28 +710,28 @@ theorem fderivWithin_list_prod' {l : List ι} {x : E}
           ((l.drop (.succ i)).map (f · x)).prod :=
   (HasFDerivWithinAt.list_prod' fun i hi ↦ (h i hi).hasFDerivWithinAt).fderivWithin hxs
 
-theorem HasStrictFDerivAt.multiset_prod {u : Multiset ι} {x : E}
+theorem HasStrictFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
     (h : ∀ i ∈ u, HasStrictFDerivAt (g i ·) (g' i) x) :
     HasStrictFDerivAt (fun x ↦ (u.map (g · x)).prod)
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum x := by
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
     (hasStrictFDerivAt_multiset_prod.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ h i i.prop)
-    (by ext; simp [Finset.sum_multiset_map_count, Multiset.map_erase_attach u (g · x)])
+    (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
 /--
 Unlike `HasFDerivAt.finset_prod`, supports duplicate elements.
 -/
-theorem HasFDerivAt.multiset_prod {u : Multiset ι} {x : E}
+theorem HasFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
     (h : ∀ i ∈ u, HasFDerivAt (g i ·) (g' i) x) :
     HasFDerivAt (fun x ↦ (u.map (g · x)).prod)
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum x := by
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
     (hasFDerivAt_multiset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ h i i.prop)
-    (by ext; simp [Finset.sum_multiset_map_count, Multiset.map_erase_attach u (g · x)])
+    (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
-theorem HasFDerivWithinAt.multiset_prod {u : Multiset ι} {x : E}
+theorem HasFDerivWithinAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
     (h : ∀ i ∈ u, HasFDerivWithinAt (g i ·) (g' i) s x) :
     HasFDerivWithinAt (fun x ↦ (u.map (g · x)).prod)
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum s x := by
@@ -739,16 +739,16 @@ theorem HasFDerivWithinAt.multiset_prod {u : Multiset ι} {x : E}
   exact .congr_fderiv
     (hasFDerivAt_multiset_prod.comp_hasFDerivWithinAt x <|
       hasFDerivWithinAt_pi.mpr fun i ↦ h i i.prop)
-    (by ext; simp [Finset.sum_multiset_map_count, Multiset.map_erase_attach u (g · x)])
+    (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
-theorem fderiv_multiset_prod {u : Multiset ι} {x : E}
+theorem fderiv_multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
     (h : ∀ i ∈ u, DifferentiableAt 𝕜 (g i ·) x) :
     fderiv 𝕜 (fun x ↦ (u.map (g · x)).prod) x =
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • fderiv 𝕜 (g i) x).sum :=
   (HasFDerivAt.multiset_prod fun i hi ↦ (h i hi).hasFDerivAt).fderiv
 
-theorem fderivWithin_multiset_prod {u : Multiset ι} {x : E} (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (g i ·) s x) :
+theorem fderivWithin_multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
+    (hxs : UniqueDiffWithinAt 𝕜 s x) (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (g i ·) s x) :
     fderivWithin 𝕜 (fun x ↦ (u.map (g · x)).prod) s x =
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • fderivWithin 𝕜 (g i) s x).sum :=
   (HasFDerivWithinAt.multiset_prod fun i hi ↦ (h i hi).hasFDerivWithinAt).fderivWithin hxs

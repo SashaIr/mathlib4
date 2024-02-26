@@ -2686,23 +2686,14 @@ theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
   rw [inter_comm, replicate_inter, min_comm]
 #align multiset.inter_replicate Multiset.inter_replicate
 
-theorem erase_attach_map_val [DecidableEq α] (s : Multiset α) (i : {i // i ∈ s}) :
-    (s.attach.erase i).map (↑) = s.erase i := by
-  suffices ∀ j : {i // i ∈ s},
-      count j.val ((s.attach.erase i).map (↑)) = count j.val (s.erase i) by
-    ext j
-    cases Decidable.em (j ∈ s) with
-    | inl hj => simpa using this ⟨j, hj⟩
-    | inr hj => simp [hj, Multiset.not_mem_mono (erase_subset i.val s) hj]
-  intro j
-  rw [Multiset.count_map_eq_count' _ _ Subtype.val_injective]
-  by_cases hj : j = i
-  · simp [hj]
-  · simp [hj, Subtype.val_injective.ne_iff.mpr hj]
+theorem erase_attach_map_val [DecidableEq α] (s : Multiset α) (x : {x // x ∈ s}) :
+    (s.attach.erase x).map (↑) = s.erase x := by
+  rw [Multiset.map_erase _ val_injective, attach_map_val]
 
-theorem map_erase_attach [DecidableEq α] (s : Multiset α) (f : α → β) (i : {i // i ∈ s}) :
-    (s.attach.erase i).map (fun j : {i // i ∈ s} ↦ f ↑j) = (s.erase ↑i).map f := by
-  simp only [← Function.comp_apply (f := f), ← map_map, erase_attach_map_val]
+theorem erase_attach_map [DecidableEq α] (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
+    (s.attach.erase x).map (fun j : {x // x ∈ s} ↦ f j) = (s.erase x).map f := by
+  simp only [← Function.comp_apply (f := f)]
+  rw [← map_map, erase_attach_map_val]
 
 end
 
