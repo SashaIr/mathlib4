@@ -1,0 +1,361 @@
+/-
+Copyright (c) 2025 Alessandro Iraci. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alessandro Iraci
+-/
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Tactic
+
+/-!
+# q-analogs
+
+The q-analog of a theorem, identity or expression is a generalization involving a new parameter q
+that returns the original theorem, identity or expression in the limit as q → 1.
+For example, the q-analog of a natural number n, denoted [n]_q, is the sum 1 + q + ... + q^(n-1).
+
+## Main definitions
+
+For R a commutative semiring, and q : R,
+
+* `qNat n q` is the q-analog of the natural number `n`, defined as `1 + q + ... + q^(n-1)`.
+* `qFactorial n q` is the product of the q-naturals up to `n`.
+* `qBinomial n k q` is the q-analog of the binomial coefficient, defined as
+  `qFactorial n q / (qFactorial k q * qFactorial (n - k) q)`.
+
+## Implementation notes
+
+TODO
+
+## Notation
+
+TODO
+-/
+
+@[expose] public section
+
+section qNat
+
+/-
+The q-analog of a natural number n is the sum 1 + q + ... + q^(n-1).
+-/
+def qNat {R : Type*} [Semiring R] : ℕ → R → R
+  | 0, _     => 0
+  | n + 1, q => qNat n q + q ^ n
+
+/- The q-analog of 0 is 0. -/
+@[simp]
+lemma qNat_zero {R : Type*} [Semiring R] (q : R) :
+    qNat 0 q = 0 := rfl
+
+/- The q-analog of 1 is 1. -/
+@[simp]
+lemma qNat_one {R : Type*} [Semiring R] (q : R) :
+    qNat 1 q = 1 := by
+  simp [qNat]
+
+/- The q-analog of 2 is 1 + q. -/
+@[simp]
+lemma qNat_two {R : Type*} [Semiring R] (q : R) :
+    qNat 2 q = 1 + q := by
+  simp [qNat]
+
+/- The q-analog of n + 1 is the q-analog of n plus q^n. -/
+lemma qNat_succ {R : Type*} [Semiring R] (n : ℕ) (q : R) :
+    qNat (n + 1) q = qNat n q + q ^ n := rfl
+
+/- The q-analog of n, evaluated at q = 0, is 0 if n = 0 and 1 otherwise -/
+@[simp]
+lemma qNat_zero' {R : Type*} [Semiring R] (n : ℕ) :
+    qNat n (0 : R) = if n = 0 then 0 else 1 := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    simp only [qNat, ih, Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte]
+    split_ifs with h
+    · rw [h, pow_zero]
+      exact AddZeroClass.zero_add 1
+    · rw [zero_pow h]
+      exact AddMonoid.add_zero 1
+
+/- The q-analog of n, evaluated at q = 1, is n -/
+@[simp]
+lemma qNat_one' {R : Type*} [Semiring R] (n : ℕ) :
+    qNat n (1 : R) = (n : R) := by
+  induction n with
+  | zero => rw [qNat, Nat.cast_zero]
+  | succ n ih => rw [qNat, ih, one_pow, Nat.cast_succ, add_comm]
+
+/- The q-analog of n is equal to 1 + q + ... + q^(n-1) -/
+theorem qNat_eq_sum_qPow {R : Type*} [Semiring R] (n : ℕ) (q : R) :
+    qNat n q = ∑ i ∈ Finset.range n, q ^ i := by
+  induction n with
+  | zero => simp [qNat]
+  | succ n ih =>
+    rw [qNat, ih]
+    exact Eq.symm (Finset.sum_range_succ (HPow.hPow q) n)
+
+/- The q-analog of n + 1 is 1 + q times the q-analog of n. -/
+lemma qNat_succ' {R : Type*} [Semiring R] (n : ℕ) (q : R) :
+    qNat (n + 1) q = 1 + q * qNat n q := by
+  induction n with
+  | zero => simp [qNat]
+  | succ n ih =>
+    rw [qNat_eq_sum_qPow _ q, qNat_eq_sum_qPow _ q, add_comm 1 _, ← pow_zero q, Finset.mul_sum]
+    simp_rw [← pow_succ']
+    rw [← Finset.sum_range_succ']
+
+/- The q-analog of n is equal to (1 - q^n) / (1 - q) -/
+theorem qNat_eq_geom_sum {R : Type*} [Field R] [Nontrivial R] (n : ℕ) (q : R)
+    (hq : q ≠ 1) :
+    qNat n q = (1 - q ^ n) / (1 - q) := by
+  rw [qNat_eq_sum_qPow, geom_sum_eq hq _]
+  grind
+
+section qFactorial
+
+/-
+The q-factorial of n, denoted [n]_q!, is the product [1]_q * [2]_q * ... * [n]_q.
+-/
+def qFactorial {R : Type*} [Semiring R] : ℕ → R → R
+  | 0, _     => 1
+  | n + 1, q => qFactorial n q * qNat (n + 1) q
+
+/- The q-factorial of 0 is 1. -/
+@[simp]
+lemma qFactorial_zero {R : Type*} [Semiring R] (q : R) :
+    qFactorial 0 q = 1 := rfl
+
+/- The q-factorial of 1 is 1. -/
+@[simp]
+lemma qFactorial_one {R : Type*} [Semiring R] (q : R) : qFactorial 1 q = 1 := by
+  simp [qFactorial, qNat]
+
+/- The q-factorial of n + 1 is the q-factorial of n times the q-analog of n + 1. -/
+lemma qFactorial_succ {R : Type*} [Semiring R] (n : ℕ) (q : R) :
+    qFactorial (n + 1) q = qFactorial n q * qNat (n + 1) q := rfl
+
+/- The q-factorial of n, evaluated at q = 0, is 1. -/
+@[simp]
+lemma qFactorial_zero' {R : Type*} [Semiring R] (n : ℕ) : qFactorial n (0 : R) = 1 := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    simp only [qFactorial, ih, qNat_zero', Nat.add_eq_zero_iff, one_ne_zero, and_false,
+      ↓reduceIte]
+    exact MulOneClass.one_mul 1
+
+/- The q-factorial of n, evaluated at q = 1, is n! -/
+@[simp]
+lemma qFactorial_one' {R : Type*} [Semiring R] (n : ℕ) :
+    qFactorial n (1 : R) = Nat.factorial n := by
+  induction n with
+  | zero =>
+    simp [qFactorial, Nat.factorial_zero]
+  | succ n ih =>
+    simp [qFactorial, ih, Nat.factorial_succ, mul_comm]
+
+section qBinomial
+
+/-
+The q-binomial coefficient, denoted [n choose k]_q, is defined as [n]_q! / ([k]_q! * [n-k]_q!).
+-/
+def qBinomial {R : Type*} [Semiring R] : ℕ → ℕ → R → R
+  | _, 0, _     => 1
+  | 0, _, _     => 0
+  | n + 1, k + 1, q => qBinomial n k q + q ^ (k + 1) * qBinomial n (k + 1) q
+
+/- The q-binomial coefficient n choose 0 is 1. -/
+@[simp]
+theorem qBinomial_zero_right {R : Type*} [Semiring R] (n : ℕ) (q : R) : qBinomial n 0 q = 1 := by
+  simp [qBinomial]
+
+/- The q-binomial coefficient 0 choose k is 0 for k > 0. -/
+@[simp]
+theorem qBinomial_zero_succ {R : Type*} [Semiring R] (k : ℕ) (q : R) :
+    qBinomial 0 (k + 1) q = 0 := by
+  simp [qBinomial]
+
+/- The q-binomial coefficient satisfies the q-Pascal's identity. -/
+theorem qBinomial_succ_succ {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
+    qBinomial n.succ k.succ q = qBinomial n k q + q ^ k.succ * qBinomial n k.succ q :=
+  rfl
+
+/- The q-binomial coefficient satisfies the first q-Pascal's identity. -/
+theorem qBinomial_succ_succ' {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
+    qBinomial (n + 1) (k + 1) q = qBinomial n k q + q ^ (k + 1) * qBinomial n (k + 1) q :=
+  rfl
+
+/- The q-binomial coefficient satisfies the first q-Pascal's identity. -/
+theorem qBinomial_succ_succ'' {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
+    qBinomial (n + 1) (k + 1) q = q ^ (n - k) * qBinomial n k q + qBinomial n (k + 1) q :=
+  sorry
+
+/- The q-binomial coefficient (n+1) choose k, for k > 0. -/
+theorem qBinomial_succ_left {R : Type*} [Semiring R] (n k : ℕ) (q : R) (hk : 0 < k) :
+    qBinomial (n + 1) k q = qBinomial n (k - 1) q + q ^ k * qBinomial n k q := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rfl
+
+/- The q-binomial coefficient n choose (k+1). -/
+theorem qBinomial_succ_right {R : Type*} [Semiring R] (n k : ℕ) (q : R) (hn : 0 < n) :
+    qBinomial n (k + 1) q = qBinomial (n - 1) k q + q ^ (k + 1) * qBinomial (n - 1) (k + 1) q := by
+  obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
+  rfl
+
+/- The q-binomial coefficient n choose k can be expressed as a sum. -/
+theorem qBinomial_eq_pred_add {R : Type*} [Semiring R] {n k : ℕ} (q : R) (hn : 0 < n) (hk : 0 < k) :
+    qBinomial n k q = qBinomial (n - 1) (k - 1) q + q ^ k * qBinomial (n - 1) k q := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rw [qBinomial_succ_right _ _ _ hn, Nat.add_one_sub_one]
+
+/- The q-binomial coefficient n choose k is 0 if n < k. -/
+theorem qBinomial_eq_zero_of_lt {R : Type*} [Semiring R] : ∀ {n k : ℕ} (q : R),
+    n < k → qBinomial n k q = 0
+  | _, 0, _, hk => absurd hk (Nat.not_lt_zero _)
+  | 0, _ + 1, q, _ => qBinomial_zero_succ _ q
+  | n + 1, k + 1, q, hk => by
+    have hnk : n < k := Nat.lt_of_succ_lt_succ hk
+    have hnk1 : n < k + 1 := Nat.lt_of_succ_lt hk
+    rw [qBinomial_succ_succ, qBinomial_eq_zero_of_lt q hnk, qBinomial_eq_zero_of_lt q hnk1,
+      mul_zero, zero_add 0]
+
+@[simp]
+theorem qBinomial_self {R : Type*} [Semiring R] (n : ℕ) (q : R) : qBinomial n n q = 1 := by
+  induction n <;> simp [*, qBinomial, qBinomial_eq_zero_of_lt q (Nat.lt_succ_self _)]
+
+@[simp]
+theorem qBinomial_succ_self {R : Type*} [Semiring R] (n : ℕ) (q : R) : qBinomial n n.succ q = 0 :=
+  qBinomial_eq_zero_of_lt q (Nat.lt_succ_self n)
+
+@[simp]
+lemma qBinomial_one_right {R : Type*} [Semiring R] (n : ℕ) (q : R) :
+    qBinomial n 1 q = qNat n q := by
+  induction n <;> simp only [qBinomial, qBinomial_zero_right, zero_add, pow_one, qNat, *]
+  rw [← qNat_succ, ← qNat_succ']
+
+theorem le_of_qBinomial_ne_zero {R : Type*} [Semiring R] {n k : ℕ} (q : R) :
+    qBinomial n k q ≠ 0 → k ≤ n := by
+  contrapose!
+  exact qBinomial_eq_zero_of_lt q
+
+theorem add_one_mul_qBinomial_eq {R : Type*} [CommSemiring R] (q : R) : ∀ n k, qNat (n + 1) q *
+    (qBinomial n k q) = qBinomial (n + 1) (k + 1) q * qNat (k + 1) q --:= by sorry
+  | 0, 0 => by simp
+  | 0, k + 1 => by simp [qNat, qBinomial]
+  | n + 1, 0 => by
+    simp only [qNat, qBinomial, mul_one, zero_add, pow_one, qBinomial_zero_right,
+      qBinomial_one_right, pow_zero]
+    repeat rw [← qNat_succ, ← qNat_succ']
+  | n + 1, k + 1 => by
+    by_cases hkn : k ≤ n
+    · rw [qBinomial_succ_succ'' (n + 1) (k + 1), add_mul _ _ (qNat (k + 1 + 1) q), mul_assoc,
+      ← add_one_mul_qBinomial_eq q n (k + 1), qNat_succ (k + 1) _, mul_add,
+      ← add_one_mul_qBinomial_eq q n, mul_add (q ^ (n + 1 - (k + 1))) _,
+      add_right_comm _ _ (_ * _), ← mul_assoc (q ^ ((n + 1) - (k + 1))) _ _,
+      mul_comm (q ^ ((n + 1) - (k + 1))) _, mul_assoc _ (q ^ ((n + 1) - (k + 1))) _,
+      ← mul_add, Nat.add_sub_add_right n 1 k, ← qBinomial_succ_succ'', qNat_succ (n + 1) _,
+      mul_comm _ (q ^ (k + 1)), ← mul_assoc, ← pow_add, (by omega : (n - k + (k + 1)) = n + 1),
+      add_mul]
+    · rw [qBinomial_eq_zero_of_lt q (by omega), mul_zero, qBinomial_eq_zero_of_lt q (by omega),
+        zero_mul]
+
+-- theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k * k ! * (n - k)! = n !
+--   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
+--   | n + 1, 0, _ => by simp
+--   | n + 1, succ k, hk => by
+--     rcases lt_or_eq_of_le hk with hk₁ | hk₁
+--     · have h : choose n k * k.succ ! * (n - k)! = (k + 1) * n ! := by
+--         rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)]
+--         simp [factorial_succ, Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc]
+--       have h₁ : (n - k)! = (n - k) * (n - k.succ)! := by
+--         rw [← succ_sub_succ, succ_sub (le_of_lt_succ hk₁), factorial_succ]
+--       have h₂ : choose n (succ k) * k.succ ! * ((n - k) * (n - k.succ)!) = (n - k) * n ! := by
+--         rw [← choose_mul_factorial_mul_factorial (le_of_lt_succ hk₁)]
+--         simp [factorial_succ, Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc]
+--       have h₃ : k * n ! ≤ n * n ! := Nat.mul_le_mul_right _ (le_of_succ_le_succ hk)
+--       rw [choose_succ_succ, Nat.add_mul, Nat.add_mul, succ_sub_succ, h, h₁, h₂, Nat.add_mul,
+--         Nat.mul_sub_right_distrib, factorial_succ, ← Nat.add_sub_assoc h₃, Nat.add_assoc,
+--         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
+--     · rw [hk₁]; simp [Nat.mul_comm, choose, Nat.sub_self]
+
+-- theorem choose_mul {n k s : ℕ} (hsk : s ≤ k) :
+--     n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) := by
+--   obtain hnk | hkn := lt_or_ge n k
+--   · grind [Nat.choose_eq_zero_of_lt]
+--   have h : 0 < (n - k)! * (k - s)! * s ! := by apply_rules [factorial_pos, Nat.mul_pos]
+--   apply Nat.mul_right_cancel h
+--   calc
+--     _ = n.choose s * s ! * ((n - s).choose (k - s) * (k - s)! * (n - s - (k - s))!) := by
+--       grind [choose_mul_factorial_mul_factorial]
+--     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) := by
+--       grind
+
+-- theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :
+--     choose n k = n ! / (k ! * (n - k)!) := by
+--   rw [← choose_mul_factorial_mul_factorial hk, Nat.mul_assoc]
+--   exact (mul_div_left _ (Nat.mul_pos (factorial_pos _) (factorial_pos _))).symm
+
+-- theorem add_choose (i j : ℕ) : (i + j).choose j = (i + j)! / (i ! * j !) := by
+--   rw [choose_eq_factorial_div_factorial (Nat.le_add_left j i), Nat.add_sub_cancel_right,
+--     Nat.mul_comm]
+
+-- theorem add_choose_mul_factorial_mul_factorial (i j : ℕ) :
+--     (i + j).choose j * i ! * j ! = (i + j)! := by
+--   rw [← choose_mul_factorial_mul_factorial (Nat.le_add_left _ _), Nat.add_sub_cancel_right,
+--     Nat.mul_right_comm]
+
+-- theorem factorial_mul_factorial_dvd_factorial {n k : ℕ} (hk : k ≤ n) : k ! * (n - k)! ∣ n ! := by
+--   rw [← choose_mul_factorial_mul_factorial hk, Nat.mul_assoc]; exact Nat.dvd_mul_left _ _
+
+-- theorem factorial_mul_factorial_dvd_factorial_add (i j : ℕ) : i ! * j ! ∣ (i + j)! := by
+--   suffices i ! * (i + j - i)! ∣ (i + j)! by
+--     rwa [Nat.add_sub_cancel_left i j] at this
+--   exact factorial_mul_factorial_dvd_factorial (Nat.le_add_right _ _)
+
+-- @[simp]
+-- theorem choose_symm {n k : ℕ} (hk : k ≤ n) : choose n (n - k) = choose n k := by
+--   rw [choose_eq_factorial_div_factorial hk, choose_eq_factorial_div_factorial (Nat.sub_le _ _),
+--     Nat.sub_sub_self hk, Nat.mul_comm]
+
+-- theorem choose_symm_of_eq_add {n a b : ℕ} (h : n = a + b) : Nat.choose n a = Nat.choose n b := by
+--   suffices choose n (n - b) = choose n b by
+--     rw [h, Nat.add_sub_cancel_right] at this; rwa [h]
+--   exact choose_symm (h ▸ le_add_left _ _)
+
+-- theorem choose_symm_add {a b : ℕ} : choose (a + b) a = choose (a + b) b :=
+--   choose_symm_of_eq_add rfl
+
+-- theorem choose_symm_half (m : ℕ) : choose (2 * m + 1) (m + 1) = choose (2 * m + 1) m := by
+--   apply choose_symm_of_eq_add
+--   rw [Nat.add_comm m 1, Nat.add_assoc 1 m m, Nat.add_comm (2 * m) 1, Nat.two_mul m]
+
+-- theorem choose_succ_right_eq (n k : ℕ) : choose n (k + 1) * (k + 1) = choose n k * (n - k) := by
+--   have e : (n + 1) * choose n k = choose n (k + 1) * (k + 1) + choose n k * (k + 1) := by
+--     rw [← Nat.add_mul, Nat.add_comm (choose _ _), ← choose_succ_succ, add_one_mul_choose_eq]
+--   rw [← Nat.sub_eq_of_eq_add e, Nat.mul_comm, ← Nat.mul_sub_left_distrib, Nat.add_sub_add_right]
+
+-- @[simp]
+-- theorem choose_succ_self_right : ∀ n : ℕ, (n + 1).choose n = n + 1
+--   | 0 => rfl
+--   | n + 1 => by rw [choose_succ_succ, choose_succ_self_right n, choose_self]
+
+-- theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k * (n + 1 - k) := by
+--   cases k with
+--   | zero => simp
+--   | succ k =>
+--     obtain hk | hk := le_or_gt (k + 1) (n + 1)
+--     · rw [choose_succ_succ, Nat.add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ,
+--         Nat.mul_sub_left_distrib, Nat.add_sub_cancel' (Nat.mul_le_mul_left _ hk)]
+--     · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), Nat.zero_mul,
+--         Nat.zero_mul]
+
+
+
+section qPochhammer
