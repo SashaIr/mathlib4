@@ -307,6 +307,42 @@ theorem qFactorial_eq_qBinomial_mul_qFactorial_mul_qFactorial {R : Type*} [Semir
             ← qFactorial_mul_qPow_eq_qPow_mul_qFactorial _ (k + 1), mul_assoc, ← mul_add,
             ← qNat_add_right, qFactorial_succ, (by omega : k + 1 + (n - (k + 1) + 1) = n + 1)]
 
+/- The q-binomial coefficient satisfies the second q-Pascal's identity. -/
+theorem qBinomial_succ_succ'' {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
+    qBinomial (n + 1) (k + 1) q = q ^ (n - k) * qBinomial n k q + qBinomial n (k + 1) q := by
+  induction n generalizing k with
+  | zero =>
+    cases k with
+    | zero => simp [qBinomial]
+    | succ k => simp [qBinomial]
+  | succ n ih =>
+    cases k with
+    | zero =>
+      simp [qNat_succ, add_comm (q ^ (n + 1))]
+    | succ k =>
+      rcases lt_trichotomy k n with hkn | hkn | hkn
+      · calc
+          qBinomial (n + 1 + 1) (k + 1 + 1) q
+              = qBinomial (n + 1) (k + 1) q
+                + q ^ (k + 1 + 1) * qBinomial (n + 1) (k + 1 + 1) q := by
+            rw [qBinomial_succ_succ']
+          _ = q ^ (n - k) * qBinomial n k q + qBinomial n (k + 1) q + q ^ (k + 1 + 1) *
+              (q ^ (n - (k + 1)) * qBinomial n (k + 1) q + qBinomial n (k + 1 + 1) q) := by
+            nth_rw 1 [ih k, ih (k + 1)]
+          _ = q ^ (n - k) * (qBinomial n k q + q ^ (k + 1) * qBinomial n (k + 1) q) +
+              (qBinomial n (k + 1) q + q ^ (k + 1 + 1) * qBinomial n (k + 1 + 1) q) := by
+            rw [mul_add, mul_add, ← mul_assoc, ← mul_assoc, ← pow_add, ← pow_add]
+            rw [(by omega : k + 1 + 1 + (n - (k + 1)) = n + 1)]
+            rw [(by omega : n - k + (k + 1) = n + 1)]
+            grind
+          _ = q ^ (n - k) * qBinomial (n + 1) (k + 1) q + qBinomial (n + 1) (k + 1 + 1) q := by
+            rw [add_comm, ← qBinomial_succ_succ', ← qBinomial_succ_succ', add_comm]
+          _ = q ^ (n + 1 - (k + 1)) * qBinomial (n + 1) (k + 1) q
+              + qBinomial (n + 1) (k + 1 + 1) q := by
+            simp
+      · simp [hkn]
+      · grind [qBinomial_eq_zero_of_lt]
+
 /- The q-binomial coefficient is symmetric in k and n-k. -/
 theorem qBinomial_symm {R : Type*} [Semiring R] {n k : ℕ} (h : k ≤ n) (q : R) :
     qBinomial n k q = qBinomial n (n - k) q := by
@@ -320,34 +356,11 @@ theorem qBinomial_symm {R : Type*} [Semiring R] {n k : ℕ} (h : k ≤ n) (q : R
       simp [qBinomial]
     | succ k =>
       by_cases hkn : k < n
-      · sorry
+      · rw [qBinomial_succ_succ', ih (by linarith : k ≤ n), ih (by linarith : k + 1 ≤ n), add_comm]
+        nth_rw 1 [(by omega : k + 1 = n - (n - (k + 1))), (by omega : n - k = (n - (k + 1) + 1))]
+        rw [← qBinomial_succ_succ'' n (n - (k + 1)) q]
+        congr; omega
       · rw [(by omega : k = n), qBinomial_self, tsub_self, qBinomial_zero_right]
-
-/- The q-binomial coefficient satisfies the second q-Pascal's identity. -/
-theorem qBinomial_succ_succ'' {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
-    qBinomial (n + 1) (k + 1) q = q ^ (n - k) * qBinomial n k q + qBinomial n (k + 1) q := by
-  induction n generalizing k with
-  | zero =>
-    cases k with
-    | zero => simp [qBinomial]
-    | succ k => simp [qBinomial]
-  | succ n ih =>
-    cases k with
-    | zero =>
-      simp only [qBinomial, zero_add, pow_one, qBinomial_zero_right, tsub_zero, mul_one,
-      qBinomial_one]
-      rw [← qNat_one q, (by simp : q * qNat n q = q ^ 1 * qNat n q), ← qNat_add_right,
-          ← mul_one (q ^ (n + 1)), Nat.add_comm 1 _, ← qNat_one q, ← qNat_add_left,
-          (by simp : q * qNat (n + 1) q = q ^ 1 * qNat (n + 1) q), ← qNat_add_right]
-    | succ k =>
-      by_cases hkn : k ≤ n
-      · rw [qBinomial_succ_succ' (n + 1) (k + 1), ih k, ih (k + 1)]
-        simp only [Nat.reduceSubDiff]
-        sorry
-      · rw [qBinomial_eq_zero_of_lt q (by omega : (n + 1) < (k + 1)),
-            qBinomial_eq_zero_of_lt q (by omega : (n + 1) < (k + 1 + 1)),
-            qBinomial_eq_zero_of_lt q (by omega : (n + 1 + 1) < (k + 1 + 1)),
-          mul_zero, zero_add]
 
 /- The q-binomial coefficient (n+1) choose k, for k > 0. -/
 theorem qBinomial_succ_left {R : Type*} [Semiring R] (n k : ℕ) (q : R) (hk : 0 < k) :
@@ -397,6 +410,8 @@ theorem add_one_mul_qBinomial_eq {R : Type*} [CommSemiring R] (q : R) : ∀ n k,
     · rw [qBinomial_eq_zero_of_lt q (by omega), mul_zero, qBinomial_eq_zero_of_lt q (by omega),
         zero_mul]
 
+/- # Questa è la roba in Mathlib sui binomiali normali, di cui va scritto un enunciato q-analogo,
+# se ha senso. -/
 -- theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k * k ! * (n - k)! = n !
 --   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
 --   | n + 1, 0, _ => by simp
