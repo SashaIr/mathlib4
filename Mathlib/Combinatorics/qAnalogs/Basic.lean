@@ -429,11 +429,8 @@ theorem qBinomial_mul {R : Type*} [Semiring R] {n k s : ℕ} (hsk : s ≤ k) (hk
   | zero =>
     simp only [qBinomial_zero, ite_mul, one_mul, zero_mul, zero_tsub, mul_ite, mul_one, mul_zero]
     by_cases hk : k = 0
-    · rw [hk]
-      simp
-    · simp only [hk, ↓reduceIte, right_eq_ite_iff]
-      intro hks hs
-      omega
+    · simp [hk]
+    · grind
   | succ n ih =>
     cases k with
     | zero =>
@@ -444,11 +441,9 @@ theorem qBinomial_mul {R : Type*} [Semiring R] {n k s : ℕ} (hsk : s ≤ k) (hk
         simp [qBinomial, mul_one]
       | succ s =>
         by_cases hkn' : k = n
-        · rw [hkn']
-          simp [qBinomial_self]
+        · simp [hkn']
         · by_cases hsk' : s = k
-          · rw [hsk']
-            simp [qBinomial]
+          · simp [hsk']
           · rw [qBinomial_succ_succ', add_mul, mul_assoc, ih (by linarith) (by omega),
               qBinomial_succ_succ', mul_add, ih (by linarith) (by linarith), ← mul_assoc,
               qBinomial_mul_qPow_eq_qPow_mul_qBinomial, mul_assoc, ih (by omega) (by linarith),
