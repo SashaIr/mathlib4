@@ -183,6 +183,20 @@ lemma qFactorial_one {R : Type*} [Semiring R] (q : R) : [1]_{q}! = 1 := by
 lemma qFactorial_succ {R : Type*} [Semiring R] (n : ℕ) (q : R) :
     [n + 1]_{q}! = [n]_{q}! * [n + 1]_{q} := rfl
 
+/- The q-factorial is the product of the q-analogs up to n. -/
+theorem qFactorial_eq_prod_qNat {R : Type*} [CommSemiring R] (n : ℕ) (q : R) :
+    qFactorial n q = ∏ i ∈ Finset.range n, [i + 1]_{q} := by
+  induction n with
+  | zero =>
+    simp [qFactorial]
+  | succ n ih =>
+    calc
+      qFactorial (n + 1) q = qFactorial n q * qNat (n + 1) q := rfl
+      _ = (∏ i ∈ Finset.range n, [i + 1]_{q}) * [n + 1]_{q} := by
+        simp [ih]
+      _ = ∏ i ∈ Finset.range (n + 1), [i + 1]_{q} := by
+        simp [Finset.prod_range_succ]
+
 /- The q-factorial of n, evaluated at q = 0, is 1. -/
 @[simp]
 lemma qFactorial_zero' {R : Type*} [Semiring R] (n : ℕ) : [n]_{(0 : R)}! = 1 := by
