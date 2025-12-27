@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Tactic
 
@@ -291,6 +292,42 @@ lemma qBinomial_one {R : Type*} [Semiring R] (n : ℕ) (q : R) :
     [n choose 1]_{q} = [n]_{q} := by
   induction n <;> simp only [qBinomial, qBinomial_zero_right, zero_add, pow_one, qNat, *]
   rw [← qNat_succ, ← qNat_succ']
+
+@[simp]
+lemma qBinomial_zero' {R : Type*} [Semiring R] (n k : ℕ) :
+    [n choose k]_{(0 : R)} = if k ≤ n then 1 else 0 := by
+  induction n generalizing k with
+  | zero =>
+    cases k <;> simp [qBinomial]
+  | succ n ih =>
+    cases k with
+    | zero =>
+      simp [qBinomial]
+    | succ k =>
+      simp [qBinomial, ih]
+
+@[simp]
+lemma qBinomial_one' {R : Type*} [Semiring R] (n k : ℕ) :
+    [n choose k]_{(1 : R)} = Nat.choose n k := by
+  induction n generalizing k with
+  | zero =>
+    cases k <;> simp [qBinomial]
+  | succ n ih =>
+    cases k with
+    | zero =>
+      simp [qBinomial]
+    | succ k =>
+      have h :
+          (Nat.choose (n + 1) (k + 1) : R) =
+            (Nat.choose n k : R) + (Nat.choose n (k + 1) : R) := by
+        simpa [Nat.cast_add] using
+          (congrArg (fun t : ℕ => (t : R)) (Nat.choose_succ_succ' n k))
+      calc
+        qBinomial (n + 1) (k + 1) (1 : R)
+            = (Nat.choose n k : R) + (Nat.choose n (k + 1) : R) := by
+                simp [qBinomial, ih]
+        _ = Nat.choose (n + 1) (k + 1) := by
+              simpa using h.symm
 
 /- q-factorials commute with powers of q. -/
 theorem qBinomial_mul_qPow_eq_qPow_mul_qBinomial {R : Type*} [Semiring R] (n k : ℕ) (m : ℕ)
