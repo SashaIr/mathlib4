@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Alessandro Iraci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alessandro Iraci
+Authors: Alessandro Iraci, Giovanni Paolini
 -/
 module
 
@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Tactic
 
@@ -49,31 +50,36 @@ def qNat {R : Type*} [Semiring R] : ℕ → R → R
   | 0, _     => 0
   | n + 1, q => qNat n q + q ^ n
 
+/-- Notation for q-analogs. Use `open scoped qAnalogs` to enable. -/
+scoped[qAnalogs] notation3:10000 "[" n "]_{" q "}" => qNat n q
+
+open scoped qAnalogs
+
 /- The q-analog of 0 is 0. -/
 @[simp]
 lemma qNat_zero {R : Type*} [Semiring R] (q : R) :
-    qNat 0 q = 0 := rfl
+    [0]_{q} = 0 := rfl
 
 /- The q-analog of 1 is 1. -/
 @[simp]
 lemma qNat_one {R : Type*} [Semiring R] (q : R) :
-    qNat 1 q = 1 := by
+    [1]_{q} = 1 := by
   simp [qNat]
 
 /- The q-analog of 2 is 1 + q. -/
 @[simp]
 lemma qNat_two {R : Type*} [Semiring R] (q : R) :
-    qNat 2 q = 1 + q := by
+    [2]_{q} = 1 + q := by
   simp [qNat]
 
 /- The q-analog of n + 1 is the q-analog of n plus q^n. -/
 lemma qNat_succ {R : Type*} [Semiring R] (n : ℕ) (q : R) :
-    qNat (n + 1) q = qNat n q + q ^ n := rfl
+    [n + 1]_{q} = [n]_{q} + q ^ n := rfl
 
 /- The q-analog of n, evaluated at q = 0, is 0 if n = 0 and 1 otherwise -/
 @[simp]
 lemma qNat_zero' {R : Type*} [Semiring R] (n : ℕ) :
-    qNat n (0 : R) = if n = 0 then 0 else 1 := by
+    [n]_{(0 : R)} = if n = 0 then 0 else 1 := by
   induction n with
   | zero => rfl
   | succ n ih =>
@@ -87,14 +93,14 @@ lemma qNat_zero' {R : Type*} [Semiring R] (n : ℕ) :
 /- The q-analog of n, evaluated at q = 1, is n -/
 @[simp]
 lemma qNat_one' {R : Type*} [Semiring R] (n : ℕ) :
-    qNat n (1 : R) = (n : R) := by
+    [n]_{(1 : R)} = (n : R) := by
   induction n with
   | zero => rw [qNat, Nat.cast_zero]
   | succ n ih => rw [qNat, ih, one_pow, Nat.cast_succ, add_comm]
 
 /- The q-analog of n is equal to 1 + q + ... + q^(n-1) -/
 theorem qNat_eq_sum_qPow {R : Type*} [Semiring R] (n : ℕ) (q : R) :
-    qNat n q = ∑ i ∈ Finset.range n, q ^ i := by
+    [n]_{q} = ∑ i ∈ Finset.range n, q ^ i := by
   induction n with
   | zero => simp [qNat]
   | succ n ih =>
@@ -103,7 +109,7 @@ theorem qNat_eq_sum_qPow {R : Type*} [Semiring R] (n : ℕ) (q : R) :
 
 /- The q-analog of n + 1 is 1 + q times the q-analog of n. -/
 lemma qNat_succ' {R : Type*} [Semiring R] (n : ℕ) (q : R) :
-    qNat (n + 1) q = 1 + q * qNat n q := by
+    [n + 1]_{q} = 1 + q * [n]_{q} := by
   induction n with
   | zero => simp [qNat]
   | succ n ih =>
@@ -114,32 +120,32 @@ lemma qNat_succ' {R : Type*} [Semiring R] (n : ℕ) (q : R) :
 /- The q-analog of n is equal to (1 - q^n) / (1 - q) -/
 theorem qNat_eq_geom_sum {R : Type*} [Field R] [Nontrivial R] (n : ℕ) (q : R)
     (hq : q ≠ 1) :
-    qNat n q = (1 - q ^ n) / (1 - q) := by
+    [n]_{q} = (1 - q ^ n) / (1 - q) := by
   rw [qNat_eq_sum_qPow, geom_sum_eq hq _]
   grind
 
 /- The q-analog of m + n is the q-analog of m plus q ^ m times the q-analog of n. -/
 theorem qNat_add_right {R : Type*} [Semiring R] (m n : ℕ) (q : R) :
-    qNat (m + n) q = qNat m q + q ^ m * qNat n q := by
+    [m + n]_{q} = [m]_{q} + q ^ m * [n]_{q} := by
   rw [qNat_eq_sum_qPow, qNat_eq_sum_qPow, qNat_eq_sum_qPow, Finset.mul_sum]
   rw [Finset.sum_range_add (HPow.hPow q) m n]
   simp_rw [← pow_add]
 
 /- The q-analog of m + n is q ^ n times the q-analog of m plus the q-analog of n. -/
 theorem qNat_add_left {R : Type*} [Semiring R] (m n : ℕ) (q : R) :
-    qNat (m + n) q = q ^ n * qNat m q + qNat n q := by
+    [m + n]_{q} = q ^ n * [m]_{q} + [n]_{q} := by
   rw [add_comm m n, qNat_add_right]
   grind
 
 /- q-analogs commute with powers of q. -/
 theorem qNat_mul_qPow_eq_qPow_mul_qNat {R : Type*} [Semiring R] (m n : ℕ) (q : R) :
-    qNat m q * q ^ n = q ^ n * qNat m q := by
+    [m]_{q} * q ^ n = q ^ n * [m]_{q} := by
   rw [qNat_eq_sum_qPow m, Finset.sum_mul, Finset.mul_sum]
   simp_rw [← pow_add, add_comm]
 
 /- The q-analogs commute. -/
 lemma qNat_mul_comm {R : Type*} [Semiring R] (m n : ℕ) (q : R) :
-    (qNat m q) * (qNat n q) = (qNat n q) * (qNat m q) := by
+    [m]_{q} * [n]_{q} = [n]_{q} * [m]_{q} := by
   induction m generalizing n with
   | zero => simp [qNat]
   | succ m ih =>
@@ -150,6 +156,8 @@ lemma qNat_mul_comm {R : Type*} [Semiring R] (m n : ℕ) (q : R) :
 
 end qNat
 
+open scoped qAnalogs
+
 section qFactorial
 
 /-
@@ -159,23 +167,39 @@ def qFactorial {R : Type*} [Semiring R] : ℕ → R → R
   | 0, _     => 1
   | n + 1, q => qFactorial n q * qNat (n + 1) q
 
+scoped[qAnalogs] notation3:10000 "[" n "]_{" q "}" "!" => qFactorial n q
+
 /- The q-factorial of 0 is 1. -/
 @[simp]
 lemma qFactorial_zero {R : Type*} [Semiring R] (q : R) :
-    qFactorial 0 q = 1 := rfl
+    [0]_{q}! = 1 := rfl
 
 /- The q-factorial of 1 is 1. -/
 @[simp]
-lemma qFactorial_one {R : Type*} [Semiring R] (q : R) : qFactorial 1 q = 1 := by
+lemma qFactorial_one {R : Type*} [Semiring R] (q : R) : [1]_{q}! = 1 := by
   simp [qFactorial, qNat]
 
 /- The q-factorial of n + 1 is the q-factorial of n times the q-analog of n + 1. -/
 lemma qFactorial_succ {R : Type*} [Semiring R] (n : ℕ) (q : R) :
-    qFactorial (n + 1) q = qFactorial n q * qNat (n + 1) q := rfl
+    [n + 1]_{q}! = [n]_{q}! * [n + 1]_{q} := rfl
+
+/- The q-factorial is the product of the q-analogs up to n. -/
+theorem qFactorial_eq_prod_qNat {R : Type*} [CommSemiring R] (n : ℕ) (q : R) :
+    qFactorial n q = ∏ i ∈ Finset.range n, [i + 1]_{q} := by
+  induction n with
+  | zero =>
+    simp [qFactorial]
+  | succ n ih =>
+    calc
+      qFactorial (n + 1) q = qFactorial n q * qNat (n + 1) q := rfl
+      _ = (∏ i ∈ Finset.range n, [i + 1]_{q}) * [n + 1]_{q} := by
+        simp [ih]
+      _ = ∏ i ∈ Finset.range (n + 1), [i + 1]_{q} := by
+        simp [Finset.prod_range_succ]
 
 /- The q-factorial of n, evaluated at q = 0, is 1. -/
 @[simp]
-lemma qFactorial_zero' {R : Type*} [Semiring R] (n : ℕ) : qFactorial n (0 : R) = 1 := by
+lemma qFactorial_zero' {R : Type*} [Semiring R] (n : ℕ) : [n]_{(0 : R)}! = 1 := by
   induction n with
   | zero => rfl
   | succ n ih =>
@@ -186,7 +210,7 @@ lemma qFactorial_zero' {R : Type*} [Semiring R] (n : ℕ) : qFactorial n (0 : R)
 /- The q-factorial of n, evaluated at q = 1, is n! -/
 @[simp]
 lemma qFactorial_one' {R : Type*} [Semiring R] (n : ℕ) :
-    qFactorial n (1 : R) = Nat.factorial n := by
+    [n]_{(1 : R)}! = Nat.factorial n := by
   induction n with
   | zero =>
     simp [qFactorial, Nat.factorial_zero]
@@ -196,7 +220,7 @@ lemma qFactorial_one' {R : Type*} [Semiring R] (n : ℕ) :
 /- q-factorials commute with powers of q. -/
 theorem qFactorial_mul_qPow_eq_qPow_mul_qFactorial {R : Type*} [Semiring R] (n : ℕ) (m : ℕ)
     (q : R) :
-    qFactorial n q * q ^ m = q ^ m * qFactorial n q := by
+    [n]_{q}! * q ^ m = q ^ m * [n]_{q}! := by
   induction n with
   | zero => simp [qFactorial]
   | succ n ih =>
@@ -204,7 +228,7 @@ theorem qFactorial_mul_qPow_eq_qPow_mul_qFactorial {R : Type*} [Semiring R] (n :
 
 /- q-analogs commute with q-factorials. -/
 theorem qFactorial_mul_qNat_eq_qNat_mul_qFactorial {R : Type*} [Semiring R] (m n : ℕ) (q : R) :
-    qFactorial m q * qNat n q = qNat n q * qFactorial m q := by
+    [m]_{q}! * [n]_{q} = [n]_{q} * [m]_{q}! := by
   induction m generalizing n with
   | zero => simp [qFactorial]
   | succ m ih =>
@@ -212,7 +236,7 @@ theorem qFactorial_mul_qNat_eq_qNat_mul_qFactorial {R : Type*} [Semiring R] (m n
 
 /- q-factorials commute. -/
 theorem qFactorial_mul_comm {R : Type*} [Semiring R] (m n : ℕ) (q : R) :
-    (qFactorial m q) * (qFactorial n q) = (qFactorial n q) * (qFactorial m q) := by
+    [m]_{q}! * [n]_{q}! = [n]_{q}! * [m]_{q}! := by
   induction m generalizing n with
   | zero => simp [qFactorial]
   | succ m ih =>
@@ -231,30 +255,33 @@ def qBinomial {R : Type*} [Semiring R] : ℕ → ℕ → R → R
   | 0, _, _     => 0
   | n + 1, k + 1, q => qBinomial n k q + q ^ (k + 1) * qBinomial n (k + 1) q
 
+scoped[qAnalogs] notation3:10000 "[" n " choose " k "]_{" q "}" => qBinomial n k q
+
 /- The q-binomial coefficient n choose 0 is 1. -/
 @[simp]
-theorem qBinomial_zero_right {R : Type*} [Semiring R] (n : ℕ) (q : R) : qBinomial n 0 q = 1 := by
+theorem qBinomial_zero_right {R : Type*} [Semiring R] (n : ℕ) (q : R) :
+    [n choose 0]_{q} = 1 := by
   simp [qBinomial]
 
 /- The q-binomial coefficient 0 choose k is 0 for k > 0. -/
 @[simp]
 theorem qBinomial_zero_succ {R : Type*} [Semiring R] (k : ℕ) (q : R) :
-    qBinomial 0 (k + 1) q = 0 := by
+    [0 choose k + 1]_{q} = 0 := by
   simp [qBinomial]
 
 /- The q-binomial coefficient satisfies the q-Pascal's identity. -/
 theorem qBinomial_succ_succ {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
-    qBinomial n.succ k.succ q = qBinomial n k q + q ^ k.succ * qBinomial n k.succ q :=
+    [n.succ choose k.succ]_{q} = [n choose k]_{q} + q ^ k.succ * [n choose k.succ]_{q} :=
   rfl
 
 /- The q-binomial coefficient satisfies the first q-Pascal's identity. -/
 theorem qBinomial_succ_succ' {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
-    qBinomial (n + 1) (k + 1) q = qBinomial n k q + q ^ (k + 1) * qBinomial n (k + 1) q :=
+    [n + 1 choose k + 1]_{q} = [n choose k]_{q} + q ^ (k + 1) * [n choose k + 1]_{q} :=
   rfl
 
 @[simp]
 lemma qBinomial_eq_zero_of_lt {R : Type*} [Semiring R] : ∀ {n k : ℕ} (q : R),
-    n < k → qBinomial n k q = 0
+    n < k → [n choose k]_{q} = 0
   | _, 0, _, hk => absurd hk (Nat.not_lt_zero _)
   | 0, _ + 1, q, _ => qBinomial_zero_succ _ q
   | n + 1, k + 1, q, hk => by
@@ -265,25 +292,61 @@ lemma qBinomial_eq_zero_of_lt {R : Type*} [Semiring R] : ∀ {n k : ℕ} (q : R)
 
 @[simp]
 lemma qBinomial_zero {R : Type*} [Semiring R] (k : ℕ) (q : R) :
-    qBinomial 0 k q = if k = 0 then 1 else 0 := by
+    [0 choose k]_{q} = if k = 0 then 1 else 0 := by
   cases k with
   | zero => simp [qBinomial]
   | succ k => simp [qBinomial]
 
 @[simp]
-lemma qBinomial_self {R : Type*} [Semiring R] (n : ℕ) (q : R) : qBinomial n n q = 1 := by
+lemma qBinomial_self {R : Type*} [Semiring R] (n : ℕ) (q : R) : [n choose n]_{q} = 1 := by
   induction n <;> simp [*, qBinomial]
 
 @[simp]
 lemma qBinomial_one {R : Type*} [Semiring R] (n : ℕ) (q : R) :
-    qBinomial n 1 q = qNat n q := by
+    [n choose 1]_{q} = [n]_{q} := by
   induction n <;> simp only [qBinomial, qBinomial_zero_right, zero_add, pow_one, qNat, *]
   rw [← qNat_succ, ← qNat_succ']
+
+@[simp]
+lemma qBinomial_zero' {R : Type*} [Semiring R] (n k : ℕ) :
+    [n choose k]_{(0 : R)} = if k ≤ n then 1 else 0 := by
+  induction n generalizing k with
+  | zero =>
+    cases k <;> simp [qBinomial]
+  | succ n ih =>
+    cases k with
+    | zero =>
+      simp [qBinomial]
+    | succ k =>
+      simp [qBinomial, ih]
+
+@[simp]
+lemma qBinomial_one' {R : Type*} [Semiring R] (n k : ℕ) :
+    [n choose k]_{(1 : R)} = Nat.choose n k := by
+  induction n generalizing k with
+  | zero =>
+    cases k <;> simp [qBinomial]
+  | succ n ih =>
+    cases k with
+    | zero =>
+      simp [qBinomial]
+    | succ k =>
+      have h :
+          (Nat.choose (n + 1) (k + 1) : R) =
+            (Nat.choose n k : R) + (Nat.choose n (k + 1) : R) := by
+        simpa [Nat.cast_add] using
+          (congrArg (fun t : ℕ => (t : R)) (Nat.choose_succ_succ' n k))
+      calc
+        qBinomial (n + 1) (k + 1) (1 : R)
+            = (Nat.choose n k : R) + (Nat.choose n (k + 1) : R) := by
+                simp [qBinomial, ih]
+        _ = Nat.choose (n + 1) (k + 1) := by
+              simpa using h.symm
 
 /- q-factorials commute with powers of q. -/
 theorem qBinomial_mul_qPow_eq_qPow_mul_qBinomial {R : Type*} [Semiring R] (n k : ℕ) (m : ℕ)
     (q : R) :
-    qBinomial n k q * q ^ m = q ^ m * qBinomial n k q := by
+    [n choose k]_{q} * q ^ m = q ^ m * [n choose k]_{q} := by
   induction n generalizing k with
   | zero => simp
   | succ n ih =>
@@ -296,7 +359,7 @@ theorem qBinomial_mul_qPow_eq_qPow_mul_qBinomial {R : Type*} [Semiring R] (n k :
 
 /- The q-binomial coefficient satisfies the second q-Pascal's identity. -/
 theorem qBinomial_succ_succ'' {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
-    qBinomial (n + 1) (k + 1) q = q ^ (n - k) * qBinomial n k q + qBinomial n (k + 1) q := by
+    [n + 1 choose k + 1]_{q} = q ^ (n - k) * [n choose k]_{q} + [n choose k + 1]_{q} := by
   induction n generalizing k with
   | zero =>
     cases k with
@@ -332,7 +395,7 @@ theorem qBinomial_succ_succ'' {R : Type*} [Semiring R] (n k : ℕ) (q : R) :
 
 /- The q-binomial coefficient is symmetric in k and n-k. -/
 theorem qBinomial_symm {R : Type*} [Semiring R] {n k : ℕ} (h : k ≤ n) (q : R) :
-    qBinomial n k q = qBinomial n (n - k) q := by
+    [n choose k]_{q} = [n choose n - k]_{q} := by
   induction n generalizing k with
   | zero =>
     rw [nonpos_iff_eq_zero] at h
@@ -351,33 +414,35 @@ theorem qBinomial_symm {R : Type*} [Semiring R] {n k : ℕ} (h : k ≤ n) (q : R
 
 /- The q-binomial coefficient (n+1) choose k, for k > 0. -/
 theorem qBinomial_succ_left {R : Type*} [Semiring R] (n k : ℕ) (q : R) (hk : 0 < k) :
-    qBinomial (n + 1) k q = qBinomial n (k - 1) q + q ^ k * qBinomial n k q := by
+    [n + 1 choose k]_{q} = [n choose k - 1]_{q} + q ^ k * [n choose k]_{q} := by
   obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
   rfl
 
 /- The q-binomial coefficient n choose (k+1). -/
 theorem qBinomial_succ_right {R : Type*} [Semiring R] (n k : ℕ) (q : R) (hn : 0 < n) :
-    qBinomial n (k + 1) q = qBinomial (n - 1) k q + q ^ (k + 1) * qBinomial (n - 1) (k + 1) q := by
+    [n choose k + 1]_{q} =
+      [n - 1 choose k]_{q} + q ^ (k + 1) * [n - 1 choose k + 1]_{q} := by
   obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
   rfl
 
 /- The q-binomial coefficient n choose k can be expressed as a sum. -/
 theorem qBinomial_eq_pred_add {R : Type*} [Semiring R] {n k : ℕ} (q : R) (hn : 0 < n) (hk : 0 < k) :
-    qBinomial n k q = qBinomial (n - 1) (k - 1) q + q ^ k * qBinomial (n - 1) k q := by
+    [n choose k]_{q} = [n - 1 choose k - 1]_{q} + q ^ k * [n - 1 choose k]_{q} := by
   obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
   rw [qBinomial_succ_right _ _ _ hn, Nat.add_one_sub_one]
 
 @[simp]
-theorem qBinomial_succ_self {R : Type*} [Semiring R] (n : ℕ) (q : R) : qBinomial n n.succ q = 0 :=
+theorem qBinomial_succ_self {R : Type*} [Semiring R] (n : ℕ) (q : R) :
+    [n choose n.succ]_{q} = 0 :=
   qBinomial_eq_zero_of_lt q (Nat.lt_succ_self n)
 
 theorem le_of_qBinomial_ne_zero {R : Type*} [Semiring R] {n k : ℕ} (q : R) :
-    qBinomial n k q ≠ 0 → k ≤ n := by
+    [n choose k]_{q} ≠ 0 → k ≤ n := by
   contrapose!
   exact qBinomial_eq_zero_of_lt q
 
-theorem add_one_mul_qBinomial_eq {R : Type*} [CommSemiring R] (q : R) : ∀ n k, qNat (n + 1) q *
-    (qBinomial n k q) = qBinomial (n + 1) (k + 1) q * qNat (k + 1) q --:= by sorry
+theorem add_one_mul_qBinomial_eq {R : Type*} [CommSemiring R] (q : R) : ∀ n k,
+    [n + 1]_{q} * [n choose k]_{q} = [n + 1 choose k + 1]_{q} * [k + 1]_{q} --:= by sorry
   | 0, 0 => by simp
   | 0, k + 1 => by simp [qNat, qBinomial]
   | n + 1, 0 => by
@@ -398,7 +463,7 @@ theorem add_one_mul_qBinomial_eq {R : Type*} [CommSemiring R] (q : R) : ∀ n k,
         zero_mul]
 
 theorem qBinomial_mul_qFactorial_mul_qFactorial {R : Type*} [Semiring R] {n k : ℕ} (h : k ≤ n)
-   (q : R) : qBinomial n k q * qFactorial k q * qFactorial (n - k) q = qFactorial n q := by
+   (q : R) : [n choose k]_{q} * [k]_{q}! * [n - k]_{q}! = [n]_{q}! := by
   induction n generalizing k with
   | zero =>
     rw [nonpos_iff_eq_zero] at h
@@ -424,7 +489,7 @@ theorem qBinomial_mul_qFactorial_mul_qFactorial {R : Type*} [Semiring R] {n k : 
             ← qNat_add_right, qFactorial_succ, (by omega : k + 1 + (n - (k + 1) + 1) = n + 1)]
 
 theorem qBinomial_mul {R : Type*} [Semiring R] {n k s : ℕ} (hsk : s ≤ k) (hkn : k ≤ n) (q : R) :
-    qBinomial n k q * qBinomial k s q = qBinomial n s q * qBinomial (n - s) (k - s) q := by
+    [n choose k]_{q} * [k choose s]_{q} = [n choose s]_{q} * [n - s choose k - s]_{q} := by
   induction n generalizing k s with
   | zero =>
     simp only [qBinomial_zero, ite_mul, one_mul, zero_mul, zero_tsub, mul_ite, mul_one, mul_zero]
