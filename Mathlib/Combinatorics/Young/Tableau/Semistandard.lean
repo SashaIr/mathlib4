@@ -1,0 +1,195 @@
+/-
+Copyright (c) 2026 Aristotle contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aristotle (Harmonic)
+-/
+import Mathlib.Combinatorics.Young.SemistandardTableau
+import Mathlib.Combinatorics.Young.Tableau.Basic
+import Mathlib.Combinatorics.Young.Shape.YoungDiagram
+
+/-!
+# Tableaux and Mathlib's semistandard Young tableaux
+
+Following Coq-Combi, a Young tableau is here a list of rows (`t : List (List ℕ)` with
+`List.IsTableau t`), whose shape `List.shape t` is the list of row lengths.  Mathlib
+represents the same object as a function `ℕ → ℕ → ℕ` vanishing outside a `YoungDiagram`
+(`SemistandardYoungTableau`).
+
+This file is the dictionary between the two.  The entry `(i, j)` of the Coq-Combi tableau
+`t` is `(t.getD i []).getD j 0`, and this function is exactly the corresponding
+semistandard Young tableau.
+
+## Main definitions
+
+* `List.ssytOfTableau` : the semistandard Young tableau of a Coq-Combi tableau.
+* `List.tableauOfSSYT` : the list of rows of a semistandard Young tableau.
+* `List.tableauEquivSSYT` : the tableaux of a given shape are in bijection with the
+  semistandard Young tableaux of the corresponding Young diagram.
+
+## Main results
+
+* `List.isTableau_tableauOfSSYT`, `List.shape_tableauOfSSYT` : the rows of a
+  semistandard Young tableau form a tableau with the expected shape.
+* `List.entry_tableauOfSSYT` : the entries are preserved by the dictionary.
+* `List.sizeTab_eq_card` : the number of boxes agrees.
+-/
+
+namespace List
+
+open List
+
+variable {t : List (List ℕ)} {mu : YoungDiagram}
+
+/-! ### From tableaux to semistandard Young tableaux -/
+
+/-- The rows of a tableau whose shape is the list of row lengths of `mu` have the lengths
+prescribed by `mu`. -/
+lemma length_getD_of_shape_eq (hshape : shape t = mu.rowLens) (i : ℕ) :
+    (t.getD i []).length = mu.rowLen i := by
+  rw [← getD_shape, hshape, YoungDiagram.getD_rowLens]
+
+/-- **A Coq-Combi tableau is a semistandard Young tableau**: the entry function of a
+tableau of shape `mu.rowLens` is a semistandard Young tableau of shape `mu`. -/
+def ssytOfTableau (mu : YoungDiagram) (htab : IsTableau t) (hshape : shape t = mu.rowLens) :
+    SemistandardYoungTableau mu where
+  entry i j := (t.getD i []).getD j 0
+  row_weak' {i j1 j2} hj hcell := by
+    have h2 : j2 < (t.getD i []).length := by
+      rw [length_getD_of_shape_eq hshape]
+      exact YoungDiagram.mem_iff_lt_rowLen.1 hcell
+    rw [List.getD_eq_getElem _ _ (lt_trans hj h2), List.getD_eq_getElem _ _ h2]
+    exact htab.row_le hj.le h2
+  col_strict' {i1 i2 j} hi hcell := by
+    have h2 : j < (t.getD i2 []).length := by
+      rw [length_getD_of_shape_eq hshape]
+      exact YoungDiagram.mem_iff_lt_rowLen.1 hcell
+    have hdom := htab.dominate_getD hi
+    have h1 : j < (t.getD i1 []).length := lt_of_lt_of_le h2 hdom.length_le
+    rw [List.getD_eq_getElem _ _ h1, List.getD_eq_getElem _ _ h2]
+    exact hdom.getElem_lt j h2
+  zeros' {i j} hcell := by
+    refine List.getD_eq_default _ _ ?_
+    rw [length_getD_of_shape_eq hshape]
+    exact not_lt.1 fun h => hcell (YoungDiagram.mem_iff_lt_rowLen.2 h)
+
+@[simp] lemma ssytOfTableau_apply (mu : YoungDiagram) (htab : IsTableau t)
+    (hshape : shape t = mu.rowLens) (i j : ℕ) :
+    ssytOfTableau mu htab hshape i j = (t.getD i []).getD j 0 := rfl
+
+/-! ### From semistandard Young tableaux to tableaux -/
+
+/-- The list of rows of a semistandard Young tableau. -/
+def tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) : List (List ℕ) :=
+  (List.range (mu.colLen 0)).map fun i => (List.range (mu.rowLen i)).map (T i)
+
+@[simp] lemma length_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) :
+    (tableauOfSSYT mu T).length = mu.colLen 0 := by
+  simp [tableauOfSSYT]
+
+lemma getD_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) (i : ℕ) :
+    (tableauOfSSYT mu T).getD i [] = (List.range (mu.rowLen i)).map (T i) := by
+  rcases Nat.lt_or_ge i (mu.colLen 0) with hi | hi
+  · rw [List.getD_eq_getElem _ _ (by simpa using hi)]
+    simp [tableauOfSSYT]
+  · have hrow : mu.rowLen i = 0 := by
+      by_contra hc
+      have : (i, 0) ∈ mu := YoungDiagram.mem_iff_lt_rowLen.2 (by omega)
+      exact absurd (YoungDiagram.mem_iff_lt_colLen.1 this) (by omega)
+    rw [List.getD_eq_default _ _ (by simpa using hi), hrow]
+    simp
+
+/-- The entries are preserved: the `(i, j)` entry of the tableau of rows of `T` is
+`T i j`. -/
+lemma entry_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu)
+    (i j : ℕ) : (((tableauOfSSYT mu T).getD i []).getD j 0) = T i j := by
+  rw [getD_tableauOfSSYT]
+  rcases Nat.lt_or_ge j (mu.rowLen i) with hj | hj
+  · rw [List.getD_eq_getElem _ _ (by simpa using hj)]
+    simp
+  · rw [List.getD_eq_default _ _ (by simpa using hj)]
+    exact (T.zeros fun hc => absurd (YoungDiagram.mem_iff_lt_rowLen.1 hc) (by omega)).symm
+
+/-- The shape of the tableau of rows of `T` is the list of row lengths of `mu`. -/
+@[simp] lemma shape_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) :
+    shape (tableauOfSSYT mu T) = mu.rowLens := by
+  simp [shape, tableauOfSSYT, YoungDiagram.rowLens, List.map_map, Function.comp_def]
+
+/-- The rows of a semistandard Young tableau form a Coq-Combi tableau. -/
+lemma isTableau_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) :
+    IsTableau (tableauOfSSYT mu T) := by
+  refine isTableau_of_getD (fun i hi => ?_) (fun i => ?_) (fun i => ?_)
+  · rw [length_tableauOfSSYT] at hi
+    have hrow : 0 < mu.rowLen i :=
+      YoungDiagram.mem_iff_lt_rowLen.1 (YoungDiagram.mem_iff_lt_colLen.2 hi)
+    rw [getD_tableauOfSSYT]
+    simp only [ne_eq, List.map_eq_nil_iff, List.range_eq_nil]
+    omega
+  · rw [getD_tableauOfSSYT]
+    refine List.isChain_iff_pairwise.2 (List.pairwise_map.2 ?_)
+    rw [List.pairwise_iff_getElem]
+    intro a b ha hb hab
+    simp only [List.getElem_range] at *
+    exact T.row_weak hab (YoungDiagram.mem_iff_lt_rowLen.2 (by simpa using hb))
+  · rw [getD_tableauOfSSYT, getD_tableauOfSSYT]
+    refine dominate_of_getElem (by simpa using mu.rowLen_anti i (i + 1) (Nat.le_succ i)) ?_
+    intro j hj
+    simp only [List.length_map, List.length_range] at hj
+    simp only [List.getElem_map, List.getElem_range]
+    exact T.col_strict (Nat.lt_succ_self i) (YoungDiagram.mem_iff_lt_rowLen.2 hj)
+
+/-! ### The bijection -/
+
+/-- Two lists of rows with the same shape and the same entries are equal. -/
+lemma eq_of_shape_eq_of_getD_eq {a b : List (List ℕ)} (hs : shape a = shape b)
+    (he : ∀ i j, (a.getD i []).getD j 0 = (b.getD i []).getD j 0) : a = b := by
+  have hlen : a.length = b.length := by
+    simpa [shape] using congrArg List.length hs
+  refine List.ext_getElem hlen fun i hi hi' => ?_
+  have hrow : (a.getD i []).length = (b.getD i []).length := by
+    rw [← getD_shape, ← getD_shape, hs]
+  rw [List.getD_eq_getElem _ _ hi, List.getD_eq_getElem _ _ hi'] at hrow
+  refine List.ext_getElem hrow fun j hj hj' => ?_
+  have hij := he i j
+  rw [List.getD_eq_getElem _ _ hi, List.getD_eq_getElem _ _ hi',
+    List.getD_eq_getElem _ _ hj, List.getD_eq_getElem _ _ hj'] at hij
+  exact hij
+
+/-- **The tableaux of a given shape are the semistandard Young tableaux of the
+corresponding Young diagram.** -/
+def tableauEquivSSYT (mu : YoungDiagram) :
+    {t : List (List ℕ) // IsTableau t ∧ shape t = mu.rowLens} ≃
+      SemistandardYoungTableau mu where
+  toFun t := ssytOfTableau mu t.2.1 t.2.2
+  invFun T := ⟨tableauOfSSYT mu T, isTableau_tableauOfSSYT mu T, shape_tableauOfSSYT mu T⟩
+  left_inv t := Subtype.ext <| eq_of_shape_eq_of_getD_eq
+    (by rw [shape_tableauOfSSYT, t.2.2]) fun i j => entry_tableauOfSSYT mu _ i j
+  right_inv T := SemistandardYoungTableau.ext fun i j => entry_tableauOfSSYT mu T i j
+
+/-- **The tableaux of shape `sh` are the semistandard Young tableaux of the Young diagram
+of `sh`.** -/
+def shapeTableauEquivSSYT (sh : List ℕ) (hsh : IsPart sh) :
+    {t : List (List ℕ) // IsTableau t ∧ shape t = sh} ≃
+      SemistandardYoungTableau (youngDiagram sh hsh) :=
+  (Equiv.subtypeEquivRight fun _ => by rw [rowLens_youngDiagram]).trans
+    (tableauEquivSSYT (youngDiagram sh hsh))
+
+/-- The number of boxes of a tableau is the number of boxes of the corresponding Young
+diagram. -/
+lemma sizeTab_eq_card (htab : IsTableau t) :
+    sizeTab t = (youngDiagram (shape t) (isPart_shape htab)).card := by
+  rw [card_youngDiagram, sizeTab]
+
+end List
+
+namespace Nat.Partition
+
+open List
+
+/-- **The tableaux whose shape is the partition `p` are the semistandard Young tableaux of
+the Young diagram of `p`.** -/
+def tableauEquivSSYT {n : ℕ} (p : Partition n) :
+    {t : List (List ℕ) // IsTableau t ∧ shape t = p.partsList} ≃
+      SemistandardYoungTableau p.youngDiagram :=
+  List.shapeTableauEquivSSYT p.partsList (isPart_partsList p)
+
+end Nat.Partition

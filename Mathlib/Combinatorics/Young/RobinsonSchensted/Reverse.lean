@@ -1,0 +1,46 @@
+/-
+Copyright (c) 2026 Aristotle contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aristotle (Harmonic)
+-/
+import Mathlib.Combinatorics.Young.Greene.Reverse
+import Mathlib.Combinatorics.Young.Plactic.Restrict
+import Mathlib.Combinatorics.Young.Plactic.Standardization
+import Mathlib.Combinatorics.Young.Tableau.ConjugateRestrict
+import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
+
+/-!
+# The insertion tableau of a reversed standard word
+
+Reversing a standard word transposes its Robinson–Schensted insertion tableau (Coq
+`RS_rev_uniq` of `theories/LRrule/Greene_inv.v` of
+[Coq-Combi](https://github.com/math-comp/Coq-Combi)).
+
+The proof combines three results already available in the library: reversing a word with
+distinct letters conjugates the shape of its insertion tableau
+(`List.shape_RS_reverse_of_nodup`), restricting a word to its letters `< k` restricts its
+insertion tableau (`List.RS_ltFilter`), transposing a standard tableau commutes with that
+restriction (`List.shape_dropMax_conjTab`), and a standard tableau is determined by the
+shapes of its restrictions (`List.eq_of_shape_dropMax_eq`).
+
+## Main results
+
+* `List.RS_reverse` : `RS w.reverse = conjTab (RS w)` for a standard word `w`.
+-/
+
+namespace List
+
+/-- Restricting to the letters `< N` commutes with reversing a word. -/
+lemma ltFilter_reverse (N : ℕ) (w : List ℕ) : ltFilter N w.reverse = (ltFilter N w).reverse :=
+  List.filter_reverse
+
+/-- **The insertion tableau of a reversed standard word is the transpose of the insertion
+tableau of the word** (Coq `RS_rev_uniq`). -/
+theorem RS_reverse {w : List ℕ} (hw : IsStd w) : RS w.reverse = conjTab (RS w) := by
+  have hstd : IsStdTab (RS w) := isStdTab_RS hw
+  refine eq_of_shape_dropMax_eq (isStdTab_RS (IsStd.perm hw (List.reverse_perm w).symm))
+    hstd.conjTab fun k => ?_
+  rw [shape_dropMax_conjTab hstd, ← RS_ltFilter, ← RS_ltFilter, ltFilter_reverse]
+  exact shape_RS_reverse_of_nodup ((IsStd.nodup hw).filter _)
+
+end List
