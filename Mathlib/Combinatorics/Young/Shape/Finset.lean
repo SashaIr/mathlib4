@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Aristotle contributors. All rights reserved.
+Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aristotle (Harmonic)
+Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 import Mathlib.Combinatorics.Young.Shape.NatPartition
 
