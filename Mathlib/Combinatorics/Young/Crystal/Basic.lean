@@ -142,10 +142,10 @@ theorem crystalE_isSome_iff (i : ℕ) (w : List ℕ) :
     by_cases hx : x = i + 1 ∧ crystalEps i w = 0
     · obtain ⟨rfl, h0⟩ := hx
       simp [crystalPhi_cons_succ, h0]
-    · rw [if_neg hx]
+    · rw [ite_eq_right hx]
       have hphi : crystalPhi i (x :: w) = crystalPhi i w := by
         rcases eq_or_ne x (i + 1) with rfl | hne
-        · rw [crystalPhi_cons_succ, if_neg (by tauto)]
+        · rw [crystalPhi_cons_succ, ite_eq_right (by tauto)]
         · exact crystalPhi_cons_of_ne hne w
       rw [hphi, ← ih]
       cases crystalE i w <;> simp
@@ -160,13 +160,13 @@ theorem crystalF_isSome_iff (i : ℕ) (w : List ℕ) :
     by_cases hx : x = i ∧ crystalEps i w = 0
     · obtain ⟨rfl, h0⟩ := hx
       simp [h0]
-    · rw [if_neg hx]
+    · rw [ite_eq_right hx]
       by_cases hx' : x = i + 1 ∧ crystalEps i w ≤ 1
       · obtain ⟨rfl, h1⟩ := hx'
-        rw [if_pos ⟨rfl, h1⟩, crystalEps_cons_succ]
+        rw [ite_eq_left ⟨rfl, h1⟩, crystalEps_cons_succ]
         simp only [Option.isSome_none, Bool.false_eq_true, false_iff, ne_eq, Decidable.not_not]
         omega
-      · rw [if_neg hx']
+      · rw [ite_eq_right hx']
         have heps : crystalEps i (x :: w) ≠ 0 ↔ crystalEps i w ≠ 0 := by
           rcases eq_or_ne x i with rfl | hne
           · simp only [crystalEps_cons_self]
@@ -229,27 +229,27 @@ theorem crystalE_append (i : ℕ) (u v : List ℕ) :
   | cons x u ih =>
     rcases eq_or_ne x (i + 1) with rfl | hne'
     · rcases eq_or_ne (crystalEps i u) 0 with h0 | h0
-      · rw [crystalPhi_cons_succ, if_pos h0]
+      · rw [crystalPhi_cons_succ, ite_eq_left h0]
         rcases lt_or_ge (crystalEps i v) (crystalPhi i u + 1) with hlt | hge
         · have heps : crystalEps i (u ++ v) = 0 := by rw [crystalEps_append]; omega
-          rw [List.cons_append, crystalE_cons, if_pos ⟨rfl, heps⟩, if_pos hlt, crystalE_cons,
-            if_pos ⟨rfl, h0⟩]
+          rw [List.cons_append, crystalE_cons, ite_eq_left ⟨rfl, heps⟩, ite_eq_left hlt,
+            crystalE_cons, ite_eq_left ⟨rfl, h0⟩]
           simp
         · have heps : crystalEps i (u ++ v) ≠ 0 := by rw [crystalEps_append]; omega
-          rw [List.cons_append, crystalE_cons, if_neg (by tauto), ih, if_neg (by omega),
-            if_neg (by omega)]
+          rw [List.cons_append, crystalE_cons, ite_eq_right (by tauto), ih, ite_eq_right (by omega),
+            ite_eq_right (by omega)]
           simp [Option.map_map, Function.comp_def]
       · have hphi : crystalPhi i ((i + 1) :: u) = crystalPhi i u := by
-          rw [crystalPhi_cons_succ, if_neg h0]
+          rw [crystalPhi_cons_succ, ite_eq_right h0]
         have hEcons : crystalE i ((i + 1) :: u) = (crystalE i u).map ((i + 1) :: ·) := by
-          rw [crystalE_cons, if_neg (by tauto)]
+          rw [crystalE_cons, ite_eq_right (by tauto)]
         rw [List.cons_append, crystalE_cons,
-          if_neg (by rw [crystalEps_append]; rintro ⟨-, h⟩; omega), ih, hphi, hEcons]
+          ite_eq_right (by rw [crystalEps_append]; rintro ⟨-, h⟩; omega), ih, hphi, hEcons]
         split <;> simp [Option.map_map, Function.comp_def]
     · have hphi : crystalPhi i (x :: u) = crystalPhi i u := crystalPhi_cons_of_ne hne' u
       have hEcons : crystalE i (x :: u) = (crystalE i u).map (x :: ·) := by
-        rw [crystalE_cons, if_neg (by tauto)]
-      rw [List.cons_append, crystalE_cons, if_neg (by tauto), ih, hphi, hEcons]
+        rw [crystalE_cons, ite_eq_right (by tauto)]
+      rw [List.cons_append, crystalE_cons, ite_eq_right (by tauto), ih, hphi, hEcons]
       split <;> simp [Option.map_map, Function.comp_def]
 
 /-- The tensor rule for the lowering operator. -/
@@ -259,10 +259,7 @@ theorem crystalF_append (i : ℕ) (u v : List ℕ) :
       else (crystalF i u).map (· ++ v) := by
   induction u with
   | nil =>
-    simp only [List.nil_append, crystalPhi_nil, crystalF_nil, Option.map_none]
-    split
-    · simp
-    · rw [(crystalF_eq_none_iff i v).2 (by omega)]
+    simp [← crystalF_eq_none_iff]
   | cons x u ih =>
     rcases eq_or_ne x i with rfl | hne
     · rcases eq_or_ne (crystalEps x u) 0 with h0 | h0
@@ -271,19 +268,20 @@ theorem crystalF_append (i : ℕ) (u v : List ℕ) :
           rw [crystalEps_append, h0]; omega
         rcases lt_or_ge (crystalPhi x u) (crystalEps x v) with hlt | hge
         · have h1 : crystalEps x (u ++ v) ≠ 0 := by omega
-          rw [List.cons_append, crystalF_cons, if_neg (by rintro ⟨-, h⟩; omega),
-            if_neg (by rintro ⟨h, -⟩; omega), ih, if_pos hlt, hphi, if_pos hlt]
+          rw [List.cons_append, crystalF_cons, ite_eq_right (by rintro ⟨-, h⟩; omega),
+            ite_eq_right (by rintro ⟨h, -⟩; omega), ih, ite_eq_left hlt, hphi, ite_eq_left hlt]
           simp [Option.map_map, Function.comp_def]
         · have h1 : crystalEps x (u ++ v) = 0 := by omega
-          rw [List.cons_append, crystalF_cons, if_pos ⟨rfl, h1⟩, hphi, if_neg (by omega),
-            crystalF_cons, if_pos ⟨rfl, h0⟩]
+          rw [List.cons_append, crystalF_cons, ite_eq_left ⟨rfl, h1⟩, hphi, ite_eq_right (by omega),
+            crystalF_cons, ite_eq_left ⟨rfl, h0⟩]
           simp
       · have hphi : crystalPhi x (x :: u) = crystalPhi x u := crystalPhi_cons_self x u
         have heps : crystalEps x (u ++ v) ≠ 0 := by rw [crystalEps_append]; omega
         have hFcons : crystalF x (x :: u) = (crystalF x u).map (x :: ·) := by
-          rw [crystalF_cons, if_neg (by rintro ⟨-, h⟩; omega), if_neg (by rintro ⟨h, -⟩; omega)]
-        rw [List.cons_append, crystalF_cons, if_neg (by rintro ⟨-, h⟩; omega),
-          if_neg (by rintro ⟨h, -⟩; omega), ih, hphi, hFcons]
+          rw [crystalF_cons, ite_eq_right (by rintro ⟨-, h⟩; omega),
+            ite_eq_right (by rintro ⟨h, -⟩; omega)]
+        rw [List.cons_append, crystalF_cons, ite_eq_right (by rintro ⟨-, h⟩; omega),
+          ite_eq_right (by rintro ⟨h, -⟩; omega), ih, hphi, hFcons]
         split <;> simp [Option.map_map, Function.comp_def]
     · rcases eq_or_ne x (i + 1) with rfl | hne'
       · have hphi : crystalPhi i ((i + 1) :: u) =
@@ -292,45 +290,45 @@ theorem crystalF_append (i : ℕ) (u v : List ℕ) :
         rcases eq_or_ne (crystalEps i u) 0 with h0 | h0
         · have heps : crystalEps i (u ++ v) = crystalEps i v - crystalPhi i u := by
             rw [crystalEps_append, h0]; omega
-          rw [hphi, if_pos h0]
+          rw [hphi, ite_eq_left h0]
           rcases lt_or_ge (crystalPhi i u + 1) (crystalEps i v) with hlt | hge
           · have h1 : ¬ crystalEps i (u ++ v) ≤ 1 := by omega
-            rw [List.cons_append, crystalF_cons, if_neg (by omega),
-              if_neg (by rintro ⟨-, h⟩; omega), ih, if_pos (by omega), if_pos hlt]
+            rw [List.cons_append, crystalF_cons, ite_eq_right (by omega),
+              ite_eq_right (by rintro ⟨-, h⟩; omega), ih, ite_eq_left (by omega), ite_eq_left hlt]
             simp [Option.map_map, Function.comp_def]
           · have h1 : crystalEps i (u ++ v) ≤ 1 := by omega
-            rw [List.cons_append, crystalF_cons, if_neg (by omega), if_pos ⟨rfl, h1⟩,
-              if_neg (by omega), crystalF_cons, if_neg (by omega), if_pos ⟨rfl, by omega⟩]
+            rw [List.cons_append, crystalF_cons, ite_eq_right (by omega), ite_eq_left ⟨rfl, h1⟩,
+              ite_eq_right (by omega), crystalF_cons, ite_eq_right (by omega),
+              ite_eq_left ⟨rfl, by omega⟩]
             rfl
         · have hFcons : crystalF i ((i + 1) :: u) =
               if crystalEps i u ≤ 1 then none else (crystalF i u).map ((i + 1) :: ·) := by
-            rw [crystalF_cons, if_neg (by omega)]
+            rw [crystalF_cons, ite_eq_right (by omega)]
             by_cases h2 : crystalEps i u ≤ 1
-            · rw [if_pos ⟨rfl, h2⟩, if_pos h2]
-            · rw [if_neg (by rintro ⟨-, h⟩; omega), if_neg h2]
+            · rw [ite_eq_left ⟨rfl, h2⟩, ite_eq_left h2]
+            · rw [ite_eq_right (by rintro ⟨-, h⟩; omega), ite_eq_right h2]
           have heps : crystalEps i (u ++ v) = crystalEps i u + (crystalEps i v - crystalPhi i u) :=
             crystalEps_append i u v
-          rw [hphi, if_neg h0, hFcons]
+          rw [hphi, ite_eq_right h0, hFcons]
           rcases lt_or_ge (crystalPhi i u) (crystalEps i v) with hlt | hge
           · have h1 : ¬ crystalEps i (u ++ v) ≤ 1 := by omega
-            rw [List.cons_append, crystalF_cons, if_neg (by omega),
-              if_neg (by rintro ⟨-, h⟩; omega), ih, if_pos hlt, if_pos hlt]
+            rw [List.cons_append, crystalF_cons, ite_eq_right (by omega),
+              ite_eq_right (by rintro ⟨-, h⟩; omega), ih, ite_eq_left hlt, ite_eq_left hlt]
             simp [Option.map_map, Function.comp_def]
           · rcases le_or_gt (crystalEps i u) 1 with h2 | h2
             · have h1 : crystalEps i (u ++ v) ≤ 1 := by omega
-              rw [List.cons_append, crystalF_cons, if_neg (by omega), if_pos ⟨rfl, h1⟩,
-                if_neg (by omega), if_pos h2]
+              rw [List.cons_append, crystalF_cons, ite_eq_right (by omega), ite_eq_left ⟨rfl, h1⟩,
+                ite_eq_right (by omega), ite_eq_left h2]
               rfl
             · have h1 : ¬ crystalEps i (u ++ v) ≤ 1 := by omega
-              rw [List.cons_append, crystalF_cons, if_neg (by omega),
-                if_neg (by rintro ⟨-, h⟩; omega), ih, if_neg (by omega), if_neg (by omega),
-                if_neg (by omega)]
+              rw [List.cons_append, crystalF_cons, ite_eq_right (by omega),
+                ite_eq_right (by rintro ⟨-, h⟩; omega), ih, ite_eq_right (by omega),
+                ite_eq_right (by omega), ite_eq_right (by omega)]
               simp [Option.map_map, Function.comp_def]
-      · have hphi : crystalPhi i (x :: u) = crystalPhi i u := crystalPhi_cons_of_ne hne' u
-        have hFcons : crystalF i (x :: u) = (crystalF i u).map (x :: ·) := by
-          rw [crystalF_cons, if_neg (by tauto), if_neg (by tauto)]
-        rw [List.cons_append, crystalF_cons, if_neg (by tauto), if_neg (by tauto), ih, hphi,
-          hFcons]
+      · have hFcons : crystalF i (x :: u) = (crystalF i u).map (x :: ·) := by
+          rw [crystalF_cons, ite_eq_right (by tauto), ite_eq_right (by tauto)]
+        rw [List.cons_append, crystalF_cons, ite_eq_right (by tauto), ite_eq_right (by tauto), ih,
+          crystalPhi_cons_of_ne hne' u, hFcons]
         split <;> simp [Option.map_map, Function.comp_def]
 
 /-! ### The operators change a single letter -/
@@ -343,10 +341,10 @@ theorem crystalE_eq_set {i : ℕ} {w w' : List ℕ} (h : crystalE i w = some w')
   | cons x w ih =>
     rw [crystalE_cons] at h
     by_cases hx : x = i + 1 ∧ crystalEps i w = 0
-    · rw [if_pos hx] at h
+    · rw [ite_eq_left hx] at h
       obtain ⟨hx1, -⟩ := hx
       exact ⟨0, by simp, by simp [hx1], by simp at h; simp [← h]⟩
-    · rw [if_neg hx] at h
+    · rw [ite_eq_right hx] at h
       obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 h
       obtain ⟨j, hj, h1, h2⟩ := ih hw0
       exact ⟨j + 1, by simpa using hj, by simpa using h1, by simp [h2]⟩
@@ -359,13 +357,13 @@ theorem crystalF_eq_set {i : ℕ} {w w' : List ℕ} (h : crystalF i w = some w')
   | cons x w ih =>
     rw [crystalF_cons] at h
     by_cases hx : x = i ∧ crystalEps i w = 0
-    · rw [if_pos hx] at h
+    · rw [ite_eq_left hx] at h
       obtain ⟨hx1, -⟩ := hx
       exact ⟨0, by simp, by simp [hx1], by simp at h; simp [← h]⟩
-    · rw [if_neg hx] at h
+    · rw [ite_eq_right hx] at h
       by_cases hx' : x = i + 1 ∧ crystalEps i w ≤ 1
-      · rw [if_pos hx'] at h; simp at h
-      · rw [if_neg hx'] at h
+      · rw [ite_eq_left hx'] at h; simp at h
+      · rw [ite_eq_right hx'] at h
         obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 h
         obtain ⟨j, hj, h1, h2⟩ := ih hw0
         exact ⟨j + 1, by simpa using hj, by simpa using h1, by simp [h2]⟩
@@ -379,12 +377,12 @@ theorem crystalEps_crystalE {i : ℕ} {w w' : List ℕ} (h : crystalE i w = some
   | cons x w ih =>
     rw [crystalE_cons] at h
     by_cases hx : x = i + 1 ∧ crystalEps i w = 0
-    · rw [if_pos hx] at h
+    · rw [ite_eq_left hx] at h
       obtain ⟨rfl, h0⟩ := hx
       simp only [Option.some_inj] at h
       subst h
       simp [h0]
-    · rw [if_neg hx] at h
+    · rw [ite_eq_right hx] at h
       obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 h
       have ihw := ih hw0
       rcases eq_or_ne x i with rfl | hne
@@ -402,15 +400,15 @@ theorem crystalEps_crystalF {i : ℕ} {w w' : List ℕ} (h : crystalF i w = some
   | cons x w ih =>
     rw [crystalF_cons] at h
     by_cases hx : x = i ∧ crystalEps i w = 0
-    · rw [if_pos hx] at h
+    · rw [ite_eq_left hx] at h
       obtain ⟨rfl, h0⟩ := hx
       simp only [Option.some_inj] at h
       subst h
       rw [crystalEps_cons_succ, crystalEps_cons_self, h0]
-    · rw [if_neg hx] at h
+    · rw [ite_eq_right hx] at h
       by_cases hx' : x = i + 1 ∧ crystalEps i w ≤ 1
-      · rw [if_pos hx'] at h; simp at h
-      · rw [if_neg hx'] at h
+      · rw [ite_eq_left hx'] at h; simp at h
+      · rw [ite_eq_right hx'] at h
         obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 h
         have ihw := ih hw0
         rcases eq_or_ne x i with rfl | hne
@@ -429,18 +427,19 @@ theorem crystalPhi_crystalE {i : ℕ} {w w' : List ℕ} (h : crystalE i w = some
   | cons x w ih =>
     rw [crystalE_cons] at h
     by_cases hx : x = i + 1 ∧ crystalEps i w = 0
-    · rw [if_pos hx] at h
+    · rw [ite_eq_left hx] at h
       obtain ⟨rfl, h0⟩ := hx
       simp only [Option.some_inj] at h
       subst h
-      rw [crystalPhi_cons_self, crystalPhi_cons_succ, if_pos h0]
-    · rw [if_neg hx] at h
+      rw [crystalPhi_cons_self, crystalPhi_cons_succ, ite_eq_left h0]
+    · rw [ite_eq_right hx] at h
       obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 h
       have ihw := ih hw0
       have heps : crystalEps i w0 = crystalEps i w + 1 := crystalEps_crystalE hw0
       rcases eq_or_ne x (i + 1) with rfl | hne'
       · have h0 : crystalEps i w ≠ 0 := fun hc => hx ⟨rfl, hc⟩
-        rw [crystalPhi_cons_succ, crystalPhi_cons_succ, if_neg (by omega), if_neg h0, ihw]
+        rw [crystalPhi_cons_succ, crystalPhi_cons_succ, ite_eq_right (by omega), ite_eq_right h0,
+          ihw]
       · rw [crystalPhi_cons_of_ne hne', crystalPhi_cons_of_ne hne', ihw]
 
 /-! ### The two operators are inverse to each other -/
@@ -452,25 +451,25 @@ theorem crystalF_crystalE {i : ℕ} {w w' : List ℕ} (h : crystalE i w = some w
   | cons x w ih =>
     rw [crystalE_cons] at h
     by_cases hx : x = i + 1 ∧ crystalEps i w = 0
-    · rw [if_pos hx] at h
+    · rw [ite_eq_left hx] at h
       obtain ⟨rfl, h0⟩ := hx
       simp only [Option.some_inj] at h
       subst h
-      rw [crystalF_cons, if_pos ⟨rfl, h0⟩]
-    · rw [if_neg hx] at h
+      rw [crystalF_cons, ite_eq_left ⟨rfl, h0⟩]
+    · rw [ite_eq_right hx] at h
       obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 h
       have heps : crystalEps i w0 = crystalEps i w + 1 := crystalEps_crystalE hw0
       rcases eq_or_ne x i with rfl | hne
-      · rw [crystalF_cons, if_neg (by rintro ⟨-, h⟩; omega), if_neg (by rintro ⟨h, -⟩; omega),
-          ih hw0]
+      · rw [crystalF_cons, ite_eq_right (by rintro ⟨-, h⟩; omega),
+          ite_eq_right (by rintro ⟨h, -⟩; omega), ih hw0]
         rfl
       · rcases eq_or_ne x (i + 1) with rfl | hne'
         · have h0 : crystalEps i w ≠ 0 := fun hc => hx ⟨rfl, hc⟩
-          rw [crystalF_cons, if_neg (by rintro ⟨h, -⟩; omega), if_neg (by rintro ⟨-, h⟩; omega),
-            ih hw0]
+          rw [crystalF_cons, ite_eq_right (by rintro ⟨h, -⟩; omega),
+            ite_eq_right (by rintro ⟨-, h⟩; omega), ih hw0]
           rfl
-        · rw [crystalF_cons, if_neg (by rintro ⟨h, -⟩; exact hne h),
-            if_neg (by rintro ⟨h, -⟩; exact hne' h), ih hw0]
+        · rw [crystalF_cons, ite_eq_right (by rintro ⟨h, -⟩; exact hne h),
+            ite_eq_right (by rintro ⟨h, -⟩; exact hne' h), ih hw0]
           rfl
 
 theorem crystalE_crystalF {i : ℕ} {w w' : List ℕ} (h : crystalF i w = some w') :
@@ -480,22 +479,22 @@ theorem crystalE_crystalF {i : ℕ} {w w' : List ℕ} (h : crystalF i w = some w
   | cons x w ih =>
     rw [crystalF_cons] at h
     by_cases hx : x = i ∧ crystalEps i w = 0
-    · rw [if_pos hx] at h
+    · rw [ite_eq_left hx] at h
       obtain ⟨rfl, h0⟩ := hx
       simp only [Option.some_inj] at h
       subst h
-      rw [crystalE_cons, if_pos ⟨rfl, h0⟩]
-    · rw [if_neg hx] at h
+      rw [crystalE_cons, ite_eq_left ⟨rfl, h0⟩]
+    · rw [ite_eq_right hx] at h
       by_cases hx' : x = i + 1 ∧ crystalEps i w ≤ 1
-      · rw [if_pos hx'] at h; simp at h
-      · rw [if_neg hx'] at h
+      · rw [ite_eq_left hx'] at h; simp at h
+      · rw [ite_eq_right hx'] at h
         obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 h
         have heps : crystalEps i w0 + 1 = crystalEps i w := crystalEps_crystalF hw0
         rcases eq_or_ne x (i + 1) with rfl | hne'
         · have h0 : ¬ crystalEps i w ≤ 1 := fun hc => hx' ⟨rfl, hc⟩
-          rw [crystalE_cons, if_neg (by rintro ⟨-, h⟩; omega), ih hw0]
+          rw [crystalE_cons, ite_eq_right (by rintro ⟨-, h⟩; omega), ih hw0]
           rfl
-        · rw [crystalE_cons, if_neg (by rintro ⟨h, -⟩; exact hne' h), ih hw0]
+        · rw [crystalE_cons, ite_eq_right (by rintro ⟨h, -⟩; exact hne' h), ih hw0]
           rfl
 
 theorem crystalE_injective (i : ℕ) {u v w : List ℕ} (hu : crystalE i u = some w)
@@ -538,7 +537,7 @@ theorem crystalPhi_eq_zero_iff (i : ℕ) (w : List ℕ) :
           simp only [List.drop_zero] at h1
           rw [List.count_cons_self, List.count_cons_of_ne (by omega)] at h1
           omega
-        · rw [if_neg h0]; exact hw
+        · rw [ite_eq_right h0]; exact hw
       · rwa [crystalPhi_cons_of_ne hne']
 
 end List
