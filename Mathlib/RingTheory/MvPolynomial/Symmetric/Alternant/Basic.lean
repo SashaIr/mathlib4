@@ -35,7 +35,6 @@ variable {m : ℕ} {R : Type*} [CommRing R]
 /-! ### The monomial expansion of `h_r` -/
 
 lemma sum_count_univ (s : Multiset (Fin m)) : ∑ x, Multiset.count x s = Multiset.card s := by
-  classical
   rw [← Multiset.toFinset_sum_count_eq s]
   exact (Finset.sum_subset (Finset.subset_univ _) (by
     intro x _ hx
@@ -60,9 +59,7 @@ theorem hsymm_eq_sum_monomial (m r : ℕ) (R : Type*) [CommRing R] :
       · rfl
       · simp⟩) ?_ ?_ ?_ ?_ ?_
   · intro s _
-    rw [Finset.mem_finsuppAntidiag]
-    refine ⟨?_, by simp⟩
-    simp
+    simp [Finset.mem_finsuppAntidiag, Multiset.toFinsupp]
   · intro d _
     exact Finset.mem_univ _
   · intro s _
