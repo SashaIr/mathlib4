@@ -90,9 +90,9 @@ lemma dominate_of_getElem {u v : List T} (hlen : u.length ≤ v.length)
     cases v with
     | nil => simp at hlen
     | cons b v =>
-      refine ⟨by simpa using h 0 (by simp), ih (by simpa using hlen) ?_⟩
+      refine ⟨by simpa using h 0, ih (by simpa using hlen) ?_⟩
       intro i hi
-      simpa using h (i + 1) (by simpa using hi)
+      exact gt_iff_lt.mp (h (i+1) (Nat.add_lt_of_lt_sub hi))
 
 lemma Dominate.trans {u v w : List T} (h1 : Dominate u v) (h2 : Dominate v w) : Dominate u w := by
   induction u generalizing v w with
@@ -220,7 +220,7 @@ lemma isPart_shape {t : List (List T)} (h : IsTableau t) : IsPart (shape t) := b
     obtain ⟨hne, _, hdom, htab⟩ := h
     refine ⟨?_, ih htab⟩
     cases t with
-    | nil => simpa using List.length_pos_iff.2 hne
+    | nil => simp [Nat.one_le_of_lt (List.length_pos_iff.2 hne)]
     | cons t1 t => simpa using hdom.length_le
 
 omit [LinearOrder T] in
