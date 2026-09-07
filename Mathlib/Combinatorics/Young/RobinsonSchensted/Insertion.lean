@@ -3,7 +3,16 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
+import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Basic
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Schensted's row insertion and the longest nondecreasing subsequence
@@ -14,7 +23,7 @@ A Lean 4 port of the first-row part of `theories/LRrule/Schensted.v` from
 Given a word `w` over a linearly ordered alphabet, Schensted's algorithm inserts the
 letters of `w` one after the other into a weakly increasing row: a letter `l` replaces
 the first entry of the row that is strictly larger than `l`, and is appended at the end
-of the row if there is no such entry.  Schensted's theorem states that the length of the
+of the row if there is no such entry. Schensted's theorem states that the length of the
 resulting row is the maximal length of a weakly increasing (nondecreasing) subsequence
 of `w`.
 
@@ -42,11 +51,10 @@ namespace List
 
 open List
 
-variable {T : Type*} [LinearOrder T]
+variable {T : Type*}
 
 /-! ### Auxiliary facts on nondecreasing lists -/
 
-omit [LinearOrder T] in
 /-- In a nondecreasing list, every entry is at most the last one. -/
 lemma le_getLast_of_pairwise_le [Preorder T] {s : List T} (hs : s.Pairwise (· ≤ ·)) {z : T}
     (hz : s.getLast? = some z) {a : T} (ha : a ∈ s) : a ≤ z := by
@@ -66,17 +74,19 @@ lemma le_getLast_of_pairwise_le [Preorder T] {s : List T} (hs : s.Pairwise (· �
       · exact hs.1 z (List.mem_of_getLast? hz)
       · exact ih hs.2 hz ha'
 
-omit [LinearOrder T] in
 /-- Monotonicity of a nondecreasing list, in terms of `getElem?`. -/
 lemma pairwise_le_getElem?_mono [Preorder T] {s : List T} (hs : s.Pairwise (· ≤ ·)) {i j : ℕ}
     (hij : i ≤ j) {a b : T} (hi : s[i]? = some a) (hj : s[j]? = some b) : a ≤ b := by
-  rcases eq_or_lt_of_le hij with rfl | h
-  · rw [hi] at hj; exact le_of_eq (Option.some.inj hj)
+  rcases Nat.lt_or_eq_of_le hij with h | rfl
   · obtain ⟨hi', rfl⟩ := List.getElem?_eq_some_iff.1 hi
     obtain ⟨hj', rfl⟩ := List.getElem?_eq_some_iff.1 hj
     exact List.pairwise_iff_getElem.1 hs i j hi' hj' h
+  · rw [hi] at hj; exact le_of_eq (Option.some.inj hj)
+
 
 /-! ### Insertion in a row -/
+
+variable [LinearOrder T]
 
 /-- The position of the first entry of `r` which is strictly larger than `l`; it is
 `r.length` when there is no such entry (Coq `inspos`). -/
@@ -121,11 +131,11 @@ lemma insRow_length (r : List T) (l : T) :
       omega
 
 lemma length_le_insRow_length (r : List T) (l : T) : r.length ≤ (insRow r l).length := by
-  rw [insRow_length]; exact le_max_left _ _
+  rw [insRow_length]; exact Nat.le_max_left r.length (r.insPos l + 1)
 
 lemma insPos_lt_insRow_length (r : List T) (l : T) : insPos r l < (insRow r l).length := by
   rw [insRow_length]
-  exact lt_of_lt_of_le (Nat.lt_succ_self _) (le_max_right _ _)
+  exact Nat.lt_of_succ_le (Nat.le_max_right r.length (r.insPos l + 1))
 
 /-- Below the insertion position, the entries of `r` are at most `l`. -/
 lemma le_of_lt_insPos {r : List T} {l : T} {k : ℕ} (hk : k < insPos r l) {x : T}
@@ -181,12 +191,12 @@ lemma insRow_getElem?_of_ne {r : List T} {l : T} {k : ℕ} (hne : k ≠ insPos r
     rw [insRow_cons]
     split at hne
     · rename_i hx
-      rw [if_pos hx]
+      rw [ite_eq_left hx]
       cases k with
       | zero => exact absurd rfl hne
       | succ j => simp
     · rename_i hx
-      rw [if_neg hx]
+      rw [ite_eq_right hx]
       cases k with
       | zero => simp
       | succ j =>
@@ -240,16 +250,16 @@ lemma schensted_concat (w : List T) (l : T) :
   simp [schensted]
 
 lemma schensted_pairwise_le (w : List T) : (schensted w).Pairwise (· ≤ ·) := by
-  induction w using List.reverseRecOn with
+  induction w using reverseRecOn with
   | nil => simp
   | append_singleton w l ih => rw [schensted_concat]; exact insRow_pairwise_le ih l
 
 /-- The entries of a Schensted row are weakly increasing. -/
 lemma schensted_getElem_le (w : List T) {i j : ℕ} (hij : i ≤ j) (hj : j < (schensted w).length) :
-    (schensted w)[i]'(lt_of_le_of_lt hij hj) ≤ (schensted w)[j] := by
-  rcases eq_or_lt_of_le hij with rfl | h
-  · exact le_rfl
+    (schensted w)[i]'(Nat.lt_of_le_of_lt hij hj) ≤ (schensted w)[j] := by
+  rcases Nat.lt_or_eq_of_le hij with h | rfl
   · exact List.pairwise_iff_getElem.1 (schensted_pairwise_le w) i j _ hj h
+  · exact le_rfl
 
 /-! ### Sublists ending with the last letter -/
 
@@ -259,7 +269,7 @@ omit [LinearOrder T] in
 lemma sublist_concat_cases {s w : List T} {l : T} (h : s.Sublist (w ++ [l])) :
     s.Sublist w ∨ ∃ s', s = s' ++ [l] ∧ s'.Sublist w := by
   obtain ⟨l₁, l₂, rfl, h₁, h₂⟩ := List.sublist_append_iff.1 h
-  rcases List.sublist_singleton.1 h₂ with rfl | rfl
+  rcases sublist_singleton.1 h₂ with rfl | rfl
   · exact Or.inl (by simpa using h₁)
   · exact Or.inr ⟨l₁, rfl, h₁⟩
 
@@ -283,7 +293,7 @@ lemma schensted_exists_sublist (w : List T) {k : ℕ} {x : T} (hx : (schensted w
       · refine ⟨[l], List.sublist_append_right w [l], by simp, by rw [hp]; rfl, by simp⟩
       · obtain ⟨j, hj⟩ : ∃ j, insPos r l = j + 1 := ⟨insPos r l - 1, by omega⟩
         have hjp : j < insPos r l := by omega
-        have hjlen : j < r.length := lt_of_lt_of_le hjp (insPos_le_length r l)
+        have hjlen : j < r.length := Nat.lt_of_lt_of_le hjp (insPos_le_length r l)
         obtain ⟨z, hz⟩ : ∃ z, r[j]? = some z := ⟨r[j], List.getElem?_eq_getElem hjlen⟩
         have hzl : z ≤ l := le_of_lt_insPos hjp hz
         obtain ⟨s, hsub, hsort, hlen, hlast⟩ := ih hz
@@ -328,7 +338,7 @@ lemma schensted_min_last (w : List T) {k : ℕ} {s : List T} (hsub : s.Sublist w
         · refine ⟨y, ?_, le_rfl⟩
           rw [← hp]
           exact insRow_getElem?_insPos r y
-        · have h0 : 0 < r.length := lt_of_lt_of_le hp (insPos_le_length r y)
+        · have h0 : 0 < r.length := Nat.lt_of_lt_of_le hp (insPos_le_length r y)
           obtain ⟨z, hz⟩ : ∃ z, r[0]? = some z := ⟨r[0], List.getElem?_eq_getElem h0⟩
           refine ⟨z, ?_, le_of_lt_insPos hp hz⟩
           rw [insRow_getElem?_of_ne (by omega)]
@@ -347,21 +357,21 @@ lemma schensted_min_last (w : List T) {k : ℕ} {s : List T} (hsub : s.Sublist w
         -- the insertion position is at least `j + 1`
         have hp : j + 1 ≤ insPos r y := by
           by_contra hcon
-          push_neg at hcon
           have hple : insPos r y ≤ j := by omega
           have hjlen : j < r.length := (List.getElem?_eq_some_iff.1 hx').1
-          have hplen : insPos r y < r.length := lt_of_le_of_lt hple hjlen
+          have hplen : insPos r y < r.length := Nat.lt_of_le_of_lt hple hjlen
           obtain ⟨u, hu⟩ : ∃ u, r[insPos r y]? = some u :=
             ⟨r[insPos r y], List.getElem?_eq_getElem hplen⟩
           have h1 : y < u := lt_of_getElem?_insPos hu
           have h2 : u ≤ x' := pairwise_le_getElem?_mono (schensted_pairwise_le w) hple hu hx'
           exact absurd (lt_of_lt_of_le h1 (le_trans h2 hx'l)) (lt_irrefl y)
-        rcases eq_or_lt_of_le hp with heq | hlt
-        · exact ⟨y, by rw [heq]; exact insRow_getElem?_insPos r y, le_rfl⟩
-        · have hjlen : j + 1 < r.length := lt_of_lt_of_le hlt (insPos_le_length r y)
+        rcases Nat.lt_or_eq_of_le hp with hlt | heq
+        · have hjlen : j + 1 < r.length := Nat.lt_of_lt_of_le hlt (insPos_le_length r y)
           obtain ⟨u, hu⟩ : ∃ u, r[j + 1]? = some u := ⟨r[j + 1], List.getElem?_eq_getElem hjlen⟩
           exact ⟨u, by rw [insRow_getElem?_of_ne (by omega)]; exact hu,
             le_of_lt_insPos hlt hu⟩
+        · exact ⟨y, by rw [heq]; exact insRow_getElem?_insPos r y, le_rfl⟩
+
 
 /-- Any nondecreasing subsequence of `w` is at most as long as the Schensted row of `w`. -/
 lemma sublist_length_le_schensted {s w : List T} (hsub : s.Sublist w)
@@ -376,7 +386,8 @@ lemma sublist_length_le_schensted {s w : List T} (hsub : s.Sublist w)
       | some y => exact ⟨y, rfl⟩
     obtain ⟨x, hx, -⟩ := schensted_min_last w hsub hs (k := t.length) (by simp) hy
     have := (List.getElem?_eq_some_iff.1 hx).1
-    simpa using this
+    simp only [length_cons, ge_iff_le] at this ⊢
+    exact Nat.succ_le_of_lt this
 
 /-- **Schensted's theorem** (Coq `Sch_max_size`): the length of the Schensted row of `w`
 is the maximal length of a nondecreasing subsequence of `w`. -/
