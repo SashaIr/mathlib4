@@ -180,7 +180,7 @@ theorem frobChar_indProd (k : ℕ) {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : P
     refine Finset.sum_congr rfl fun x _ => ?_
     simp only [ite_smul, zero_smul]
     rw [Finset.sum_ite_eq Finset.univ (tinj m n x)
-      (fun sigma => (f x.1 * g x.2) • pProd k ℚ (cycleTypeList sigma)), if_pos (Finset.mem_univ _)]
+      (fun sigma => (f x.1 * g x.2) • pProd k ℚ (cycleTypeList sigma)), ite_eq_left (Finset.mem_univ _)]
   have hterm : ∀ sigma : Perm (Fin (m + n)),
       indProd f g sigma • pProd k ℚ (cycleTypeList sigma)
         = ((Nat.factorial m : ℚ) * (Nat.factorial n : ℚ))⁻¹ •

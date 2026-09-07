@@ -99,13 +99,13 @@ lemma permRank_succ_left (s : Perm (Fin n)) (i j : ℕ) :
         have hk' : k = (⟨i, h⟩ : Fin n) := Fin.ext hk
         subst hk'
         exact hs
-    rw [permRank, permRank, hsplit, Finset.card_union_of_disjoint hdisj, hsingle, dif_pos h]
+    rw [permRank, permRank, hsplit, Finset.card_union_of_disjoint hdisj, hsingle, dite_eq_left h]
     by_cases hs : (s ⟨i, h⟩).val < j <;> simp [hs]
   · have hiff : ∀ k : Fin n, (k.val < i + 1 ∧ (s k).val < j) ↔ (k.val < i ∧ (s k).val < j) := by
       intro k
       have := k.isLt
       omega
-    simp only [permRank, dif_neg h, add_zero]
+    simp only [permRank, dite_eq_right h, add_zero]
     exact congrArg _ (Finset.filter_congr fun k _ => by simpa using hiff k)
 
 /-- The rank function of `s⁻¹` is that of `s` with the two arguments exchanged. -/
@@ -244,7 +244,7 @@ lemma permRank_injective : Function.Injective (permRank (n := n)) := by
     intro j
     have h1 := permRank_succ_left s k.val j
     have h2 := permRank_succ_left t k.val j
-    rw [dif_pos hk] at h1 h2
+    rw [dite_eq_left hk] at h1 h2
     rw [hst] at h1
     omega
   have hks : (⟨k.val, hk⟩ : Fin n) = k := Fin.ext rfl
@@ -254,10 +254,10 @@ lemma permRank_injective : Function.Injective (permRank (n := n)) := by
   simp only [lt_irrefl, if_false, Nat.lt_succ_self, if_true] at h1 h2
   have hval : (t k).val = (s k).val := by
     by_cases hlt : (t k).val < (s k).val
-    · rw [if_pos hlt] at h1; omega
+    · rw [ite_eq_left hlt] at h1; omega
     · push_neg at hlt
       by_cases hgt : (s k).val < (t k).val
-      · rw [if_neg (by omega)] at h2; omega
+      · rw [ite_eq_right (by omega)] at h2; omega
       · omega
   exact hval.symm
 

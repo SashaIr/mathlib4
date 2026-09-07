@@ -90,7 +90,7 @@ lemma pairE_eq {i : ℕ} {S T : List (List ℕ)} (hS : IsTableau S) (hT : IsTabl
       shape S' = shape S ∧ shape T' = shape T ∧ toWord S' ++ toWord T' = w := by
   rw [crystalE_append] at h
   by_cases hcond : crystalEps i (toWord T) < crystalPhi i (toWord S)
-  · rw [if_pos hcond] at h
+  · rw [ite_eq_left hcond] at h
     obtain ⟨u, hu, rfl⟩ := Option.map_eq_some_iff.1 h
     obtain ⟨S', hword, hS', hshape⟩ := exists_isTableau_crystalE hS hu
     refine ⟨S', T, ?_, hS', hT, hshape, rfl, by rw [hword]⟩
@@ -98,16 +98,16 @@ lemma pairE_eq {i : ℕ} {S T : List (List ℕ)} (hS : IsTableau S) (hT : IsTabl
     have h1 : (u ++ toWord T).take (toWord S).length = u := by rw [← hlen, List.take_left]
     have h2 : (u ++ toWord T).drop (toWord S).length = toWord T := by rw [← hlen, List.drop_left]
     rw [pairE]
-    simp only [crystalE_append, if_pos hcond, hu, Option.map_some, Option.getD_some, h1, h2]
+    simp only [crystalE_append, ite_eq_left hcond, hu, Option.map_some, Option.getD_some, h1, h2]
     rw [← hword, RS_toWord hS', RS_toWord hT]
-  · rw [if_neg hcond] at h
+  · rw [ite_eq_right hcond] at h
     obtain ⟨v, hv, rfl⟩ := Option.map_eq_some_iff.1 h
     obtain ⟨T', hword, hT', hshape⟩ := exists_isTableau_crystalE hT hv
     refine ⟨S, T', ?_, hS, hT', rfl, hshape, by rw [hword]⟩
     have h1 : (toWord S ++ v).take (toWord S).length = toWord S := List.take_left
     have h2 : (toWord S ++ v).drop (toWord S).length = v := List.drop_left
     rw [pairE]
-    simp only [crystalE_append, if_neg hcond, hv, Option.map_some, Option.getD_some, h1, h2]
+    simp only [crystalE_append, ite_eq_right hcond, hv, Option.map_some, Option.getD_some, h1, h2]
     rw [← hword, RS_toWord hS, RS_toWord hT']
 
 lemma pairF_eq {i : ℕ} {S T : List (List ℕ)} (hS : IsTableau S) (hT : IsTableau T) {w : List ℕ}
@@ -116,16 +116,16 @@ lemma pairF_eq {i : ℕ} {S T : List (List ℕ)} (hS : IsTableau S) (hT : IsTabl
       shape S' = shape S ∧ shape T' = shape T ∧ toWord S' ++ toWord T' = w := by
   rw [crystalF_append] at h
   by_cases hcond : crystalPhi i (toWord S) < crystalEps i (toWord T)
-  · rw [if_pos hcond] at h
+  · rw [ite_eq_left hcond] at h
     obtain ⟨v, hv, rfl⟩ := Option.map_eq_some_iff.1 h
     obtain ⟨T', hword, hT', hshape⟩ := exists_isTableau_crystalF hT hv
     refine ⟨S, T', ?_, hS, hT', rfl, hshape, by rw [hword]⟩
     have h1 : (toWord S ++ v).take (toWord S).length = toWord S := List.take_left
     have h2 : (toWord S ++ v).drop (toWord S).length = v := List.drop_left
     rw [pairF]
-    simp only [crystalF_append, if_pos hcond, hv, Option.map_some, Option.getD_some, h1, h2]
+    simp only [crystalF_append, ite_eq_left hcond, hv, Option.map_some, Option.getD_some, h1, h2]
     rw [← hword, RS_toWord hS, RS_toWord hT']
-  · rw [if_neg hcond] at h
+  · rw [ite_eq_right hcond] at h
     obtain ⟨u, hu, rfl⟩ := Option.map_eq_some_iff.1 h
     obtain ⟨S', hword, hS', hshape⟩ := exists_isTableau_crystalF hS hu
     refine ⟨S', T, ?_, hS', hT, hshape, rfl, by rw [hword]⟩
@@ -133,7 +133,7 @@ lemma pairF_eq {i : ℕ} {S T : List (List ℕ)} (hS : IsTableau S) (hT : IsTabl
     have h1 : (u ++ toWord T).take (toWord S).length = u := by rw [← hlen, List.take_left]
     have h2 : (u ++ toWord T).drop (toWord S).length = toWord T := by rw [← hlen, List.drop_left]
     rw [pairF]
-    simp only [crystalF_append, if_neg hcond, hu, Option.map_some, Option.getD_some, h1, h2]
+    simp only [crystalF_append, ite_eq_right hcond, hu, Option.map_some, Option.getD_some, h1, h2]
     rw [← hword, RS_toWord hS', RS_toWord hT]
 
 /-! ### The crystal operators on pairs of tableaux with a given plactic product -/

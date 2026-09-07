@@ -73,8 +73,8 @@ theorem schurPoly_conjPart_mul_esymm {mu : List ℕ} (hmu : IsPart mu) (r : ℕ)
   refine Finset.sum_congr rfl fun nu hnu => ?_
   have hnupart : IsPart nu := (mem_partFinset.1 hnu).1
   by_cases hstrip : HorizStrip nu mu
-  · rw [if_pos hstrip, if_pos ((vertStrip_conjPart_iff hnupart hmu).2 hstrip)]
-  · rw [if_neg hstrip, if_neg fun h => hstrip ((vertStrip_conjPart_iff hnupart hmu).1 h)]
+  · rw [ite_eq_left hstrip, ite_eq_left ((vertStrip_conjPart_iff hnupart hmu).2 hstrip)]
+  · rw [ite_eq_right hstrip, ite_eq_right fun h => hstrip ((vertStrip_conjPart_iff hnupart hmu).1 h)]
 
 /-! ### The products of elementary symmetric polynomials -/
 

@@ -249,7 +249,7 @@ lemma prod_one_add_gnwRow_mul (hlam : IsPart lam) (hal : IsRemCorner lam al) :
     exact_mod_cast hpos
   have hcast : (hookLength (decrNth lam al) i (lam.getD al 0 - 1) : ℚ) + 1
       = (hookLength lam i (lam.getD al 0 - 1) : ℚ) := by exact_mod_cast hdec
-  rw [gnwRow, if_neg (by omega : ¬ i = al), ← hcast, add_sub_cancel_right]
+  rw [gnwRow, ite_eq_right (by omega : ¬ i = al), ← hcast, add_sub_cancel_right]
   have hne : (hookLength (decrNth lam al) i (lam.getD al 0 - 1) : ℚ) ≠ 0 := by linarith
   field_simp
 
@@ -269,7 +269,7 @@ lemma prod_one_add_gnwCol_mul (hlam : IsPart lam) (hal : IsRemCorner lam al) :
   have hposQ : (1 : ℚ) ≤ (hookLength (decrNth lam al) al j : ℚ) := by exact_mod_cast hpos
   have hcast : (hookLength (decrNth lam al) al j : ℚ) + 1 = (hookLength lam al j : ℚ) := by
     exact_mod_cast hdec
-  rw [gnwCol, if_neg (by omega : ¬ j = lam.getD al 0 - 1), ← hcast, add_sub_cancel_right]
+  rw [gnwCol, ite_eq_right (by omega : ¬ j = lam.getD al 0 - 1), ← hcast, add_sub_cancel_right]
   have hne : (hookLength (decrNth lam al) al j : ℚ) ≠ 0 := by linarith
   field_simp
 
@@ -421,7 +421,7 @@ theorem sum_hookProd_div_hookProd_decrNth (hlam : IsPart lam) :
               hookWalkProb lam (r, lam.getD r 0 - 1) (i, j) else 0) := by
     intro r _
     by_cases hc : IsRemCorner lam r
-    · simp only [if_pos hc]
+    · simp only [ite_eq_left hc]
       exact (sum_hookWalkProb_cells hlam hc).symm
     · simp [hc]
   rw [Finset.sum_congr rfl hexp, Finset.sum_comm]
@@ -460,7 +460,7 @@ private lemma numStdTab_mul_hookProd_aux :
             (if IsRemCorner lam r then (hookProd lam : ℚ) / hookProd (decrNth lam r) else 0) := by
       intro r _
       by_cases hc : IsRemCorner lam r
-      · rw [if_pos hc, if_pos hc]
+      · rw [ite_eq_left hc, ite_eq_left hc]
         have hmu : IsPart (decrNth lam r) := isPart_decrNth hlam hc
         have hsum' : (decrNth lam r).sum = n := by rw [sum_decrNth hlam hc, hsum]; omega
         have hIH : (numStdTab (decrNth lam r) : ℚ) * hookProd (decrNth lam r)

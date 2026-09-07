@@ -60,8 +60,8 @@ lemma coeff_hsymm (m n : ℕ) (R : Type*) [CommRing R] (d : Fin m →₀ ℕ) :
     Finset.sum_ite_eq' (Finset.finsuppAntidiag (Finset.univ : Finset (Fin m)) n) d
       (fun _ => (1 : R))]
   by_cases h : ∑ i, d i = n
-  · rw [if_pos h, if_pos (Finset.mem_finsuppAntidiag.2 ⟨h, Finset.subset_univ _⟩)]
-  · rw [if_neg h, if_neg (fun hc => h (Finset.mem_finsuppAntidiag.1 hc).1)]
+  · rw [ite_eq_left h, ite_eq_left (Finset.mem_finsuppAntidiag.2 ⟨h, Finset.subset_univ _⟩)]
+  · rw [ite_eq_right h, ite_eq_right (fun hc => h (Finset.mem_finsuppAntidiag.1 hc).1)]
 
 /-- The coefficients of `p_r · h_{n-r}`: the monomials of degree `n` occur with multiplicity
 the number of variables whose exponent is at least `r`. -/
@@ -80,7 +80,7 @@ lemma coeff_psum_mul_hsymm (m n r : ℕ) (R : Type*) [CommRing R] (hr : r ≤ n)
     intro i
     rw [coeff_monomial_mul', one_mul]
     by_cases hi : r ≤ d i
-    · rw [if_pos (Finsupp.single_le_iff.2 hi), coeff_hsymm]
+    · rw [ite_eq_left (Finsupp.single_le_iff.2 hi), coeff_hsymm]
       have hsum : ∑ j, (d - Finsupp.single i r) j = (∑ j, d j) - r := by
         rw [← Finset.add_sum_erase _ (fun j => (d - Finsupp.single i r) j) (Finset.mem_univ i),
           ← Finset.add_sum_erase _ (fun j => d j) (Finset.mem_univ i)]
@@ -89,7 +89,7 @@ lemma coeff_psum_mul_hsymm (m n r : ℕ) (R : Type*) [CommRing R] (hr : r ≤ n)
           Finset.sum_congr rfl fun j hj => by
             have hne : j ≠ i := (Finset.mem_erase.1 hj).1
             have hz : (Finsupp.single i r : Fin m →₀ ℕ) j = 0 := by
-              rw [Finsupp.single_apply, if_neg fun h : i = j => hne h.symm]
+              rw [Finsupp.single_apply, ite_eq_right fun h : i = j => hne h.symm]
             simp [hz]
         have hpti : (d - Finsupp.single i r) i = d i - r := by simp
         rw [he, hpti]
@@ -98,19 +98,19 @@ lemma coeff_psum_mul_hsymm (m n r : ℕ) (R : Type*) [CommRing R] (hr : r ≤ n)
       have hri : r ≤ ∑ j, d j := le_trans hi (Finset.single_le_sum (f := fun j => d j)
         (fun j _ => Nat.zero_le _) (Finset.mem_univ i))
       by_cases hd : ∑ j, d j = n
-      · rw [if_pos (show ∑ j, d j - r = n - r by rw [hd]), if_pos ⟨hi, hd⟩]
-      · rw [if_neg (show ¬ (∑ j, d j - r = n - r) by omega), if_neg (fun hc => hd hc.2)]
-    · rw [if_neg (fun hc => hi (Finsupp.single_le_iff.1 hc)), if_neg (fun hc => hi hc.1)]
+      · rw [ite_eq_left (show ∑ j, d j - r = n - r by rw [hd]), ite_eq_left ⟨hi, hd⟩]
+      · rw [ite_eq_right (show ¬ (∑ j, d j - r = n - r) by omega), ite_eq_right (fun hc => hd hc.2)]
+    · rw [ite_eq_right (fun hc => hi (Finsupp.single_le_iff.1 hc)), ite_eq_right (fun hc => hi hc.1)]
   rw [Finset.sum_congr rfl fun i _ => hterm i]
   by_cases hd : ∑ j, d j = n
   · have hsimp : ∀ i : Fin m, (if r ≤ d i ∧ ∑ j, d j = n then (1 : R) else 0)
         = if r ≤ d i then (1 : R) else 0 := by
       intro i
       by_cases hi : r ≤ d i
-      · rw [if_pos ⟨hi, hd⟩, if_pos hi]
-      · rw [if_neg (fun hc => hi hc.1), if_neg hi]
-    rw [if_pos hd, Finset.sum_congr rfl fun i _ => hsimp i, Finset.sum_boole]
-  · rw [if_neg hd, Finset.sum_eq_zero fun i _ => if_neg fun hc => hd hc.2]
+      · rw [ite_eq_left ⟨hi, hd⟩, ite_eq_left hi]
+      · rw [ite_eq_right (fun hc => hi hc.1), ite_eq_right hi]
+    rw [ite_eq_left hd, Finset.sum_congr rfl fun i _ => hsimp i, Finset.sum_boole]
+  · rw [ite_eq_right hd, Finset.sum_eq_zero fun i _ => ite_eq_right fun hc => hd hc.2]
 
 /-- Counting, for each variable, the thresholds it exceeds. -/
 lemma sum_card_le_eq_sum (m n : ℕ) {d : Fin m →₀ ℕ} (hd : ∑ i, d i = n) :
@@ -145,9 +145,9 @@ theorem nsmul_hsymm_eq_sum_psum_mul_hsymm (m n : ℕ) (R : Type*) [CommRing R] :
   rw [coeff_smul, coeff_hsymm, coeff_sum,
     Finset.sum_congr rfl fun r hr => coeff_psum_mul_hsymm m n r R (Finset.mem_Icc.1 hr).2 d]
   by_cases hd : ∑ i, d i = n
-  · rw [if_pos hd, Finset.sum_congr rfl fun r _ => if_pos hd, nsmul_eq_mul, mul_one,
+  · rw [ite_eq_left hd, Finset.sum_congr rfl fun r _ => ite_eq_left hd, nsmul_eq_mul, mul_one,
       ← Nat.cast_sum, sum_card_le_eq_sum m n hd]
-  · rw [if_neg hd, Finset.sum_eq_zero fun r _ => if_neg hd, smul_zero]
+  · rw [ite_eq_right hd, Finset.sum_eq_zero fun r _ => ite_eq_right hd, smul_zero]
 
 end MvPolynomial
 
@@ -183,8 +183,8 @@ lemma count_dropPart (lam : List ℕ) (r i : ℕ) :
   rw [h]
   by_cases hi : i = r
   · subst hi
-    rw [if_pos rfl, Multiset.count_erase_self, Multiset.coe_count]
-  · rw [if_neg hi, Multiset.count_erase_of_ne hi, Multiset.coe_count]
+    rw [ite_eq_left rfl, Multiset.count_erase_self, Multiset.coe_count]
+  · rw [ite_eq_right hi, Multiset.count_erase_of_ne hi, Multiset.coe_count]
 
 lemma sum_dropPart {lam : List ℕ} {r : ℕ} (hr : r ∈ lam) : (dropPart lam r).sum + r = lam.sum := by
   have hmem : r ∈ (lam : Multiset ℕ) := by simpa using hr
@@ -220,13 +220,13 @@ lemma zcard_dropPart {lam : List ℕ} {r : ℕ} (hr : r ∈ lam) :
         i ^ (dropPart lam r).count i * Nat.factorial ((dropPart lam r).count i)
       = ∏ i ∈ lam.toFinset.erase r, i ^ lam.count i * Nat.factorial (lam.count i) :=
     Finset.prod_congr rfl fun i hi => by
-      rw [count_dropPart, if_neg (Finset.mem_erase.1 hi).1]
+      rw [count_dropPart, ite_eq_right (Finset.mem_erase.1 hi).1]
   have hc : lam.count r ≠ 0 := by
     rw [ne_eq, List.count_eq_zero, not_not]
     exact hr
   obtain ⟨k, hk⟩ : ∃ k, lam.count r = k + 1 := ⟨lam.count r - 1, by omega⟩
   rw [h1, h2, ← Finset.mul_prod_erase _ _ hrs, ← Finset.mul_prod_erase _ _ hrs, htail,
-    count_dropPart, if_pos rfl, hk]
+    count_dropPart, ite_eq_left rfl, hk]
   simp only [Nat.add_sub_cancel]
   rw [pow_succ, Nat.factorial_succ]
   ring

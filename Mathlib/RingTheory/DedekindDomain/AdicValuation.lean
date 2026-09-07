@@ -84,25 +84,25 @@ def intValuationDef (r : R) : ℤᵐ⁰ :=
   else
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
 
-theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
+theorem intValuationDef_ite_eq_left {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   ite_eq_left hr
 
 @[simp]
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
   ite_eq_left rfl
 
-theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
+theorem intValuationDef_ite_eq_right {r : R} (hr : r ≠ 0) :
     v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   ite_eq_right hr
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
-  v.intValuationDef_if_pos rfl
+  v.intValuationDef_ite_eq_left rfl
 
 /-- The `v`-adic valuation of `1 : R` equals 1. -/
 theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by
-  rw [v.intValuationDef_if_neg one_ne_zero, Ideal.span_singleton_one, ← Ideal.one_eq_top,
+  rw [v.intValuationDef_ite_eq_right one_ne_zero, Ideal.span_singleton_one, ← Ideal.one_eq_top,
     Associates.mk_one, Associates.factors_one, Associates.count_zero v.associates_irreducible,
     Int.ofNat_zero, neg_zero, exp_zero]
 
@@ -139,7 +139,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
       order
     · by_cases hxy : x + y = 0
       · rw [intValuationDef, ite_eq_left hxy]; exact zero_le
-      · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
+      · rw [v.intValuationDef_ite_eq_right hxy, v.intValuationDef_ite_eq_right hx, v.intValuationDef_ite_eq_right hy,
           le_max_iff]
         simp only [exp_le_exp, neg_le_neg_iff, Nat.cast_le, ← min_le_iff]
         set nmin :=
@@ -179,24 +179,24 @@ theorem intValuation_def {r : R} :
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   rfl
 
-theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
+theorem intValuation_ite_eq_right {r : R} (hr : r ≠ 0) :
     v.intValuation r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
-  intValuationDef_if_neg _ hr
+  intValuationDef_ite_eq_right _ hr
 
 theorem intValuation_eq_exp_neg_multiplicity {r : R} (hr : r ≠ 0) :
     v.intValuation r = exp (-multiplicity v.asIdeal (Ideal.span {r}) : ℤ) := by
   have hsr : Ideal.span {r} ≠ 0 := Submodule.span_singleton_eq_bot.mp.mt hr
   have hfm : FiniteMultiplicity v.asIdeal (Ideal.span {r}) :=
     FiniteMultiplicity.of_prime_left v.prime hsr
-  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.natCast_inj,
+  rw [v.intValuation_ite_eq_right hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.natCast_inj,
     ← FiniteMultiplicity.emultiplicity_eq_multiplicity hfm,
     UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors (irreducible v) hsr,
     normalize_eq, Ideal.count_associates_factors_eq hsr v.isPrime v.ne_bot]
 
 /-- Nonzero elements have nonzero adic valuation. -/
 theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuation x ≠ 0 := by
-  rw [v.intValuation_if_neg hx]
+  rw [v.intValuation_ite_eq_right hx]
   exact WithZero.coe_ne_zero
 
 /-- Nonzero divisors have nonzero valuation. -/
@@ -205,14 +205,14 @@ theorem intValuation_ne_zero' (x : nonZeroDivisors R) : v.intValuation x ≠ 0 :
 
 /-- Nonzero divisors have valuation greater than zero. -/
 theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := by
-  rw [v.intValuation_if_neg (nonZeroDivisors.coe_ne_zero x)]
+  rw [v.intValuation_ite_eq_right (nonZeroDivisors.coe_ne_zero x)]
   exact WithZero.zero_lt_coe _
 
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
   obtain rfl | hx := eq_or_ne x 0
   · simp
-  · rw [v.intValuation_if_neg hx, ← exp_zero, exp_le_exp, Right.neg_nonpos_iff]
+  · rw [v.intValuation_ite_eq_right hx, ← exp_zero, exp_le_exp, Right.neg_nonpos_iff]
     exact Int.natCast_nonneg _
 
 /-- The `v`-adic valuation of `r : R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
@@ -220,7 +220,7 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
     v.intValuation r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
   by_cases hr : r = 0
   · simp [hr]
-  · rw [v.intValuation_if_neg hr, ← exp_zero, exp_lt_exp,
+  · rw [v.intValuation_ite_eq_right hr, ← exp_zero, exp_lt_exp,
       neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
     have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
       rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
@@ -243,7 +243,7 @@ theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
     v.intValuation r ≤ exp (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
   by_cases hr : r = 0
   · simp_rw [hr, Valuation.map_zero, Ideal.dvd_span_singleton, zero_le, Submodule.zero_mem]
-  · rw [v.intValuation_if_neg hr, exp_le_exp, neg_le_neg_iff, Int.ofNat_le,
+  · rw [v.intValuation_ite_eq_right hr, exp_le_exp, neg_le_neg_iff, Int.ofNat_le,
       Ideal.dvd_span_singleton, ← Associates.le_singleton_iff,
       Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr) v.associates_irreducible]
 
@@ -280,7 +280,7 @@ theorem intValuation_exists_uniformizer :
     rw [h] at notMem
     exact notMem (Submodule.zero_mem (v.asIdeal ^ 2))
   use π
-  rw [intValuation_if_neg _ (Associates.mk_ne_zero'.mp hπ), exp_inj]
+  rw [intValuation_ite_eq_right _ (Associates.mk_ne_zero'.mp hπ), exp_inj]
   apply congr_arg
   rw [← Int.ofNat_one, Int.natCast_inj]
   rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem notMem
@@ -302,7 +302,7 @@ theorem intValuation_uniformizer (π : v.intValuation.Uniformizer) :
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = exp (-1 : ℤ) := by
-  rw [v.intValuation_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one]
+  rw [v.intValuation_ite_eq_right hr, ← hv, Associates.count_self, Int.ofNat_one]
   exact v.associates_irreducible
 
 @[simp]
@@ -435,7 +435,7 @@ theorem mem_integers_of_valuation_le_one (x : K)
   have hv' := hv
   rw [Associates.irreducible_mk, irreducible_iff_prime] at hv
   specialize h ⟨v, Ideal.isPrime_of_prime hv, hv.ne_zero⟩
-  simp_rw [valuation_of_mk', intValuation_if_neg _ hn0, intValuation_if_neg _ hd0, ← exp_sub,
+  simp_rw [valuation_of_mk', intValuation_ite_eq_right _ hn0, intValuation_ite_eq_right _ hd0, ← exp_sub,
     ← exp_zero, exp_le_exp, Associates.factors_mk _ (ine hn0),
     Associates.factors_mk _ (ine hd0), Associates.count_some hv'] at h
   simpa using h

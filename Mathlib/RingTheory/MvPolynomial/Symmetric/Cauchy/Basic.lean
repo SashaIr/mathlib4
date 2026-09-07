@@ -268,9 +268,9 @@ theorem cauchy_hProd_monomialSym (m k n : ℕ) (R : Type*) [CommRing R] :
       rw [hmon, C_mul_monomial, mul_one, coeff_monomial]
       by_cases h : a = (d : Fin k → ℕ)
       · subst h
-        rw [if_pos rfl, if_pos (Finsupp.equivFunOnFinite_symm_coe d)]
+        rw [ite_eq_left rfl, ite_eq_left (Finsupp.equivFunOnFinite_symm_coe d)]
         rw [← prod_hsymm_eq_hProd m k R d]
-      · rw [if_neg h, if_neg]
+      · rw [ite_eq_right h, ite_eq_right]
         intro hc
         exact h (by rw [← hc]; rfl)
     rw [Finset.sum_congr rfl hterm,
@@ -297,20 +297,20 @@ theorem cauchy_hProd_monomialSym (m k n : ℕ) (R : Type*) [CommRing R] :
           refine degShape_eq_iff.1 ?_
           rw [degShape_shapeContent mu.2.1 mu.2.2.2, h]
       by_cases h : mu.1 = degShape d
-      · rw [if_pos (hiff.2 h), if_pos h, mul_one, h]
-      · rw [if_neg (fun hc => h (hiff.1 hc)), if_neg h, mul_zero]
+      · rw [ite_eq_left (hiff.2 h), ite_eq_left h, mul_one, h]
+      · rw [ite_eq_right (fun hc => h (hiff.1 hc)), ite_eq_right h, mul_zero]
     rw [Finset.sum_congr rfl (fun mu _ => hterm mu)]
     by_cases hn : ∑ j, d j = n
     · have hmu0 : IsPart (degShape d) ∧ (degShape d).sum = n ∧ (degShape d).length ≤ k :=
         ⟨isPart_degShape d, by rw [sum_degShape]; exact hn, length_degShape_le d⟩
-      rw [if_pos hn, Finset.sum_eq_single (⟨degShape d, hmu0⟩ : PartIdx n k)]
-      · rw [if_pos rfl]
+      rw [ite_eq_left hn, Finset.sum_eq_single (⟨degShape d, hmu0⟩ : PartIdx n k)]
+      · rw [ite_eq_left rfl]
       · intro mu _ hne
-        exact if_neg fun hc => hne (Subtype.ext hc)
+        exact ite_eq_right fun hc => hne (Subtype.ext hc)
       · intro h
         exact absurd (Finset.mem_univ _) h
-    · rw [if_neg hn]
-      refine Finset.sum_eq_zero fun mu _ => if_neg fun hc => hn ?_
+    · rw [ite_eq_right hn]
+      refine Finset.sum_eq_zero fun mu _ => ite_eq_right fun hc => hn ?_
       rw [← sum_degShape d, ← hc, mu.2.2.1]
   rw [hL, hR]
 

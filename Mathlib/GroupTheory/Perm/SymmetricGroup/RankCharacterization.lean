@@ -90,13 +90,13 @@ theorem isPermRankFun_permRank (s : Perm (Fin n)) : IsPermRankFun n (permRank s)
   submodular i j := by
     rw [permRank_succ_left s i (j + 1), permRank_succ_left s i j]
     by_cases h : i < n
-    · rw [dif_pos h, dif_pos h]
+    · rw [dite_eq_left h, dite_eq_left h]
       by_cases hs : (s ⟨i, h⟩).val < j
-      · rw [if_pos hs, if_pos (by omega)]
+      · rw [ite_eq_left hs, ite_eq_left (by omega)]
         omega
-      · rw [if_neg hs]
+      · rw [ite_eq_right hs]
         omega
-    · rw [dif_neg h, dif_neg h]
+    · rw [dite_eq_right h, dite_eq_right h]
       omega
   stab_left i j hi := permRank_of_le_left s hi j
   stab_right i j hj := permRank_of_le_right s i hj
@@ -202,14 +202,14 @@ theorem exists_permRank_eq_of_isPermRankFun (hM : IsPermRankFun n M) :
     have hval : ∑ l ∈ range j, permRankDiff M i l
         = if (f ⟨i, hi⟩).val < j then 1 else 0 := by
       by_cases hlt : (f ⟨i, hi⟩).val < j
-      · rw [if_pos hlt]
+      · rw [ite_eq_left hlt]
         rw [Finset.sum_eq_single (f ⟨i, hi⟩).val]
         · exact hf1 ⟨i, hi⟩
         · intro l _ hl
           exact hf0 ⟨i, hi⟩ l hl
         · intro hmem
           exact absurd (Finset.mem_range.2 hlt) hmem
-      · rw [if_neg hlt]
+      · rw [ite_eq_right hlt]
         refine Finset.sum_eq_zero fun l hl => ?_
         exact hf0 ⟨i, hi⟩ l (by
           intro h
@@ -222,7 +222,7 @@ theorem exists_permRank_eq_of_isPermRankFun (hM : IsPermRankFun n M) :
     | succ i ih =>
       intro hi j
       have hi' : i < n := by omega
-      rw [hstep i hi' j, ih (by omega) j, permRank_succ_left, dif_pos hi', hsf ⟨i, hi'⟩]
+      rw [hstep i hi' j, ih (by omega) j, permRank_succ_left, dite_eq_left hi', hsf ⟨i, hi'⟩]
   funext i j
   by_cases hi : i ≤ n
   · exact hle i hi j

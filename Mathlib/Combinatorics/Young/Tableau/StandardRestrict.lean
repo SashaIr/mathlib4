@@ -36,7 +36,7 @@ lemma dropMax_of_forall_lt {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P)
       rw [ltFilter, List.filter_eq_self]
       intro x hx
       simpa using h x (by simp [hx])
-    rw [dropMax_cons, hr, if_neg hP.1, ih hP.2.2.2 fun x hx => h x (by simp [hx])]
+    rw [dropMax_cons, hr, ite_eq_right hP.1, ih hP.2.2.2 fun x hx => h x (by simp [hx])]
 
 /-- Restricting to the letters `< m + 1` rather than `< m` adds the letter `m` when the
 row contains it. -/
@@ -55,7 +55,7 @@ lemma length_ltFilter_succ (m : ℕ) {r : List ℕ} (hr : r.Nodup) :
       simp only [List.length_cons, ih hnd, hmem]
       omega
     · rw [ltFilter_cons_of_lt _ (by omega : a < a + 1), ltFilter_cons_of_ge _ (by omega),
-        List.length_cons, ih hnd, if_pos (List.mem_cons_self ..), if_neg ha]
+        List.length_cons, ih hnd, ite_eq_left (List.mem_cons_self ..), ite_eq_right ha]
     · have hmem : (m ∈ a :: r) ↔ (m ∈ r) :=
         ⟨fun hc => (List.mem_cons.1 hc).resolve_left (by omega),
           fun hc => List.mem_cons.2 (Or.inr hc)⟩
@@ -95,12 +95,12 @@ lemma mem_getD_iff_of_shape_dropMax_eq {P Q : List (List ℕ)} (hP : IsStdTab P)
   have e2 := key (m + 1)
   refine ⟨fun hp => ?_, fun hq => ?_⟩
   · by_contra hq
-    rw [if_pos hp] at h1
-    rw [if_neg hq] at h2
+    rw [ite_eq_left hp] at h1
+    rw [ite_eq_right hq] at h2
     omega
   · by_contra hp
-    rw [if_neg hp] at h1
-    rw [if_pos hq] at h2
+    rw [ite_eq_right hp] at h1
+    rw [ite_eq_left hq] at h2
     omega
 
 /-- **Two standard tableaux whose restrictions to the letters `< k` have the same shape

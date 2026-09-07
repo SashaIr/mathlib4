@@ -245,7 +245,7 @@ theorem numStdTab_mul_prod_factorial (N : ℕ) :
         rw [Finset.sum_mul]
         refine Finset.sum_congr rfl fun r _ => ?_
         by_cases hc : IsRemCorner lam (r : ℕ)
-        · rw [if_pos hc]
+        · rw [ite_eq_left hc]
           have hnu : IsPart (decrNth lam (r : ℕ)) := isPart_decrNth hlam hc
           have hnulen : (decrNth lam (r : ℕ)).length ≤ N :=
             le_trans (included_decrNth lam (r : ℕ)).length_le hlen
@@ -270,7 +270,7 @@ theorem numStdTab_mul_prod_factorial (N : ℕ) :
                 rw [frobVec_decrNth hlam hc, hT]
                 simp only [hx]
                 ring
-        · rw [if_neg hc, hT]
+        · rw [ite_eq_right hc, hT]
           simp only [zero_mul, hx]
           rw [frobVec_term_eq_zero_of_not_remCorner hlam hlen hc, mul_zero]
       have hrevsum : ∑ i : Fin N, T i.rev = ∑ i : Fin N, T i :=

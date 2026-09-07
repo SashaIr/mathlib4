@@ -74,11 +74,11 @@ lemma coeff_rename_castSucc_mul_pow (P : MvPolynomial (Fin m) R) (j : ℕ)
     rw [rename_monomial, X_pow_eq_monomial, monomial_mul, mul_one, coeff_monomial,
       coeff_monomial]
     by_cases hlast : d (Fin.last m) = j
-    · rw [if_pos hlast]
+    · rw [ite_eq_left hlast]
       by_cases hu : u = restrictLast d
-      · rw [if_pos hu, if_pos (eq_mapDomain_add_single_iff.2 ⟨hlast, hu.symm⟩).symm]
-      · rw [if_neg hu, if_neg fun h => hu (eq_mapDomain_add_single_iff.1 h.symm).2.symm]
-    · rw [if_neg hlast, if_neg fun h => hlast (eq_mapDomain_add_single_iff.1 h.symm).1]
+      · rw [ite_eq_left hu, ite_eq_left (eq_mapDomain_add_single_iff.2 ⟨hlast, hu.symm⟩).symm]
+      · rw [ite_eq_right hu, ite_eq_right fun h => hu (eq_mapDomain_add_single_iff.1 h.symm).2.symm]
+    · rw [ite_eq_right hlast, ite_eq_right fun h => hlast (eq_mapDomain_add_single_iff.1 h.symm).1]
   | add P Q hP hQ =>
     rw [map_add, add_mul, coeff_add, hP, hQ, coeff_add]
     split_ifs
@@ -89,12 +89,12 @@ lemma coeff_rename_castSucc_mul_pow (P : MvPolynomial (Fin m) R) (j : ℕ)
 
 lemma finContent_castSucc (d : Fin (m + 1) →₀ ℕ) (i : ℕ) (hi : i < m) :
     finContent (m + 1) d i = finContent m (restrictLast d) i := by
-  rw [finContent, finContent, dif_pos (by omega), dif_pos hi]
+  rw [finContent, finContent, dite_eq_left (by omega), dite_eq_left hi]
   rfl
 
 lemma finContent_last (d : Fin (m + 1) →₀ ℕ) :
     finContent (m + 1) d m = d (Fin.last m) := by
-  rw [finContent, dif_pos (Nat.lt_succ_self m)]
+  rw [finContent, dite_eq_left (Nat.lt_succ_self m)]
   rfl
 
 /-! ### The branching rule -/
@@ -127,30 +127,30 @@ theorem schurPoly_branching (lam : List ℕ) (hlam : IsPart lam) :
     intro k _
     rw [coeff_sum]
     by_cases hlast : d (Fin.last m) = lam.sum - k
-    · rw [if_pos hlast, Nat.cast_sum]
+    · rw [ite_eq_left hlast, Nat.cast_sum]
       refine Finset.sum_congr rfl fun nu _ => ?_
       by_cases hstrip : HorizStrip lam nu.1
-      · rw [if_pos hstrip, if_pos hstrip, coeff_rename_castSucc_mul_pow, if_pos hlast,
+      · rw [ite_eq_left hstrip, ite_eq_left hstrip, coeff_rename_castSucc_mul_pow, ite_eq_left hlast,
           coeff_schurPoly_eq_kostkaNum]
         exact congrArg _ (kostkaNum_congr m nu.1
           fun i hi => (finContent_castSucc d i hi).symm)
-      · rw [if_neg hstrip, if_neg hstrip, coeff_zero, Nat.cast_zero]
-    · rw [if_neg hlast, Finset.sum_eq_zero fun nu _ => ?_]
+      · rw [ite_eq_right hstrip, ite_eq_right hstrip, coeff_zero, Nat.cast_zero]
+    · rw [ite_eq_right hlast, Finset.sum_eq_zero fun nu _ => ?_]
       by_cases hstrip : HorizStrip lam nu.1
-      · rw [if_pos hstrip, coeff_rename_castSucc_mul_pow, if_neg hlast]
-      · rw [if_neg hstrip, coeff_zero]
+      · rw [ite_eq_left hstrip, coeff_rename_castSucc_mul_pow, ite_eq_right hlast]
+      · rw [ite_eq_right hstrip, coeff_zero]
   rw [Finset.sum_congr rfl hterm]
   by_cases hle : d (Fin.last m) ≤ lam.sum
   · have hk : lam.sum - d (Fin.last m) ∈ Finset.range (lam.sum + 1) :=
       Finset.mem_range.2 (by omega)
     rw [Finset.sum_eq_single (lam.sum - d (Fin.last m)) ?_ (fun h => absurd hk h)]
-    · rw [if_pos (by omega)]
+    · rw [ite_eq_left (by omega)]
       refine congrArg _ (kostkaNum_succ hlam ?_)
       rw [finContent_last]
       omega
     · intro k hk hne
       have hkk := Finset.mem_range.1 hk
-      exact if_neg (by omega)
+      exact ite_eq_right (by omega)
   · have hzero : kostkaNum (m + 1) lam (finContent (m + 1) d) = 0 := by
       refine kostkaNum_eq_zero_of_sum_ne _ _ _ fun hsum => hle ?_
       have hle' : finContent (m + 1) d m ≤ ∑ i ∈ Finset.range (m + 1), finContent (m + 1) d i :=
@@ -160,7 +160,7 @@ theorem schurPoly_branching (lam : List ℕ) (hlam : IsPart lam) :
       omega
     rw [hzero, Nat.cast_zero, Finset.sum_eq_zero]
     intro k hk
-    exact if_neg (by
+    exact ite_eq_right (by
       have := Finset.mem_range.1 hk
       omega)
 

@@ -152,8 +152,8 @@ private lemma isGreeneCol_transportCol (hw : IsStd w) {k : ℕ} {c : ℕ → Opt
     · exact absurd hx (by simp)
   · have hj2w : j2 < w.length := by simpa using hj2
     have hj1w : j1 < w.length := hj12.trans hj2w
-    rw [transportCol, if_pos hj1w] at h1
-    rw [transportCol, if_pos hj2w] at h2
+    rw [transportCol, ite_eq_left hj1w] at h1
+    rw [transportCol, ite_eq_left hj2w] at h2
     simp only [getElem_invStd]
     have hi1 : w.idxOf j1 < w.length := hw.idxOf_lt hj1w
     have hi2 : w.idxOf j2 < w.length := hw.idxOf_lt hj2w
@@ -170,14 +170,14 @@ private lemma greeneSize_transportCol (hw : IsStd w) (c : ℕ → Option ℕ) :
   · intro j hj
     simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range, length_invStd] at hj ⊢
     obtain ⟨hjr, hjs⟩ := hj
-    rw [transportCol, if_pos hjr] at hjs
+    rw [transportCol, ite_eq_left hjr] at hjs
     exact ⟨hw.idxOf_lt hjr, hjs⟩
   · intro i hi
     simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range, length_invStd] at hi ⊢
     obtain ⟨hir, his⟩ := hi
     have hlt : w.getD i 0 < w.length := hw.getD_lt' hir
     refine ⟨hlt, ?_⟩
-    rw [transportCol, if_pos hlt, hw.idxOf_getD hir]
+    rw [transportCol, ite_eq_left hlt, hw.idxOf_getD hir]
     exact his
   · intro j hj
     simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range, length_invStd] at hj

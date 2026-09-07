@@ -149,23 +149,23 @@ lemma IsRow.crystalE_eq {i : ℕ} {r : List ℕ} (h : IsRow r) :
     have hx : ∀ y ∈ r, x ≤ y := fun y hy => h.le_of_mem_cons hy
     rcases lt_trichotomy x (i + 1) with hlt | rfl | hgt
     · have h1 : ¬ (x = i + 1 ∧ crystalEps i r = 0) := by rintro ⟨h1, -⟩; omega
-      rw [crystalE_cons, if_neg h1, ih hr, countLt_cons, if_pos hlt,
+      rw [crystalE_cons, ite_eq_right h1, ih hr, countLt_cons, ite_eq_left hlt,
         List.count_cons_of_ne (by omega)]
       by_cases h0 : r.count (i + 1) = 0
-      · rw [if_pos h0, if_pos h0]; rfl
-      · rw [if_neg h0, if_neg h0]; rfl
+      · rw [ite_eq_left h0, ite_eq_left h0]; rfl
+      · rw [ite_eq_right h0, ite_eq_right h0]; rfl
     · have hc : r.count i = 0 := List.count_eq_zero.2 fun hmem => absurd (hx i hmem) (by omega)
       have heps : crystalEps i r = 0 := by rw [hr.crystalEps_eq_count, hc]
       have hcz : countLt (i + 1) r = 0 := countLt_eq_zero_of_forall (fun y hy => hx y hy)
       have hne : ¬ (((i + 1) :: r).count (i + 1) = 0) := by
         rw [List.count_cons_self]; omega
-      rw [crystalE_cons, if_pos ⟨rfl, heps⟩, if_neg hne, countLt_cons,
-        if_neg (show ¬ (i + 1 < i + 1) by omega), hcz]
+      rw [crystalE_cons, ite_eq_left ⟨rfl, heps⟩, ite_eq_right hne, countLt_cons,
+        ite_eq_right (show ¬ (i + 1 < i + 1) by omega), hcz]
       rfl
     · have hc : r.count (i + 1) = 0 :=
         List.count_eq_zero.2 fun hmem => absurd (hx _ hmem) (by omega)
       have h1 : ¬ (x = i + 1 ∧ crystalEps i r = 0) := by rintro ⟨h1, -⟩; omega
-      rw [crystalE_cons, if_neg h1, ih hr, if_pos hc, List.count_cons_of_ne (by omega), if_pos hc]
+      rw [crystalE_cons, ite_eq_right h1, ih hr, ite_eq_left hc, List.count_cons_of_ne (by omega), ite_eq_left hc]
       rfl
 
 /-- On a row, the lowering operator changes the last letter `i` into an `i + 1`. -/
@@ -180,13 +180,13 @@ lemma IsRow.crystalF_eq {i : ℕ} {r : List ℕ} (h : IsRow r) :
     rcases lt_trichotomy x i with hlt | rfl | hgt
     · have h1 : ¬ (x = i ∧ crystalEps i r = 0) := by rintro ⟨h1, -⟩; omega
       have h2 : ¬ (x = i + 1 ∧ crystalEps i r ≤ 1) := by rintro ⟨h1, -⟩; omega
-      rw [crystalF_cons, if_neg h1, if_neg h2, ih hr, List.count_cons_of_ne (by omega),
-        countLt_cons, if_pos (show x < i + 1 by omega)]
+      rw [crystalF_cons, ite_eq_right h1, ite_eq_right h2, ih hr, List.count_cons_of_ne (by omega),
+        countLt_cons, ite_eq_left (show x < i + 1 by omega)]
       by_cases h0 : r.count i = 0
-      · rw [if_pos h0, if_pos h0]; rfl
+      · rw [ite_eq_left h0, ite_eq_left h0]; rfl
       · have hpos : 0 < countLt (i + 1) r :=
           countLt_pos_of_mem (List.count_pos_iff.1 (Nat.pos_of_ne_zero h0)) (by omega)
-        rw [if_neg h0, if_neg h0]
+        rw [ite_eq_right h0, ite_eq_right h0]
         simp only [Option.map_some, Option.some_inj]
         rw [show countLt (i + 1) r + 1 - 1 = (countLt (i + 1) r - 1) + 1 by omega,
           List.set_cons_succ]
@@ -199,8 +199,8 @@ lemma IsRow.crystalF_eq {i : ℕ} {r : List ℕ} (h : IsRow r) :
             exact absurd (List.count_pos_iff.2 hy) (by omega)
           · have := hx y hy; omega
         have hne : ¬ ((x :: r).count x = 0) := by rw [List.count_cons_self]; omega
-        rw [crystalF_cons, if_pos ⟨rfl, heps⟩, if_neg hne, countLt_cons,
-          if_pos (show x < x + 1 by omega), hcz]
+        rw [crystalF_cons, ite_eq_left ⟨rfl, heps⟩, ite_eq_right hne, countLt_cons,
+          ite_eq_left (show x < x + 1 by omega), hcz]
         rfl
       · have heps : crystalEps x r ≠ 0 := by rw [hr.crystalEps_eq_count]; exact hc
         have hpos : 0 < countLt (x + 1) r :=
@@ -208,8 +208,8 @@ lemma IsRow.crystalF_eq {i : ℕ} {r : List ℕ} (h : IsRow r) :
         have h1 : ¬ (x = x ∧ crystalEps x r = 0) := by rintro ⟨-, h1⟩; exact heps h1
         have h2 : ¬ (x = x + 1 ∧ crystalEps x r ≤ 1) := by rintro ⟨h1, -⟩; omega
         have hne : ¬ ((x :: r).count x = 0) := by rw [List.count_cons_self]; omega
-        rw [crystalF_cons, if_neg h1, if_neg h2, ih hr, if_neg hc, if_neg hne, countLt_cons,
-          if_pos (show x < x + 1 by omega)]
+        rw [crystalF_cons, ite_eq_right h1, ite_eq_right h2, ih hr, ite_eq_right hc, ite_eq_right hne, countLt_cons,
+          ite_eq_left (show x < x + 1 by omega)]
         simp only [Option.map_some, Option.some_inj]
         rw [show countLt (x + 1) r + 1 - 1 = (countLt (x + 1) r - 1) + 1 by omega,
           List.set_cons_succ]
@@ -218,9 +218,9 @@ lemma IsRow.crystalF_eq {i : ℕ} {r : List ℕ} (h : IsRow r) :
       have h1 : ¬ (x = i ∧ crystalEps i r = 0) := by rintro ⟨h1, -⟩; omega
       rcases eq_or_ne x (i + 1) with rfl | hne
       · have heps : crystalEps i r = 0 := by rw [hr.crystalEps_eq_count, hc]
-        rw [crystalF_cons, if_neg h1, if_pos ⟨rfl, by omega⟩, if_pos hcc]
+        rw [crystalF_cons, ite_eq_right h1, ite_eq_left ⟨rfl, by omega⟩, ite_eq_left hcc]
       · have h2 : ¬ (x = i + 1 ∧ crystalEps i r ≤ 1) := by rintro ⟨h1, -⟩; exact hne h1
-        rw [crystalF_cons, if_neg h1, if_neg h2, ih hr, if_pos hc, if_pos hcc]
+        rw [crystalF_cons, ite_eq_right h1, ite_eq_right h2, ih hr, ite_eq_left hc, ite_eq_left hcc]
         rfl
 
 /-! ### Rows and domination under a single change of letter -/
@@ -459,7 +459,7 @@ theorem exists_isSkewTableau_crystalE {i : ℕ} :
     obtain ⟨hne, hrow0, hdom, htail⟩ := ht
     rw [toWord_cons, crystalE_append] at hw
     by_cases hcond : crystalEps i r0 < crystalPhi i (toWord t)
-    · rw [if_pos hcond] at hw
+    · rw [ite_eq_left hcond] at hw
       obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 hw
       obtain ⟨t1, ht1w, ht1skew, ht1shape, hdisj⟩ := ih htail hw0
       refine ⟨r0 :: t1, by rw [toWord_cons, ht1w], ⟨hne, hrow0, ?_, ht1skew⟩,
@@ -473,8 +473,8 @@ theorem exists_isSkewTableau_crystalE {i : ℕ} :
           simp only [List.headD_cons] at hE hphi hdom
           rw [IsRow.crystalE_eq hrow1] at hE
           by_cases hc : r1.count (i + 1) = 0
-          · rw [if_pos hc] at hE; simp at hE
-          · rw [if_neg hc] at hE
+          · rw [ite_eq_left hc] at hE; simp at hE
+          · rw [ite_eq_right hc] at hE
             have hset : t1.headD [] = r1.set (countLt (i + 1) r1) i := by
               simp only [Option.some_inj] at hE; rw [← hE]
             rw [SkewDominate, hset]
@@ -482,12 +482,12 @@ theorem exists_isSkewTableau_crystalE {i : ℕ} :
             have h1 : crystalEps i r0 = r0.count i := hrow0.crystalEps_eq_count
             have h2 : crystalPhi i r1 = r1.count (i + 1) := hrow1.crystalPhi_eq_count
             omega
-    · rw [if_neg hcond] at hw
+    · rw [ite_eq_right hcond] at hw
       obtain ⟨r0', hr0', rfl⟩ := Option.map_eq_some_iff.1 hw
       rw [IsRow.crystalE_eq hrow0] at hr0'
       by_cases hc : r0.count (i + 1) = 0
-      · rw [if_pos hc] at hr0'; simp at hr0'
-      · rw [if_neg hc] at hr0'
+      · rw [ite_eq_left hc] at hr0'; simp at hr0'
+      · rw [ite_eq_right hc] at hr0'
         have hset : r0' = r0.set (countLt (i + 1) r0) i := by
           simp only [Option.some_inj] at hr0'; rw [← hr0']
         subst hset
@@ -497,7 +497,7 @@ theorem exists_isSkewTableau_crystalE {i : ℕ} :
           rw [IsRow.getElem_countLt hrow0 hc]
           omega
         · simp only [List.headD_cons]
-          rw [IsRow.crystalE_eq hrow0, if_neg hc]
+          rw [IsRow.crystalE_eq hrow0, ite_eq_right hc]
         · simp only [List.headD_cons]
           rw [toWord_cons, crystalPhi_append]
           omega
@@ -517,12 +517,12 @@ theorem exists_isSkewTableau_crystalF {i : ℕ} :
     obtain ⟨hne, hrow0, hdom, htail⟩ := ht
     rw [toWord_cons, crystalF_append] at hw
     by_cases hcond : crystalPhi i (toWord t) < crystalEps i r0
-    · rw [if_pos hcond] at hw
+    · rw [ite_eq_left hcond] at hw
       obtain ⟨r0', hr0', rfl⟩ := Option.map_eq_some_iff.1 hw
       rw [IsRow.crystalF_eq hrow0] at hr0'
       by_cases hc : r0.count i = 0
-      · rw [if_pos hc] at hr0'; simp at hr0'
-      · rw [if_neg hc] at hr0'
+      · rw [ite_eq_left hc] at hr0'; simp at hr0'
+      · rw [ite_eq_right hc] at hr0'
         have hset : r0' = r0.set (countLt (i + 1) r0 - 1) (i + 1) := by
           simp only [Option.some_inj] at hr0'; rw [← hr0']
         subst hset
@@ -541,8 +541,8 @@ theorem exists_isSkewTableau_crystalF {i : ℕ} :
             rw [h3, crystalPhi_append] at hcond
             omega
         · simp only [List.headD_cons]
-          rw [IsRow.crystalF_eq hrow0, if_neg hc]
-    · rw [if_neg hcond] at hw
+          rw [IsRow.crystalF_eq hrow0, ite_eq_right hc]
+    · rw [ite_eq_right hcond] at hw
       obtain ⟨w0, hw0, rfl⟩ := Option.map_eq_some_iff.1 hw
       obtain ⟨t1, ht1w, ht1skew, ht1shape, hdisj⟩ := ih htail hw0
       refine ⟨r0 :: t1, by rw [toWord_cons, ht1w], ⟨hne, hrow0, ?_, ht1skew⟩,
@@ -556,8 +556,8 @@ theorem exists_isSkewTableau_crystalF {i : ℕ} :
           simp only [List.headD_cons] at hF hdom
           rw [IsRow.crystalF_eq hrow1] at hF
           by_cases hc : r1.count i = 0
-          · rw [if_pos hc] at hF; simp at hF
-          · rw [if_neg hc] at hF
+          · rw [ite_eq_left hc] at hF; simp at hF
+          · rw [ite_eq_right hc] at hF
             have hset : t1.headD [] = r1.set (countLt (i + 1) r1 - 1) (i + 1) := by
               simp only [Option.some_inj] at hF; rw [← hF]
             rw [SkewDominate, hset]

@@ -234,13 +234,13 @@ lemma coeff_monomialSym [CommSemiring R] (lam : List ℕ) (d : Fin m →₀ ℕ)
   rw [monomialSym, coeff_sum]
   rw [Finset.sum_congr rfl (fun d' _ => coeff_monomial d d' (1 : R))]
   by_cases hd : d ∈ degOrbit (shapeContent m lam)
-  · rw [if_pos hd, Finset.sum_ite_eq' (degOrbit (shapeContent m lam)) d (fun _ => (1 : R)),
-      if_pos hd]
-  · rw [if_neg hd, Finset.sum_eq_zero fun d' hd' => if_neg (by rintro rfl; exact hd hd')]
+  · rw [ite_eq_left hd, Finset.sum_ite_eq' (degOrbit (shapeContent m lam)) d (fun _ => (1 : R)),
+      ite_eq_left hd]
+  · rw [ite_eq_right hd, Finset.sum_eq_zero fun d' hd' => ite_eq_right (by rintro rfl; exact hd hd')]
 
 lemma coeff_monomialSym_shapeContent [CommSemiring R] (lam : List ℕ) :
     coeff (shapeContent m lam) (monomialSym m R lam) = 1 := by
-  rw [coeff_monomialSym, if_pos (self_mem_degOrbit _)]
+  rw [coeff_monomialSym, ite_eq_left (self_mem_degOrbit _)]
 
 /-- The monomial symmetric polynomials are symmetric. -/
 theorem monomialSym_isSymmetric [CommSemiring R] (lam : List ℕ) :
@@ -345,7 +345,7 @@ theorem linearIndependent_monomialSym (m : ℕ) (R : Type*) [CommRing R] :
   have hsingle : ∀ nu ∈ s, nu ≠ lam →
       coeff (shapeContent m lam.1) (g nu • monomialSym m R nu.1) = 0 := by
     intro nu _ hne
-    rw [coeff_smul, smul_eq_mul, coeff_monomialSym, if_neg, mul_zero]
+    rw [coeff_smul, smul_eq_mul, coeff_monomialSym, ite_eq_right, mul_zero]
     intro hmem
     refine hne (Subtype.ext ?_)
     have := degShape_eq_iff.2 (mem_degOrbit_iff.1 hmem)

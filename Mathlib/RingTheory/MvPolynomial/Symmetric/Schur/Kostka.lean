@@ -138,9 +138,9 @@ lemma isTableau_mapTab_val {P : List (List (Fin m))} (hP : IsTableau P) :
 lemma count_map_val (l : List (Fin m)) (i : ℕ) :
     (l.map Fin.val).count i = if h : i < m then l.count ⟨i, h⟩ else 0 := by
   by_cases h : i < m
-  · rw [dif_pos h]
+  · rw [dite_eq_left h]
     exact List.count_map_of_injective l Fin.val Fin.val_injective ⟨i, h⟩
-  · rw [dif_neg h]
+  · rw [dite_eq_right h]
     refine List.count_eq_zero_of_not_mem ?_
     intro hmem
     obtain ⟨a, -, ha⟩ := List.mem_map.1 hmem
@@ -158,9 +158,9 @@ lemma count_toWord_map_val {P : List (List (Fin m))} {d : Fin m →₀ ℕ}
     simpa [Finsupp.count_toMultiset] using h
   rw [count_map_val]
   by_cases h : i < m
-  · rw [dif_pos h, hcount, List.getD_eq_getElem _ _ (by simpa using h)]
+  · rw [dite_eq_left h, hcount, List.getD_eq_getElem _ _ (by simpa using h)]
     simp
-  · rw [dif_neg h, List.getD_eq_default _ _ (by simpa using h)]
+  · rw [dite_eq_right h, List.getD_eq_default _ _ (by simpa using h)]
 
 /-- The coefficient of `x ^ d` in the Schur polynomial of shape `sh` vanishes unless `sh`
 dominates the content `d`. -/
@@ -254,7 +254,7 @@ lemma shape_superTabFin (sh : List ℕ) (hlen : sh.length ≤ m) :
 lemma count_toWord_superTabFin (sh : List ℕ) (hlen : sh.length ≤ m) (j : Fin m) :
     (toWord (superTabFin m sh hlen)).count j = sh.getD j 0 := by
   have h := count_toWord_superTab sh (j : ℕ)
-  rw [← mapTab_val_superTabFin sh hlen, toWord_mapTab, count_map_val, dif_pos j.2] at h
+  rw [← mapTab_val_superTabFin sh hlen, toWord_mapTab, count_map_val, dite_eq_left j.2] at h
   simpa using h
 
 /-- The coefficient of the monomial of content `sh` in the Schur polynomial of shape `sh`

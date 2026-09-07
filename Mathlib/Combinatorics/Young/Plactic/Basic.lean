@@ -145,9 +145,9 @@ lemma headD_insRow_le (r : List T) (l d : T) : (insRow r l).headD d ≤ l := by
   | nil => simp
   | cons x r =>
     by_cases hx : l < x
-    · rw [insRow_cons, if_pos hx]
+    · rw [insRow_cons, ite_eq_left hx]
       simp
-    · rw [insRow_cons, if_neg hx]
+    · rw [insRow_cons, ite_eq_right hx]
       simpa using not_lt.1 hx
 
 lemma insRow_ne_nil (r : List T) (l : T) : insRow r l ≠ [] := by
@@ -171,13 +171,13 @@ lemma plactic_insRow {r : List T} (hr : IsRow r) {l b : T} (hb : bumped r l = so
       exact hp.1
     by_cases hlx : l < x
     · have hbx : b = x := by
-        rw [bumped_cons, if_pos hlx] at hb
+        rw [bumped_cons, ite_eq_left hlx] at hb
         exact (Option.some.inj hb).symm
-      rw [hbx, insRow_cons, if_pos hlx]
+      rw [hbx, insRow_cons, ite_eq_left hlx]
       simpa using plactic_cons_shift r x l hrow hlx hx
     · have hxl : x ≤ l := not_lt.1 hlx
-      rw [bumped_cons, if_neg hlx] at hb
-      rw [insRow_cons, if_neg hlx]
+      rw [bumped_cons, ite_eq_right hlx] at hb
+      rw [insRow_cons, ite_eq_right hlx]
       obtain ⟨u0, rest, hins⟩ : ∃ u0 rest, insRow r l = u0 :: rest := by
         cases hcase : insRow r l with
         | nil => exact absurd hcase (insRow_ne_nil r l)

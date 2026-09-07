@@ -101,10 +101,10 @@ lemma CrystalRel.append_left {i : ℕ} {u v : List ℕ} (h : CrystalRel i u v) (
   rw [crystalE_append] at hu' ⊢
   rw [heps] at hu'
   by_cases hc : crystalEps i v < crystalPhi i c
-  · rw [if_pos hc] at hu' ⊢
+  · rw [ite_eq_left hc] at hu' ⊢
     obtain ⟨c', hc', rfl⟩ := Option.map_eq_some_iff.1 hu'
     exact ⟨c' ++ v, by rw [hc']; rfl, hpl.append_left c'⟩
-  · rw [if_neg hc] at hu' ⊢
+  · rw [ite_eq_right hc] at hu' ⊢
     obtain ⟨u0, hu0, rfl⟩ := Option.map_eq_some_iff.1 hu'
     obtain ⟨v0, hv0, hequiv⟩ := he u0 hu0
     exact ⟨c ++ v0, by rw [hv0]; rfl, hequiv.append_left c⟩
@@ -117,11 +117,11 @@ lemma CrystalRel.append_right {i : ℕ} {u v : List ℕ} (h : CrystalRel i u v) 
   rw [crystalE_append] at hu' ⊢
   rw [hphi] at hu'
   by_cases hc : crystalEps i d < crystalPhi i v
-  · rw [if_pos hc] at hu' ⊢
+  · rw [ite_eq_left hc] at hu' ⊢
     obtain ⟨u0, hu0, rfl⟩ := Option.map_eq_some_iff.1 hu'
     obtain ⟨v0, hv0, hequiv⟩ := he u0 hu0
     exact ⟨v0 ++ d, by rw [hv0]; rfl, hequiv.append_right d⟩
-  · rw [if_neg hc] at hu' ⊢
+  · rw [ite_eq_right hc] at hu' ⊢
     obtain ⟨d', hd', rfl⟩ := Option.map_eq_some_iff.1 hu'
     exact ⟨v ++ d', by rw [hd']; rfl, hpl.append_right d'⟩
 

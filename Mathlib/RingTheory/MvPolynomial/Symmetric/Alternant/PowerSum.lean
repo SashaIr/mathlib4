@@ -86,8 +86,8 @@ lemma moveVec_self (b : Fin m → ℕ) (k : Fin m) : moveVec b (k : ℕ) k = b :
   funext i
   rw [moveVec_apply]
   by_cases h : (i : ℕ) = (k : ℕ)
-  · rw [if_pos h, Fin.ext h]
-  · rw [if_neg h, if_neg (by omega)]
+  · rw [ite_eq_left h, Fin.ext h]
+  · rw [ite_eq_right h, ite_eq_right (by omega)]
 
 /-- Moving the entry in position `k` one step to the left is an adjacent transposition. -/
 lemma moveVec_swap (b : Fin m → ℕ) (j : ℕ) (k k' : Fin m)
@@ -98,11 +98,11 @@ lemma moveVec_swap (b : Fin m → ℕ) (j : ℕ) (k k' : Fin m)
   funext i
   rw [moveVec_apply, moveVec_apply]
   by_cases hij : (i : ℕ) = j
-  · rw [if_pos hij, if_pos hij]
+  · rw [ite_eq_left hij, ite_eq_left hij]
     simp [Function.comp_apply, Equiv.swap_apply_left]
-  rw [if_neg hij, if_neg hij]
+  rw [ite_eq_right hij, ite_eq_right hij]
   by_cases hmid : j < (i : ℕ) ∧ (i : ℕ) ≤ (k' : ℕ)
-  · rw [if_pos hmid, if_pos ⟨hmid.1, by omega⟩]
+  · rw [ite_eq_left hmid, ite_eq_left ⟨hmid.1, by omega⟩]
     have h1 : (⟨(i : ℕ) - 1, lt_of_le_of_lt (Nat.sub_le _ _) i.isLt⟩ : Fin m) ≠ k' := by
       intro h
       have := congrArg (fun x : Fin m => (x : ℕ)) h
@@ -114,16 +114,16 @@ lemma moveVec_swap (b : Fin m → ℕ) (j : ℕ) (k k' : Fin m)
       simp only at this
       omega
     simp [Function.comp_apply, Equiv.swap_apply_of_ne_of_ne h1 h2]
-  rw [if_neg hmid]
+  rw [ite_eq_right hmid]
   by_cases hik : (i : ℕ) = (k : ℕ)
   · have hik' : i = k := Fin.ext hik
     subst hik'
-    rw [if_pos ⟨hjk, le_rfl⟩]
+    rw [ite_eq_left ⟨hjk, le_rfl⟩]
     have : (⟨(i : ℕ) - 1, lt_of_le_of_lt (Nat.sub_le _ _) i.isLt⟩ : Fin m) = k' :=
       Fin.ext (by simp [hk'])
     rw [this]
     simp [Function.comp_apply, Equiv.swap_apply_right]
-  · rw [if_neg (by omega)]
+  · rw [ite_eq_right (by omega)]
     have h1 : i ≠ k' := fun h => by
       have := congrArg (fun x : Fin m => (x : ℕ)) h
       simp only at this

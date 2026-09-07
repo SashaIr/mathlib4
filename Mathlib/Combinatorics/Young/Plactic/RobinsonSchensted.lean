@@ -48,18 +48,18 @@ variable {T : Type*} [LinearOrder T]
 /-! ### Complements on row insertion -/
 
 lemma insRow_cons_of_lt {a l : T} (r : List T) (h : l < a) : insRow (a :: r) l = l :: r := by
-  rw [insRow_cons, if_pos h]
+  rw [insRow_cons, ite_eq_left h]
 
 lemma insRow_cons_of_le {a l : T} (r : List T) (h : a ≤ l) :
     insRow (a :: r) l = a :: insRow r l := by
-  rw [insRow_cons, if_neg (not_lt.2 h)]
+  rw [insRow_cons, ite_eq_right (not_lt.2 h)]
 
 lemma bumped_cons_of_lt {a l : T} (r : List T) (h : l < a) : bumped (a :: r) l = some a := by
-  rw [bumped_cons, if_pos h]
+  rw [bumped_cons, ite_eq_left h]
 
 lemma bumped_cons_of_le {a l : T} (r : List T) (h : a ≤ l) :
     bumped (a :: r) l = bumped r l := by
-  rw [bumped_cons, if_neg (not_lt.2 h)]
+  rw [bumped_cons, ite_eq_right (not_lt.2 h)]
 
 lemma mem_insRow_self (r : List T) (l : T) : l ∈ insRow r l := by
   induction r with

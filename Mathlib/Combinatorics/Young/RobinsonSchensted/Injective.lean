@@ -69,7 +69,7 @@ lemma invInsRow_eq_none {r : List T} {b : T} (h : ∀ y ∈ r, b ≤ y) : invIns
   | nil => rfl
   | cons x r ih =>
     rw [invInsRow_cons, ih (fun y hy => h y (List.mem_cons_of_mem _ hy))]
-    simp only [if_neg (not_lt.2 (h x (List.mem_cons_self)))]
+    simp only [ite_eq_right (not_lt.2 (h x (List.mem_cons_self)))]
 
 /-- If nothing is bumped, insertion appends the letter at the end of the row. -/
 lemma insRow_eq_append_of_bumped_none {r : List T} {l : T} (h : bumped r l = none) :
@@ -81,7 +81,7 @@ lemma insRow_eq_append_of_bumped_none {r : List T} {l : T} (h : bumped r l = non
     split at h
     · exact absurd h (by simp)
     · rename_i hx
-      rw [insRow_cons, if_neg hx, ih h]
+      rw [insRow_cons, ite_eq_right hx, ih h]
       rfl
 
 /-- Coq `invinsE`: reverse row insertion undoes row insertion. -/
@@ -96,13 +96,13 @@ lemma invInsRow_insRow {r : List T} (hr : IsRow r) {l b : T} (hb : bumped r l = 
     · rename_i hx
       have hbx : b = x := (Option.some.inj hb).symm
       subst hbx
-      rw [insRow_cons, if_pos hx, invInsRow_cons,
-        invInsRow_eq_none (fun y hy => hr.1 y hy), if_pos hx]
+      rw [insRow_cons, ite_eq_left hx, invInsRow_cons,
+        invInsRow_eq_none (fun y hy => hr.1 y hy), ite_eq_left hx]
     · rename_i hx
       have hrow : IsRow r := by
         rw [IsRow, List.isChain_iff_pairwise]
         exact hr.2
-      rw [insRow_cons, if_neg hx, invInsRow_cons, ih hrow hb]
+      rw [insRow_cons, ite_eq_right hx, invInsRow_cons, ih hrow hb]
 
 /-! ### Reverse insertion in a tableau -/
 
@@ -269,7 +269,7 @@ lemma isAddCorner_of_isPart_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh)
   have h1 : (incrNth sh i).getD i 0 = sh.getD i 0 + 1 := by
     rw [getD_incrNth]; simp
   have h2 : (incrNth sh i).getD (i - 1) 0 = sh.getD (i - 1) 0 := by
-    rw [getD_incrNth, if_neg (by omega : ¬ i = i - 1)]
+    rw [getD_incrNth, ite_eq_right (by omega : ¬ i = i - 1)]
     omega
   have h3 : (incrNth sh i).getD i 0 ≤ (incrNth sh i).getD (i - 1) 0 :=
     h'.getD_antitone (by omega)
@@ -369,8 +369,8 @@ lemma insRow_invInsRow {r : List T} (hr : IsRow r) {b : T} : ∀ {r' : List T} {
         rcases mem_invInsRow hrec hy with hy' | rfl
         · exact hx y hy'
         · exact le_trans hxm (le_of_lt hlt)
-      · rw [insRow_cons, if_neg (not_lt.2 hxm), hins]
-      · rw [bumped_cons, if_neg (not_lt.2 hxm), hbump]
+      · rw [insRow_cons, ite_eq_right (not_lt.2 hxm), hins]
+      · rw [bumped_cons, ite_eq_right (not_lt.2 hxm), hbump]
     | none =>
       rw [hrec] at h
       simp only at h
@@ -384,8 +384,8 @@ lemma insRow_invInsRow {r : List T} (hr : IsRow r) {b : T} : ∀ {r' : List T} {
         refine ⟨?_, ?_, ?_, List.mem_cons_self, hxb⟩
         · rw [IsRow, List.isChain_iff_pairwise, List.pairwise_cons]
           exact ⟨hbr, by rw [← List.isChain_iff_pairwise]; exact hrow⟩
-        · rw [insRow_cons, if_pos hxb]
-        · rw [bumped_cons, if_pos hxb]
+        · rw [insRow_cons, ite_eq_left hxb]
+        · rw [bumped_cons, ite_eq_left hxb]
       · exact absurd h (by simp)
 
 end List

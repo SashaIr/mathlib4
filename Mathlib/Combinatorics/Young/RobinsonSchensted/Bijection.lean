@@ -93,12 +93,12 @@ lemma remBox_spec {q : List (List ℕ)} (h : IsTableau q) {i n : ℕ} (hi : i < 
             omega
         subst hq
         refine ⟨by simp [remBox_cons_zero, hdl], ?_, by simp [remBox_cons_zero, hdl], ?_⟩
-        · rw [remBox_cons_zero, if_pos hdl, addBox_nil, ← ht0, hdl]
+        · rw [remBox_cons_zero, ite_eq_left hdl, addBox_nil, ← ht0, hdl]
           rfl
-        · rw [remBox_cons_zero, if_pos hdl]
+        · rw [remBox_cons_zero, ite_eq_left hdl]
           simp
       · have hrem : remBox (q0 :: q) 0 = q0.dropLast :: q := by
-          rw [remBox_cons_zero, if_neg hdl]
+          rw [remBox_cons_zero, ite_eq_right hdl]
         rw [hrem]
         refine ⟨⟨hdl, ?_, ?_, htab⟩, ?_, Nat.zero_le _, ?_⟩
         · exact List.IsChain.sublist hrow (List.dropLast_sublist q0)

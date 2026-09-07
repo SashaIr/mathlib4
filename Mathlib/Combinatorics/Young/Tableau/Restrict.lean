@@ -199,7 +199,7 @@ lemma length_eq_sum_count {l : List ℕ} {M : ℕ} (h : ∀ x ∈ l, x < M) :
       by_cases hai : a = i <;> simp [hai]
     simp only [List.length_cons, ih hl]
     rw [Finset.sum_congr rfl (fun i _ => hcount i), Finset.sum_add_distrib,
-      Finset.sum_ite_eq (Finset.range M) a (fun _ => 1), if_pos (Finset.mem_range.2 ha)]
+      Finset.sum_ite_eq (Finset.range M) a (fun _ => 1), ite_eq_left (Finset.mem_range.2 ha)]
 
 /-! ### Removing the largest letter -/
 
@@ -356,7 +356,7 @@ lemma count_flatten_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P) (
   | cons r P ih =>
     rw [dropMax_cons]
     by_cases h : ltFilter N r = []
-    · rw [if_pos h]
+    · rw [ite_eq_left h]
       have hzero : ∀ x ∈ (r :: P).flatten, ¬ x < N := by
         intro x hx
         obtain ⟨j, hj⟩ := mem_getD_of_mem_flatten hx
@@ -367,12 +367,12 @@ lemma count_flatten_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P) (
         rw [hj0] at hmem
         simp at hmem
       by_cases hi : i < N
-      · rw [if_pos hi]
+      · rw [ite_eq_left hi]
         simp only [List.flatten_nil, List.count_nil]
         exact (List.count_eq_zero_of_not_mem fun hc => hzero i hc hi).symm
-      · rw [if_neg hi]
+      · rw [ite_eq_right hi]
         simp
-    · rw [if_neg h, List.flatten_cons, List.flatten_cons, List.count_append, List.count_append,
+    · rw [ite_eq_right h, List.flatten_cons, List.flatten_cons, List.count_append, List.count_append,
         count_ltFilter, ih hP.of_cons]
       by_cases hi : i < N <;> simp [hi]
 
@@ -550,7 +550,7 @@ lemma sum_shape_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P)
     rw [← length_flatten_eq_sum_shape,
       length_eq_sum_count (M := N) (fun x hx => lt_of_mem_flatten_dropMax hP hx)]
     refine Finset.sum_congr rfl fun i hi => ?_
-    rw [count_flatten_dropMax hP, if_pos (Finset.mem_range.1 hi)]
+    rw [count_flatten_dropMax hP, ite_eq_left (Finset.mem_range.1 hi)]
   have h2 : (shape P).sum = ∑ i ∈ Finset.range (N + 1), P.flatten.count i := by
     rw [← length_flatten_eq_sum_shape, length_eq_sum_count hlt]
   rw [h1, h2, Finset.sum_range_succ]
@@ -606,7 +606,7 @@ lemma dropMax_mem_pairSet (hm : m + c N = sh.sum) {P : List (List ℕ)}
       show (shape (dropMax N P)).sum = m by rw [hPsh] at hsum; omega⟩,
     hPsh ▸ horizStrip_shape_dropMax hPtab hPlt,
     isTableau_dropMax hPtab, rfl, fun x hx => lt_of_mem_flatten_dropMax hPtab hx, fun i hi => ?_⟩
-  rw [count_flatten_dropMax hPtab, if_pos hi]
+  rw [count_flatten_dropMax hPtab, ite_eq_left hi]
   exact hPcount i (by omega)
 
 lemma addMax_mem_tabSet (hsh : IsPart sh) (hm : m + c N = sh.sum)
@@ -621,7 +621,7 @@ lemma addMax_mem_tabSet (hsh : IsPart sh) (hm : m + c N = sh.sum)
   refine ⟨hAtab, shape_addMax hstrip', hAlt, fun i hi => ?_⟩
   rcases lt_or_ge i N with hiN | hiN
   · have := count_flatten_dropMax hAtab (N := N) i
-    rw [hdrop, if_pos hiN] at this
+    rw [hdrop, ite_eq_left hiN] at this
     rw [← this]
     exact hQcount i hiN
   · have hiN' : i = N := by omega
@@ -685,9 +685,9 @@ theorem kostkaNum_succ (hsh : IsPart sh) (hm : m + c N = sh.sum) :
     Nat.card_sigma]
   refine Finset.sum_congr rfl fun nu _ => ?_
   by_cases hstrip : HorizStrip sh nu.1
-  · rw [if_pos hstrip, kostkaNum]
+  · rw [ite_eq_left hstrip, kostkaNum]
     exact Nat.card_congr (Equiv.subtypeEquivRight fun Q => and_iff_right hstrip)
-  · rw [if_neg hstrip]
+  · rw [ite_eq_right hstrip]
     have : IsEmpty {Q : List (List ℕ) // HorizStrip sh nu.1 ∧ Q ∈ tabSet N nu.1 c} :=
       ⟨fun Q => hstrip Q.2.1⟩
     exact Nat.card_of_isEmpty

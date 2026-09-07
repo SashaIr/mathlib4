@@ -34,8 +34,8 @@ theorem ssytOfTableau_superTab {lam : List ℕ} (hlam : IsPart lam) :
   rw [ssytOfTableau_apply, getD_superTab, SemistandardYoungTableau.highestWeight_apply]
   simp only [mk_mem_youngDiagram]
   rcases Nat.lt_or_ge j (lam.getD i 0) with hj | hj
-  · rw [if_pos hj, List.getD_eq_getElem _ _ (by simpa using hj), List.getElem_replicate]
-  · rw [if_neg (by omega), List.getD_eq_default _ _ (by simpa using hj)]
+  · rw [ite_eq_left hj, List.getD_eq_getElem _ _ (by simpa using hj), List.getElem_replicate]
+  · rw [ite_eq_right (by omega), List.getD_eq_default _ _ (by simpa using hj)]
 
 /-- The list of rows of the highest weight semistandard Young tableau is the
 superstandard tableau. -/

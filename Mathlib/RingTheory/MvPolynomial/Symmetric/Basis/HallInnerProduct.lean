@@ -176,7 +176,7 @@ lemma repr_mBasis_schurSub [CommRing R] (lam mu : PartIdx n m) :
   rw [Finset.sum_eq_single mu]
   · rw [coeff_smul, coeff_monomialSym_shapeContent, smul_eq_mul, mul_one]
   · intro nu _ hne
-    rw [coeff_smul, coeff_monomialSym, if_neg, smul_zero]
+    rw [coeff_smul, coeff_monomialSym, ite_eq_right, smul_zero]
     intro hmem
     have h2 := degShape_eq_iff.2 (mem_degOrbit_iff.1 hmem)
     rw [degShape_shapeContent mu.2.1 mu.2.2.2, degShape_shapeContent nu.2.1 nu.2.2.2] at h2
@@ -251,7 +251,7 @@ theorem hallInner_hSub_eq_coeff [CommRing R] (mu : PartIdx n m)
         Finsupp.single_eq_same, mul_one]
     · intro nu _ hne
       rw [← schurBasis_apply, Module.Basis.repr_self, Finsupp.single_apply,
-        if_neg (fun h => hne h.symm), mul_zero]
+        ite_eq_right (fun h => hne h.symm), mul_zero]
     · intro h
       exact absurd (Finset.mem_univ lam) h
   rw [key]
@@ -270,8 +270,8 @@ theorem hallInner_hSub_mSub [CommRing R] (lam mu : PartIdx n m) :
   rw [hallInner_hSub_eq_coeff, coe_mSub, coeff_monomialSym]
   by_cases h : lam = mu
   · subst h
-    rw [if_pos (self_mem_degOrbit _), if_pos rfl]
-  · rw [if_neg h, if_neg]
+    rw [ite_eq_left (self_mem_degOrbit _), ite_eq_left rfl]
+  · rw [ite_eq_right h, ite_eq_right]
     intro hmem
     refine h (Subtype.ext ?_)
     have := degShape_eq_iff.2 (mem_degOrbit_iff.1 hmem)

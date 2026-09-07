@@ -90,7 +90,7 @@ theorem coeff_msymm {n : ℕ} (mu : Nat.Partition n) (d : Fin m →₀ ℕ) :
   rw [msymm, coeff_sum]
   simp only [prod_map_X_multiset, coeff_monomial]
   by_cases hd : (degShape d : Multiset ℕ) = mu.parts
-  · rw [if_pos hd]
+  · rw [ite_eq_left hd]
     have hcard : Multiset.card (Finsupp.toMultiset d) = n := by
       have hsum : (Finsupp.toMultiset d).card = (degShape d).sum := by
         rw [Finsupp.card_toMultiset, sum_degShape d, Finsupp.sum]
@@ -103,14 +103,14 @@ theorem coeff_msymm {n : ℕ} (mu : Nat.Partition n) (d : Fin m →₀ ℕ) :
         refine Nat.Partition.ext ?_
         rw [hshape ⟨Finsupp.toMultiset d, hcard⟩ (by simp), hd]⟩ with ha0
     rw [Fintype.sum_eq_single a0]
-    · rw [if_pos (by simp [ha0])]
+    · rw [ite_eq_left (by simp [ha0])]
     · intro b hb
-      refine if_neg fun hbd => hb (Subtype.ext (Sym.ext ?_))
+      refine ite_eq_right fun hbd => hb (Subtype.ext (Sym.ext ?_))
       rw [ha0]
       simpa using congrArg Finsupp.toMultiset hbd
-  · rw [if_neg hd, Finset.sum_eq_zero]
+  · rw [ite_eq_right hd, Finset.sum_eq_zero]
     intro a _
-    refine if_neg fun hbd => hd ?_
+    refine ite_eq_right fun hbd => hd ?_
     rw [← hshape a.1 hbd, a.2]
 
 /-- **The two definitions of the monomial symmetric polynomials agree**: the monomial
@@ -131,7 +131,7 @@ theorem monomialSym_eq_msymm {n : ℕ} {lam : List ℕ} (hlam : IsPart lam) (hsu
       have := congrArg sortDesc h
       rwa [sortDesc_coe (isPart_degShape d), sortDesc_coe hlam] at this
   by_cases hd : d ∈ degOrbit (shapeContent m lam)
-  · rw [if_pos hd, if_pos (hiff.1 hd)]
-  · rw [if_neg hd, if_neg fun h => hd (hiff.2 h)]
+  · rw [ite_eq_left hd, ite_eq_left (hiff.1 hd)]
+  · rw [ite_eq_right hd, ite_eq_right fun h => hd (hiff.2 h)]
 
 end MvPolynomial

@@ -146,8 +146,8 @@ private lemma coe_eq_sum_singleton_range (l : List ℕ) {C : ℕ} (hC : l.length
   have hsub : Finset.range l.length ⊆ Finset.range C := by
     intro x hx; simp only [Finset.mem_range] at hx ⊢; omega
   rw [← Finset.sum_subset hsub
-    (fun x _ hx => by simp only [Finset.mem_range] at hx; rw [if_neg hx]), coe_eq_sum_singleton l]
-  exact Finset.sum_congr rfl fun j hj => by rw [if_pos (Finset.mem_range.1 hj)]
+    (fun x _ hx => by simp only [Finset.mem_range] at hx; rw [ite_eq_right hx]), coe_eq_sum_singleton l]
+  exact Finset.sum_congr rfl fun j hj => by rw [ite_eq_left (Finset.mem_range.1 hj)]
 
 /-- The reading word and the concatenation have the same entries. -/
 private lemma coe_toWord (L : List (List ℕ)) :
@@ -215,8 +215,8 @@ theorem perm_toWord_conjTab {t : List (List ℕ)} (h : IsPart (shape t)) :
     coe_flatten_eq_sum_boxes h (le_refl _) (le_refl _), Finset.sum_comm]
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => ?_
   by_cases hij : InShape (shape t) (i, j)
-  · rw [if_pos hij, if_pos ((hshiff i j).2 hij), getD_getD_conjTab h hij]
-  · rw [if_neg hij, if_neg (fun hx => hij ((hshiff i j).1 hx))]
+  · rw [ite_eq_left hij, ite_eq_left ((hshiff i j).2 hij), getD_getD_conjTab h hij]
+  · rw [ite_eq_right hij, ite_eq_right (fun hx => hij ((hshiff i j).1 hx))]
 
 /-! ### Conjugating a standard tableau -/
 

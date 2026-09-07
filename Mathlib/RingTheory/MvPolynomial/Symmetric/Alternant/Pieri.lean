@@ -179,7 +179,7 @@ lemma flipPerm_eq_swap {a c : Fin m → ℕ} (hne : (freeSet a c).Nonempty) :
   obtain ⟨hlt, hfree⟩ := hmem
   refine ⟨⟨sInf (freeSet a c), Nat.lt_of_succ_lt hlt⟩, ⟨sInf (freeSet a c) + 1, hlt⟩, rfl, hfree,
     ?_⟩
-  rw [flipPerm, flipOfSet, dif_pos ⟨hlt, ⟨hlt, hfree⟩⟩]
+  rw [flipPerm, flipOfSet, dite_eq_left ⟨hlt, ⟨hlt, hfree⟩⟩]
 
 /-- A vector which is not a horizontal strip above `a` has a free position. -/
 lemma freeSet_nonempty {a c : Fin m → ℕ} (ha : Antitone a) (hac : ∀ i, a i ≤ c i)
@@ -202,7 +202,7 @@ lemma freeSet_nonempty {a c : Fin m → ℕ} (ha : Antitone a) (hac : ∀ i, a i
 /-- If there is no free position, the flipping permutation is the identity. -/
 lemma flipPerm_eq_one {a c : Fin m → ℕ} (hemp : ¬ (freeSet a c).Nonempty) :
     flipPerm a c = 1 := by
-  rw [flipPerm, flipOfSet, dif_neg]
+  rw [flipPerm, flipOfSet, dite_eq_right]
   rintro ⟨-, hmem⟩
   exact hemp ⟨_, hmem⟩
 

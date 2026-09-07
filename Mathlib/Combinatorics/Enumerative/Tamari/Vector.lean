@@ -162,16 +162,16 @@ theorem isTamariVector_rightSizes (t : Tree Unit) : IsTamariVector (rightSizes t
       intro i
       rw [rightSizes_node]
       by_cases hip : i < p
-      · rw [List.getD_append _ _ _ _ (by simpa [hp] using hip), if_pos hip]
+      · rw [List.getD_append _ _ _ _ (by simpa [hp] using hip), ite_eq_left hip]
       · rw [List.getD_append_right _ _ _ _ (by simpa [hp] using Nat.le_of_not_lt hip),
-          if_neg hip]
+          ite_eq_right hip]
         by_cases hie : i = p
-        · rw [if_pos hie]
+        · rw [ite_eq_left hie]
           have hz : i - (rightSizes l).length = 0 := by
             rw [length_rightSizes]
             omega
           rw [hz, List.getD_cons_zero]
-        · rw [if_neg hie]
+        · rw [ite_eq_right hie]
           have hsub : i - (rightSizes l).length = (i - p - 1) + 1 := by
             simp only [length_rightSizes, ← hp]
             omega
@@ -189,36 +189,36 @@ theorem isTamariVector_rightSizes (t : Tree Unit) : IsTamariVector (rightSizes t
       rw [hlen] at hi ⊢
       rw [hget i]
       by_cases hip : i < p
-      · rw [if_pos hip]
+      · rw [ite_eq_left hip]
         have := hl1' i hip
         omega
-      · rw [if_neg hip]
+      · rw [ite_eq_right hip]
         by_cases hie : i = p
-        · rw [if_pos hie]
+        · rw [ite_eq_left hie]
           omega
-        · rw [if_neg hie]
+        · rw [ite_eq_right hie]
           have := hr1' (i - p - 1) (by omega)
           omega
     · intro i j hij hj
       rw [hget i] at hj ⊢
       rw [hget j]
       by_cases hip : i < p
-      · rw [if_pos hip] at hj ⊢
+      · rw [ite_eq_left hip] at hj ⊢
         have hli := hl1' i hip
         have hjp : j < p := by omega
-        rw [if_pos hjp]
+        rw [ite_eq_left hjp]
         exact hl2 i j hij hj
-      · rw [if_neg hip] at hj ⊢
+      · rw [ite_eq_right hip] at hj ⊢
         by_cases hie : i = p
-        · rw [if_pos hie] at hj ⊢
+        · rw [ite_eq_left hie] at hj ⊢
           have hjp : ¬ j < p := by omega
-          rw [if_neg hjp, if_neg (by omega : j ≠ p)]
+          rw [ite_eq_right hjp, ite_eq_right (by omega : j ≠ p)]
           have := hr1' (j - p - 1) (by omega)
           omega
-        · rw [if_neg hie] at hj ⊢
+        · rw [ite_eq_right hie] at hj ⊢
           have hip' : p < i := by omega
           have hjp : ¬ j < p := by omega
-          rw [if_neg hjp, if_neg (by omega : j ≠ p)]
+          rw [ite_eq_right hjp, ite_eq_right (by omega : j ≠ p)]
           have := hr2 (i - p - 1) (j - p - 1) (by omega) (by omega)
           omega
 

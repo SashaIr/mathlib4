@@ -105,7 +105,7 @@ variable {m k : ℕ} {R : Type*} [CommRing R]
 
 lemma dualCauchyTerm_eq_zero_of_sum_lt {lam mu : List ℕ} (h : lam.sum < mu.sum) :
     dualCauchyTerm m k R lam mu = 0 := by
-  rw [dualCauchyTerm, if_neg]
+  rw [dualCauchyTerm, ite_eq_right]
   exact fun hstrip => absurd hstrip.1.sum_le (by omega)
 
 /-- Outside the `m × k` rectangle the terms of the dual Cauchy identity vanish. -/
@@ -163,12 +163,12 @@ lemma sum_range_eq_dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (lam mu :
   classical
   rw [dualCauchyTerm]
   by_cases hstrip : VertStrip lam mu
-  · simp only [if_pos hstrip]
+  · simp only [ite_eq_left hstrip]
     by_cases hd : lam.sum - mu.sum ≤ m
     · rw [Finset.sum_eq_single (lam.sum - mu.sum)]
-      · rw [if_pos (by have := hstrip.1.sum_le; omega)]
+      · rw [ite_eq_left (by have := hstrip.1.sum_le; omega)]
       · intro r _ hr
-        refine if_neg ?_
+        refine ite_eq_right ?_
         have := hstrip.1.sum_le
         omega
       · intro h
@@ -179,10 +179,10 @@ lemma sum_range_eq_dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (lam mu :
       rw [schurPoly_eq_zero_of_lt_length hlen, map_zero, zero_mul]
       refine Finset.sum_eq_zero fun r hr => ?_
       rw [Finset.mem_range] at hr
-      refine if_neg ?_
+      refine ite_eq_right ?_
       have := hstrip.1.sum_le
       omega
-  · simp only [if_neg hstrip, zero_mul, ite_self, Finset.sum_const_zero]
+  · simp only [ite_eq_right hstrip, zero_mul, ite_self, Finset.sum_const_zero]
 
 /-- One term of the dual Pieri expansion, written as a sum over the partitions of size at
 most `m * (k + 1)`. -/
@@ -272,8 +272,8 @@ lemma dualCauchy_rhs (m k : ℕ) (R : Type*) [CommRing R] :
     exact h.symm
   rw [dualCauchyTerm, sum_conjPart]
   by_cases hstrip : VertStrip lam mu
-  · rw [if_pos (hiff.2 hstrip), if_pos hstrip]
-  · rw [if_neg (fun h => hstrip (hiff.1 h)), if_neg hstrip, mul_zero]
+  · rw [ite_eq_left (hiff.2 hstrip), ite_eq_left hstrip]
+  · rw [ite_eq_right (fun h => hstrip (hiff.1 h)), ite_eq_right hstrip, mul_zero]
 
 /-- **The dual Cauchy identity**: the product of the `1 + x_i y_j` is the sum over the
 partitions `lam` of the products `s_lam(x) * s_{lam'}(y)`. -/

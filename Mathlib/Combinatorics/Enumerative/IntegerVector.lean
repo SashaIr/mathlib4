@@ -60,16 +60,16 @@ theorem mem_vectNK : ∀ {k n : ℕ} {s : List ℕ}, s ∈ vectNK n k ↔ s.sum 
     constructor
     · intro h
       by_cases hn : n = 0
-      · rw [if_pos hn, List.mem_singleton] at h
+      · rw [ite_eq_left hn, List.mem_singleton] at h
         subst h
         exact ⟨hn.symm, rfl⟩
-      · rw [if_neg hn] at h
+      · rw [ite_eq_right hn] at h
         exact absurd h List.not_mem_nil
     · rintro ⟨hsum, hlen⟩
       rw [List.length_eq_zero_iff] at hlen
       subst hlen
       simp at hsum
-      rw [if_pos hsum.symm, List.mem_singleton]
+      rw [ite_eq_left hsum.symm, List.mem_singleton]
   | k + 1, n, s => by
     rw [vectNK_succ]
     constructor
@@ -95,7 +95,7 @@ theorem mem_vectNK : ∀ {k n : ℕ} {s : List ℕ}, s ∈ vectNK n k ↔ s.sum 
 /-- The only vector of sum zero is the zero vector (Coq `vect_0_k`). -/
 lemma vectNK_zero (k : ℕ) : vectNK 0 k = [List.replicate k 0] := by
   induction k with
-  | zero => rw [vectNK_zero_length, if_pos rfl, List.replicate_zero]
+  | zero => rw [vectNK_zero_length, ite_eq_left rfl, List.replicate_zero]
   | succ k ih =>
     rw [vectNK_succ, List.range_one, List.map_cons, List.map_nil, List.flatten_cons,
       List.flatten_nil, List.append_nil, Nat.zero_sub, ih, List.map_cons, List.map_nil,
@@ -107,9 +107,9 @@ theorem nodup_vectNK : ∀ (n k : ℕ), (vectNK n k).Nodup
   | n, 0 => by
     rw [vectNK_zero_length]
     by_cases hn : n = 0
-    · rw [if_pos hn]
+    · rw [ite_eq_left hn]
       simp
-    · rw [if_neg hn]
+    · rw [ite_eq_right hn]
       simp
   | n, k + 1 => by
     rw [vectNK_succ, List.nodup_flatten]

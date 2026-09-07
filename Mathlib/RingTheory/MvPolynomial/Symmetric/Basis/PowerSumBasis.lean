@@ -56,7 +56,7 @@ lemma linearIndependent_monomialSym_partIdx (m n : ℕ) (R : Type*) [CommRing R]
   have hsingle : ∀ nu ∈ s, nu ≠ lam →
       coeff (shapeContent m lam.1) (g nu • monomialSym m R nu.1) = 0 := by
     intro nu _ hne
-    rw [coeff_smul, smul_eq_mul, coeff_monomialSym, if_neg, mul_zero]
+    rw [coeff_smul, smul_eq_mul, coeff_monomialSym, ite_eq_right, mul_zero]
     intro hmem
     refine hne (Subtype.ext ?_)
     have h2 := degShape_eq_iff.2 (mem_degOrbit_iff.1 hmem)

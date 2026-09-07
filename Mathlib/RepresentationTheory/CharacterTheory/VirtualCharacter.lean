@@ -133,17 +133,17 @@ theorem charBilin_isSimpleChar {c d : G → k} (hc : IsSimpleChar c) (hd : IsSim
     rw [← hkey, smul_eq_mul, ← mul_assoc, mul_invOf_self, one_mul]
     rfl
   by_cases hVW : V.character = W.character
-  · rw [if_pos hVW]
+  · rw [ite_eq_left hVW]
     have hiso : Nonempty (V ≅ W) := by
       by_contra hcon
-      rw [if_neg hcon, mul_zero] at h2
+      rw [ite_eq_right hcon, mul_zero] at h2
       have hnorm : ∑ g : G, V.character g * V.character g⁻¹ = Nat.card G :=
         (FDRep.simple_iff_char_is_norm_one V).1 hV
       have h3 : ∑ g : G, V.character g * W.character g⁻¹ = 0 := h2
       rw [← hVW, hnorm] at h3
       exact hne (by rw [Fintype.card_eq_nat_card]; exact h3)
-    rw [h2, if_pos hiso, mul_one]
-  · rw [if_neg hVW, h2, if_neg (fun ⟨i⟩ => hVW (FDRep.char_iso i)), mul_zero]
+    rw [h2, ite_eq_left hiso, mul_one]
+  · rw [ite_eq_right hVW, h2, ite_eq_right (fun ⟨i⟩ => hVW (FDRep.char_iso i)), mul_zero]
 
 variable [Finite G] [NeZero (Nat.card G : k)]
 
@@ -164,9 +164,9 @@ theorem charBilin_intCombination (S : Finset (G → k)) (hS : ∀ c ∈ S, IsSim
       intro d hdS
       rw [charBilin_smul_right, charBilin_isSimpleChar (hS c hc) (hS d hdS)]
       by_cases h : d = c
-      · subst h; rw [if_pos rfl, if_pos rfl, mul_comm]
-      · rw [if_neg h, if_neg (fun hh : c = d => h hh.symm), mul_zero]
-    rw [Finset.sum_congr rfl hd, Finset.sum_ite_eq' S c, if_pos hc]
+      · subst h; rw [ite_eq_left rfl, ite_eq_left rfl, mul_comm]
+      · rw [ite_eq_right h, ite_eq_right (fun hh : c = d => h hh.symm), mul_zero]
+    rw [Finset.sum_congr rfl hd, Finset.sum_ite_eq' S c, ite_eq_left hc]
     ring
   rw [Finset.sum_congr rfl hterm, ← Finset.mul_sum]
   congr 1
@@ -198,7 +198,7 @@ theorem isSimpleChar_one_ne_zero {chi : G → k} (h : IsSimpleChar chi) : chi 1 
     simp [FDRep.character, hg]
   have hb := charBilin_isSimpleChar (c := V.character) (d := V.character)
     ⟨V, hV, rfl⟩ ⟨V, hV, rfl⟩
-  rw [if_pos rfl, hzero] at hb
+  rw [ite_eq_left rfl, hzero] at hb
   simp only [charBilin, Pi.zero_apply, zero_mul, Finset.sum_const_zero] at hb
   exact (NeZero.ne ((Nat.card G : k))) (by rw [Nat.card_eq_fintype_card, ← hb])
 

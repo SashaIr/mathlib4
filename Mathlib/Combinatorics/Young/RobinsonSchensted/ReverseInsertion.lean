@@ -90,7 +90,7 @@ lemma insPos_eq_length_of_forall_le {r : List T} {b : T} (h : ∀ y ∈ r, y ≤
   induction r with
   | nil => rfl
   | cons x r ih =>
-    rw [insPos_cons, if_neg (not_lt.2 (h x List.mem_cons_self)),
+    rw [insPos_cons, ite_eq_right (not_lt.2 (h x List.mem_cons_self)),
       ih (fun y hy => h y (List.mem_cons_of_mem _ hy))]
     simp
 

@@ -199,7 +199,7 @@ def singIdx (m k : ℕ) (hkm : k ≤ m) : PartIdx k m :=
 
 lemma pProd_singList (m : ℕ) (R : Type*) [CommRing R] {k : ℕ} (hk : 0 < k) :
     pProd m R (singList k) = psum (Fin m) R k := by
-  rw [singList, if_neg hk.ne', pProd, List.map_cons, List.map_nil, List.prod_cons,
+  rw [singList, ite_eq_right hk.ne', pProd, List.map_cons, List.map_nil, List.prod_cons,
     List.prod_nil, mul_one]
 
 /-! ### The action of `omega` on the power sums -/
@@ -226,7 +226,7 @@ theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
     intro j hj
     rw [Finset.mem_Icc] at hj
     rw [hT]
-    simp only [dif_pos (⟨hj.1, hj.2⟩ : 1 ≤ j ∧ j ≤ r), coe_mulSub, coe_pSub, coe_hSub,
+    simp only [dite_eq_left (⟨hj.1, hj.2⟩ : 1 ≤ j ∧ j ≤ r), coe_mulSub, coe_pSub, coe_hSub,
       singIdx_val, hProd_singList]
     rw [pProd_singList m R (show 0 < j by omega)]
   have hA : (r : ℕ) • hSub m r R (singIdx m r hrm) = ∑ j ∈ Finset.Icc 1 r, T j := by
@@ -252,14 +252,14 @@ theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
     have hj' := Finset.mem_Icc.1 (Finset.mem_erase.1 hj).2
     have hjr : j < r := lt_of_le_of_ne hj'.2 hne
     rw [hT]
-    simp only [dif_pos (⟨hj'.1, hj'.2⟩ : 1 ≤ j ∧ j ≤ r)]
+    simp only [dite_eq_left (⟨hj'.1, hj'.2⟩ : 1 ≤ j ∧ j ≤ r)]
     rw [omegaSym_mul, IH j hjr (by omega) (by omega), omegaSym_hSub, coe_eSubOfPart,
       singIdx_val, eProd_singList, mul_assoc]
   have hTr : (omegaSym m r R hrm (T r) : MvPolynomial (Fin m) R)
       = (omegaSym m r R hrm (pSub m r R (singIdx m r hrm)) : MvPolynomial (Fin m) R) := by
     have hTreq : T r = pSub m r R (singIdx m r hrm) := by
       rw [hT]
-      simp only [dif_pos (⟨hr, le_refl r⟩ : 1 ≤ r ∧ r ≤ r)]
+      simp only [dite_eq_left (⟨hr, le_refl r⟩ : 1 ≤ r ∧ r ≤ r)]
       apply Subtype.ext
       rw [coe_mulSub, coe_hSub, singIdx_val, Nat.sub_self, hProd_singList, hsymm_zero,
         mul_one, coe_pSub]

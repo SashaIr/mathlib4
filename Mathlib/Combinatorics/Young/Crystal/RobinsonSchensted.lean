@@ -262,7 +262,7 @@ lemma crystalPhi_toWord_superTabFrom {lam : List ℕ} (h : IsPart lam) (k : ℕ)
         rw [hrow.crystalEps_eq_count, List.count_replicate]
         simp
       have hcount := crystalPhi_le_count k (toWord (superTabFrom (k + 1) lam))
-      rw [count_toWord_superTabFrom, if_pos (show k + 1 ≤ k + 1 by omega), Nat.sub_self] at hcount
+      rw [count_toWord_superTabFrom, ite_eq_left (show k + 1 ≤ k + 1 by omega), Nat.sub_self] at hcount
       rw [heps]
       omega
     · rw [ih hpart (k + 1) i (by omega)]

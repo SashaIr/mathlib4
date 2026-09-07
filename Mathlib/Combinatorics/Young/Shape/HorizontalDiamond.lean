@@ -199,14 +199,14 @@ lemma upDiamond_nil_nil (N : ℕ) :
         simp only [List.sum_cons, List.sum_nil, Nat.add_zero] at hsum
         subst hsum
         have ha : 0 < a := hpart.headD_pos (by simp)
-        rw [if_neg (by omega)]
+        rw [ite_eq_right (by omega)]
   · intro hlam
     subst hlam
     by_cases hN : N = 0
     · subst hN
       exact ⟨isPart_nil, ⟨Included.refl _, fun i => by simp⟩, ⟨Included.refl _, fun i => by simp⟩,
         rfl⟩
-    · rw [if_neg hN]
+    · rw [ite_eq_right hN]
       refine ⟨⟨by simpa using Nat.one_le_iff_ne_zero.2 hN, isPart_nil⟩,
         ⟨included_nil _, fun i => ?_⟩, ⟨included_nil _, fun i => ?_⟩, by simp⟩
       · simp

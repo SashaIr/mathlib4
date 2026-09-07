@@ -51,7 +51,7 @@ lemma indicVec_le_iff {S : Finset (Fin m)} {e : Fin m →₀ ℕ} :
   constructor
   · intro h j hj
     have := h j
-    rw [indicVec_apply, if_pos hj] at this
+    rw [indicVec_apply, ite_eq_left hj] at this
     exact Finsupp.mem_support_iff.2 (by omega)
   · intro h j
     rw [indicVec_apply]

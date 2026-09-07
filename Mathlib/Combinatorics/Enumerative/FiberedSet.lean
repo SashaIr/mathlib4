@@ -63,7 +63,7 @@ theorem exists_bijOn_of_card_fiber_eq [Nonempty β] [DecidableEq I] (s : Finset 
   classical
   set e : α → β := fun x => if hx : x ∈ s then (E ⟨x, hx⟩).1 else Classical.arbitrary β with he
   have hes : ∀ (x : α) (hx : x ∈ s), e x = (E ⟨x, hx⟩).1 := fun x hx => by
-    simp only [he, dif_pos hx]
+    simp only [he, dite_eq_left hx]
   refine ⟨e, ⟨?_, ?_, ?_⟩, ?_⟩
   · intro x hx
     simp only [Finset.mem_coe] at hx ⊢

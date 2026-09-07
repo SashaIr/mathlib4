@@ -63,7 +63,7 @@ lemma filter_range_eq_range_card {P : ℕ → Prop} [DecidablePred P]
         Finset.filter_true_of_mem fun i hi =>
           hdown n i (Nat.lt_succ_iff.1 (Finset.mem_range.1 hi)) hn
       rw [hall, Finset.card_range]
-    · rw [Finset.range_add_one, Finset.filter_insert, if_neg hn, ih, Finset.card_range]
+    · rw [Finset.range_add_one, Finset.filter_insert, ite_eq_right hn, ih, Finset.card_range]
 
 /-- The row in which the entry of row `k` lands after adding `r` to it and sorting:
 the number of rows `i ≤ k` with `lam k + r + i < lam i + k`. -/
@@ -136,20 +136,20 @@ def mnFn (lam : List ℕ) (r k : ℕ) : ℕ → ℕ := fun i =>
   else lam.getD i 0
 
 lemma mnFn_of_lt {i : ℕ} (h : i < mnPos lam r k) : mnFn lam r k i = lam.getD i 0 := by
-  rw [mnFn, if_pos h]
+  rw [mnFn, ite_eq_left h]
 
 lemma mnFn_mnPos :
     mnFn lam r k (mnPos lam r k) = lam.getD k 0 + r - (k - mnPos lam r k) := by
-  rw [mnFn, if_neg (lt_irrefl _), if_pos rfl]
+  rw [mnFn, ite_eq_right (lt_irrefl _), ite_eq_left rfl]
 
 lemma mnFn_of_mid {i : ℕ} (h1 : mnPos lam r k < i) (h2 : i ≤ k) :
     mnFn lam r k i = lam.getD (i - 1) 0 + 1 := by
-  rw [mnFn, if_neg (by omega), if_neg (by omega), if_pos h2]
+  rw [mnFn, ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left h2]
 
 lemma mnFn_of_gt (hlam : IsPart lam) {i : ℕ} (h : k < i) :
     mnFn lam r k i = lam.getD i 0 := by
   have := mnPos_le (r := r) hlam k
-  rw [mnFn, if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+  rw [mnFn, ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega)]
 
 /-- The shape obtained from `lam` by adding a ribbon of `r` boxes ending in row `k`. -/
 def mnShape (lam : List ℕ) (r k : ℕ) : List ℕ :=
@@ -163,8 +163,8 @@ lemma getD_mnShape (hlam : IsPart lam) (r k i : ℕ) :
     (mnShape lam r k).getD i 0 = mnFn lam r k i := by
   rw [mnShape, getD_shapeOfFn]
   by_cases hi : i < max (k + 1) lam.length
-  · rw [if_pos hi]
-  · rw [if_neg hi, mnFn_of_gt hlam (show k < i by omega),
+  · rw [ite_eq_left hi]
+  · rw [ite_eq_right hi, mnFn_of_gt hlam (show k < i by omega),
       List.getD_eq_default _ _ (by omega)]
 
 /-- The shape obtained by adding a ribbon is a partition. -/
@@ -223,11 +223,11 @@ lemma partVec_mnShape (hlam : IsPart lam) (hr : 0 < r) (k' : Fin m)
   funext i
   rw [partVec_apply, getD_mnShape hlam, moveVec_apply, hk']
   by_cases hij : (i : ℕ) = mnPos lam r k
-  · rw [if_pos hij, hij, mnFn_mnPos, Function.update_self, partVec_apply, hk']
+  · rw [ite_eq_left hij, hij, mnFn_mnPos, Function.update_self, partVec_apply, hk']
     omega
-  rw [if_neg hij]
+  rw [ite_eq_right hij]
   by_cases hmid : mnPos lam r k < (i : ℕ) ∧ (i : ℕ) ≤ k
-  · rw [if_pos hmid, mnFn_of_mid hmid.1 hmid.2]
+  · rw [ite_eq_left hmid, mnFn_of_mid hmid.1 hmid.2]
     have hne : (⟨(i : ℕ) - 1, lt_of_le_of_lt (Nat.sub_le _ _) i.isLt⟩ : Fin m) ≠ k' := by
       intro hcon
       have := congrArg (fun x : Fin m => (x : ℕ)) hcon
@@ -237,7 +237,7 @@ lemma partVec_mnShape (hlam : IsPart lam) (hr : 0 < r) (k' : Fin m)
     have hik : (i : ℕ) ≤ k := hmid.2
     simp only []
     omega
-  rw [if_neg hmid]
+  rw [ite_eq_right hmid]
   have hik : (i : ℕ) ≠ k := by
     intro hcon
     rcases Nat.lt_or_ge (mnPos lam r k) (i : ℕ) with h | h
@@ -343,11 +343,11 @@ theorem psum_mul_alt_partVec (hlam : IsPart lam) (hr : 0 < r) :
   rw [psum_mul_alt]
   refine Finset.sum_congr rfl fun k' _ => ?_
   by_cases hadd : MNAddable lam r (k' : ℕ)
-  · rw [if_pos hadd,
+  · rw [ite_eq_left hadd,
       alt_moveVec (R := R) _ (mnPos lam r (k' : ℕ)) k' (mnPos_le (r := r) hlam _),
       ← partVec_mnShape hlam hr k' rfl]
     rfl
-  · rw [if_neg hadd]
+  · rw [ite_eq_right hadd]
     exact alt_update_partVec_of_not_addable k' rfl hadd
 
 /-! ### The Murnaghan–Nakayama rule -/
@@ -375,10 +375,10 @@ theorem psum_mul_schurPoly_int (hlam : IsPart lam) (hlen : lam.length ≤ m) (hr
     rw [Finset.sum_mul]
     refine Finset.sum_congr rfl fun k' _ => ?_
     by_cases hadd : MNAddable lam r (k' : ℕ)
-    · rw [if_pos hadd, if_pos hadd, smul_mul_assoc, hdelta,
+    · rw [ite_eq_left hadd, ite_eq_left hadd, smul_mul_assoc, hdelta,
         alt_partVec_eq_schurPoly_mul (isPart_mnShape hlam hr hadd)
           (le_trans (length_mnShape_le _ _ _) (max_le k'.isLt hlen))]
-    · rw [if_neg hadd, if_neg hadd, zero_mul]
+    · rw [ite_eq_right hadd, ite_eq_right hadd, zero_mul]
   rw [hlhs, hrhs]
   exact psum_mul_alt_partVec hlam hr
 
@@ -402,7 +402,7 @@ theorem psum_mul_schurPoly (hlam : IsPart lam) (hlen : lam.length ≤ m) (hr : 0
   rw [h]
   refine Finset.sum_congr rfl fun k' _ => ?_
   by_cases hadd : MNAddable lam r (k' : ℕ)
-  · rw [if_pos hadd, if_pos hadd, map_zsmul, map_schurPoly]
-  · rw [if_neg hadd, if_neg hadd, map_zero]
+  · rw [ite_eq_left hadd, ite_eq_left hadd, map_zsmul, map_schurPoly]
+  · rw [ite_eq_right hadd, ite_eq_right hadd, map_zero]
 
 end MvPolynomial

@@ -87,12 +87,12 @@ theorem iSupIndep_symFuncHomogeneous (R : Type*) [CommRing R] :
     by_cases hj : j ≠ i
     · rw [iSup_pos hj] at hz'
       rw [SymFunc.homogeneousComponentLM_apply,
-        SymFunc.homogeneousComponent_of_isHomogeneous hz', if_neg fun h => hj h.symm]
+        SymFunc.homogeneousComponent_of_isHomogeneous hz', ite_eq_right fun h => hj h.symm]
     · rw [iSup_neg hj, Submodule.mem_bot] at hz'
       rw [hz', map_zero]
   have hxi : SymFunc.homogeneousComponentLM i R x = x := by
     rw [SymFunc.homogeneousComponentLM_apply, SymFunc.homogeneousComponent_of_isHomogeneous hx,
-      if_pos rfl]
+      ite_eq_left rfl]
   rw [← hxi, hzero x hx']
 
 /-- **The homogeneous parts span the ring of symmetric functions.** -/

@@ -168,16 +168,16 @@ lemma getD_append_cons_right : (l ++ x :: m).getD (l.length + 1 + k) d = m.getD 
   rw [this, List.getD_cons_succ]
 
 lemma set_append_cons_left (h : i < l.length) : (l ++ x :: m).set i y = l.set i y ++ x :: m := by
-  rw [List.set_append, if_pos h]
+  rw [List.set_append, ite_eq_left h]
 
 lemma set_append_cons_right : (l ++ x :: m).set (l.length + 1 + k) y = l ++ x :: m.set k y := by
-  rw [List.set_append, if_neg (by omega)]
+  rw [List.set_append, ite_eq_right (by omega)]
   have : l.length + 1 + k - l.length = k + 1 := by omega
   rw [this, List.set_cons_succ]
 
 /-- The set of a list at the position of a cons in the middle. -/
 lemma set_append_cons_self : (l ++ x :: m).set l.length y = l ++ y :: m := by
-  rw [List.set_append, if_neg (by omega), Nat.sub_self, List.set_cons_zero]
+  rw [List.set_append, ite_eq_right (by omega), Nat.sub_self, List.set_cons_zero]
 
 end List
 

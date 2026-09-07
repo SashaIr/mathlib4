@@ -58,7 +58,7 @@ lemma exists_comp_cycleTypeList {f : Perm (Fin n) → ℚ} (hf : IsClassFun f) :
   have hex : ∃ tau : Perm (Fin n), cycleTypeList tau = cycleTypeList sigma := ⟨sigma, rfl⟩
   change f sigma = if h : ∃ tau : Perm (Fin n), cycleTypeList tau = cycleTypeList sigma
     then f h.choose else 0
-  rw [dif_pos hex]
+  rw [dite_eq_left hex]
   exact hf.apply_eq_of_cycleTypeList_eq hex.choose_spec.symm
 
 /-- Averaging a function of the cycle type over the symmetric group. -/
@@ -141,10 +141,10 @@ theorem hallInner_frobCharSub (hnk : n ≤ k) {f g : Perm (Fin n) → ℚ}
     intro x
     have hz : (zcard x.1 : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos x.2.1).ne'
     rw [Finset.sum_eq_single x]
-    · rw [if_pos rfl]
+    · rw [ite_eq_left rfl]
       field_simp
     · intro y _ hy
-      rw [if_neg hy, mul_zero]
+      rw [ite_eq_right hy, mul_zero]
     · intro hx
       exact absurd (Finset.mem_univ x) hx
   rw [Finset.sum_congr rfl fun x _ => by rw [hinner x], classInner,
@@ -168,7 +168,7 @@ theorem exists_isClassFun_frobCharSub_eq (hnk : n ≤ k) (F : symHomogeneousSubm
     intro lam
     have hz : (zcard lam.1 : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos lam.2.1).ne'
     rw [hcdef]
-    simp only [dif_pos lam.2]
+    simp only [dite_eq_left lam.2]
     field_simp
   rw [Finset.sum_congr rfl fun lam _ => by rw [hterm lam]]
   exact (eq_sum_hallInner_pSubInvZ_smul hnk F).symm

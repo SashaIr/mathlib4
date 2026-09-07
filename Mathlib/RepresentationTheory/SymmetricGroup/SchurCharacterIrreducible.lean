@@ -86,7 +86,7 @@ lemma prod_jtMatrix_of_jtGood {R : Type*} [CommRing R] (lam : List ℕ) {s : Per
   have h0 : (0 : ℤ) ≤ (lam.getD (s i) 0 : ℤ) + (i : ℕ) - (s i : ℕ) := by
     have := hs i; omega
   simp only [jtMatrix, Matrix.of_apply, Function.comp_apply]
-  rw [hsymmInt, if_pos h0]
+  rw [hsymmInt, ite_eq_left h0]
 
 lemma prod_jtMatrix_of_not_jtGood {R : Type*} [CommRing R] (lam : List ℕ) {s : Perm (Fin m)}
     (hs : ¬ JtGood m lam s) :
@@ -127,8 +127,8 @@ theorem schurPoly_eq_sum_jt {R : Type*} [CommRing R] {lam : List ℕ} (hlam : Is
   rw [schurPoly_eq_det_jtMatrix hlam hlen, Matrix.det_apply']
   refine Finset.sum_congr rfl fun s _ => ?_
   by_cases hs : JtGood m lam s
-  · rw [prod_jtMatrix_of_jtGood lam hs, jtCoeff, if_pos hs, zsmul_eq_mul]
-  · rw [prod_jtMatrix_of_not_jtGood lam hs, jtCoeff, if_neg hs, mul_zero, zero_smul]
+  · rw [prod_jtMatrix_of_jtGood lam hs, jtCoeff, ite_eq_left hs, zsmul_eq_mul]
+  · rw [prod_jtMatrix_of_not_jtGood lam hs, jtCoeff, ite_eq_right hs, mul_zero, zero_smul]
 
 /-! ### The Schur class function as a combination of permutation characters -/
 
@@ -170,7 +170,7 @@ theorem schurChar_eq_sum_youngPermCharOf (lam : PartIdx n n) :
   rw [frobChar_zsmul]
   by_cases hs : JtGood n lam.1 s
   · rw [frobChar_youngPermCharOf n _ (by rw [sum_jtList lam.2.2.2 hs, lam.2.2.1])]
-  · rw [jtCoeff, if_neg hs, zero_smul, zero_smul]
+  · rw [jtCoeff, ite_eq_right hs, zero_smul, zero_smul]
 
 /-! ### The Schur class functions are the irreducible characters over `ℂ` -/
 
@@ -199,7 +199,7 @@ theorem isVirtualChar_youngPermCharOfC (n : ℕ) (l : List ℕ) :
       rfl
     rw [heq]
     exact hv
-  · simp only [youngPermCharOf, dif_neg h, Pi.zero_apply, Rat.cast_zero]
+  · simp only [youngPermCharOf, dite_eq_right h, Pi.zero_apply, Rat.cast_zero]
     exact IsVirtualChar.zero
 
 /-- **The Schur class function is a virtual character of `S_n` over `ℂ`.** -/
@@ -228,7 +228,7 @@ lemma sum_sq_schurChar (lam : PartIdx n n) :
     ∑ sigma : Perm (Fin n), schurChar lam sigma * schurChar lam sigma
       = (Nat.factorial n : ℚ) := by
   have h := classInner_schurChar lam lam
-  rw [if_pos rfl, classInner] at h
+  rw [ite_eq_left rfl, classInner] at h
   have hne : (Nat.factorial n : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (Nat.factorial_ne_zero n)
   have h2 : (Nat.factorial n : ℚ) * (((Nat.factorial n : ℚ))⁻¹ *
       ∑ sigma : Perm (Fin n), schurChar lam sigma * schurChar lam sigma)
@@ -314,7 +314,7 @@ lemma frobChar_regChar (k : ℕ) :
     · rw [zero_smul]
   rw [Finset.sum_congr rfl fun sigma _ => hterm sigma, Finset.sum_ite_eq' Finset.univ
     (1 : Perm (Fin n)) fun _ => (Nat.factorial n : ℚ) • pProd k ℚ
-      (cycleTypeList (1 : Perm (Fin n))), if_pos (Finset.mem_univ _), smul_smul,
+      (cycleTypeList (1 : Perm (Fin n))), ite_eq_left (Finset.mem_univ _), smul_smul,
     inv_mul_cancel₀ (Nat.cast_ne_zero.2 (Nat.factorial_ne_zero n)), one_smul]
 
 /-- **The regular character is the combination of the Schur class functions weighted by
@@ -362,7 +362,7 @@ theorem exists_eq_schurCharC {chi : Perm (Fin n) → ℂ} (h : IsSimpleChar chi)
     rw [regCharC_eq_sum, charBilin_sum_right]
     refine Finset.sum_eq_zero fun lam _ => ?_
     rw [charBilin_smul_right, charBilin_isSimpleChar h (isSimpleChar_schurCharC lam),
-      if_neg (hcon lam), mul_zero]
+      ite_eq_right (hcon lam), mul_zero]
   rw [charBilin_regCharC] at hzero
   rcases mul_eq_zero.1 hzero with h1 | h1
   · exact (Nat.cast_ne_zero.2 (Nat.factorial_ne_zero n)) h1
@@ -373,9 +373,9 @@ theorem schurCharC_injective (lam mu : PartIdx n n) (h : schurCharC lam = schurC
     lam = mu := by
   by_contra hne
   have h0 : classInner (schurChar lam) (schurChar mu) = 0 := by
-    rw [classInner_schurChar, if_neg hne]
+    rw [classInner_schurChar, ite_eq_right hne]
   have h1 : classInner (schurChar lam) (schurChar lam) = 1 := by
-    rw [classInner_schurChar, if_pos rfl]
+    rw [classInner_schurChar, ite_eq_left rfl]
   have hq : schurChar lam = schurChar mu := by
     funext sigma
     have := congrFun h sigma

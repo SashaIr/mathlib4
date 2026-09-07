@@ -116,7 +116,7 @@ theorem mnShape_of_ribbonOn (hlam : IsPart lam) {mu : List ℕ} (hmu : IsPart mu
   rcases Nat.lt_or_ge i s with hi | hi
   · rw [mnFn_of_lt (by omega), (hrib.getD_eq_of_lt hi).symm]
   rcases Nat.eq_or_lt_of_le hi with rfl | hi'
-  · rw [mnFn, if_neg (by omega), if_pos hpos.symm, hpos]
+  · rw [mnFn, ite_eq_right (by omega), ite_eq_left hpos.symm, hpos]
     omega
   rcases Nat.lt_or_ge k i with hik | hik
   · rw [mnFn_of_gt hlam hik, (hrib.getD_eq_of_gt hik).symm]
@@ -137,8 +137,8 @@ theorem psum_mul_schurPoly_ribbonHeight (hlam : IsPart lam) (hlen : lam.length �
   rw [psum_mul_schurPoly hlam hlen hr]
   refine Finset.sum_congr rfl fun k _ => ?_
   by_cases hadd : MNAddable lam r (k : ℕ)
-  · rw [if_pos hadd, if_pos hadd, ribbonHeight_mnShape hlam hr hadd, Nat.add_sub_cancel]
-  · rw [if_neg hadd, if_neg hadd]
+  · rw [ite_eq_left hadd, ite_eq_left hadd, ribbonHeight_mnShape hlam hr hadd, Nat.add_sub_cancel]
+  · rw [ite_eq_right hadd, ite_eq_right hadd]
 
 /-- A row where a ribbon grows is a row of the outer shape. -/
 lemma lt_length_of_ribbonOn {mu : List ℕ} {s k : ℕ} (hlam : IsPart lam)

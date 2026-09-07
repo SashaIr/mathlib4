@@ -55,8 +55,8 @@ lemma coeff_cauchyRHS (m k n : ℕ) (R : Type*) [CommRing R] (d : Fin k →₀ �
     rw [hmon, C_mul_monomial, mul_one, coeff_monomial]
     by_cases h : a = (d : Fin k → ℕ)
     · subst h
-      rw [if_pos rfl, if_pos (Finsupp.equivFunOnFinite_symm_coe d)]
-    · rw [if_neg h, if_neg]
+      rw [ite_eq_left rfl, ite_eq_left (Finsupp.equivFunOnFinite_symm_coe d)]
+    · rw [ite_eq_right h, ite_eq_right]
       intro hc
       exact h (by rw [← hc]; rfl)
   rw [Finset.sum_congr rfl hterm,
@@ -76,9 +76,9 @@ lemma sum_sub_single {k : ℕ} (d : Fin k →₀ ℕ) (j : Fin k) {r : ℕ} (hr 
   rw [Finset.sum_congr rfl fun i _ => hj i]
   have hsplit : ∑ i, (if i = j then d j - r else d i)
       = (d j - r) + ∑ i ∈ Finset.univ.erase j, d i := by
-    rw [← Finset.add_sum_erase _ _ (Finset.mem_univ j), if_pos rfl]
+    rw [← Finset.add_sum_erase _ _ (Finset.mem_univ j), ite_eq_left rfl]
     congr 1
-    exact Finset.sum_congr rfl fun i hi => if_neg (Finset.mem_erase.1 hi).1
+    exact Finset.sum_congr rfl fun i hi => ite_eq_right (Finset.mem_erase.1 hi).1
   have hsplit2 : ∑ i, d i = d j + ∑ i ∈ Finset.univ.erase j, d i :=
     (Finset.add_sum_erase _ _ (Finset.mem_univ j)).symm
   omega
@@ -132,11 +132,11 @@ lemma nsmul_cauchyRHS (m k n : ℕ) (R : Type*) [CommRing R] :
     refine Finset.sum_congr rfl fun j _ => ?_
     rw [coeff_C_mul, coeff_monomial_mul', one_mul]
     by_cases hle : r ≤ d j
-    · rw [if_pos (Finsupp.single_le_iff.2 hle), if_pos hle]
-    · rw [if_neg (fun h => hle (Finsupp.single_le_iff.1 h)), if_neg hle, mul_zero]
+    · rw [ite_eq_left (Finsupp.single_le_iff.2 hle), ite_eq_left hle]
+    · rw [ite_eq_right (fun h => hle (Finsupp.single_le_iff.1 h)), ite_eq_right hle, mul_zero]
   rw [Finset.sum_congr rfl fun r _ => hterm r]
   by_cases hd : ∑ j, d j = n
-  · rw [if_pos hd]
+  · rw [ite_eq_left hd]
     -- each `j` contributes `d j • ∏ h`, and the exponents sum to `n`
     rw [Finset.sum_comm]
     have hj : ∀ j : Fin k,
@@ -160,10 +160,10 @@ lemma nsmul_cauchyRHS (m k n : ℕ) (R : Type*) [CommRing R] :
         intro r hr
         rw [Finset.mem_Icc] at hr
         by_cases hle : r ≤ d j
-        · rw [if_pos hle, if_pos (Finset.mem_Icc.2 ⟨hr.1, hle⟩), coeff_cauchyRHS,
-            if_pos (by rw [sum_sub_single d j hle, hd]),
+        · rw [ite_eq_left hle, ite_eq_left (Finset.mem_Icc.2 ⟨hr.1, hle⟩), coeff_cauchyRHS,
+            ite_eq_left (by rw [sum_sub_single d j hle, hd]),
             prod_hsymm_sub_single m R d j r, mul_assoc]
-        · rw [if_neg hle, if_neg (fun h => hle (Finset.mem_Icc.1 h).2)]
+        · rw [ite_eq_right hle, ite_eq_right (fun h => hle (Finset.mem_Icc.1 h).2)]
       rw [Finset.sum_congr rfl hstep, ← Finset.sum_filter,
         Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 (by
           intro r hr
@@ -172,17 +172,17 @@ lemma nsmul_cauchyRHS (m k n : ℕ) (R : Type*) [CommRing R] :
         ← nsmul_hsymm_eq_sum_psum_mul_hsymm m (d j) R, smul_mul_assoc,
         Finset.mul_prod_erase Finset.univ (fun i => hsymm (Fin m) R (d i)) (Finset.mem_univ j)]
     rw [Finset.sum_congr rfl fun j _ => hj j, ← Finset.sum_smul, hd]
-  · rw [if_neg hd, smul_zero]
+  · rw [ite_eq_right hd, smul_zero]
     refine (Finset.sum_eq_zero fun r hr => Finset.sum_eq_zero fun j _ => ?_).symm
     rw [Finset.mem_Icc] at hr
     dsimp only
     by_cases hle : r ≤ d j
-    · rw [if_pos hle, coeff_cauchyRHS, if_neg, mul_zero]
+    · rw [ite_eq_left hle, coeff_cauchyRHS, ite_eq_right, mul_zero]
       rw [sum_sub_single d j hle]
       have hdj : d j ≤ ∑ i, d i :=
         Finset.single_le_sum (f := fun i => d i) (fun i _ => Nat.zero_le _) (Finset.mem_univ j)
       omega
-    · rw [if_neg hle]
+    · rw [ite_eq_right hle]
 
 /-! ### The Cauchy identity in terms of the power sums -/
 
@@ -194,7 +194,7 @@ lemma cauchyRHS_zero (m k : ℕ) (R : Type*) [CommRing R] : cauchyRHS m k 0 R = 
   by_cases hd : d = 0
   · subst hd
     simp
-  · rw [if_neg (show ¬(0 = d) from fun h => hd h.symm), if_neg]
+  · rw [ite_eq_right (show ¬(0 = d) from fun h => hd h.symm), ite_eq_right]
     intro hsum
     refine hd (Finsupp.ext fun i => ?_)
     exact (Finset.sum_eq_zero_iff.1 hsum) i (Finset.mem_univ i)

@@ -192,7 +192,7 @@ lemma coordOf_spec {t : List (List T)} {i : ℕ} (hi : i < (toWord t).length) :
   obtain ⟨r, j, hr, hj, hij⟩ := exists_coord hi
   have h : ∃ rj : ℕ × ℕ, rj.1 < t.length ∧ rj.2 < rowLen t rj.1 ∧ i = rowOffset t rj.1 + rj.2 :=
     ⟨(r, j), hr, hj, hij⟩
-  rw [coordOf, dif_pos h]
+  rw [coordOf, dite_eq_left h]
   exact h.choose_spec
 
 omit [LinearOrder T] in

@@ -92,21 +92,21 @@ theorem kostkaNum_two_step (hsh : IsPart sh) (h2 : m + c N + c (N + 1) = sh.sum)
             if HorizStrip sh nu.1 ∧ HorizStrip nu.1 rho.1 then kostkaNum N rho.1 c else 0 := by
     intro nu
     by_cases hstrip : HorizStrip sh nu.1
-    · rw [if_pos hstrip, kostkaNum_succ nu.2.1 (by rw [nu.2.2])]
+    · rw [ite_eq_left hstrip, kostkaNum_succ nu.2.1 (by rw [nu.2.2])]
       refine Finset.sum_congr rfl fun rho _ => ?_
       by_cases h : HorizStrip nu.1 rho.1
-      · rw [if_pos h, if_pos ⟨hstrip, h⟩]
-      · rw [if_neg h, if_neg (show ¬ (HorizStrip sh nu.1 ∧ HorizStrip nu.1 rho.1) from
+      · rw [ite_eq_left h, ite_eq_left ⟨hstrip, h⟩]
+      · rw [ite_eq_right h, ite_eq_right (show ¬ (HorizStrip sh nu.1 ∧ HorizStrip nu.1 rho.1) from
           fun hc => h hc.2)]
-    · rw [if_neg hstrip]
-      exact (Finset.sum_eq_zero fun rho _ => if_neg fun hc => hstrip hc.1).symm
+    · rw [ite_eq_right hstrip]
+      exact (Finset.sum_eq_zero fun rho _ => ite_eq_right fun hc => hstrip hc.1).symm
   rw [Finset.sum_congr rfl fun nu _ => step nu, Finset.sum_comm]
   refine Finset.sum_congr rfl fun rho _ => ?_
   rw [card_midSet_eq_sum, Finset.sum_mul]
   refine Finset.sum_congr rfl fun nu _ => ?_
   by_cases h : HorizStrip sh nu.1 ∧ HorizStrip nu.1 rho.1
-  · rw [if_pos h, if_pos h, one_mul]
-  · rw [if_neg h, if_neg h, zero_mul]
+  · rw [ite_eq_left h, ite_eq_left h, one_mul]
+  · rw [ite_eq_right h, ite_eq_right h, zero_mul]
 
 /-- Exchanging the multiplicities of the two largest letters does not change the Kostka
 number. -/
@@ -169,9 +169,9 @@ theorem kostkaNum_swap :
       rw [kostkaNum_succ (N := M) (m := m) hsh hcsum, kostkaNum_succ (N := M) (m := m) hsh hdsum]
       refine Finset.sum_congr rfl fun nu _ => ?_
       by_cases hstrip : HorizStrip sh nu.1
-      · rw [if_pos hstrip, if_pos hstrip]
+      · rw [ite_eq_left hstrip, ite_eq_left hstrip]
         exact ih M (by omega) nu.1 c d k nu.2.1 hkM hne h1 h2 (by rw [nu.2.2])
-      · rw [if_neg hstrip, if_neg hstrip]
+      · rw [ite_eq_right hstrip, ite_eq_right hstrip]
 
 /-! ### Invariance under an arbitrary permutation of the letters -/
 
@@ -189,15 +189,15 @@ lemma permContent_mul (N : ℕ) (c : ℕ → ℕ) (σ τ : Equiv.Perm (Fin N)) :
   funext i
   simp only [permContent, Equiv.Perm.coe_mul, Function.comp_apply]
   by_cases h : i < N
-  · rw [dif_pos h, dif_pos h, dif_pos (τ ⟨i, h⟩).2, Fin.eta]
-  · rw [dif_neg h, dif_neg h, dif_neg h]
+  · rw [dite_eq_left h, dite_eq_left h, dite_eq_left (τ ⟨i, h⟩).2, Fin.eta]
+  · rw [dite_eq_right h, dite_eq_right h, dite_eq_right h]
 
 lemma sum_permContent (N : ℕ) (c : ℕ → ℕ) (σ : Equiv.Perm (Fin N)) :
     ∑ i ∈ Finset.range N, permContent N c σ i = ∑ i ∈ Finset.range N, c i := by
   rw [Finset.sum_range, Finset.sum_range]
   have h : ∀ i : Fin N, permContent N c σ i = c (σ i) := by
     intro i
-    simp only [permContent, dif_pos i.2, Fin.eta]
+    simp only [permContent, dite_eq_left i.2, Fin.eta]
   simp only [h]
   exact Equiv.sum_comp σ fun i : Fin N => c i
 
@@ -230,11 +230,11 @@ theorem kostkaNum_permContent (N : ℕ) (σ : Equiv.Perm (Fin N)) :
           rw [Equiv.swap_apply_of_ne_of_ne (by simp [Fin.ext_iff, hj])
             (by simp [Fin.ext_iff, Fin.val_succ, hj'])]
         · rfl
-      · simp only [permContent, dif_pos (show i.1 < n + 1 by omega)]
+      · simp only [permContent, dite_eq_left (show i.1 < n + 1 by omega)]
         rw [show (⟨i.1, show i.1 < n + 1 by omega⟩ : Fin (n + 1)) = i.castSucc from rfl,
           Equiv.swap_apply_left]
         rfl
-      · simp only [permContent, dif_pos (show i.1 + 1 < n + 1 by omega)]
+      · simp only [permContent, dite_eq_left (show i.1 + 1 < n + 1 by omega)]
         rw [show (⟨i.1 + 1, show i.1 + 1 < n + 1 by omega⟩ : Fin (n + 1)) = i.succ from rfl,
           Equiv.swap_apply_right]
         rfl
@@ -278,6 +278,6 @@ theorem kostkaNum_eq_of_multiset_eq (N : ℕ) (sh : List ℕ) (c d : ℕ → ℕ
   obtain ⟨σ, hσ⟩ := exists_perm_comp_eq h
   rw [← kostkaNum_permContent N σ sh c hsh hsum]
   refine kostkaNum_congr N sh fun i hi => ?_
-  simpa [permContent, dif_pos hi] using hσ ⟨i, hi⟩
+  simpa [permContent, dite_eq_left hi] using hσ ⟨i, hi⟩
 
 end List

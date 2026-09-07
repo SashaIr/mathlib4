@@ -79,16 +79,16 @@ noncomputable def kostkaInv (n : ℕ) (lam mu : List ℕ) : ℤ :=
 
 lemma kostkaInv_apply (lam mu : PartIdx n n) :
     kostkaInv n lam.1 mu.1 = (hBasis n n ℤ).toMatrix (schurBasis n n ℤ) mu lam := by
-  rw [kostkaInv, dif_pos ⟨lam.2.1, lam.2.2.1⟩, dif_pos ⟨mu.2.1, mu.2.2.1⟩]
+  rw [kostkaInv, dite_eq_left ⟨lam.2.1, lam.2.2.1⟩, dite_eq_left ⟨mu.2.1, mu.2.2.1⟩]
   rfl
 
 lemma kostkaInv_eq_zero_of_left {lam mu : List ℕ} (h : ¬ (IsPart lam ∧ lam.sum = n)) :
     kostkaInv n lam mu = 0 := by
-  rw [kostkaInv, dif_neg h]
+  rw [kostkaInv, dite_eq_right h]
 
 lemma kostkaInv_eq_zero_of_right {lam mu : List ℕ} (h : ¬ (IsPart mu ∧ mu.sum = n)) :
     kostkaInv n lam mu = 0 := by
-  simp only [kostkaInv, dif_neg h, dite_eq_ite, ite_self]
+  simp only [kostkaInv, dite_eq_right h, dite_eq_ite, ite_self]
 
 /-! ### Orthogonality -/
 
@@ -137,7 +137,7 @@ theorem partdom_of_kostkaInv_ne_zero {lam mu : List ℕ} (h : kostkaInv n lam mu
   have hkne : k ≠ partIdxOfMem hlam.1 hlam.2 := fun he => hkdom (he ▸ Partdom.refl lam)
   have horth := sum_kostka_mul_kostkaInv_partIdx k (partIdxOfMem hlam.1 hlam.2)
   simp only [partIdxOfMem_val] at horth
-  rw [if_neg hkne] at horth
+  rw [ite_eq_right hkne] at horth
   have hsingle : ∀ mu' ∈ (Finset.univ : Finset (PartIdx n n)), mu' ≠ k →
       (kostka k.1 mu'.1 : ℤ) * kostkaInv n lam mu'.1 = 0 := by
     intro mu' _ hne

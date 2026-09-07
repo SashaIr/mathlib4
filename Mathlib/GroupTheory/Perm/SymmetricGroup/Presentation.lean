@@ -52,12 +52,12 @@ lemma isLiftable_adjSwap (n : ℕ) : (CoxeterMatrix.Aₙ n).IsLiftable (adjSwap 
   by_cases hij : i = j
   · subst hij
     have hM : (CoxeterMatrix.Aₙ n) i i = 1 := by
-      simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, if_pos]
+      simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, ite_eq_left]
     rw [hM, pow_one, adjSwap, Equiv.swap_mul_self]
   · have hne : (i : ℕ) ≠ (j : ℕ) := fun h => hij (Fin.ext h)
     by_cases hadj : (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j
     · have hM : (CoxeterMatrix.Aₙ n) i j = 3 := by
-        simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, if_neg hij, if_pos hadj]
+        simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, ite_eq_right hij, ite_eq_left hadj]
       rw [hM, adjSwap, adjSwap]
       rcases hadj with h | h
       · have he : (j.succ : Fin (n + 1)) = i.castSucc := Fin.ext (by rw [hsc, hcs]; omega)
@@ -73,7 +73,7 @@ lemma isLiftable_adjSwap (n : ℕ) : (CoxeterMatrix.Aₙ n).IsLiftable (adjSwap 
         rw [← he]
         exact swap_mul_swap_pow_three h1 h2 h3
     · have hM : (CoxeterMatrix.Aₙ n) i j = 2 := by
-        simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, if_neg hij, if_neg hadj]
+        simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, ite_eq_right hij, ite_eq_right hadj]
       push_neg at hadj
       obtain ⟨h1, h2⟩ := hadj
       rw [hM, adjSwap, adjSwap]
@@ -115,9 +115,9 @@ noncomputable def coxGen (N k : ℕ) : (CoxeterMatrix.Aₙ N).Group :=
   if h : k < N then (CoxeterMatrix.Aₙ N).simple ⟨k, h⟩ else 1
 
 lemma coxGen_of_lt {N k : ℕ} (h : k < N) :
-    coxGen N k = (CoxeterMatrix.Aₙ N).simple ⟨k, h⟩ := dif_pos h
+    coxGen N k = (CoxeterMatrix.Aₙ N).simple ⟨k, h⟩ := dite_eq_left h
 
-lemma coxGen_of_le {N k : ℕ} (h : N ≤ k) : coxGen N k = 1 := dif_neg (by omega)
+lemma coxGen_of_le {N k : ℕ} (h : N ≤ k) : coxGen N k = 1 := dite_eq_right (by omega)
 
 /-- In a group, two involutions whose product is an involution commute. -/
 lemma mul_comm_of_sq {G : Type*} [Group G] {a b : G} (ha : a * a = 1) (hb : b * b = 1)
@@ -151,7 +151,7 @@ lemma coxGen_comm {N k l : ℕ} (h : k + 1 < l) :
   · have hk : k < N := by omega
     have hM : (CoxeterMatrix.Aₙ N) ⟨k, hk⟩ ⟨l, hl⟩ = 2 := by
       simp only [CoxeterMatrix.Aₙ, Matrix.of_apply]
-      rw [if_neg (by simp only [Fin.mk.injEq]; omega), if_neg (by omega)]
+      rw [ite_eq_right (by simp only [Fin.mk.injEq]; omega), ite_eq_right (by omega)]
     have hpow := (CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_pow ⟨k, hk⟩ ⟨l, hl⟩
     rw [hM] at hpow
     rw [coxGen_of_lt hk, coxGen_of_lt hl]
@@ -165,7 +165,7 @@ lemma coxGen_braid {N k : ℕ} (h : k + 1 < N) :
   have hk : k < N := by omega
   have hM : (CoxeterMatrix.Aₙ N) ⟨k, hk⟩ ⟨k + 1, h⟩ = 3 := by
     simp only [CoxeterMatrix.Aₙ, Matrix.of_apply]
-    rw [if_neg (by simp only [Fin.mk.injEq]; omega), if_pos (Or.inr trivial)]
+    rw [ite_eq_right (by simp only [Fin.mk.injEq]; omega), ite_eq_left (Or.inr trivial)]
   have hpow := (CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_pow ⟨k, hk⟩ ⟨k + 1, h⟩
   rw [hM] at hpow
   rw [coxGen_of_lt hk, coxGen_of_lt h]

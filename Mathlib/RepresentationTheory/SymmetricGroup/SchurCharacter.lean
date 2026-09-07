@@ -202,7 +202,7 @@ lemma kostka_replicate_one {sh : List ℕ} (hsum : sh.sum = n) :
     simp only [tabSet, Set.mem_setOf_eq]
     refine and_congr_right fun _ => and_congr_right fun _ => and_congr_right fun _ => ?_
     refine forall_congr' fun i => forall_congr' fun hi => ?_
-    rw [List.getD_eq_getElem?_getD, List.getElem?_replicate, if_pos hi]
+    rw [List.getD_eq_getElem?_getD, List.getElem?_replicate, ite_eq_left hi]
     rfl
   rw [kostkaNum, kostkaNum, hset]
 

@@ -90,18 +90,18 @@ lemma sum_ite_mnShape_smul (hr : 0 < r) (hN : n + r = N) (lam : PartIdx n n) {k 
       = if MNAddable lam.1 r k then a • schurPoly (Fin N) ℚ (mnShape lam.1 r k) else 0 := by
   classical
   by_cases hadd : MNAddable lam.1 r k
-  · rw [if_pos hadd]
+  · rw [ite_eq_left hadd]
     set mu0 : PartIdx N N := ⟨mnShape lam.1 r k, mnShapeIdx_aux hr hN lam hk hadd⟩ with hmu0
     have h0 : ∀ mu ∈ (Finset.univ : Finset (PartIdx N N)), mu ≠ mu0 →
         (if MNAddable lam.1 r k ∧ mnShape lam.1 r k = mu.1 then a else 0)
           • schurPoly (Fin N) ℚ mu.1 = 0 := by
       intro mu _ hne
-      rw [if_neg (fun hcond => hne (Subtype.ext hcond.2.symm)), zero_smul]
+      rw [ite_eq_right (fun hcond => hne (Subtype.ext hcond.2.symm)), zero_smul]
     rw [Finset.sum_eq_single_of_mem mu0 (Finset.mem_univ _) h0, hmu0,
-      if_pos ⟨hadd, rfl⟩]
-  · rw [if_neg hadd]
+      ite_eq_left ⟨hadd, rfl⟩]
+  · rw [ite_eq_right hadd]
     refine Finset.sum_eq_zero fun mu _ => ?_
-    rw [if_neg (fun hc => hadd hc.1), zero_smul]
+    rw [ite_eq_right (fun hc => hadd hc.1), zero_smul]
 
 /-- **The Murnaghan-Nakayama rule for the characters of the symmetric group**: if the cycle
 type of `σ ∈ S_N` is obtained from the one of `τ ∈ S_n` by adding a part `r`, then the value
@@ -141,10 +141,10 @@ theorem schurChar_mnRule (hr : 0 < r) (hN : n + r = N)
     rw [mul_smul_comm, psum_mul_schurPoly lam.2.1 (lam.2.2.2.trans hle) hr, Finset.smul_sum]
     refine Finset.sum_congr rfl fun k _ => ?_
     by_cases hadd : MNAddable lam.1 r (k : ℕ)
-    · rw [if_pos hadd, if_pos hadd, smul_comm, ← Int.cast_smul_eq_zsmul ℚ, smul_smul]
+    · rw [ite_eq_left hadd, ite_eq_left hadd, smul_comm, ← Int.cast_smul_eq_zsmul ℚ, smul_smul]
       push_cast
       ring_nf
-    · rw [if_neg hadd, if_neg hadd, smul_zero]
+    · rw [ite_eq_right hadd, ite_eq_right hadd, smul_zero]
   have hzero : ∑ nu : PartIdx N N, (schurChar nu sigma - c nu) • schurPoly (Fin N) ℚ nu.1 = 0 := by
     simp only [sub_smul, Finset.sum_sub_distrib, key, sub_self]
   have hli := linearIndependent_schurPoly N N ℚ
@@ -168,19 +168,19 @@ lemma sum_ite_mnShape_eq_ite_ribbon {lam mu : List ℕ} (hlam : IsPart lam) (hmu
   · obtain ⟨s, k, hrib⟩ := hex
     obtain ⟨-, hadd, hshape⟩ := mnShape_of_ribbonOn hlam hmu hrib hr hsum
     have hk : k < N := lt_of_lt_of_le (lt_length_of_ribbonOn hlam hrib) hlen
-    rw [if_pos ⟨s, k, hrib⟩]
+    rw [ite_eq_left ⟨s, k, hrib⟩]
     have hheight : ribbonHeight lam mu - 1 = mnHeight lam r k := by
       rw [← hshape, ribbonHeight_mnShape hlam hr hadd, Nat.add_sub_cancel]
     rw [Finset.sum_eq_single_of_mem (⟨k, hk⟩ : Fin N) (Finset.mem_univ _) ?_,
-      if_pos ⟨hadd, hshape⟩, hheight]
+      ite_eq_left ⟨hadd, hshape⟩, hheight]
     intro k' _ hne
-    refine if_neg fun hcond => hne (Fin.ext ?_)
+    refine ite_eq_right fun hcond => hne (Fin.ext ?_)
     have hrib' : RibbonOn (mnPos lam r (k' : ℕ)) (k' : ℕ) lam mu := by
       rw [← hcond.2]
       exact ribbonOn_mnShape hlam hr hcond.1
     exact (RibbonOn.unique hlam hrib' hrib).2
-  · rw [if_neg hex]
-    refine Finset.sum_eq_zero fun k _ => if_neg fun hcond => hex ?_
+  · rw [ite_eq_right hex]
+    refine Finset.sum_eq_zero fun k _ => ite_eq_right fun hcond => hex ?_
     refine ⟨mnPos lam r (k : ℕ), (k : ℕ), ?_⟩
     rw [← hcond.2]
     exact ribbonOn_mnShape hlam hr hcond.1

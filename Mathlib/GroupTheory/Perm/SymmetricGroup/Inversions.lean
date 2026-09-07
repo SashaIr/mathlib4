@@ -112,11 +112,11 @@ lemma swap_lt_swap {a b : Fin N} (hab : a < b) (hne : (a, b) ≠ (c, d)) :
       = if (x : ℕ) = (c : ℕ) then (d : ℕ) else if (x : ℕ) = (d : ℕ) then (c : ℕ) else (x : ℕ) := by
     intro x
     by_cases h1 : x = c
-    · rw [h1, Equiv.swap_apply_left, if_pos rfl]
+    · rw [h1, Equiv.swap_apply_left, ite_eq_left rfl]
     by_cases h2 : x = d
-    · rw [h2, Equiv.swap_apply_right, if_neg (show ¬((d : ℕ) = (c : ℕ)) by omega), if_pos rfl]
-    · rw [Equiv.swap_apply_of_ne_of_ne h1 h2, if_neg (fun h => h1 (Fin.ext h)),
-        if_neg (fun h => h2 (Fin.ext h))]
+    · rw [h2, Equiv.swap_apply_right, ite_eq_right (show ¬((d : ℕ) = (c : ℕ)) by omega), ite_eq_left rfl]
+    · rw [Equiv.swap_apply_of_ne_of_ne h1 h2, ite_eq_right (fun h => h1 (Fin.ext h)),
+        ite_eq_right (fun h => h2 (Fin.ext h))]
   have hab' : (a : ℕ) < (b : ℕ) := hab
   have hne' : ¬ ((a : ℕ) = (c : ℕ) ∧ (b : ℕ) = (d : ℕ)) := by
     intro ⟨h1, h2⟩
@@ -189,13 +189,13 @@ lemma invCount_mul_swap (σ : Equiv.Perm (Fin N)) :
     simp [mem_invSet, hcltd, Equiv.swap_apply_left, Equiv.swap_apply_right]
   have hne : σ c ≠ σ d := fun hcon => absurd (σ.injective hcon) (ne_of_lt hcltd)
   by_cases hlt : σ c < σ d
-  · rw [if_pos hlt]
+  · rw [ite_eq_left hlt]
     have h1 : (c, d) ∈ invSet (σ * Equiv.swap c d) := hmemσ'.2 hlt
     have h2 : (c, d) ∉ invSet σ := fun hcon => absurd (hmemσ.1 hcon) (not_lt.2 (le_of_lt hlt))
     rw [Finset.erase_eq_of_notMem h2] at hcard
     have := Finset.card_erase_add_one h1
     rw [invCount, invCount, ← this, hcard]
-  · rw [if_neg hlt]
+  · rw [ite_eq_right hlt]
     have hgt : σ d < σ c := lt_of_le_of_ne (not_lt.1 hlt) (fun hcon => hne hcon.symm)
     have h1 : (c, d) ∈ invSet σ := hmemσ.2 hgt
     have h2 : (c, d) ∉ invSet (σ * Equiv.swap c d) := fun hcon =>
@@ -220,9 +220,9 @@ lemma invCount_mul_adjSwap_cases {n : ℕ} (σ : Equiv.Perm (Fin (n + 1))) (i : 
       invCount (σ * adjSwap n i) + 1 = invCount σ := by
   rw [invCount_mul_adjSwap]
   by_cases h : σ i.castSucc < σ i.succ
-  · exact Or.inl (by rw [if_pos h])
+  · exact Or.inl (by rw [ite_eq_left h])
   · refine Or.inr ?_
-    rw [if_neg h]
+    rw [ite_eq_right h]
     have hpos : 0 < invCount σ := by
       have hne : σ i.succ < σ i.castSucc :=
         lt_of_le_of_ne (not_lt.1 h) fun hcon =>
@@ -248,7 +248,7 @@ theorem length_eq_invCount {n : ℕ} (σ : Equiv.Perm (Fin (n + 1))) :
       · simp
       obtain ⟨i, hi⟩ := exists_adjacent_descent hσ
       have hstep : invCount (σ * adjSwap n i) + 1 = invCount σ := by
-        rw [invCount_mul_adjSwap, if_neg (not_lt.2 (le_of_lt hi))]
+        rw [invCount_mul_adjSwap, ite_eq_right (not_lt.2 (le_of_lt hi))]
         have : (i.castSucc, i.succ) ∈ invSet σ :=
           mem_invSet.2 ⟨Fin.castSucc_lt_succ, hi⟩
         have hpos : 0 < invCount σ := Finset.card_pos.2 ⟨_, this⟩
@@ -303,11 +303,11 @@ theorem isRightDescent_iff_lt {n : ℕ} (σ : Equiv.Perm (Fin (n + 1))) (i : Fin
   constructor
   · intro h
     by_contra hcon
-    rw [if_pos (lt_of_le_of_ne (not_lt.1 hcon) fun hc =>
+    rw [ite_eq_left (lt_of_le_of_ne (not_lt.1 hcon) fun hc =>
       absurd (σ.injective hc) (Fin.castSucc_lt_succ (i := i)).ne)] at h
     omega
   · intro h
-    rw [if_neg (not_lt.2 (le_of_lt h))]
+    rw [ite_eq_right (not_lt.2 (le_of_lt h))]
     have hmem : (i.castSucc, i.succ) ∈ invSet σ := mem_invSet.2 ⟨Fin.castSucc_lt_succ, h⟩
     have : 0 < invCount σ := Finset.card_pos.2 ⟨_, hmem⟩
     omega

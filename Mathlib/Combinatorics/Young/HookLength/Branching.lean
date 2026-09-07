@@ -58,8 +58,8 @@ lemma tabSet_one (sh : List ℕ) :
     intro a
     rw [(perm_toWord_flatten P).count_eq, List.count_range]
     by_cases ha : a < sh.sum
-    · rw [if_pos ha]; exact hcount a ha
-    · rw [if_neg ha]
+    · rw [ite_eq_left ha]; exact hcount a ha
+    · rw [ite_eq_right ha]
       exact List.count_eq_zero_of_not_mem fun hmem => ha (hlt a hmem)
   · rintro ⟨⟨htab, hstd⟩, hsh⟩
     have hlen : (toWord P).length = sh.sum := by
@@ -67,10 +67,10 @@ lemma tabSet_one (sh : List ℕ) :
     rw [IsStd, hlen, List.perm_iff_count] at hstd
     have hcount : ∀ a, P.flatten.count a = if a < sh.sum then 1 else 0 := fun a => by
       rw [← (perm_toWord_flatten P).count_eq, hstd a, List.count_range]
-    refine ⟨htab, hsh, fun x hx => ?_, fun i hi => by rw [hcount i, if_pos hi]⟩
+    refine ⟨htab, hsh, fun x hx => ?_, fun i hi => by rw [hcount i, ite_eq_left hi]⟩
     by_contra hxlt
     have hx0 := hcount x
-    rw [if_neg hxlt] at hx0
+    rw [ite_eq_right hxlt] at hx0
     exact absurd hx0 (by simp [List.count_eq_zero, hx])
 
 /-- The number of standard tableaux of shape `sh` is the Kostka number
@@ -174,8 +174,8 @@ theorem numStdTab_branching {lam : List ℕ} (hlam : IsPart lam) {n N : ℕ} (hs
       kostkaNum_succ (N := n) (c := fun _ => 1) (m := n) hlam (by simp [hsum])]
     refine Finset.sum_congr rfl fun nu _ => ?_
     by_cases h : HorizStrip lam nu.1
-    · rw [if_pos h, if_pos h, numStdTab_eq_kostkaNum, nu.2.2]
-    · rw [if_neg h, if_neg h]
+    · rw [ite_eq_left h, ite_eq_left h, numStdTab_eq_kostkaNum, nu.2.2]
+    · rw [ite_eq_right h, ite_eq_right h]
   rw [hkos, ← Finset.sum_filter, ← Finset.sum_filter]
   refine (Finset.sum_bij
     (fun (r : ℕ) (hr : r ∈ (Finset.range N).filter (IsRemCorner lam)) =>

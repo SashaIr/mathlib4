@@ -74,8 +74,8 @@ theorem schurPoly_mul_esymm_int {mu : List ℕ} (hmu : IsPart mu) (r : ℕ) :
     refine Finset.sum_congr rfl fun lam hlam => ?_
     obtain ⟨hlampart, -⟩ := mem_partFinset.1 hlam
     by_cases hstrip : VertStrip lam mu
-    · rw [if_pos hstrip, if_pos hstrip, altPart_eq_schurPoly_mul hlampart]
-    · rw [if_neg hstrip, if_neg hstrip, zero_mul]
+    · rw [ite_eq_left hstrip, ite_eq_left hstrip, altPart_eq_schurPoly_mul hlampart]
+    · rw [ite_eq_right hstrip, ite_eq_right hstrip, zero_mul]
   rw [hlhs, hrhs]
   exact altPart_mul_esymm hmu r
 
@@ -90,8 +90,8 @@ theorem schurPoly_mul_esymm_nat {mu : List ℕ} (hmu : IsPart mu) (r : ℕ) :
   rw [schurPoly_mul_esymm_int hmu r]
   refine Finset.sum_congr rfl fun lam _ => ?_
   by_cases hstrip : VertStrip lam mu
-  · rw [if_pos hstrip, if_pos hstrip, map_schurPoly]
-  · rw [if_neg hstrip, if_neg hstrip, map_zero]
+  · rw [ite_eq_left hstrip, ite_eq_left hstrip, map_schurPoly]
+  · rw [ite_eq_right hstrip, ite_eq_right hstrip, map_zero]
 
 /-- **The dual Pieri rule**: the product of the Schur polynomial of shape `mu` by the
 elementary symmetric polynomial of degree `r` is the sum of the Schur polynomials of the
@@ -107,7 +107,7 @@ theorem schurPoly_mul_esymm {R : Type*} [CommSemiring R] {mu : List ℕ} (hmu : 
   rw [h]
   refine Finset.sum_congr rfl fun lam _ => ?_
   by_cases hstrip : VertStrip lam mu
-  · rw [if_pos hstrip, if_pos hstrip, map_schurPoly]
-  · rw [if_neg hstrip, if_neg hstrip, map_zero]
+  · rw [ite_eq_left hstrip, ite_eq_left hstrip, map_schurPoly]
+  · rw [ite_eq_right hstrip, ite_eq_right hstrip, map_zero]
 
 end MvPolynomial

@@ -71,7 +71,7 @@ def vecPart (m : ℕ) (c : Fin m → ℕ) : List ℕ :=
 
 lemma getD_vecPart (c : Fin m → ℕ) (i : Fin m) :
     (vecPart m c).getD (i : ℕ) 0 = c i - (m - 1 - (i : ℕ)) := by
-  rw [vecPart, getD_shapeOfFn, if_pos i.isLt, dif_pos i.isLt]
+  rw [vecPart, getD_shapeOfFn, ite_eq_left i.isLt, dite_eq_left i.isLt]
 
 lemma getD_vecPart_of_le {c : Fin m → ℕ} {i : ℕ} (hi : m ≤ i) :
     (vecPart m c).getD i 0 = 0 :=
@@ -89,7 +89,7 @@ lemma vecPart_partVec {lam : List ℕ} (hlam : IsPart lam) (hlen : lam.length �
   · funext i
     by_cases hi : i < m
     · simp [hi]
-    · rw [dif_neg hi, List.getD_eq_default _ _ (by omega)]
+    · rw [dite_eq_right hi, List.getD_eq_default _ _ (by omega)]
       simp
 
 lemma partVec_vecPart {c : Fin m → ℕ} (hc : ∀ i : Fin m, m - 1 - (i : ℕ) ≤ c i) :
@@ -151,9 +151,9 @@ lemma isPart_vecPart {mu : List ℕ} {c : Fin m → ℕ} (h : IsAltStrip (partVe
     have h1 := htwo ⟨i, hi'⟩ ⟨i + 1, hi⟩ rfl
     have h2 := hone ⟨i, hi'⟩
     simp only [partVec_apply] at h1 h2
-    rw [dif_pos hi, dif_pos hi']
+    rw [dite_eq_left hi, dite_eq_left hi']
     omega
-  · simp [dif_neg hi]
+  · simp [dite_eq_right hi]
 
 /-- The size of the partition attached to a horizontal strip of exponent vectors. -/
 lemma sum_vecPart {mu : List ℕ} (hmulen : mu.length ≤ m) {r : ℕ}
@@ -188,10 +188,10 @@ noncomputable def altPart (m : ℕ) (R : Type*) [CommRing R] (lam : List ℕ) :
   if lam.length ≤ m then alt m R (partVec m lam) else 0
 
 lemma altPart_of_le {lam : List ℕ} (h : lam.length ≤ m) :
-    altPart m R lam = alt m R (partVec m lam) := if_pos h
+    altPart m R lam = alt m R (partVec m lam) := ite_eq_left h
 
 lemma altPart_of_lt {lam : List ℕ} (h : m < lam.length) : altPart m R lam = 0 :=
-  if_neg (by omega)
+  ite_eq_right (by omega)
 
 /-- The exponent vector of a horizontal strip, as a finitely supported function. -/
 noncomputable def stripFinsupp (m : ℕ) (mu lam : List ℕ) : Fin m →₀ ℕ :=

@@ -100,7 +100,7 @@ decreasing_by
 /-- The walk stops at a box whose hook is reduced to a single box. -/
 lemma hookWalkProb_of_le {lam : List ℕ} {c x : ℕ × ℕ} (h : hookLength lam x.1 x.2 ≤ 1) :
     hookWalkProb lam c x = if x = c then 1 else 0 := by
-  rw [hookWalkProb, if_pos h]
+  rw [hookWalkProb, ite_eq_left h]
 
 /-- The recursive step of the hook walk. -/
 lemma hookWalkProb_of_lt {lam : List ℕ} {c x : ℕ × ℕ} (h : 1 < hookLength lam x.1 x.2) :
@@ -108,7 +108,7 @@ lemma hookWalkProb_of_lt {lam : List ℕ} {c x : ℕ × ℕ} (h : 1 < hookLength
       ((∑ j ∈ Finset.Ioo x.2 (lam.getD x.1 0), hookWalkProb lam c (x.1, j)) +
         (∑ i ∈ Finset.Ioo x.1 ((conjPart lam).getD x.2 0), hookWalkProb lam c (i, x.2)))
         / ((hookLength lam x.1 x.2 : ℚ) - 1) := by
-  rw [hookWalkProb, if_neg (by omega), Finset.sum_attach _ (fun j => hookWalkProb lam c (x.1, j)),
+  rw [hookWalkProb, ite_eq_right (by omega), Finset.sum_attach _ (fun j => hookWalkProb lam c (x.1, j)),
     Finset.sum_attach _ (fun i => hookWalkProb lam c (i, x.2))]
 
 /-! ### Hook lengths of the boxes of a diagram -/
@@ -170,13 +170,13 @@ private lemma hookWalkProb_eq_zero_aux (c : ℕ × ℕ) :
   induction N with
   | zero =>
     intro x hx hnot
-    rw [hookWalkProb_of_le (hookLength_le_one_of_sum_le (by omega) (by omega)), if_neg]
+    rw [hookWalkProb_of_le (hookLength_le_one_of_sum_le (by omega) (by omega)), ite_eq_right]
     rintro rfl
     exact hnot ⟨le_rfl, le_rfl⟩
   | succ N ih =>
     intro x hx hnot
     by_cases h : hookLength lam x.1 x.2 ≤ 1
-    · rw [hookWalkProb_of_le h, if_neg]
+    · rw [hookWalkProb_of_le h, ite_eq_right]
       rintro rfl
       exact hnot ⟨le_rfl, le_rfl⟩
     · rw [hookWalkProb_of_lt (by omega)]
@@ -229,14 +229,14 @@ private lemma sum_hookWalkProb_corners_aux (hlam : IsPart lam) :
       rw [List.getD_eq_default _ _ (by omega)] at hc
       omega
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_range.2 hilen) ?_]
-    · rw [if_pos hcorner, hookWalkProb_of_le h, if_pos (by rw [hj])]
+    · rw [ite_eq_left hcorner, hookWalkProb_of_le h, ite_eq_left (by rw [hj])]
     · intro r _ hne
       by_cases hr : IsRemCorner lam r
-      · rw [if_pos hr, hookWalkProb_of_le h, if_neg]
+      · rw [ite_eq_left hr, hookWalkProb_of_le h, ite_eq_right]
         simp only [Prod.mk.injEq]
         rintro ⟨rfl, -⟩
         exact hne rfl
-      · rw [if_neg hr]
+      · rw [ite_eq_right hr]
   intro N
   induction N with
   | zero =>
@@ -279,9 +279,9 @@ private lemma sum_hookWalkProb_corners_aux (hlam : IsPart lam) :
                   else 0))) / ((hookLength lam i j : ℚ) - 1) := by
         intro r
         by_cases hr : IsRemCorner lam r
-        · simp only [if_pos hr]
+        · simp only [ite_eq_left hr]
           exact hookWalkProb_of_lt (x := (i, j)) (Nat.lt_of_not_le h)
-        · simp [if_neg hr]
+        · simp [ite_eq_right hr]
       rw [Finset.sum_congr rfl fun r _ => hexp r, ← Finset.sum_div, Finset.sum_add_distrib,
         Finset.sum_comm (s := Finset.range lam.length) (t := Finset.Ioo j (lam.getD i 0)),
         Finset.sum_comm (s := Finset.range lam.length)
@@ -401,11 +401,11 @@ private lemma hookWalkProb_corner_aux (hlam : IsPart lam) (hal : IsRemCorner lam
   have hbeval : lam.getD al 0 - 1 = be := by omega
   have hrowval : ∀ i : ℕ, i ≠ al → gnwRow lam al i = ((hookLength lam i be : ℚ) - 1)⁻¹ := by
     intro i hi
-    rw [gnwRow, if_neg hi, hbeval]
+    rw [gnwRow, ite_eq_right hi, hbeval]
   have hcolval : ∀ j : ℕ, j ≠ be → gnwCol lam al j = ((hookLength lam al j : ℚ) - 1)⁻¹ := by
     intro j hj
-    rw [gnwCol, if_neg (by rw [hbeval]; exact hj)]
-  have hcolone : gnwCol lam al be = 1 := by rw [gnwCol, if_pos hbeval.symm]
+    rw [gnwCol, ite_eq_right (by rw [hbeval]; exact hj)]
+  have hcolone : gnwCol lam al be = 1 := by rw [gnwCol, ite_eq_left hbeval.symm]
   have hconjbe : (conjPart lam).getD be 0 = al + 1 := by
     have := getD_conjPart_corner hlam hal
     rwa [hbeval] at this
@@ -429,7 +429,7 @@ private lemma hookWalkProb_corner_aux (hlam : IsPart lam) (hal : IsRemCorner lam
     subst hbb
     have h5 : a = al := by omega
     subst h5
-    rw [hookWalkProb_of_le h, if_pos rfl, gnwRow_self, hcolone]
+    rw [hookWalkProb_of_le h, ite_eq_left rfl, gnwRow_self, hcolone]
     simp
   intro N
   induction N with
@@ -495,9 +495,9 @@ private lemma hookWalkProb_corner_aux (hlam : IsPart lam) (hal : IsRemCorner lam
           ∏ j' ∈ Finset.Ioo j be, (1 + gnwCol lam al j')
         = if b = be then 0 else ∏ j ∈ Finset.Ioo b be, (1 + gnwCol lam al j) := by
       rcases eq_or_lt_of_le hb with heq | hlt
-      · rw [if_pos heq, heq]
+      · rw [ite_eq_left heq, heq]
         simp
-      · rw [if_neg (by omega),
+      · rw [ite_eq_right (by omega),
           show Finset.Ioc b be = Finset.Icc (b + 1) be by
             ext j; simp only [Finset.mem_Ioc, Finset.mem_Icc]; omega,
           sum_Icc_mul_prod_Ioo (gnwCol lam al) be (be - (b + 1)) (b + 1) (by omega),
@@ -507,9 +507,9 @@ private lemma hookWalkProb_corner_aux (hlam : IsPart lam) (hal : IsRemCorner lam
           ∏ i' ∈ Finset.Ioo i al, (1 + gnwRow lam al i')
         = if a = al then 0 else ∏ i ∈ Finset.Ioo a al, (1 + gnwRow lam al i) := by
       rcases eq_or_lt_of_le ha with heq | hlt
-      · rw [if_pos heq, heq]
+      · rw [ite_eq_left heq, heq]
         simp
-      · rw [if_neg (by omega),
+      · rw [ite_eq_right (by omega),
           show Finset.Ioc a al = Finset.Icc (a + 1) al by
             ext i; simp only [Finset.mem_Ioc, Finset.mem_Icc]; omega,
           sum_Icc_mul_prod_Ioo (gnwRow lam al) al (al - (a + 1)) (a + 1) (by omega),
@@ -534,7 +534,7 @@ private lemma hookWalkProb_corner_aux (hlam : IsPart lam) (hal : IsRemCorner lam
           have h2 : (conjPart lam).getD b 0 = al + 1 := by rw [heqb]; exact hconjbe
           omega
         · exact h
-      rw [if_neg (by omega : ¬ b = be), if_pos heqa, heqa, gnwRow_self,
+      rw [ite_eq_right (by omega : ¬ b = be), ite_eq_left heqa, heqa, gnwRow_self,
         hcolval b (by omega)]
       have hne' : ((hookLength lam al b : ℚ) - 1) ≠ 0 := by rwa [heqa] at hne
       simp only [Finset.Ioo_self, Finset.prod_empty]
@@ -542,14 +542,14 @@ private lemma hookWalkProb_corner_aux (hlam : IsPart lam) (hal : IsRemCorner lam
       ring
     · rcases eq_or_lt_of_le hb with heqb | hblt
       · -- the box is in the column of the corner
-        rw [if_pos heqb, if_neg (by omega : ¬ a = al), heqb, hcolone,
+        rw [ite_eq_left heqb, ite_eq_right (by omega : ¬ a = al), heqb, hcolone,
           hrowval a (by omega)]
         have hne' : ((hookLength lam a be : ℚ) - 1) ≠ 0 := by rwa [heqb] at hne
         simp only [Finset.Ioo_self, Finset.prod_empty]
         field_simp
         ring
       · -- the generic case
-        rw [if_neg (by omega), if_neg (by omega), hrowval a (by omega), hcolval b (by omega)]
+        rw [ite_eq_right (by omega), ite_eq_right (by omega), hrowval a (by omega), hcolval b (by omega)]
         have hkey : hookLength lam a be + hookLength lam al b = hookLength lam a b + 1 := by
           have := hookLength_add_hookLength hlam hal (b := b) ha (by omega)
           rwa [hbeval] at this

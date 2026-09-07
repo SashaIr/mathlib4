@@ -79,9 +79,9 @@ lemma esymm_eq_sum_zeroOneAntidiag (m r : ℕ) (R : Type*) [CommRing R] :
     by_cases h : i ∈ d.support
     · have h1 := hone i
       have h2 := Finsupp.mem_support_iff.1 h
-      rw [if_pos h]
+      rw [ite_eq_left h]
       omega
-    · rw [if_neg h]
+    · rw [ite_eq_right h]
       exact (Finsupp.notMem_support_iff.1 h).symm
   · intro S _
     rfl
@@ -170,9 +170,9 @@ lemma isPart_vecPart_of_strict {c : Fin m → ℕ} (hge : ∀ i : Fin m, m - 1 -
     have h2 := hge ⟨i, hi'⟩
     have h3 := hge ⟨i + 1, hi⟩
     simp only at h1 h2 h3
-    rw [dif_pos hi, dif_pos hi']
+    rw [dite_eq_left hi, dite_eq_left hi']
     omega
-  · simp [dif_neg hi]
+  · simp [dite_eq_right hi]
 
 /-- **The dual Pieri rule for alternants**, in terms of partitions. -/
 theorem altPart_mul_esymm {mu : List ℕ} (hmu : IsPart mu) (r : ℕ) :

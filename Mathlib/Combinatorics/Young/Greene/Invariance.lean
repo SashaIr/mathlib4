@@ -97,13 +97,13 @@ lemma mixCol_lt {n : ℕ} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ} {i : �
 lemma mixCol_mid {n : ℕ} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ} {j : ℕ} (hj : j < 3) :
     mixCol n c wc τ (n + j) = wc j := by
   simp only [mixCol]
-  rw [if_neg (by omega), if_pos (by omega)]
+  rw [ite_eq_right (by omega), ite_eq_left (by omega)]
   simp
 
 lemma mixCol_gt {n : ℕ} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ} {i : ℕ} (hi : n + 3 ≤ i) :
     mixCol n c wc τ i = (c i).map τ := by
   simp only [mixCol]
-  rw [if_neg (by omega), if_neg (by omega)]
+  rw [ite_eq_right (by omega), ite_eq_right (by omega)]
 
 /-- The key transfer lemma: a colouring of `p ++ mu ++ s` yields a colouring of
 `p ++ mv ++ s`, provided the four families of comparisons hold. -/
@@ -325,20 +325,20 @@ lemma greeneRow_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
     interval_cases j
     · exact absurd hij (Nat.not_lt_zero i)
     · interval_cases i
-      · rw [if_pos rfl] at h1
-        rw [if_neg (by norm_num), if_pos rfl] at h2
+      · rw [ite_eq_left rfl] at h1
+        rw [ite_eq_right (by norm_num), ite_eq_left rfl] at h2
         have := col_mid_mid (m := [Z, X, Y]) rfl hc (i := 0) (j := 1) (by norm_num)
           (by norm_num) h2 h1
         simp only [List.getElem_cons_zero, List.getElem_cons_succ] at this
         exact absurd this (not_le.2 (lt_of_le_of_lt hXY hYZ))
     · interval_cases i
-      · rw [if_pos rfl] at h1
-        rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+      · rw [ite_eq_left rfl] at h1
+        rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
         have := col_mid_mid (m := [Z, X, Y]) rfl hc (i := 1) (j := 2) (by norm_num)
           (by norm_num) h1 h2
         simpa using this
-      · rw [if_neg (by norm_num), if_pos rfl] at h1
-        rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+      · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at h1
+        rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
         have := col_mid_mid (m := [Z, X, Y]) rfl hc (i := 0) (j := 2) (by norm_num)
           (by norm_num) h1 h2
         simp only [List.getElem_cons_zero, List.getElem_cons_succ] at this
@@ -346,26 +346,26 @@ lemma greeneRow_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
   · intro i j x hi hj hci hwc
     simp only at hwc
     interval_cases j
-    · rw [if_pos rfl] at hwc
+    · rw [ite_eq_left rfl] at hwc
       have := col_pre_mid (m := [Z, X, Y]) rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
       simpa using this
-    · rw [if_neg (by norm_num), if_pos rfl] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
       have := col_pre_mid (m := [Z, X, Y]) rfl hc hi (show (0:ℕ) < 3 by norm_num) hci hwc
       simpa using this
-    · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
       have := col_pre_mid (m := [Z, X, Y]) rfl hc hi (show (2:ℕ) < 3 by norm_num) hci hwc
       simpa using this
   · intro j i x hj hi hwc hcs
     rw [Option.map_id] at hcs
     simp only at hwc
     interval_cases j
-    · rw [if_pos rfl] at hwc
+    · rw [ite_eq_left rfl] at hwc
       have := col_mid_suf (m := [Z, X, Y]) rfl hc (show (1:ℕ) < 3 by norm_num) hi hwc hcs
       simpa using this
-    · rw [if_neg (by norm_num), if_pos rfl] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
       have := col_mid_suf (m := [Z, X, Y]) rfl hc (show (0:ℕ) < 3 by norm_num) hi hwc hcs
       simpa using this
-    · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
       have := col_mid_suf (m := [Z, X, Y]) rfl hc (show (2:ℕ) < 3 by norm_num) hi hwc hcs
       simpa using this
   · intro i j x hi hj hci hcs
@@ -390,39 +390,39 @@ lemma greeneRow_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
     interval_cases j
     · exact absurd hij (Nat.not_lt_zero i)
     · interval_cases i
-      · rw [if_pos rfl] at h1
-        rw [if_neg (by norm_num), if_pos rfl] at h2
+      · rw [ite_eq_left rfl] at h1
+        rw [ite_eq_right (by norm_num), ite_eq_left rfl] at h2
         have := col_mid_mid rfl hc (i := 0) (j := 2) (by norm_num) (by norm_num) h1 h2
         simp only [List.getElem_cons_zero, List.getElem_cons_succ] at this
         exact absurd this (not_le.2 hXY)
     · interval_cases i
-      · rw [if_pos rfl] at h1
-        rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+      · rw [ite_eq_left rfl] at h1
+        rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
         have := col_mid_mid rfl hc (i := 0) (j := 1) (by norm_num) (by norm_num) h1 h2
         simpa using this
-      · rw [if_neg (by norm_num), if_pos rfl] at h1
-        rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+      · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at h1
+        rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
         have := col_mid_mid rfl hc (i := 1) (j := 2) (by norm_num) (by norm_num) h2 h1
         simp only [List.getElem_cons_zero, List.getElem_cons_succ] at this
         exact absurd this (not_le.2 (lt_of_lt_of_le hXY hYZ))
   · intro i j x hi hj hci hwc
     simp only at hwc
     interval_cases j
-    · rw [if_pos rfl] at hwc
+    · rw [ite_eq_left rfl] at hwc
       simpa using col_pre_mid rfl hc hi (show (0:ℕ) < 3 by norm_num) hci hwc
-    · rw [if_neg (by norm_num), if_pos rfl] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
       simpa using col_pre_mid rfl hc hi (show (2:ℕ) < 3 by norm_num) hci hwc
-    · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
       simpa using col_pre_mid rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
   · intro j i x hj hi hwc hcs
     rw [Option.map_id] at hcs
     simp only at hwc
     interval_cases j
-    · rw [if_pos rfl] at hwc
+    · rw [ite_eq_left rfl] at hwc
       simpa using col_mid_suf rfl hc (show (0:ℕ) < 3 by norm_num) hi hwc hcs
-    · rw [if_neg (by norm_num), if_pos rfl] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
       simpa using col_mid_suf rfl hc (show (2:ℕ) < 3 by norm_num) hi hwc hcs
-    · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+    · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
       simpa using col_mid_suf rfl hc (show (1:ℕ) < 3 by norm_num) hi hwc hcs
   · intro i j x hi hj hci hcs
     rw [Option.map_id] at hcs
@@ -540,10 +540,10 @@ lemma greeneRow_knuthAC_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
         interval_cases j
         · exact absurd hij (Nat.not_lt_zero i)
         · interval_cases i
-          · simp only [if_neg (by norm_num : ¬(1:ℕ) = 0)] at h1 h2
+          · simp only [ite_eq_right (by norm_num : ¬(1:ℕ) = 0)] at h1 h2
             exact absurd ((Option.some.inj h2).trans (Option.some.inj h1).symm) hgh
         · interval_cases i
-          · simp only [if_neg (by norm_num : ¬(2:ℕ) = 0)] at h1 h2
+          · simp only [ite_eq_right (by norm_num : ¬(2:ℕ) = 0)] at h1 h2
             exact absurd ((Option.some.inj h2).trans (Option.some.inj h1).symm) hgh
           · simpa using hXY
       · intro i j x hi hj hci hwc
@@ -604,35 +604,35 @@ lemma greeneRow_knuthAC_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
       interval_cases j
       · exact absurd hij (Nat.not_lt_zero i)
       · interval_cases i
-        · rw [if_pos rfl] at h1
-          rw [if_neg (by norm_num), if_pos rfl] at h2
+        · rw [ite_eq_left rfl] at h1
+          rw [ite_eq_right (by norm_num), ite_eq_left rfl] at h2
           exact absurd ⟨x, h2, h1⟩ hgen
       · interval_cases i
-        · rw [if_pos rfl] at h1
-          rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+        · rw [ite_eq_left rfl] at h1
+          rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
           have := col_mid_mid rfl hc (i := 1) (j := 2) (by norm_num) (by norm_num) h1 h2
           exact absurd this (not_le.2 hYZ)
-        · rw [if_neg (by norm_num), if_pos rfl] at h1
-          rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+        · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at h1
+          rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
           simpa using hXY
     · intro i j x hi hj hci hwc
       simp only at hwc
       interval_cases j
-      · rw [if_pos rfl] at hwc
+      · rw [ite_eq_left rfl] at hwc
         simpa using col_pre_mid rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
-      · rw [if_neg (by norm_num), if_pos rfl] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
         simpa using col_pre_mid rfl hc hi (show (0:ℕ) < 3 by norm_num) hci hwc
-      · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
         simpa using col_pre_mid rfl hc hi (show (2:ℕ) < 3 by norm_num) hci hwc
     · intro j i x hj hi hwc hcs
       rw [Option.map_id] at hcs
       simp only at hwc
       interval_cases j
-      · rw [if_pos rfl] at hwc
+      · rw [ite_eq_left rfl] at hwc
         simpa using col_mid_suf rfl hc (show (1:ℕ) < 3 by norm_num) hi hwc hcs
-      · rw [if_neg (by norm_num), if_pos rfl] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
         simpa using col_mid_suf rfl hc (show (0:ℕ) < 3 by norm_num) hi hwc hcs
-      · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
         simpa using col_mid_suf rfl hc (show (2:ℕ) < 3 by norm_num) hi hwc hcs
     · intro i j x hi hj hci hcs
       rw [Option.map_id] at hcs
@@ -716,9 +716,9 @@ lemma greeneRow_knuthCA_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
         · interval_cases i
           · simpa using hYZ
         · interval_cases i
-          · simp only [if_neg (by norm_num : ¬(0:ℕ) = 2)] at h1 h2
+          · simp only [ite_eq_right (by norm_num : ¬(0:ℕ) = 2)] at h1 h2
             exact absurd ((Option.some.inj h2).trans (Option.some.inj h1).symm) hgh
-          · simp only [if_neg (by norm_num : ¬(1:ℕ) = 2)] at h1 h2
+          · simp only [ite_eq_right (by norm_num : ¬(1:ℕ) = 2)] at h1 h2
             exact absurd ((Option.some.inj h2).trans (Option.some.inj h1).symm) hgh
       · intro i j x hi hj hci hwc
         simp only at hwc
@@ -780,31 +780,31 @@ lemma greeneRow_knuthCA_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
       · interval_cases i
         · simpa using hYZ
       · interval_cases i
-        · rw [if_pos rfl] at h1
-          rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+        · rw [ite_eq_left rfl] at h1
+          rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
           have := col_mid_mid rfl hc (i := 0) (j := 1) (by norm_num) (by norm_num) h1 h2
           exact absurd this (not_le.2 hXY)
-        · rw [if_neg (by norm_num), if_pos rfl] at h1
-          rw [if_neg (by norm_num), if_neg (by norm_num)] at h2
+        · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at h1
+          rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
           exact absurd ⟨x, h2, h1⟩ hgen
     · intro i j x hi hj hci hwc
       simp only at hwc
       interval_cases j
-      · rw [if_pos rfl] at hwc
+      · rw [ite_eq_left rfl] at hwc
         simpa using col_pre_mid rfl hc hi (show (0:ℕ) < 3 by norm_num) hci hwc
-      · rw [if_neg (by norm_num), if_pos rfl] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
         simpa using col_pre_mid rfl hc hi (show (2:ℕ) < 3 by norm_num) hci hwc
-      · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
         simpa using col_pre_mid rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
     · intro j i x hj hi hwc hcs
       rw [Option.map_id] at hcs
       simp only at hwc
       interval_cases j
-      · rw [if_pos rfl] at hwc
+      · rw [ite_eq_left rfl] at hwc
         simpa using col_mid_suf rfl hc (show (0:ℕ) < 3 by norm_num) hi hwc hcs
-      · rw [if_neg (by norm_num), if_pos rfl] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_left rfl] at hwc
         simpa using col_mid_suf rfl hc (show (2:ℕ) < 3 by norm_num) hi hwc hcs
-      · rw [if_neg (by norm_num), if_neg (by norm_num)] at hwc
+      · rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at hwc
         simpa using col_mid_suf rfl hc (show (1:ℕ) < 3 by norm_num) hi hwc hcs
     · intro i j x hi hj hci hcs
       rw [Option.map_id] at hcs

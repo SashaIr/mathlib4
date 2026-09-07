@@ -52,12 +52,12 @@ lemma schurPoly_rowShape (σ : Type*) [Fintype σ] [LinearOrder σ] (R : Type*) 
   rcases Nat.eq_zero_or_pos k with hk | hk
   · subst hk
     rw [show rowShape 0 = ([] : List ℕ) from rfl, schurPoly_nil, hsymm_zero]
-  · rw [show rowShape k = [k] from if_neg (by omega), schurPoly_row hk]
+  · rw [show rowShape k = [k] from ite_eq_right (by omega), schurPoly_row hk]
 
 lemma getD_rowShape (k i : ℕ) : (rowShape k).getD i 0 = if i = 0 then k else 0 := by
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · simp [rowShape]
-  · rw [rowShape, if_neg (by omega)]
+  · rw [rowShape, ite_eq_right (by omega)]
     cases i with
     | zero => simp
     | succ j => simp
@@ -71,7 +71,7 @@ lemma horizStrip_rowShape {j r : ℕ} (h : j ≤ r) : HorizStrip (rowShape r) (r
   refine ⟨(isPart_rowShape j).included_iff_getD.2 fun i => ?_, fun i => ?_⟩
   · rw [getD_rowShape, getD_rowShape]
     split_ifs <;> omega
-  · rw [getD_rowShape, getD_rowShape, if_neg (Nat.succ_ne_zero i)]
+  · rw [getD_rowShape, getD_rowShape, ite_eq_right (Nat.succ_ne_zero i)]
     omega
 
 /-- A partition contained in a one-row shape is a one-row shape. -/
@@ -83,7 +83,7 @@ lemma eq_rowShape_of_included {nu : List ℕ} {r : ℕ} (hnu : IsPart nu)
   | [a], _ =>
       have ha : 0 < a := hnu.headD_pos (by simp)
       have hs : [a].sum = a := by simp
-      rw [hs, rowShape, if_neg (by omega)]
+      rw [hs, rowShape, ite_eq_right (by omega)]
 
 /-! ### The branching rule in the finite-set formulation -/
 
@@ -152,7 +152,7 @@ lemma pieri_lhs (m : ℕ)
     obtain ⟨hsp, hssum⟩ := mem_partFinsetLe.1 hsigma
     have hjr : j ≤ r := Nat.lt_succ_iff.1 (Finset.mem_range.1 hj)
     by_cases hstrip : HorizStrip rho sigma
-    · rw [if_pos hstrip]
+    · rw [ite_eq_left hstrip]
       have hprod : (rename Fin.castSucc (schurPoly (Fin m) R sigma)
             * X (Fin.last m) ^ (rho.sum - sigma.sum))
           * ((rename Fin.castSucc (hsymm (Fin m) R j) : MvPolynomial (Fin (m + 1)) R)
@@ -172,15 +172,15 @@ lemma pieri_lhs (m : ℕ)
         · rfl
         · exact map_zero _
       by_cases htsum : tau.sum = sigma.sum + j
-      · rw [if_pos htsum, hrn]
+      · rw [ite_eq_left htsum, hrn]
         by_cases hts : HorizStrip tau sigma
-        · rw [if_pos hts, if_pos ⟨hstrip, hts, htsum⟩,
+        · rw [ite_eq_left hts, ite_eq_left ⟨hstrip, hts, htsum⟩,
             show rho.sum + r - tau.sum = rho.sum - sigma.sum + (r - j) by omega]
-        · rw [if_neg hts, if_neg (fun h => hts h.2.1), zero_mul]
-      · rw [if_neg htsum, if_neg (fun h => htsum h.2.2)]
-    · rw [if_neg hstrip, zero_mul, Finset.sum_eq_zero]
+        · rw [ite_eq_right hts, ite_eq_right (fun h => hts h.2.1), zero_mul]
+      · rw [ite_eq_right htsum, ite_eq_right (fun h => htsum h.2.2)]
+    · rw [ite_eq_right hstrip, zero_mul, Finset.sum_eq_zero]
       intro tau _
-      rw [if_neg (fun h => hstrip h.1)]
+      rw [ite_eq_right (fun h => hstrip h.1)]
   have expand : schurPoly (Fin (m + 1)) R rho * hsymm (Fin (m + 1)) R r
       = ∑ sigma ∈ partFinsetLe rho.sum, ∑ j ∈ Finset.range (r + 1),
           ∑ tau ∈ partFinsetLe (rho.sum + r),
@@ -204,17 +204,17 @@ lemma pieri_lhs (m : ℕ)
     intro sigma _
     by_cases hc : HorizStrip rho sigma ∧ HorizStrip tau sigma ∧ tau.sum ≤ sigma.sum + r
     · have hsigtau : sigma.sum ≤ tau.sum := hc.2.1.included.sum_le
-      rw [if_pos hc, Finset.sum_eq_single (tau.sum - sigma.sum)]
-      · rw [if_pos ⟨hc.1, hc.2.1, by omega⟩]
+      rw [ite_eq_left hc, Finset.sum_eq_single (tau.sum - sigma.sum)]
+      · rw [ite_eq_left ⟨hc.1, hc.2.1, by omega⟩]
       · intro b _ hbne
-        refine if_neg ?_
+        refine ite_eq_right ?_
         rintro ⟨-, -, hb⟩
         exact hbne (by omega)
       · intro hnot
         exact absurd (Finset.mem_range.2 (show tau.sum - sigma.sum < r + 1 by omega)) hnot
-    · rw [if_neg hc, Finset.sum_eq_zero]
+    · rw [ite_eq_right hc, Finset.sum_eq_zero]
       intro j hj
-      refine if_neg ?_
+      refine ite_eq_right ?_
       rintro ⟨h1, h2, h3⟩
       rw [Finset.mem_range] at hj
       exact hc ⟨h1, h2, by omega⟩
@@ -249,14 +249,14 @@ lemma pieri_rhs (m : ℕ) {rho : List ℕ} (r : ℕ) :
     intro lam hlam
     obtain ⟨hp, hsum⟩ := mem_partFinset.1 hlam
     by_cases hstrip : HorizStrip lam rho
-    · rw [if_pos hstrip, schurPoly_branching' m hp, hsum]
+    · rw [ite_eq_left hstrip, schurPoly_branching' m hp, hsum]
       refine Finset.sum_congr rfl fun tau _ => ?_
       by_cases hts : HorizStrip lam tau
-      · rw [if_pos hts, if_pos ⟨hstrip, hts⟩]
-      · rw [if_neg hts, if_neg (fun h => hts h.2)]
-    · rw [if_neg hstrip, Finset.sum_eq_zero]
+      · rw [ite_eq_left hts, ite_eq_left ⟨hstrip, hts⟩]
+      · rw [ite_eq_right hts, ite_eq_right (fun h => hts h.2)]
+    · rw [ite_eq_right hstrip, Finset.sum_eq_zero]
       intro tau _
-      rw [if_neg (fun h => hstrip h.1)]
+      rw [ite_eq_right (fun h => hstrip h.1)]
   rw [Finset.sum_congr rfl step, Finset.sum_comm]
   refine Finset.sum_congr rfl fun tau _ => ?_
   rw [Finset.sum_ite, Finset.sum_const_zero, add_zero, Finset.sum_const]
@@ -287,7 +287,7 @@ theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {rho : List ℕ}, IsPart rho → ∀
       · rw [schurPoly_nil, one_mul, List.sum_nil, Nat.zero_add]
         rcases Nat.eq_zero_or_pos r with rfl | hr
         · rw [hsymm_zero, partFinset_zero, Finset.sum_singleton,
-            if_pos (horizStrip_self isPart_nil), schurPoly_nil]
+            ite_eq_left (horizStrip_self isPart_nil), schurPoly_nil]
         · have h1 : hsymm (Fin 0) R r = 0 := by
             rw [← schurPoly_row (σ := Fin 0) (R := R) hr]
             exact schurPoly_eq_zero_of_lt_length (by simp)
@@ -304,12 +304,12 @@ theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {rho : List ℕ}, IsPart rho → ∀
         rw [h0, zero_mul, Finset.sum_eq_zero]
         intro lam hlam
         by_cases hstrip : HorizStrip lam rho
-        · rw [if_pos hstrip]
+        · rw [ite_eq_left hstrip]
           refine schurPoly_eq_zero_of_lt_length ?_
           have h1 := hstrip.included.length_le
           have h2 := List.length_pos_iff.2 hne
           omega
-        · rw [if_neg hstrip]
+        · rw [ite_eq_right hstrip]
   | succ m IH =>
       intro rho hrho r
       rw [pieri_lhs m (fun {sigma} hsigma j => IH hsigma j) hrho r, pieri_rhs m r]

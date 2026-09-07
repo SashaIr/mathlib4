@@ -74,15 +74,15 @@ lemma sortPair_fst_lt_snd {a b : Fin N} (hab : a ≠ b) :
     (sortPair a b).1 < (sortPair a b).2 := by
   rw [sortPair_def]
   by_cases h : a < b
-  · rw [if_pos h]; exact h
-  · rw [if_neg h]; exact lt_of_le_of_ne (not_lt.1 h) hab.symm
+  · rw [ite_eq_left h]; exact h
+  · rw [ite_eq_right h]; exact lt_of_le_of_ne (not_lt.1 h) hab.symm
 
 lemma isInvPair_sortPair (σ : Equiv.Perm (Fin N)) (a b : Fin N) :
     IsInvPair σ (sortPair a b).1 (sortPair a b).2 ↔ IsInvPair σ a b := by
   rw [sortPair_def]
   by_cases h : a < b
-  · rw [if_pos h]
-  · rw [if_neg h]
+  · rw [ite_eq_left h]
+  · rw [ite_eq_right h]
     exact isInvPair_comm σ b a
 
 /-! ### Inversions of a product -/
@@ -117,9 +117,9 @@ lemma card_transportSet : (transportSet σ τ).card = invCount σ := by
     change IsInvPair σ (τ (sortPair (τ⁻¹ a) (τ⁻¹ b)).1) (τ (sortPair (τ⁻¹ a) (τ⁻¹ b)).2)
     rw [sortPair_def]
     by_cases h : τ⁻¹ a < τ⁻¹ b
-    · rw [if_pos h]
+    · rw [ite_eq_left h]
       simpa using hinv'
-    · rw [if_neg h]
+    · rw [ite_eq_right h]
       simpa using (isInvPair_comm σ a b).1 hinv'
   · rintro ⟨i, j⟩ hp
     obtain ⟨hij, -⟩ := (mem_transportSet σ τ).1 hp
@@ -127,24 +127,24 @@ lemma card_transportSet : (transportSet σ τ).card = invCount σ := by
     change sortPair (τ⁻¹ (sortPair (τ i) (τ j)).1) (τ⁻¹ (sortPair (τ i) (τ j)).2) = (i, j)
     rw [sortPair_def (τ i) (τ j)]
     by_cases h : τ i < τ j
-    · rw [if_pos h]
+    · rw [ite_eq_left h]
       simp only [Equiv.Perm.inv_def, Equiv.symm_apply_apply]
-      rw [sortPair_def, if_pos hij]
-    · rw [if_neg h]
+      rw [sortPair_def, ite_eq_left hij]
+    · rw [ite_eq_right h]
       simp only [Equiv.Perm.inv_def, Equiv.symm_apply_apply]
-      rw [sortPair_def, if_neg (asymm hij)]
+      rw [sortPair_def, ite_eq_right (asymm hij)]
   · rintro ⟨a, b⟩ hp
     obtain ⟨hab, -⟩ := mem_invSet.1 hp
     simp only at hab
     change sortPair (τ (sortPair (τ⁻¹ a) (τ⁻¹ b)).1) (τ (sortPair (τ⁻¹ a) (τ⁻¹ b)).2) = (a, b)
     rw [sortPair_def (τ⁻¹ a) (τ⁻¹ b)]
     by_cases h : τ⁻¹ a < τ⁻¹ b
-    · rw [if_pos h]
+    · rw [ite_eq_left h]
       simp only [Equiv.Perm.inv_def, Equiv.apply_symm_apply]
-      rw [sortPair_def, if_pos hab]
-    · rw [if_neg h]
+      rw [sortPair_def, ite_eq_left hab]
+    · rw [ite_eq_right h]
       simp only [Equiv.Perm.inv_def, Equiv.apply_symm_apply]
-      rw [sortPair_def, if_neg (asymm hab)]
+      rw [sortPair_def, ite_eq_right (asymm hab)]
 
 /-- A pair of positions is an inversion of `σ τ` exactly when it is an inversion of `τ` or
 its image under `τ` is an inversion of `σ`, but not both. -/

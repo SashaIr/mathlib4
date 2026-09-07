@@ -67,7 +67,7 @@ lemma truncVars_rename (h : m ≤ M) (q : MvPolynomial (Fin m) R) :
   | C r => simp [truncVars]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i hp =>
-      rw [map_mul, map_mul, hp, rename_X, truncVars_X, dif_pos (by simp)]
+      rw [map_mul, map_mul, hp, rename_X, truncVars_X, dite_eq_left (by simp)]
       congr 2
 
 /-- A monomial involving a variable of index at least `m` is killed by truncation. -/
@@ -75,7 +75,7 @@ lemma truncVars_monomial_eq_zero {d : Fin M →₀ ℕ} (r : R) {i : Fin M} (hi 
     (hilt : m ≤ (i : ℕ)) : truncVars m M R (monomial d r) = 0 := by
   rw [truncVars, aeval_monomial, Finsupp.prod]
   have hz : ((if h : (i : ℕ) < m then X (σ := Fin m) (R := R) ⟨i, h⟩ else 0) ^ d i) = 0 := by
-    rw [dif_neg (by omega)]
+    rw [dite_eq_right (by omega)]
     exact zero_pow (Finsupp.mem_support_iff.1 hi)
   rw [Finset.prod_eq_zero hi hz, mul_zero]
 
@@ -99,7 +99,7 @@ lemma coeff_truncVars (h : m ≤ M) (p : MvPolynomial (Fin M) R) (e : Fin m →�
         obtain ⟨i, hi, hilt⟩ := hd
         rw [truncVars_monomial_eq_zero r hi hilt]
         simp only [coeff_zero, coeff_monomial]
-        rw [if_neg]
+        rw [ite_eq_right]
         intro hcontra
         have hmem : i ∈ (Finsupp.mapDomain (Fin.castLE h) e).support := hcontra ▸ hi
         have hmem2 := Finsupp.mapDomain_support hmem
@@ -133,21 +133,21 @@ def extPerm (h : m ≤ M) (sigma : Equiv.Perm (Fin m)) : Equiv.Perm (Fin M) wher
   invFun i := if hi : (i : ℕ) < m then Fin.castLE h (sigma.symm ⟨i, hi⟩) else i
   left_inv i := by
     by_cases hi : (i : ℕ) < m
-    · simp only [dif_pos hi]
-      rw [dif_pos (by simp)]
+    · simp only [dite_eq_left hi]
+      rw [dite_eq_left (by simp)]
       simp
-    · simp only [dif_neg hi]
+    · simp only [dite_eq_right hi]
   right_inv i := by
     by_cases hi : (i : ℕ) < m
-    · simp only [dif_pos hi]
-      rw [dif_pos (by simp)]
+    · simp only [dite_eq_left hi]
+      rw [dite_eq_left (by simp)]
       simp
-    · simp only [dif_neg hi]
+    · simp only [dite_eq_right hi]
 
 @[simp] lemma extPerm_castLE (h : m ≤ M) (sigma : Equiv.Perm (Fin m)) (j : Fin m) :
     extPerm h sigma (Fin.castLE h j) = Fin.castLE h (sigma j) := by
   change (if hi : ((Fin.castLE h j : Fin M) : ℕ) < m then Fin.castLE h (sigma ⟨_, hi⟩) else _) = _
-  rw [dif_pos (by simp)]
+  rw [dite_eq_left (by simp)]
   congr 2
 
 /-- The coefficients of a symmetric polynomial are invariant under permuting the
@@ -191,9 +191,9 @@ lemma isHomogeneous_truncVars {p : MvPolynomial (Fin M) R} (hp : p.IsHomogeneous
         (if h : (i : ℕ) < m then X (σ := Fin m) (R := R) ⟨i, h⟩ else 0) 1 := by
     intro i
     by_cases hi : (i : ℕ) < m
-    · rw [dif_pos hi]
+    · rw [dite_eq_left hi]
       exact isHomogeneous_X _ _
-    · rw [dif_neg hi]
+    · rw [dite_eq_right hi]
       exact isHomogeneous_zero (Fin m) R 1
   have := hp.aeval (fun i => if h : (i : ℕ) < m then X (σ := Fin m) (R := R) ⟨i, h⟩ else 0) hg
   rwa [one_mul] at this
@@ -308,8 +308,8 @@ theorem truncSub_mSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M) (mu 
   rw [repr_mBasis_truncSub hn h, ← mBasis_apply, ← mBasis_apply, Module.Basis.repr_self,
     Module.Basis.repr_self, Finsupp.single_apply, Finsupp.single_apply]
   by_cases hnu : mu = nu
-  · rw [if_pos hnu, if_pos (by rw [hnu])]
-  · rw [if_neg hnu, if_neg fun hc => hnu ((partIdxEquiv hn (hn.trans h)).injective hc)]
+  · rw [ite_eq_left hnu, ite_eq_left (by rw [hnu])]
+  · rw [ite_eq_right hnu, ite_eq_right fun hc => hnu ((partIdxEquiv hn (hn.trans h)).injective hc)]
 
 /-- Truncating twice is truncating once, in a fixed degree. -/
 lemma truncSub_truncSub {R : Type*} [CommRing R] (h1 : k ≤ m) (h2 : m ≤ M)
@@ -399,16 +399,16 @@ theorem truncVars_psum {R : Type*} [CommRing R] (h : m ≤ M) {r : ℕ} (hr : 0 
     intro i
     rw [map_pow, truncVars_X]
     by_cases hi : (i : ℕ) < m
-    · rw [dif_pos hi, dif_pos hi]
-    · rw [dif_neg hi, dif_neg hi, zero_pow hr.ne']
+    · rw [dite_eq_left hi, dite_eq_left hi]
+    · rw [dite_eq_right hi, dite_eq_right hi, zero_pow hr.ne']
   rw [Finset.sum_congr rfl fun i _ => hf i,
     ← Finset.sum_subset (Finset.subset_univ (Finset.image (Fin.castLE h) Finset.univ))]
   · rw [Finset.sum_image (fun a _ b _ hab => Fin.castLE_injective h hab)]
     refine Finset.sum_congr rfl fun j _ => ?_
-    rw [dif_pos (show ((Fin.castLE h j : Fin M) : ℕ) < m by simp)]
+    rw [dite_eq_left (show ((Fin.castLE h j : Fin M) : ℕ) < m by simp)]
     congr 2
   · intro i _ hi
-    rw [dif_neg]
+    rw [dite_eq_right]
     intro hlt
     exact hi (Finset.mem_image.2 ⟨⟨i, hlt⟩, Finset.mem_univ _, rfl⟩)
 
@@ -442,8 +442,8 @@ lemma repr_schurBasis_truncSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m �
       Module.Basis.repr_self, Module.Basis.repr_self, Finsupp.single_apply,
       Finsupp.single_apply]
     by_cases hc : (partIdxEquiv hn (hn.trans h)).symm nu = lam
-    · rw [if_pos hc, if_pos (by rw [hc])]
-    · refine (if_neg hc).trans (if_neg fun hc' => hc ?_).symm
+    · rw [ite_eq_left hc, ite_eq_left (by rw [hc])]
+    · refine (ite_eq_right hc).trans (ite_eq_right fun hc' => hc ?_).symm
       exact (partIdxEquiv hn (hn.trans h)).injective hc'
   exact congrFun (congrArg (fun L : symHomogeneousSubmodule M n R →ₗ[R] R => (L : _ → R)) key) f
 

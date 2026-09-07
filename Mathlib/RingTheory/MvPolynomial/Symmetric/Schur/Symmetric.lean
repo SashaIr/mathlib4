@@ -86,12 +86,12 @@ theorem card_ssyt_eq_kostkaNum (sh : List ℕ) (d : Fin m →₀ ℕ) :
         have h : Multiset.count j (toWord Q : Multiset (Fin m))
             = Multiset.count j (Finsupp.toMultiset d) := by rw [hQ]
         simpa [Finsupp.count_toMultiset] using h
-      rw [flatten_mapTab_val, count_map_val, dif_pos hi, ← count_toWord, hcount, finContent,
-        dif_pos hi]
+      rw [flatten_mapTab_val, count_map_val, dite_eq_left hi, ← count_toWord, hcount, finContent,
+        dite_eq_left hi]
     · intro hQ
       refine Multiset.ext.2 fun j => ?_
       have hj := hQ j.1 j.2
-      rw [flatten_mapTab_val, count_map_val, dif_pos j.2, finContent, dif_pos j.2] at hj
+      rw [flatten_mapTab_val, count_map_val, dite_eq_left j.2, finContent, dite_eq_left j.2] at hj
       simp only [Fin.eta] at hj
       rw [Finsupp.count_toMultiset]
       simpa [count_toWord] using hj
@@ -132,9 +132,9 @@ lemma finContent_mapDomain (e : Equiv.Perm (Fin m)) (d : Fin m →₀ ℕ) :
   by_cases h : i < m
   · have hmap : (Finsupp.mapDomain (e : Fin m → Fin m) d) ⟨i, h⟩ = d (e.symm ⟨i, h⟩) := by
       simp
-    rw [finContent, dif_pos h, hmap, permContent, dif_pos h, finContent,
-      dif_pos (e.symm ⟨i, h⟩).2, Fin.eta]
-  · rw [finContent, dif_neg h, permContent, dif_neg h, finContent, dif_neg h]
+    rw [finContent, dite_eq_left h, hmap, permContent, dite_eq_left h, finContent,
+      dite_eq_left (e.symm ⟨i, h⟩).2, Fin.eta]
+  · rw [finContent, dite_eq_right h, permContent, dite_eq_right h, finContent, dite_eq_right h]
 
 /-- Permuting the variables of a monomial does not change its coefficient in the Schur
 polynomial. -/

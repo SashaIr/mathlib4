@@ -53,8 +53,8 @@ theorem hallInner_eq_of_cauchy [CommRing R] (u v : PartIdx n m → symHomogeneou
     rwa [Matrix.transpose_mul, Matrix.transpose_transpose, Matrix.transpose_one] at hc
   rw [hallInner_eq_matrix, mul_eq_one_comm.2 h2]
   by_cases hlm : lam = mu
-  · rw [if_pos hlm, hlm, Matrix.one_apply_eq]
-  · rw [if_neg hlm, Matrix.one_apply_ne hlm]
+  · rw [ite_eq_left hlm, hlm, Matrix.one_apply_eq]
+  · rw [ite_eq_right hlm, Matrix.one_apply_ne hlm]
 
 /-! ### A family with a dual family is a basis -/
 
@@ -68,8 +68,8 @@ lemma mul_transpose_eq_one_of_hallInner_dual [CommRing R]
   ext lam mu
   rw [← hallInner_eq_matrix, h lam mu]
   by_cases hc : lam = mu
-  · rw [if_pos hc, hc, Matrix.one_apply_eq]
-  · rw [if_neg hc, Matrix.one_apply_ne hc]
+  · rw [ite_eq_left hc, hc, Matrix.one_apply_eq]
+  · rw [ite_eq_right hc, Matrix.one_apply_ne hc]
 
 /-- The expansion of an element in a family admitting a dual family. -/
 lemma eq_sum_hallInner_smul_of_dual [CommRing R]
@@ -181,10 +181,10 @@ theorem hallInner_pSub [CommRing R] [Algebra ℚ R] (hnm : n ≤ m) (lam mu : Pa
   rw [map_smul, smul_eq_mul] at hkey
   by_cases hlm : lam = mu
   · subst hlm
-    rw [if_pos rfl] at hkey ⊢
+    rw [ite_eq_left rfl] at hkey ⊢
     have := congrArg (fun x => (zcard lam.1 : R) * x) hkey
     simpa [← mul_assoc, hzmul lam] using this
-  · rw [if_neg hlm] at hkey ⊢
+  · rw [ite_eq_right hlm] at hkey ⊢
     have := congrArg (fun x => (zcard mu.1 : R) * x) hkey
     simpa [← mul_assoc, hzmul mu] using this
 
@@ -204,9 +204,9 @@ theorem hallInner_pSub_pSubInvZ [CommRing R] [Algebra ℚ R] (hnm : n ≤ m)
   rw [pSubInvZ, map_smul, smul_eq_mul, hallInner_pSub hnm]
   by_cases hlm : lam = mu
   · subst hlm
-    rw [if_pos rfl, if_pos rfl, mul_comm]
+    rw [ite_eq_left rfl, ite_eq_left rfl, mul_comm]
     exact hzmul
-  · rw [if_neg hlm, if_neg hlm, mul_zero]
+  · rw [ite_eq_right hlm, ite_eq_right hlm, mul_zero]
 
 /-- The expansion of a symmetric homogeneous polynomial in the power sums. -/
 theorem eq_sum_hallInner_pSubInvZ_smul [CommRing R] [Algebra ℚ R] (hnm : n ≤ m)

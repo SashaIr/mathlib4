@@ -185,8 +185,8 @@ lemma finContent_shapeContent {mu : List ℕ} (hlen : mu.length ≤ m) :
     finContent m (shapeContent m mu) = fun i => mu.getD i 0 := by
   funext i
   by_cases hi : i < m
-  · rw [finContent, dif_pos hi, shapeContent_apply]
-  · rw [finContent, dif_neg hi, List.getD_eq_default _ _ (by omega)]
+  · rw [finContent, dite_eq_left hi, shapeContent_apply]
+  · rw [finContent, dite_eq_right hi, List.getD_eq_default _ _ (by omega)]
 
 /-- **The Schur polynomial is the sum of the Kostka numbers times the monomial symmetric
 polynomials**: `s_lam = ∑_mu K_{lam mu} m_mu`, the sum being over the partitions `mu` of

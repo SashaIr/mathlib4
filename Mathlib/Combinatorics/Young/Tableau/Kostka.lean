@@ -243,7 +243,7 @@ lemma count_toWord_superTabFrom (i : ℕ) (lam : List ℕ) (j : ℕ) :
       have h3 : i ≠ j := by omega
       have h4 : j - i = (j - i - 1) + 1 := by omega
       simp only [h1, h2, if_true, beq_iff_eq]
-      rw [if_neg h3, h4, List.getD_cons_succ, add_zero]
+      rw [ite_eq_right h3, h4, List.getD_cons_succ, add_zero]
       congr 1
 
 lemma count_toWord_superTab (lam : List ℕ) (j : ℕ) :

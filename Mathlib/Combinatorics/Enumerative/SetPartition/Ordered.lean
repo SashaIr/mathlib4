@@ -80,16 +80,16 @@ theorem mem_orderedParts {s : Finset α} {l : List ℕ} {L : List (Finset α)} :
     constructor
     · intro hL
       by_cases hs : s = ∅
-      · rw [if_pos hs] at hL
+      · rw [ite_eq_left hs] at hL
         simp only [Finset.mem_singleton] at hL
         subst hL
         simp [hs]
-      · rw [if_neg hs] at hL
+      · rw [ite_eq_right hs] at hL
         simp at hL
     · rintro ⟨hmap, -, hun⟩
       obtain rfl : L = [] := List.map_eq_nil_iff.1 hmap
       simp only [listUnion_nil] at hun
-      rw [if_pos hun.symm]
+      rw [ite_eq_left hun.symm]
       simp
   | cons k t ih =>
     rw [orderedParts_cons]
