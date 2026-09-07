@@ -86,11 +86,12 @@ lemma getD_shapeOfFn (k : ℕ) (f : ℕ → ℕ) (i : ℕ) :
     (shapeOfFn k f).getD i 0 = if i < k then f i else 0 := by
   rw [shapeOfFn, getD_trimZeros]
   by_cases hi : i < k
-  · rw [List.getD_eq_getElem _ _ (by simpa using hi), if_pos hi]
+  · rw [List.getD_eq_getElem _ _ (by simpa using hi), ite_eq_left hi]
     simp
-  · rw [List.getD_eq_default _ _ (by simpa using not_lt.1 hi), if_neg hi]
+  · rw [List.getD_eq_default _ _ (by simpa using not_lt.1 hi), ite_eq_right hi]
 
 lemma length_shapeOfFn_le (k : ℕ) (f : ℕ → ℕ) : (shapeOfFn k f).length ≤ k := by
+  rw [shapeOfFn]
   simpa using length_trimZeros_le (List.ofFn fun i : Fin k => f i)
 
 @[simp] lemma sum_shapeOfFn (k : ℕ) (f : ℕ → ℕ) :
