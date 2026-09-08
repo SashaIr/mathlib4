@@ -156,9 +156,8 @@ theorem card_finpartition_aux :
         rw [hc]
         congr 1
         omega
-    rw [hreindex, Finset.sum_powerset, hcarderase, Nat.bell_succ,
-      Fin.sum_univ_eq_sum_range (fun i => Nat.choose m i * Nat.bell (m - i)) (m + 1)]
-    refine Finset.sum_congr rfl fun j _ => ?_
+    rw [hreindex, Finset.sum_powerset, hcarderase, Nat.bell_succ]
+    refine Finset.sum_congr (by ext j; simp) fun j _ => ?_
     rw [Finset.sum_congr rfl (fun C hC => by
       rw [(Finset.mem_powersetCard.1 hC).2] : ∀ C ∈ Finset.powersetCard j (s.erase a),
         Nat.bell (m - C.card) = Nat.bell (m - j)), Finset.sum_const,
