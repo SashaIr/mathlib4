@@ -67,14 +67,18 @@ lemma adjacent_symm {p q : ℕ × ℕ} (h : Adjacent p q) : Adjacent q p := by
 def SkewStep (inner outer : List ℕ) (p q : ℕ × ℕ) : Prop :=
   Adjacent p q ∧ SkewBox inner outer p ∧ SkewBox inner outer q
 
-lemma skewStep_symmetric (inner outer : List ℕ) : Symmetric (SkewStep inner outer) :=
-  fun _ _ h => ⟨adjacent_symm h.1, h.2.2, h.2.1⟩
+lemma skewStep_symmetric (inner outer : List ℕ) : Std.Symm (SkewStep inner outer) := by
+  constructor
+  intro _ _ h
+  exact ⟨adjacent_symm h.1, h.2.2, h.2.1⟩
 
 /-- Reversing a path of boxes. -/
 lemma ReflTransGen.skewStep_symm {p q : ℕ × ℕ}
     (h : Relation.ReflTransGen (SkewStep inner outer) p q) :
-    Relation.ReflTransGen (SkewStep inner outer) q p :=
-  Relation.ReflTransGen.symmetric (skewStep_symmetric inner outer) h
+    Relation.ReflTransGen (SkewStep inner outer) q p := by
+  induction h with
+  | refl => exact Relation.ReflTransGen.refl
+  | tail _ step ih => exact Relation.ReflTransGen.head ⟨adjacent_symm step.1, step.2.2, step.2.1⟩ ih
 
 /-- The skew shape `outer / inner` is connected: any two of its boxes are joined by a path
 of boxes, each two consecutive ones sharing a side (Coq `conn4_skew`). -/
