@@ -113,7 +113,7 @@ lemma exists_remCorner_of_included_succ {lam nu : List ℕ} (hlam : IsPart lam) 
     omega
   obtain ⟨r, hrmem, hr0⟩ : ∃ r ∈ Finset.range L, d r ≠ 0 := by
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     rw [Finset.sum_congr rfl fun i hi => hcon i hi] at hdsum
     simp at hdsum
   have hsplit2 : d r + ∑ i ∈ (Finset.range L).erase r, d i = 1 := by

@@ -211,7 +211,7 @@ theorem youngDiagram_le_iff {sh1 sh2 : List ℕ} (h1 : IsPart sh1) (h2 : IsPart 
   constructor
   · intro hle i
     by_contra hc
-    push_neg at hc
+    push Not at hc
     have hmem : (i, sh2.getD i 0) ∈ youngDiagram sh1 h1 := by
       rw [mk_mem_youngDiagram]; omega
     have := hle hmem

@@ -125,7 +125,7 @@ theorem eq_one_or_eq_signChar (f : Perm α →* ℂˣ) : f = 1 ∨ f = signChar 
         simp
       · rw [hodd σ h, signChar_apply, h, h1]
         simp
-  · push_neg at hcard
+  · push Not at hcard
     have hsub : Subsingleton α := ⟨fun a b => hcard a b⟩
     refine Or.inl (MonoidHom.ext fun σ => ?_)
     have : σ = 1 := Subsingleton.elim _ _

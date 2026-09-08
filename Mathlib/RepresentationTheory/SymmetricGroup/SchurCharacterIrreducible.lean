@@ -357,7 +357,7 @@ lemma charBilin_regCharC (chi : Perm (Fin n) → ℂ) :
 theorem exists_eq_schurCharC {chi : Perm (Fin n) → ℂ} (h : IsSimpleChar chi) :
     ∃ lam : PartIdx n n, chi = schurCharC lam := by
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   have hzero : charBilin chi (regCharC n) = 0 := by
     rw [regCharC_eq_sum, charBilin_sum_right]
     refine Finset.sum_eq_zero fun lam _ => ?_

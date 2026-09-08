@@ -48,7 +48,7 @@ lemma dominate_of_dominate_insRow {u r : List T} (hu : IsRow u) (hr : IsRow r) {
     omega
   have hqp : q ≤ p := by
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     have hq1 : q < (insRow u b).length := insPos_lt_insRow_length u b
     have hq2 : q < (insRow r l).length := lt_of_lt_of_le hq1 hdom.length_le
     have hqr : q < r.length := by omega

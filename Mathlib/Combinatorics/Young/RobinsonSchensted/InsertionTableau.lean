@@ -140,7 +140,7 @@ was bumped from. -/
 lemma insPos_le_of_dominate {u r : List T} {l b : T} (hdom : Dominate u r)
     (hb : bumped r l = some b) : insPos u b ≤ insPos r l := by
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   have hp : insPos r l < u.length := lt_of_lt_of_le hcon (insPos_le_length u b)
   have hulb : u[insPos r l]? = some (u[insPos r l]'hp) := List.getElem?_eq_getElem hp
   have h1 : u[insPos r l]'hp ≤ b := le_of_lt_insPos hcon hulb

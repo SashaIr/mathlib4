@@ -3,7 +3,16 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
+import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Basic
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Greene invariants: definitions

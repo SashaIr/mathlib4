@@ -339,7 +339,7 @@ theorem getD_eq_replicate_of_isYam_toWord {t : List (List ℕ)} (htab : IsTablea
     have hib : i ≤ b := htab.index_le_getElem hcl
     have hbi : b ≤ i := by
       by_contra hcon
-      push_neg at hcon
+      push Not at hcon
       have hrsplit : r.dropLast ++ [b] = r := by
         rw [hbdef, ← getLast_eq_getElem hne]
         exact dropLast_append_getLast hne

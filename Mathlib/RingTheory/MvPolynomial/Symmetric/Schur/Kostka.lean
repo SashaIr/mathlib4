@@ -189,7 +189,7 @@ theorem coeff_schurPoly_eq_zero_of_not_partdom (sh : List ℕ) (d : Fin m →₀
 /-- A tableau over `Fin m` has at most `m` rows. -/
 lemma length_le_of_isTableau {P : List (List (Fin m))} (hP : IsTableau P) : P.length ≤ m := by
   by_contra hlt
-  push_neg at hlt
+  push Not at hlt
   have htab : IsTableau (mapTab (Fin.val : Fin m → ℕ) P) := isTableau_mapTab_val hP
   have hlen : (mapTab (Fin.val : Fin m → ℕ) P).length = P.length := by simp [mapTab]
   have hne : (mapTab (Fin.val : Fin m → ℕ) P).getD m [] ≠ [] := by

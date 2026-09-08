@@ -90,7 +90,7 @@ def IsFirstMin (w : List DyckStep) (k : ℕ) : Prop :=
 
 lemma IsFirstMin.le_length {w : List DyckStep} {k : ℕ} (h : IsFirstMin w k) : k ≤ w.length := by
   by_contra hk
-  push_neg at hk
+  push Not at hk
   have h1 := h.2 w.length hk
   rw [prefHeight_of_length_le hk.le, prefHeight_length] at h1
   exact absurd h1 (lt_irrefl _)
@@ -110,7 +110,7 @@ lemma exists_isFirstMin (w : List DyckStep) : ∃ k, IsFirstMin w k := by
     exact ⟨x, fun j hj ↦ hmin j (by simp; omega)⟩
   refine ⟨Nat.find hex, Nat.find_spec hex, fun j hj ↦ ?_⟩
   have hnot := Nat.find_min hex hj
-  push_neg at hnot
+  push Not at hnot
   obtain ⟨i, hi, hlt⟩ := hnot
   exact lt_of_le_of_lt (Nat.find_spec hex i hi) hlt
 

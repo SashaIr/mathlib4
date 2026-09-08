@@ -95,7 +95,7 @@ lemma coeff_truncVars (h : m ≤ M) (p : MvPolynomial (Fin M) R) (e : Fin m →�
         obtain ⟨q, hq⟩ := exists_rename_eq_of_vars_subset_range _ (Fin.castLE h)
           (Fin.castLE_injective h) hvars
         rw [← hq, truncVars_rename, coeff_rename_mapDomain _ (Fin.castLE_injective h)]
-      · push_neg at hd
+      · push Not at hd
         obtain ⟨i, hi, hilt⟩ := hd
         rw [truncVars_monomial_eq_zero r hi hilt]
         simp only [coeff_zero, coeff_monomial]

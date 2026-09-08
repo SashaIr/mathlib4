@@ -206,7 +206,7 @@ theorem altPart_mul_esymm {mu : List ℕ} (hmu : IsPart mu) (r : ℕ) :
     have : ¬ ∀ i j : Fin m, (j : ℕ) = (i : ℕ) + 1 →
         (partVec m mu + ⇑d) j < (partVec m mu + ⇑d) i := fun h =>
       hnot (Finset.mem_filter.2 ⟨hd, h⟩)
-    push_neg at this
+    push Not at this
     obtain ⟨i, j, hij, hnotlt⟩ := this
     exact alt_eq_zero_of_not_strict hmu hone hij (by omega)
   rw [← hsub, ← hstrict]

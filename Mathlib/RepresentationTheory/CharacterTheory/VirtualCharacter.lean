@@ -240,7 +240,7 @@ theorem exists_isSimpleChar_of_norm_one (chi : G → k) (hchiv : IsVirtualChar c
   have honeZ : (∑ c ∈ S, n c ^ 2 : ℤ) = 1 := by exact_mod_cast hone
   obtain ⟨c₀, hc₀S, hc₀⟩ : ∃ c₀ ∈ S, n c₀ ^ 2 ≠ 0 := by
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     rw [Finset.sum_congr rfl hcon] at honeZ
     simp at honeZ
   rw [← Finset.add_sum_erase S (fun c => n c ^ 2) hc₀S] at honeZ

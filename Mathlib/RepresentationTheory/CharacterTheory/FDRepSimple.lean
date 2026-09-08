@@ -72,7 +72,7 @@ theorem exists_subrepresentation_of_not_simple (X : FDRep k G) (hX : 0 < finrank
     (hns : ¬ Simple X) :
     ∃ U : Subrepresentation X.ρ, U ≠ ⊥ ∧ U ≠ ⊤ := by
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   have hnt : Nontrivial (Subrepresentation X.ρ) := by
     refine ⟨⊥, ⊤, fun h => ?_⟩
     obtain ⟨v, hv⟩ := (Module.finrank_pos_iff_exists_ne_zero (R := k)).1 hX

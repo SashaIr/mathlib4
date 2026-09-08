@@ -74,7 +74,7 @@ lemma isLiftable_adjSwap (n : ℕ) : (CoxeterMatrix.Aₙ n).IsLiftable (adjSwap 
         exact swap_mul_swap_pow_three h1 h2 h3
     · have hM : (CoxeterMatrix.Aₙ n) i j = 2 := by
         simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, ite_eq_right hij, ite_eq_right hadj]
-      push_neg at hadj
+      push Not at hadj
       obtain ⟨h1, h2⟩ := hadj
       rw [hM, adjSwap, adjSwap]
       exact swap_mul_swap_pow_two (Fin.ne_of_val_ne (by rw [hcs, hcs]; omega))

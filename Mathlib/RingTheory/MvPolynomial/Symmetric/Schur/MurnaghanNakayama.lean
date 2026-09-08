@@ -315,7 +315,7 @@ lemma alt_update_partVec_of_not_addable (k' : Fin m)
     (hk' : (k' : ℕ) = k) (hadd : ¬ MNAddable lam r k) :
     alt m R (Function.update (partVec m lam) k' (partVec m lam k' + r)) = 0 := by
   rw [MNAddable] at hadd
-  push_neg at hadd
+  push Not at hadd
   obtain ⟨i, hik, hi⟩ := hadd
   have him : i < m := by rw [← hk'] at hik; exact lt_trans hik k'.isLt
   refine alt_eq_zero_of_eq (i := (⟨i, him⟩ : Fin m)) (j := k') ?_ ?_

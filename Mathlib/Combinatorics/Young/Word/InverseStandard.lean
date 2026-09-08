@@ -158,7 +158,7 @@ private lemma isGreeneCol_transportCol (hw : IsStd w) {k : ℕ} {c : ℕ → Opt
     have hi1 : w.idxOf j1 < w.length := hw.idxOf_lt hj1w
     have hi2 : w.idxOf j2 < w.length := hw.idxOf_lt hj2w
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     have hle := hc.le_of_colour hcon hi1 h2 h1
     rw [hw.getElem_idxOf hj2w, hw.getElem_idxOf hj1w] at hle
     omega

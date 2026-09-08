@@ -255,7 +255,7 @@ lemma permRank_injective : Function.Injective (permRank (n := n)) := by
   have hval : (t k).val = (s k).val := by
     by_cases hlt : (t k).val < (s k).val
     · rw [ite_eq_left hlt] at h1; omega
-    · push_neg at hlt
+    · push Not at hlt
       by_cases hgt : (s k).val < (t k).val
       · rw [ite_eq_right (by omega)] at h2; omega
       · omega

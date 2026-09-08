@@ -186,7 +186,7 @@ theorem reflTransGen_tabRaise_superTab : ∀ n (t : List (List ℕ)), IsTableau 
     intro t ht hsum
     by_cases hzero : ∀ i, crystalPhi i (toWord t) = 0
     · rw [← eq_superTab_of_crystalPhi_eq_zero ht hzero]
-    · push_neg at hzero
+    · push Not at hzero
       obtain ⟨i, hi⟩ := hzero
       obtain ⟨w, hw⟩ := Option.isSome_iff_exists.1 ((crystalE_isSome_iff i (toWord t)).2 hi)
       obtain ⟨t', hword, ht', hshape⟩ := exists_isTableau_crystalE ht hw

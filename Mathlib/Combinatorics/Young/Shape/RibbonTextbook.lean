@@ -111,7 +111,7 @@ theorem hasNoSquare_iff (hinner : IsPart inner) (houter : IsPart outer) :
   constructor
   · intro h i
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     have houtI : outer.getD (i + 1) 0 ≤ outer.getD i 0 := houter.getD_succ_le i
     have hinI : inner.getD (i + 1) 0 ≤ inner.getD i 0 := hinner.getD_succ_le i
     refine h i (inner.getD i 0) ⟨?_, ?_, ?_, ?_⟩ <;> rw [skewBox_mk] <;> omega

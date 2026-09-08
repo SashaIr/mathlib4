@@ -179,7 +179,7 @@ theorem erdos_szekeres (m n : ℕ) (s : List T) (hs : m * n < s.length) :
       rw [hlen, hcard]
       exact hi
   · exfalso
-    push_neg at hex
+    push Not at hex
     -- the pair of labels is injective, so there are at most `m * n` positions
     have hinj : Set.InjOn (fun i : Fin s.length => (A i, B i))
         (↑(Finset.univ : Finset (Fin s.length)) : Set (Fin s.length)) := by

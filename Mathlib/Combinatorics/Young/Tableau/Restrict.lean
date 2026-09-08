@@ -299,7 +299,7 @@ lemma dominate_ltFilter {N : ℕ} {u v : List ℕ} (hu : IsRow u) (hv : IsRow v)
     exact (lt_length_ltFilter_iff hv hcv).1 (by omega)
   have hlen : (ltFilter N u).length ≤ (ltFilter N v).length := by
     by_contra hlt
-    push_neg at hlt
+    push Not at hlt
     exact absurd (hkey _ hlt) (lt_irrefl _)
   refine dominate_of_getElem hlen fun c hc => ?_
   have hcu : c < u.length := lt_of_lt_of_le hc (length_ltFilter_le N u)
@@ -345,7 +345,7 @@ lemma horizStrip_shape_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P
       have h3 : v[c]'hcv < N := by omega
       exact (lt_length_ltFilter_iff (show IsRow v from hP.isRow_getD i) hcv).1 h3
     by_contra hlt'
-    push_neg at hlt'
+    push Not at hlt'
     exact absurd (hkey _ hlt') (lt_irrefl _)
 
 /-- The letters of `dropMax N P` are the letters `< N` of `P`. -/
@@ -474,7 +474,7 @@ lemma isTableau_addMax (hsh : IsPart sh) (hQ : IsTableau Q) (hstrip : HorizStrip
       rw [h1, h2]
       exact hdomQ.getElem_lt c hcq
     · -- the entry of the lower row is the largest letter
-      push_neg at hcq
+      push Not at hcq
       have hci : c < (Q.getD i []).length := by
         have := hstrip.getD_succ_le i
         rw [getD_shape] at this

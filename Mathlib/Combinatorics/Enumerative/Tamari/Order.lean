@@ -377,7 +377,7 @@ theorem tamariLE_of_forall₂_le_aux :
       exact ht ▸ tamariLE_refl t
     · have hex : ∃ i, (rightSizes t).getD i 0 < (rightSizes u).getD i 0 := by
         by_contra hcon
-        push_neg at hcon
+        push Not at hcon
         exact hEq (eq_of_length_eq_of_getD_eq hlen fun i => le_antisymm (hle i) (hcon i))
       classical
       set i := Nat.find hex with hi

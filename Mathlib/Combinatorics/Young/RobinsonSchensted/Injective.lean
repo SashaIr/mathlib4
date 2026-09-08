@@ -263,7 +263,7 @@ lemma isAddCorner_of_isPart_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh)
   · exact Or.inl rfl
   refine Or.inr ?_
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   have hanti : sh.getD i 0 ≤ sh.getD (i - 1) 0 := h.getD_antitone (by omega)
   have heq : sh.getD i 0 = sh.getD (i - 1) 0 := le_antisymm hanti hcon
   have h1 : (incrNth sh i).getD i 0 = sh.getD i 0 + 1 := by

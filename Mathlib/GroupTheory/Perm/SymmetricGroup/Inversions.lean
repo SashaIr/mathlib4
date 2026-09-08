@@ -67,12 +67,12 @@ lemma eq_one_of_invCount_eq_zero {σ : Equiv.Perm (Fin N)} (h : invCount σ = 0)
     intro a b hab
     have : (a, b) ∉ invSet σ := by simp [hempty]
     rw [mem_invSet] at this
-    push_neg at this
+    push Not at this
     exact lt_of_le_of_ne (this hab) fun hcon => absurd (σ.injective hcon) (ne_of_lt hab)
   have hinv : StrictMono (⇑σ⁻¹) := by
     intro a b hab
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     have h2 : b ≤ a := by simpa using hmono.monotone hcon
     exact absurd hab (not_lt.2 h2)
   ext i
@@ -84,7 +84,7 @@ lemma eq_one_of_invCount_eq_zero {σ : Equiv.Perm (Fin N)} (h : invCount σ = 0)
 lemma exists_adjacent_descent {n : ℕ} {σ : Equiv.Perm (Fin (n + 1))} (h : σ ≠ 1) :
     ∃ i : Fin n, σ i.succ < σ i.castSucc := by
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   refine h ?_
   have hmono : StrictMono (⇑σ) := by
     refine Fin.strictMono_iff_lt_succ.2 fun i => ?_
