@@ -130,7 +130,7 @@ lemma midSet_diamond (hrho : IsPart rho) (htau : IsPart tau) (s : ℕ) :
       = {sigma | IsPart sigma ∧ HorizStrip rho sigma ∧ HorizStrip tau sigma ∧ sigma.sum = s} := by
   ext sigma
   rw [mem_midSet_iff (isPart_diamMin hrho htau)]
-  simp only [Set.mem_setOf_eq, loBd_diamond, hiBd_diamond]
+  simp only [Set.mem_ofPred_eq, loBd_diamond, hiBd_diamond]
   constructor
   · rintro ⟨h1, h2, h3⟩
     exact ⟨h1, ((horizStrip_both_iff h1).2 h2).1, ((horizStrip_both_iff h1).2 h2).2, h3⟩

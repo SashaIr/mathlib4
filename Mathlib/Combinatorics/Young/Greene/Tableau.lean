@@ -29,23 +29,20 @@ namespace List
 
 open List
 
-variable {T : Type*} [LinearOrder T]
+variable {T : Type*}
 
 /-! ### Coordinates in the reading word -/
 
 /-- The length of the `r`-th row of `t`, or `0` if `t` has at most `r` rows. -/
 def rowLen (t : List (List T)) (r : ℕ) : ℕ := (t.getD r []).length
 
-omit [LinearOrder T] in
 lemma rowLen_eq_zero {t : List (List T)} {r : ℕ} (hr : t.length ≤ r) : rowLen t r = 0 := by
   simp [rowLen, List.getD_eq_getElem?_getD, List.getElem?_eq_none hr]
 
-omit [LinearOrder T] in
 @[simp] lemma rowLen_cons_succ (t0 : List T) (t : List (List T)) (r : ℕ) :
     rowLen (t0 :: t) (r + 1) = rowLen t r := by
   simp [rowLen, List.getD_eq_getElem?_getD]
 
-omit [LinearOrder T] in
 @[simp] lemma rowLen_cons_zero (t0 : List T) (t : List (List T)) :
     rowLen (t0 :: t) 0 = t0.length := by
   simp [rowLen, List.getD_eq_getElem?_getD]
@@ -53,22 +50,18 @@ omit [LinearOrder T] in
 /-- The position in the reading word at which the `r`-th row of `t` starts. -/
 def rowOffset (t : List (List T)) (r : ℕ) : ℕ := ((t.drop (r + 1)).map List.length).sum
 
-omit [LinearOrder T] in
 @[simp] lemma rowOffset_cons_succ (t0 : List T) (t : List (List T)) (r : ℕ) :
     rowOffset (t0 :: t) (r + 1) = rowOffset t r := by
   simp [rowOffset]
 
-omit [LinearOrder T] in
 lemma rowOffset_cons_zero (t0 : List T) (t : List (List T)) :
     rowOffset (t0 :: t) 0 = (toWord t).length := by
   simp [rowOffset, toWord, List.length_flatten]
 
-omit [LinearOrder T] in
 lemma length_toWord_eq_sum (t : List (List T)) :
     (toWord t).length = ((t.map List.length).sum) := by
   simp [toWord, List.length_flatten]
 
-omit [LinearOrder T] in
 /-- Every box of `t` corresponds to a position of the reading word. -/
 lemma rowOffset_add_lt_length {t : List (List T)} {r j : ℕ} (hr : r < t.length)
     (hj : j < rowLen t r) : rowOffset t r + j < (toWord t).length := by
@@ -90,7 +83,6 @@ lemma rowOffset_add_lt_length {t : List (List T)} {r j : ℕ} (hr : r < t.length
       simp only [List.length_append]
       omega
 
-omit [LinearOrder T] in
 /-- The letter of the reading word at the position of the box `(r, j)`. -/
 lemma getElem?_toWord {t : List (List T)} {r j : ℕ} (hr : r < t.length) (hj : j < rowLen t r) :
     (toWord t)[rowOffset t r + j]? = (t.getD r [])[j]? := by
@@ -110,7 +102,6 @@ lemma getElem?_toWord {t : List (List T)} {r j : ℕ} (hr : r < t.length) (hj : 
         List.getElem?_append_left (rowOffset_add_lt_length hr' hj), ih hr' hj]
       rfl
 
-omit [LinearOrder T] in
 lemma getElem_toWord {t : List (List T)} {r j : ℕ} (hr : r < t.length) (hj : j < rowLen t r)
     (h : rowOffset t r + j < (toWord t).length) :
     (toWord t)[rowOffset t r + j] = (t.getD r [])[j]'(by simpa [rowLen] using hj) := by
@@ -119,7 +110,6 @@ lemma getElem_toWord {t : List (List T)} {r j : ℕ} (hr : r < t.length) (hj : j
     List.getElem?_eq_getElem (show j < (t.getD r []).length by simpa [rowLen] using hj),
     Option.some_inj] at this
 
-omit [LinearOrder T] in
 /-- Every position of the reading word is the position of a box. -/
 lemma exists_coord {t : List (List T)} {i : ℕ} (hi : i < (toWord t).length) :
     ∃ r j, r < t.length ∧ j < rowLen t r ∧ i = rowOffset t r + j := by
@@ -134,7 +124,6 @@ lemma exists_coord {t : List (List T)} {i : ℕ} (hi : i < (toWord t).length) :
       rw [rowOffset_cons_zero]
       omega
 
-omit [LinearOrder T] in
 /-- The offset decreases strictly from one row to the next. -/
 lemma rowOffset_step {t : List (List T)} {r : ℕ} (hr : r + 1 < t.length) :
     rowOffset t r = rowLen t (r + 1) + rowOffset t (r + 1) := by
@@ -153,7 +142,6 @@ lemma rowOffset_step {t : List (List T)} {r : ℕ} (hr : r + 1 < t.length) :
       rw [rowOffset_cons_succ, rowLen_cons_succ, rowOffset_cons_succ]
       exact ih (by simpa using hr)
 
-omit [LinearOrder T] in
 lemma rowOffset_add_rowLen_le {t : List (List T)} {r r' : ℕ} (hrr : r < r')
     (hr' : r' < t.length) : rowOffset t r' + rowLen t r' ≤ rowOffset t r := by
   induction r' generalizing r with
@@ -167,7 +155,6 @@ lemma rowOffset_add_rowLen_le {t : List (List T)} {r r' : ℕ} (hrr : r < r')
         rowOffset_step (by omega)
       omega
 
-omit [LinearOrder T] in
 /-- The coordinates of a box are determined by its position. -/
 lemma coord_unique {t : List (List T)} {r j r' j' : ℕ} (hr : r < t.length)
     (hj : j < rowLen t r) (hr' : r' < t.length) (hj' : j' < rowLen t r')
@@ -185,7 +172,6 @@ noncomputable def coordOf (t : List (List T)) (i : ℕ) : ℕ × ℕ :=
   if h : ∃ rj : ℕ × ℕ, rj.1 < t.length ∧ rj.2 < rowLen t rj.1 ∧ i = rowOffset t rj.1 + rj.2
     then h.choose else (0, 0)
 
-omit [LinearOrder T] in
 lemma coordOf_spec {t : List (List T)} {i : ℕ} (hi : i < (toWord t).length) :
     (coordOf t i).1 < t.length ∧ (coordOf t i).2 < rowLen t (coordOf t i).1 ∧
       i = rowOffset t (coordOf t i).1 + (coordOf t i).2 := by
@@ -195,7 +181,6 @@ lemma coordOf_spec {t : List (List T)} {i : ℕ} (hi : i < (toWord t).length) :
   rw [coordOf, dite_eq_left h]
   exact h.choose_spec
 
-omit [LinearOrder T] in
 lemma coordOf_eq {t : List (List T)} {r j : ℕ} (hr : r < t.length) (hj : j < rowLen t r) :
     coordOf t (rowOffset t r + j) = (r, j) := by
   obtain ⟨hr', hj', hij⟩ := coordOf_spec (rowOffset_add_lt_length hr hj)
@@ -204,15 +189,17 @@ lemma coordOf_eq {t : List (List T)} {r j : ℕ} (hr : r < t.length) (hj : j < r
 
 /-! ### Columns of a tableau -/
 
-omit [LinearOrder T] in
 lemma finset_eq_range_card {S : Finset ℕ} (h : ∀ a b : ℕ, a ≤ b → b ∈ S → a ∈ S) :
     S = Finset.range S.card := by
   refine Finset.eq_of_subset_of_card_le ?_ (by simp)
   intro x hx
-  simp only [Finset.mem_range]
-  have hsub : Finset.range (x + 1) ⊆ S := fun y hy =>
-    h y x (by simpa using Nat.lt_succ_iff.1 (Finset.mem_range.1 hy)) hx
-  simpa using Finset.card_le_card hsub
+  rw [Finset.mem_range]
+  apply Nat.lt_of_add_one_le
+  rw [← Finset.card_range (x+1)]
+  apply Finset.card_le_card
+  exact fun y hy => h y x (by simpa using Nat.lt_succ_iff.1 (Finset.mem_range.1 hy)) hx
+
+variable [LinearOrder T]
 
 lemma rowLen_antitone {t : List (List T)} (ht : IsTableau t) {i j : ℕ} (hij : i ≤ j) :
     rowLen t j ≤ rowLen t i := by
@@ -276,7 +263,6 @@ colour `r`, for `r < k`, the other letters being uncoloured. -/
 noncomputable def rowCol (t : List (List T)) (k : ℕ) : ℕ → Option ℕ :=
   fun i => if (coordOf t i).1 < k then some (coordOf t i).1 else none
 
-omit [LinearOrder T] in
 lemma rowCol_eq_some_iff {t : List (List T)} {k i x : ℕ} :
     rowCol t k i = some x ↔ (coordOf t i).1 = x ∧ x < k := by
   unfold rowCol
@@ -316,14 +302,13 @@ lemma isGreeneCol_rowCol {t : List (List T)} (ht : IsTableau t) (k : ℕ) :
     rw [hwi, hwj]
     exact ht.row_le hlt.le (by simpa [rowLen] using hj2)
 
-omit [LinearOrder T] in
 lemma greeneSize_rowCol (t : List (List T)) (k : ℕ) :
     greeneSize (toWord t) (rowCol t k) = ∑ r ∈ Finset.range (min k t.length), rowLen t r := by
   have hmaps : Set.MapsTo (fun i => (coordOf t i).1)
       (((Finset.range (toWord t).length).filter fun i => (rowCol t k i).isSome) : Finset ℕ)
       (Finset.range (min k t.length)) := by
     intro i hi
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range] at hi
+    simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range] at hi
     obtain ⟨hilt, hsome⟩ := hi
     obtain ⟨x, hx⟩ := Option.isSome_iff_exists.1 hsome
     obtain ⟨hr, hxk⟩ := rowCol_eq_some_iff.1 hx
@@ -363,7 +348,6 @@ lemma greeneSize_rowCol (t : List (List T)) (k : ℕ) :
 
 /-! ### The upper bound -/
 
-omit [LinearOrder T] in
 /-- The letter of the reading word at a position, in terms of its coordinates. -/
 lemma getElem_toWord_coordOf {t : List (List T)} {i : ℕ} (hi : i < (toWord t).length) :
     (toWord t)[i] = (t.getD (coordOf t i).1 [])[(coordOf t i).2]'(by
