@@ -199,10 +199,8 @@ lemma finset_eq_range_card {S : Finset ℕ} (h : ∀ a b : ℕ, a ≤ b → b �
   apply Finset.card_le_card
   exact fun y hy => h y x (by simpa using Nat.lt_succ_iff.1 (Finset.mem_range.1 hy)) hx
 
-variable [LinearOrder T]
-
-lemma rowLen_antitone {t : List (List T)} (ht : IsTableau t) {i j : ℕ} (hij : i ≤ j) :
-    rowLen t j ≤ rowLen t i := by
+lemma rowLen_antitone {t : List (List T)} [LinearOrder T] (ht : IsTableau t) {i j : ℕ}
+    (hij : i ≤ j) : rowLen t j ≤ rowLen t i := by
   rcases eq_or_lt_of_le hij with rfl | h
   · exact le_rfl
   · exact (ht.dominate_getD h).length_le
@@ -211,7 +209,7 @@ lemma rowLen_antitone {t : List (List T)} (ht : IsTableau t) {i j : ℕ} (hij : 
 def colHeight (t : List (List T)) (j : ℕ) : ℕ :=
   ((Finset.range t.length).filter fun r => j < rowLen t r).card
 
-lemma lt_rowLen_iff {t : List (List T)} (ht : IsTableau t) (j r : ℕ) :
+lemma lt_rowLen_iff {t : List (List T)} [LinearOrder T] (ht : IsTableau t) (j r : ℕ) :
     j < rowLen t r ↔ r < colHeight t j := by
   have hS : ((Finset.range t.length).filter fun r => j < rowLen t r)
       = Finset.range (colHeight t j) := by
@@ -234,7 +232,7 @@ lemma lt_rowLen_iff {t : List (List T)} (ht : IsTableau t) (j r : ℕ) :
     rw [← hS] at hmem
     exact (Finset.mem_filter.1 hmem).2
 
-lemma card_filter_lt_rowLen {t : List (List T)} (ht : IsTableau t) (m j : ℕ) :
+lemma card_filter_lt_rowLen {t : List (List T)} [LinearOrder T] (ht : IsTableau t) (m j : ℕ) :
     ((Finset.range m).filter fun r => j < rowLen t r).card = min m (colHeight t j) := by
   have h : ((Finset.range m).filter fun r => j < rowLen t r)
       = Finset.range (min m (colHeight t j)) := by
@@ -242,7 +240,7 @@ lemma card_filter_lt_rowLen {t : List (List T)} (ht : IsTableau t) (m j : ℕ) :
     simp [lt_rowLen_iff ht]
   rw [h, Finset.card_range]
 
-lemma sum_card_filter_lt_rowLen {t : List (List T)} (ht : IsTableau t) (m : ℕ) :
+lemma sum_card_filter_lt_rowLen {t : List (List T)} [LinearOrder T] (ht : IsTableau t) (m : ℕ) :
     ∑ j ∈ Finset.range (rowLen t 0), ((Finset.range m).filter fun r => j < rowLen t r).card
       = ∑ r ∈ Finset.range m, rowLen t r := by
   simp only [Finset.card_filter]
@@ -273,7 +271,7 @@ lemma rowCol_eq_some_iff {t : List (List T)} {k i x : ℕ} :
     rintro rfl
     exact fun hx => h hx
 
-lemma isGreeneCol_rowCol {t : List (List T)} (ht : IsTableau t) (k : ℕ) :
+lemma isGreeneCol_rowCol {t : List (List T)} [LinearOrder T] (ht : IsTableau t) (k : ℕ) :
     IsGreeneCol (toWord t) k (rowCol t k) := by
   constructor
   · intro i x hx
@@ -360,8 +358,8 @@ lemma getElem_toWord_coordOf {t : List (List T)} {i : ℕ} (hi : i < (toWord t).
       simpa [rowLen] using hj), Option.some_inj] at h
 
 /-- Two positions in the same column of a tableau cannot carry the same colour. -/
-lemma not_colour_eq_of_same_col {t : List (List T)} (ht : IsTableau t) {k : ℕ} {c : ℕ → Option ℕ}
-    (hc : IsGreeneCol (toWord t) k c) {i i' x : ℕ} (hi : i < (toWord t).length)
+lemma not_colour_eq_of_same_col {t : List (List T)} [LinearOrder T] (ht : IsTableau t) {k : ℕ}
+    {c : ℕ → Option ℕ} (hc : IsGreeneCol (toWord t) k c) {i i' x : ℕ} (hi : i < (toWord t).length)
     (hi' : i' < (toWord t).length) (hci : c i = some x) (hci' : c i' = some x)
     (hcol : (coordOf t i).2 = (coordOf t i').2)
     (hrow : (coordOf t i).1 < (coordOf t i').1) : False := by
@@ -377,8 +375,8 @@ lemma not_colour_eq_of_same_col {t : List (List T)} (ht : IsTableau t) {k : ℕ}
     (by rw [hcol]; simpa [rowLen] using hj')
   exact absurd hle (not_le.2 (by convert hdom using 2; exact hcol.symm))
 
-lemma greeneSize_le_sum_rowLen {t : List (List T)} (ht : IsTableau t) {k : ℕ} {c : ℕ → Option ℕ}
-    (hc : IsGreeneCol (toWord t) k c) :
+lemma greeneSize_le_sum_rowLen {t : List (List T)} [LinearOrder T] (ht : IsTableau t) {k : ℕ}
+    {c : ℕ → Option ℕ} (hc : IsGreeneCol (toWord t) k c) :
     greeneSize (toWord t) c ≤ ∑ r ∈ Finset.range (min k t.length), rowLen t r := by
   have hmaps : Set.MapsTo (fun i => (coordOf t i).2)
       (((Finset.range (toWord t).length).filter fun i => (c i).isSome) : Finset ℕ)
@@ -445,7 +443,7 @@ lemma greeneSize_le_sum_rowLen {t : List (List T)} (ht : IsTableau t) {k : ℕ} 
 
 /-- **The Greene invariant of the reading word of a tableau** is the sum of the lengths of
 its `k` first rows (Coq `Greene_row_tab`). -/
-theorem greeneRow_toWord {t : List (List T)} (ht : IsTableau t) (k : ℕ) :
+theorem greeneRow_toWord {t : List (List T)} [LinearOrder T] (ht : IsTableau t) (k : ℕ) :
     greeneRow (toWord t) k = ∑ r ∈ Finset.range (min k t.length), rowLen t r := by
   refine le_antisymm (greeneRow_le fun c hc => greeneSize_le_sum_rowLen ht hc) ?_
   rw [← greeneSize_rowCol t k]
