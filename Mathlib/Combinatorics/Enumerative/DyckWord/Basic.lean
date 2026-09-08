@@ -250,7 +250,7 @@ theorem join_eq_join_iff {u v u' v' : List DyckStep} (hu : IsDyckWord u) (hu' : 
       a ++ D :: b = a' ++ D :: b' → a.length ≤ a'.length := by
     intro a b a' b' ha ha' heq
     by_contra hlt
-    push_neg at hlt
+    push Not at hlt
     have h1 : (a' ++ D :: b').take (a'.length + 1) = a' ++ [D] := by
       rw [take_append]
       simp
@@ -309,20 +309,20 @@ def isDyckWordEquiv : {w : List DyckStep // IsDyckWord w} ≃ DyckWord where
   right_inv p := by ext1; rfl
 
 /-- Dyck words are in bijection with binary trees (Coq `Dyck_of_bintree`, `bintree_of_Dyck`). -/
-def isDyckWordEquivTree : {w : List DyckStep // IsDyckWord w} ≃ Tree Unit :=
+def isDyckWordEquivTree : {w : List DyckStep // IsDyckWord w} ≃ BinaryTree Unit :=
   isDyckWordEquiv.trans DyckWord.equivTree
 
 /-- The Dyck word attached to a binary tree (Coq `Dyck_of_bintree`). -/
-def dyckOfTree (t : Tree Unit) : List DyckStep := (isDyckWordEquivTree.symm t).1
+def dyckOfTree (t : BinaryTree Unit) : List DyckStep := (isDyckWordEquivTree.symm t).1
 
-lemma isDyckWord_dyckOfTree (t : Tree Unit) : IsDyckWord (dyckOfTree t) :=
+lemma isDyckWord_dyckOfTree (t : BinaryTree Unit) : IsDyckWord (dyckOfTree t) :=
   (isDyckWordEquivTree.symm t).2
 
-lemma dyckOfTree_eq (t : Tree Unit) : dyckOfTree t = (DyckWord.ofTree t).toList := rfl
+lemma dyckOfTree_eq (t : BinaryTree Unit) : dyckOfTree t = (DyckWord.ofTree t).toList := rfl
 
 /-- The Dyck word of a binary tree has twice as many letters as the tree has nodes (Coq
 `size_Dyck_of_bintree`). -/
-lemma length_dyckOfTree (t : Tree Unit) : (dyckOfTree t).length = 2 * t.numNodes := by
+lemma length_dyckOfTree (t : BinaryTree Unit) : (dyckOfTree t).length = 2 * t.numNodes := by
   have h : (DyckWord.ofTree t).semilength = t.numNodes := by
     rw [← DyckWord.numNodes_toTree, DyckWord.toTree_ofTree]
   rw [dyckOfTree_eq, length_toList, h]
