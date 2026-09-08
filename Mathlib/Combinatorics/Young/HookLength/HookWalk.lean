@@ -108,7 +108,8 @@ lemma hookWalkProb_of_lt {lam : List ℕ} {c x : ℕ × ℕ} (h : 1 < hookLength
       ((∑ j ∈ Finset.Ioo x.2 (lam.getD x.1 0), hookWalkProb lam c (x.1, j)) +
         (∑ i ∈ Finset.Ioo x.1 ((conjPart lam).getD x.2 0), hookWalkProb lam c (i, x.2)))
         / ((hookLength lam x.1 x.2 : ℚ) - 1) := by
-  rw [hookWalkProb, ite_eq_right (by omega), Finset.sum_attach _ (fun j => hookWalkProb lam c (x.1, j)),
+  rw [hookWalkProb, ite_eq_right (by omega),
+    Finset.sum_attach _ (fun j => hookWalkProb lam c (x.1, j)),
     Finset.sum_attach _ (fun i => hookWalkProb lam c (i, x.2))]
 
 /-! ### Hook lengths of the boxes of a diagram -/
@@ -549,7 +550,8 @@ private lemma hookWalkProb_corner_aux (hlam : IsPart lam) (hal : IsRemCorner lam
         field_simp
         ring
       · -- the generic case
-        rw [ite_eq_right (by omega), ite_eq_right (by omega), hrowval a (by omega), hcolval b (by omega)]
+        rw [ite_eq_right (by omega), ite_eq_right (by omega), hrowval a (by omega),
+          hcolval b (by omega)]
         have hkey : hookLength lam a be + hookLength lam al b = hookLength lam a b + 1 := by
           have := hookLength_add_hookLength hlam hal (b := b) ha (by omega)
           rwa [hbeval] at this
