@@ -279,15 +279,7 @@ lemma count_hyperYamRev (l : List ℕ) (i : ℕ) :
   | nil => simp
   | cons a s ih =>
     rw [hyperYamRev_cons, List.count_append, List.count_replicate, ih]
-    simp only [List.length_cons]
-    rcases lt_trichotomy i s.length with hlt | heq | hgt
-    · rw [ite_eq_right (by simp; omite_eq_leftite_eq_leftite_eq_leftite_eq_left (by omega)]
-      have hk : s.length + 1 - 1 - i = (s.length - 1 - i) + 1 := by omega
-      rw [hk]
-      simp
-    · subst heq
-      simp
-    · rw [ite_eq_right (by simp; omega), ite_eq_right (by omega), ite_eq_right (by omega)]
+    grind
 
 lemma count_hyperYam (ev : List ℕ) (i : ℕ) : (hyperYam ev).count i = ev.getD i 0 := by
   rw [hyperYam, count_hyperYamRev]
