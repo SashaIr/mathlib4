@@ -36,28 +36,28 @@ the smallest element.
   `rotations_flip`).
 -/
 
-namespace Tree
+namespace BinaryTree
 
-open Tree
+open BinaryTree
 
 /-! ### Rotations -/
 
 /-- The list of the rotations of a binary tree: the rotation at the root, if the left
 subtree is not a leaf, followed by the rotations inside the two subtrees (Coq
 `rotations`). -/
-def rotations : Tree Unit → List (Tree Unit)
+def rotations : BinaryTree Unit → List (BinaryTree Unit)
   | .nil => []
   | .node _ l r =>
       (match l with
         | .nil => []
-        | .node _ a b => [Tree.node () a (Tree.node () b r)]) ++
-      ((rotations l).map (fun lr => Tree.node () lr r) ++
-        (rotations r).map (fun rr => Tree.node () l rr))
+        | .node _ a b => [BinaryTree.node () a (BinaryTree.node () b r)]) ++
+      ((rotations l).map (fun lr => BinaryTree.node () lr r) ++
+        (rotations r).map (fun rr => BinaryTree.node () l rr))
 
 @[simp] lemma rotations_nil : rotations .nil = [] := rfl
 
-lemma rotations_node (l r : Tree Unit) :
-    rotations (Tree.node () l r)
+lemma rotations_node (l r : BinaryTree Unit) :
+  rotations (BinaryTree.node () l r)
       = (match l with
           | .nil => []
           | .node _ a b => [Tree.node () a (Tree.node () b r)]) ++
