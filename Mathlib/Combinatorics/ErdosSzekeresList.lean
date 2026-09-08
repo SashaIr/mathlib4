@@ -196,13 +196,9 @@ theorem erdos_szekeres (m n : ℕ) (s : List T) (hs : m * n < s.length) :
         (↑(Finset.univ : Finset (Fin s.length)) : Set (Fin s.length))
         (↑(Finset.Icc 1 m ×ˢ Finset.Icc 1 n) : Set (ℕ × ℕ)) := by
       intro i _
-      simp only [Finset.coe_product, Set.mem_prod, Finset.mem_coe]
-      have h1 := (hex i).1
-      have h2 := (hex i).2
-      have h3 := one_le_maxChainEndingAt s (· ≤ ·) i
-      have h4 := one_le_maxChainEndingAt s (· > ·) i
-      simp only [Finset.mem_Icc]
-      exact ⟨⟨h3, h1⟩, ⟨h4, h2⟩⟩
+      simp only [Finset.coe_product, Set.mem_prod, Finset.mem_coe, Finset.mem_Icc]
+      exact ⟨⟨one_le_maxChainEndingAt s (· ≤ ·) i, (hex i).1⟩,
+        ⟨one_le_maxChainEndingAt s (· > ·) i, (hex i).2⟩⟩
     have hcard := Finset.card_le_card_of_injOn _ hmaps hinj
     simp only [Finset.card_univ, Fintype.card_fin, Finset.card_product, Nat.card_Icc,
       Nat.add_sub_cancel] at hcard
