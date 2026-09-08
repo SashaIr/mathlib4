@@ -3,7 +3,7 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Finite.Card
+import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Bijections between fibered sets
