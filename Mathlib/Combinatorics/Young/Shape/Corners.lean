@@ -147,17 +147,17 @@ lemma isPart_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsAddCorner
         rcases hc with h0 | hc
         · omega
         · rw [h1] at hc; simpa using hc
-      rw [if_pos h1, if_neg (by omega : ¬ (i = j))]
+      rw [ite_eq_left h1, ite_eq_right (by omega : ¬ (i = j))]
       omega
-    · rw [if_neg h1]
+    · rw [ite_eq_right h1]
       by_cases h2 : i = j
-      · rw [if_pos h2]; omega
-      · rw [if_neg h2]; omega
+      · rw [ite_eq_left h2]; omega
+      · rw [ite_eq_right h2]; omega
   · rw [length_incrNth] at hj
     rw [getD_incrNth]
     by_cases h2 : i = j
     · simp [h2]
-    · simp only [if_neg h2, Nat.add_zero]
+    · simp only [ite_eq_right h2, Nat.add_zero]
       refine h.getD_pos ?_
       omega
 
@@ -166,9 +166,9 @@ lemma isRemCorner_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) :
     IsRemCorner (incrNth sh i) i := by
   have hmono := h.getD_succ_le i
   have e1 : (incrNth sh i).getD (i + 1) 0 = sh.getD (i + 1) 0 := by
-    rw [getD_incrNth, if_neg (by omega : ¬ (i = i + 1)), Nat.add_zero]
+    rw [getD_incrNth, ite_eq_right (by omega : ¬ (i = i + 1)), Nat.add_zero]
   have e2 : (incrNth sh i).getD i 0 = sh.getD i 0 + 1 := by
-    rw [getD_incrNth, if_pos rfl]
+    rw [getD_incrNth, ite_eq_left rfl]
   simp only [IsRemCorner, e1, e2]
   omega
 
@@ -293,7 +293,7 @@ lemma sum_decrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsRemCorner sh
 lemma getD_decrNth_of_ne {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsRemCorner sh i)
     {j : ℕ} (hij : i ≠ j) : (decrNth sh i).getD j 0 = sh.getD j 0 := by
   conv_rhs => rw [← incrNth_decrNth h hc]
-  rw [getD_incrNth, if_neg hij, Nat.add_zero]
+  rw [getD_incrNth, ite_eq_right hij, Nat.add_zero]
 
 /-- Coq `add_corner_decr_nth`. -/
 lemma isAddCorner_decrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsRemCorner sh i) :

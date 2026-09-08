@@ -54,9 +54,9 @@ lemma getD_incrFirstN (sh : List ℕ) (n i : ℕ) :
   | nil =>
     simp only [incrFirstN_nil, List.getD_nil]
     rcases Nat.lt_or_ge i n with h | h
-    · rw [if_pos h, List.getD_eq_getElem _ _ (by simpa using h)]
+    · rw [ite_eq_left h, List.getD_eq_getElem _ _ (by simpa using h)]
       simp
-    · rw [if_neg (by omega), List.getD_eq_default _ _ (by simpa using h)]
+    · rw [ite_eq_right (by omega), List.getD_eq_default _ _ (by simpa using h)]
   | cons a s ih =>
     cases n with
     | zero => simp
@@ -193,14 +193,14 @@ lemma inShape_conjPart {sh : List ℕ} (h : IsPart sh) (r c : ℕ) :
       · intro hca; simp [hca]
       · intro hpos
         by_contra hca
-        rw [if_neg hca, hzero hca] at hpos
+        rw [ite_eq_right hca, hzero hca] at hpos
         omega
     | succ k =>
       have hIH := ih hs k c
       simp only [InShape, hval, List.getD_cons_succ] at hIH ⊢
       by_cases hca : c < a
-      · rw [if_pos hca]; omega
-      · rw [if_neg hca, hzero hca]
+      · rw [ite_eq_left hca]; omega
+      · rw [ite_eq_right hca, hzero hca]
         simp only [Nat.add_zero]
         rw [hzero hca] at hIH
         omega

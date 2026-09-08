@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Fintype.Defs
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Standardization of a word
@@ -61,7 +65,7 @@ instance decidableStdLt (w : List T) (i j : Fin w.length) : Decidable (stdLt w i
   infer_instance
 
 lemma stdLt_irrefl (w : List T) (i : Fin w.length) : ¬ stdLt w i i := by
-  rintro (h | ⟨-, h⟩) <;> exact absurd h (lt_irrefl _)
+  rintro (h | ⟨-, h⟩) <;> exact absurd h (Std.not_gt_of_lt h)
 
 lemma stdLt_trans {w : List T} {i j k : Fin w.length} (hij : stdLt w i j)
     (hjk : stdLt w j k) : stdLt w i k := by
@@ -69,13 +73,13 @@ lemma stdLt_trans {w : List T} {i j k : Fin w.length} (hij : stdLt w i j)
   · exact Or.inl (lt_trans h1 h2)
   · exact Or.inl (h2 ▸ h1)
   · exact Or.inl (h1 ▸ h2)
-  · exact Or.inr ⟨h1.trans h2, lt_trans h1' h2'⟩
+  · exact Or.inr ⟨h1.trans h2, Nat.lt_trans h1' h2'⟩
 
 lemma stdLt_total {w : List T} {i j : Fin w.length} (hij : i ≠ j) :
     stdLt w i j ∨ stdLt w j i := by
   rcases lt_trichotomy w[(i : ℕ)] w[(j : ℕ)] with h | h | h
   · exact Or.inl (Or.inl h)
-  · rcases lt_trichotomy (i : ℕ) (j : ℕ) with h' | h' | h'
+  · rcases Nat.lt_trichotomy (i : ℕ) (j : ℕ) with h' | h' | h'
     · exact Or.inl (Or.inr ⟨h, h'⟩)
     · exact absurd (Fin.ext h') hij
     · exact Or.inr (Or.inr ⟨h.symm, h'⟩)

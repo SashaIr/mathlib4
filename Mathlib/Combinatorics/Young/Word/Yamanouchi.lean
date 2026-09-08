@@ -79,7 +79,7 @@ lemma getLastD_incrNth_ne_zero {l : List ℕ} (hl : l.getLastD 1 ≠ 0) (i : ℕ
   rw [getLastD_eq_getD 1 hne, getD_incrNth, hlen]
   rcases Nat.lt_or_ge (i + 1) l.length with h | h
   · have hmax : max l.length (i + 1) = l.length := by omega
-    rw [hmax, if_neg (by omega)]
+    rw [hmax, ite_eq_right (by omega)]
     have hlne : l ≠ [] := by
       intro hc
       rw [hc] at h
@@ -242,8 +242,8 @@ lemma isAddCorner_evalseq {l0 : ℕ} {s : List ℕ} (h : IsYam (l0 :: s)) :
   · exact Or.inl rfl
   refine Or.inr ?_
   have hmono := h.1.getD_antitone (i := l0 - 1) (j := l0) (by omega)
-  rw [evalseq_cons, getD_incrNth, getD_incrNth, if_pos rfl,
-    if_neg (by omega : ¬ (l0 = l0 - 1))] at hmono
+  rw [evalseq_cons, getD_incrNth, getD_incrNth, ite_eq_left rfl,
+    ite_eq_right (by omega : ¬ (l0 = l0 - 1))] at hmono
   omega
 
 /-! ### The hyperstandard Yamanouchi word -/
@@ -281,23 +281,23 @@ lemma count_hyperYamRev (l : List ℕ) (i : ℕ) :
     rw [hyperYamRev_cons, List.count_append, List.count_replicate, ih]
     simp only [List.length_cons]
     rcases lt_trichotomy i s.length with hlt | heq | hgt
-    · rw [if_neg (by simp; omega), if_pos hlt, if_pos (by omega)]
+    · rw [ite_eq_right (by simp; omite_eq_leftite_eq_leftite_eq_leftite_eq_left (by omega)]
       have hk : s.length + 1 - 1 - i = (s.length - 1 - i) + 1 := by omega
       rw [hk]
       simp
     · subst heq
       simp
-    · rw [if_neg (by simp; omega), if_neg (by omega), if_neg (by omega)]
+    · rw [ite_eq_right (by simp; omega), ite_eq_right (by omega), ite_eq_right (by omega)]
 
 lemma count_hyperYam (ev : List ℕ) (i : ℕ) : (hyperYam ev).count i = ev.getD i 0 := by
   rw [hyperYam, count_hyperYamRev]
   by_cases hi : i < ev.reverse.length
-  · rw [if_pos hi]
+  · rw [ite_eq_left hi]
     simp only [List.length_reverse] at hi ⊢
     rw [List.getD_reverse _ (by omega)]
     congr 1
     omega
-  · rw [if_neg hi]
+  · rw [ite_eq_right hi]
     simp only [List.length_reverse] at hi
     exact (List.getD_eq_default _ _ (by omega)).symm
 
@@ -315,7 +315,7 @@ lemma count_drop_hyperYamRev_cons (a : ℕ) (s : List ℕ) (i m : ℕ) :
   congr 1
   by_cases hm : m = s.length
   · simp [hm]
-  · rw [if_neg hm, if_neg (by simpa using fun hc => hm hc.symm)]
+  · rw [ite_eq_right hm, ite_eq_right (by simpa using fun hc => hm hc.symm)]
 
 /-- The key inequality: in every suffix of `hyperYamRev l`, where `l` is weakly increasing,
 each letter occurs at least as often as its successor. -/
@@ -331,12 +331,12 @@ lemma count_drop_hyperYamRev_le (l : List ℕ)
       simpa using this
     rw [count_drop_hyperYamRev_cons, count_drop_hyperYamRev_cons]
     by_cases hn : n + 1 = s.length
-    · rw [if_pos hn, if_neg (by omega)]
+    · rw [ite_eq_left hn, ite_eq_right (by omega)]
       have hzero : ((hyperYamRev s).drop (i - a)).count (n + 1) = 0 := by
         have hsub : ((hyperYamRev s).drop (i - a)).count (n + 1)
             ≤ (hyperYamRev s).count (n + 1) :=
           (List.drop_sublist _ _).count_le _
-        rw [count_hyperYamRev, if_neg (by omega)] at hsub
+        rw [count_hyperYamRev, ite_eq_right (by omega)] at hsub
         omega
       cases s with
       | nil => simp at hn
@@ -346,10 +346,10 @@ lemma count_drop_hyperYamRev_le (l : List ℕ)
           have := H 0 (by simp)
           simpa using this
         have hkey : a - i ≤ ((hyperYamRev (s0 :: t)).drop (i - a)).count n := by
-          rw [count_drop_hyperYamRev_cons, if_pos hn']
+          rw [count_drop_hyperYamRev_cons, ite_eq_left hn']
           omega
         omega
-    · rw [if_neg hn]
+    · rw [ite_eq_right hn]
       have := ih Hs (i - a) n
       split_ifs <;> omega
 

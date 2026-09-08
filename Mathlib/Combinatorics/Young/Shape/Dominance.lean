@@ -106,10 +106,10 @@ lemma sum_take_incrFirstN (c : List ℕ) (n k : ℕ) :
   | succ m ih =>
     rw [sum_take_succ_getD, ih, getD_incrFirstN, sum_take_succ_getD]
     by_cases hm : m < n
-    · rw [if_pos hm]
+    · rw [ite_eq_left hm]
       have : min (m + 1) n = min m n + 1 := by omega
       omega
-    · rw [if_neg hm]
+    · rw [ite_eq_right hm]
       have : min (m + 1) n = min m n := by omega
       omega
 

@@ -202,7 +202,7 @@ theorem card_cycleTypeList_mul_zcard {l : List ℕ} (hl : IsPart l) (hn : l.sum 
     rw [Fintype.card_fin]
     omega
   have hmain := card_of_cycleType_mul_eq (Fin n) (bigParts l)
-  rw [if_pos ⟨hsum, fun a ha => two_le_of_mem_bigParts ha⟩] at hmain
+  rw [ite_eq_left ⟨hsum, fun a ha => two_le_of_mem_bigParts ha⟩] at hmain
   have hcnt : Fintype.card (Fin n) - (bigParts l).sum = l.count 1 := by
     have := sum_bigParts_add_count_one hl
     rw [Fintype.card_fin]
