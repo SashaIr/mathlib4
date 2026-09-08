@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 import Mathlib.Data.Fintype.List
-import Mathlib.Data.List.Multinomial
+import Mathlib.Data.Nat.Choose.Multinomial
 
 /-!
 # Rearrangements of a word and the multinomial coefficient
@@ -23,16 +23,30 @@ its cardinality times the product of the factorials of the multiplicities is `(m
   `permuted`).
 * `List.card_rearrangements_mul_prod_factorial` : `|rearrangements m| * ∏ (count a)! =
   (m.card)!`.
-* `List.card_rearrangements` : `|rearrangements m| = m.multinomial`.
-* `List.card_rearrangements_eq_multinomialList` : the Coq statement
-  `card_permuted_multinomial`, with the multinomial coefficient `List.multinomialList` of
-  the list of the multiplicities.
+* `List.card_rearrangements` : `|rearrangements m| = m.multinomial`, the Coq statement
+  `card_permuted_multinomial`.
 * `List.card_permutations_toFinset` : the number of distinct rearrangements of a word.
+
+On the way we record the factorial identity for the multiplicity function as a
+`Nat.multinomial` (`Multiset.prod_factorial_count_mul_multinomial`).
 -/
 
-namespace List
-
 open Nat
+
+namespace Multiset
+
+variable {α : Type*} [DecidableEq α]
+
+/-- The factorial identity for the multiplicities of a multiset. -/
+theorem prod_factorial_count_mul_multinomial (m : Multiset α) :
+    (∏ a ∈ m.toFinset, Nat.factorial (m.count a)) *
+      Nat.multinomial m.toFinset (fun a => m.count a) = Nat.factorial m.card := by
+  rw [Nat.multinomial_spec m.toFinset fun a => m.count a,
+    Multiset.toFinset_sum_count_eq m]
+
+end Multiset
+
+namespace List
 
 variable {α : Type*} [DecidableEq α]
 
@@ -147,49 +161,20 @@ theorem card_rearrangements_mul_prod_factorial (m : Multiset α) :
       obtain ⟨k, hk⟩ : ∃ k, m.card = k + 1 := ⟨m.card - 1, by omega⟩
       rw [← hn, hk, Nat.factorial_succ, Nat.add_sub_cancel, Nat.mul_comm]
 
-/-- The factorial identity satisfied by Mathlib's `Multiset.multinomial`. -/
-lemma prod_factorial_count_mul_multinomial (m : Multiset α) :
-    (∏ a ∈ m.toFinset, Nat.factorial (m.count a)) * m.multinomial = Nat.factorial m.card := by
-  rw [Multiset.multinomial, Finsupp.multinomial_eq]
-  have h1 : m.toFinsupp.support = m.toFinset := by simp
-  have h2 : Nat.multinomial m.toFinsupp.support ⇑(Multiset.toFinsupp m)
-      = Nat.multinomial m.toFinset (fun a => m.count a) := by
-    rw [h1]
-    exact Nat.multinomial_congr (by intro a _; simp)
-  rw [h2, Nat.multinomial_spec m.toFinset (fun a => m.count a),
-    Multiset.toFinset_sum_count_eq m]
-
 /-- **The number of rearrangements of a word** is the multinomial coefficient of the
 multiplicities of its letters. -/
 theorem card_rearrangements (m : Multiset α) :
-    (rearrangements m).card = m.multinomial := by
+    (rearrangements m).card = Nat.multinomial m.toFinset (fun a => m.count a) := by
   have hpos : 0 < ∏ a ∈ m.toFinset, Nat.factorial (m.count a) :=
     Finset.prod_pos fun a _ => Nat.factorial_pos _
   refine Nat.eq_of_mul_eq_mul_right hpos ?_
   rw [card_rearrangements_mul_prod_factorial, mul_comm,
-    prod_factorial_count_mul_multinomial]
-
-/-- **The Coq statement `card_permuted_multinomial`**: the number of rearrangements of a
-word is the multinomial coefficient of the list of the multiplicities of its letters. -/
-theorem card_rearrangements_eq_multinomialList (m : Multiset α) :
-    (rearrangements m).card = multinomialList (m.toFinset.toList.map fun a => m.count a) := by
-  have hprod : ((m.toFinset.toList.map fun a => m.count a).map Nat.factorial).prod
-      = ∏ a ∈ m.toFinset, Nat.factorial (m.count a) := by
-    rw [List.map_map, Finset.prod_eq_multiset_prod, ← Finset.coe_toList]
-    rfl
-  have hsum : (m.toFinset.toList.map fun a => m.count a).sum = m.card := by
-    rw [show (m.toFinset.toList.map fun a => m.count a).sum = ∑ a ∈ m.toFinset, m.count a by
-      rw [Finset.sum_eq_multiset_sum, ← Finset.coe_toList]; rfl,
-      Multiset.toFinset_sum_count_eq]
-  have hpos : 0 < ∏ a ∈ m.toFinset, Nat.factorial (m.count a) :=
-    Finset.prod_pos fun a _ => Nat.factorial_pos _
-  refine Nat.eq_of_mul_eq_mul_right hpos ?_
-  rw [card_rearrangements_mul_prod_factorial, ← hprod,
-    multinomialList_mul_prod_factorial, hprod, hsum] at *
+    Multiset.prod_factorial_count_mul_multinomial]
 
 /-- The number of distinct rearrangements of a word `w`. -/
 theorem card_permutations_toFinset (w : List α) :
-    w.permutations.toFinset.card = Multiset.multinomial (w : Multiset α) := by
+    w.permutations.toFinset.card =
+      Nat.multinomial (w : Multiset α).toFinset (fun a => (w : Multiset α).count a) := by
   have : w.permutations.toFinset = rearrangements (w : Multiset α) := by
     ext l
     simp [rearrangements, List.mem_permutations]
