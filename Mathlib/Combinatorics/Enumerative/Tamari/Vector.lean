@@ -30,32 +30,32 @@ The lists arising in this way are the *Tamari vectors*, characterised by the pre
 
 namespace List
 
-open Tree
+open BinaryTree
 
 /-! ### The vector of the sizes of the right subtrees -/
 
 /-- The list of the sizes of the right subtrees of the nodes of a binary tree, read in
 infix order (Coq `right_sizes`). -/
-def rightSizes : Tree Unit → List ℕ
+def rightSizes : BinaryTree Unit → List ℕ
   | .nil => []
   | .node _ l r => rightSizes l ++ r.numNodes :: rightSizes r
 
 @[simp] lemma rightSizes_nil : rightSizes .nil = [] := rfl
 
-@[simp] lemma rightSizes_node (l r : Tree Unit) :
-    rightSizes (Tree.node () l r) = rightSizes l ++ r.numNodes :: rightSizes r := rfl
+@[simp] lemma rightSizes_node (l r : BinaryTree Unit) :
+  rightSizes (BinaryTree.node () l r) = rightSizes l ++ r.numNodes :: rightSizes r := rfl
 
-@[simp] lemma length_rightSizes (t : Tree Unit) : (rightSizes t).length = t.numNodes := by
+@[simp] lemma length_rightSizes (t : BinaryTree Unit) : (rightSizes t).length = t.numNodes := by
   induction t with
   | nil => rfl
   | node a l r ihl ihr =>
     cases a
     simp only [rightSizes_node, List.length_append, List.length_cons, ihl, ihr,
-      Tree.numNodes]
+      BinaryTree.numNodes]
     omega
 
 /-- The sum of the vector of a tree is the weight used for the Tamari order. -/
-@[simp] lemma sum_rightSizes (t : Tree Unit) : (rightSizes t).sum = rightSizesSum t := by
+@[simp] lemma sum_rightSizes (t : BinaryTree Unit) : (rightSizes t).sum = rightSizesSum t := by
   induction t with
   | nil => rfl
   | node a l r ihl ihr =>
@@ -69,7 +69,7 @@ def rightSizes : Tree Unit → List ℕ
   | zero => rfl
   | succ n ih =>
     rw [combLeft, rightSizes_node, ih]
-    simp [List.replicate_succ', Tree.numNodes]
+    simp [List.replicate_succ', BinaryTree.numNodes]
 
 /-! ### Tamari vectors -/
 
@@ -142,7 +142,7 @@ theorem isTamariVector_iff {v : List ℕ} :
 
 /-- **The vector of the sizes of the right subtrees of a binary tree is a Tamari vector**
 (Coq `right_sizesP`). -/
-theorem isTamariVector_rightSizes (t : Tree Unit) : IsTamariVector (rightSizes t) := by
+theorem isTamariVector_rightSizes (t : BinaryTree Unit) : IsTamariVector (rightSizes t) := by
   induction t with
   | nil => exact isTamariVector_nil
   | node a l r ihl ihr =>
@@ -152,11 +152,11 @@ theorem isTamariVector_rightSizes (t : Tree Unit) : IsTamariVector (rightSizes t
     obtain ⟨hr1, hr2⟩ := ihr
     set p := l.numNodes with hp
     set q := r.numNodes with hq
-    have hlen : (rightSizes (Tree.node () l r)).length = p + 1 + q := by
+    have hlen : (rightSizes (BinaryTree.node () l r)).length = p + 1 + q := by
       rw [length_rightSizes]
       change l.numNodes + r.numNodes + 1 = p + 1 + q
       omega
-    have hget : ∀ i, (rightSizes (Tree.node () l r)).getD i 0
+    have hget : ∀ i, (rightSizes (BinaryTree.node () l r)).getD i 0
         = if i < p then (rightSizes l).getD i 0
           else if i = p then q else (rightSizes r).getD (i - p - 1) 0 := by
       intro i
