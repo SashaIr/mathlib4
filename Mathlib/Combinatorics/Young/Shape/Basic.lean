@@ -318,7 +318,7 @@ lemma ext_getD_of_getLastD_ne_zero {p q : List ℕ} (hp : p.getLastD 1 ≠ 0) (h
       a.length ≤ b.length := by
     intro a b ha hab
     by_contra hlt
-    push_neg at hlt
+    push Not at hlt
     have hane : a ≠ [] := by
       intro hc
       rw [hc] at hlt
