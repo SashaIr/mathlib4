@@ -95,7 +95,7 @@ lemma IsPart.included_iff_getD {s t : List ℕ} (hs : IsPart s) :
     Included s t ↔ ∀ i, s.getD i 0 ≤ t.getD i 0 := by
   refine ⟨fun h => h.getD_le, fun h => List.included_iff.2 ⟨?_, h⟩⟩
   by_contra hlt
-  push_neg at hlt
+  push Not at hlt
   have h1 : 0 < s.getD t.length 0 := hs.getD_pos hlt
   have h2 : t.getD t.length 0 = 0 := List.getD_eq_default _ _ (le_refl _)
   have := h t.length
@@ -143,7 +143,7 @@ lemma included_conjPart {s t : List ℕ} (hs : IsPart s) (ht : IsPart t) (h : In
   rw [(isPart_conjPart hs).included_iff_getD]
   intro j
   by_contra hlt
-  push_neg at hlt
+  push Not at hlt
   -- `(conjPart t) j < (conjPart s) j` means row `(conjPart t) j` of `s` is longer than that of `t`
   have h1 : (conjPart t).getD j 0 < (conjPart s).getD j 0 := hlt
   set i := (conjPart t).getD j 0 with hi
