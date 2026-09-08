@@ -88,13 +88,13 @@ lemma permRank_succ_left (s : Perm (Fin n)) (i j : ℕ) :
       ext k
       simp only [mem_filter, mem_univ, true_and]
       by_cases hs : (s ⟨i, h⟩).val < j
-      · simp only [hs, if_true, mem_singleton]
+      · simp only [hs, ite_true, mem_singleton]
         constructor
         · rintro ⟨hk, -⟩
           exact Fin.ext hk
         · rintro rfl
           exact ⟨rfl, hs⟩
-      · simp only [hs, if_false, Finset.notMem_empty, iff_false, not_and]
+      · simp only [hs, ite_false, Finset.notMem_empty, iff_false, not_and]
         intro hk
         have hk' : k = (⟨i, h⟩ : Fin n) := Fin.ext hk
         subst hk'
@@ -251,7 +251,7 @@ lemma permRank_injective : Function.Injective (permRank (n := n)) := by
   rw [hks] at key
   have h1 := key (s k).val
   have h2 := key ((s k).val + 1)
-  simp only [lt_irrefl, if_false, Nat.lt_succ_self, if_true] at h1 h2
+  simp only [lt_irrefl, ite_false, Nat.lt_succ_self, ite_true] at h1 h2
   have hval : (t k).val = (s k).val := by
     by_cases hlt : (t k).val < (s k).val
     · rw [ite_eq_left hlt] at h1; omega

@@ -94,7 +94,7 @@ lemma greeneSize_colCol (t : List (List T)) (k : ℕ) :
       (((Finset.range (toWord t).length).filter fun i => (colCol t k i).isSome) : Finset ℕ)
       (Finset.range t.length) := by
     intro i hi
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range] at hi
+    simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range] at hi
     simp only [Finset.coe_range, Set.mem_Iio]
     exact (coordOf_spec hi.1).1
   rw [greeneSize, Finset.card_eq_sum_card_fiberwise hmaps]
@@ -168,7 +168,7 @@ lemma greeneSize_le_sum_min {t : List (List T)} (ht : IsTableau t) {k : ℕ} {c 
       (((Finset.range (toWord t).length).filter fun i => (c i).isSome) : Finset ℕ)
       (Finset.range t.length) := by
     intro i hi
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range] at hi
+    simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range] at hi
     simp only [Finset.coe_range, Set.mem_Iio]
     exact (coordOf_spec hi.1).1
   rw [greeneSize, Finset.card_eq_sum_card_fiberwise hmaps]

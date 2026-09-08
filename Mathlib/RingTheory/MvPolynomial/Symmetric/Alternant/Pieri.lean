@@ -147,7 +147,7 @@ def freeSet (a c : Fin m → ℕ) : Set ℕ :=
 lemma freeSet_comp (a c : Fin m → ℕ) (w : Equiv.Perm (Fin m)) :
     freeSet a (c ∘ w) = freeSet a c := by
   ext i
-  simp only [freeSet, Set.mem_setOf_eq, FreeAt, Function.comp_apply]
+  simp only [freeSet, Set.mem_ofPred_eq, FreeAt, Function.comp_apply]
   constructor
   · rintro ⟨h, hf⟩
     exact ⟨h, fun k hk => hf (w.symm k) (by simpa using hk)⟩

@@ -165,14 +165,14 @@ theorem perm_append_of_mem_shuffle {u v w : List T} (h : w ∈ shuffle u v) :
 theorem sublist_left_of_isShuffle {u v w : List T} (h : IsShuffle u v w) : u.Sublist w := by
   induction h with
   | nil => exact List.Sublist.refl _
-  | left _ ih => exact ih.cons₂ _
+  | left _ ih => exact ih.cons_cons _
   | right _ ih => exact ih.cons _
 
 theorem sublist_right_of_isShuffle {u v w : List T} (h : IsShuffle u v w) : v.Sublist w := by
   induction h with
   | nil => exact List.Sublist.refl _
   | left _ ih => exact ih.cons _
-  | right _ ih => exact ih.cons₂ _
+  | right _ ih => exact ih.cons_cons _
 
 theorem sublist_left_of_mem_shuffle {u v w : List T} (h : w ∈ shuffle u v) : u.Sublist w :=
   sublist_left_of_isShuffle ((mem_shuffle_iff u v w).mp h)

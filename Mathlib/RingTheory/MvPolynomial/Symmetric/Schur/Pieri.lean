@@ -223,8 +223,8 @@ lemma pieri_lhs (m : ℕ)
   congr 1
   refine (card_set_eq_card_finset ?_).symm
   ext sigma
-  simp only [downDiamondLe, Set.mem_setOf_eq, Finset.coe_filter, mem_partFinsetLe,
-    Set.mem_setOf_eq]
+  simp only [downDiamondLe, Set.mem_ofPred_eq, Finset.coe_filter, mem_partFinsetLe,
+    Set.mem_ofPred_eq]
   constructor
   · rintro ⟨h1, h2, h3, h4⟩
     exact ⟨⟨h1, h2.included.sum_le⟩, h2, h3, h4⟩
@@ -263,7 +263,7 @@ lemma pieri_rhs (m : ℕ) {rho : List ℕ} (r : ℕ) :
   congr 1
   refine (card_set_eq_card_finset ?_).symm
   ext lam
-  simp only [upDiamond, Set.mem_setOf_eq, Finset.coe_filter, mem_partFinset]
+  simp only [upDiamond, Set.mem_ofPred_eq, Finset.coe_filter, mem_partFinset]
   constructor
   · rintro ⟨h1, h2, h3, h4⟩
     exact ⟨⟨h1, h4⟩, h2, h3⟩

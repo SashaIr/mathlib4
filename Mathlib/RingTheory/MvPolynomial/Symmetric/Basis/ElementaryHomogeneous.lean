@@ -135,7 +135,7 @@ lemma esymm_mul_hsymm_eq_sum (i r : ℕ) :
             monomial (indicVec S + d) (1 : R) := by
   rw [esymm_eq_sum_indicVec, hsymm_eq_sum_monomial, Finset.sum_mul_sum]
   exact Finset.sum_congr rfl fun S _ => Finset.sum_congr rfl fun d _ => by
-    rw [monomial_mul, mul_one]
+    rw [monomial_mul_monomial, mul_one]
 
 /-- Shifting the exponent vectors of degree `n - i` by a `0-1` vector of degree `i`. -/
 lemma sum_monomial_shift {S : Finset (Fin m)} {i n : ℕ} (hS : S.card = i) (hi : i ≤ n) :

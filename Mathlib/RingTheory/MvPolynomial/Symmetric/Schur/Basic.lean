@@ -3,7 +3,7 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Finite.Vector
+import Mathlib.Data.Fintype.Vector
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 import Mathlib.Combinatorics.Young.Tableau.Basic
@@ -78,7 +78,8 @@ lemma prod_map_X (l : List σ) :
   | nil => simp
   | cons a l ih =>
     simp only [List.map_cons, List.prod_cons, ih]
-    rw [show (X a : MvPolynomial σ R) = monomial (Finsupp.single a 1) 1 from rfl, monomial_mul,
+    rw [show (X a : MvPolynomial σ R) = monomial (Finsupp.single a 1) 1 from rfl,
+      monomial_mul_monomial,
       one_mul, ← Multiset.cons_coe, ← Multiset.singleton_add, Multiset.toFinsupp_add,
       Multiset.toFinsupp_singleton]
 

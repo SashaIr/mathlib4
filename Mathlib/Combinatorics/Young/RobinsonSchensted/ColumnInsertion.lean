@@ -335,7 +335,7 @@ theorem length_le_mul_schensted (w : List T) :
   have hlen : (shape (RS w)).length = (RS w).length := by simp [shape]
   calc w.length = (shape (RS w)).sum := hsize
     _ ≤ (shape (RS w)).length * (schensted w).length := by
-        simpa using List.sum_le_card_nsmul (shape (RS w)) (schensted w).length hb
+        simpa using List.sum_le_length_nsmul (shape (RS w)) (schensted w).length hb
     _ = (schensted w).length * (RS w).length := by rw [hlen]; ring
 
 end List

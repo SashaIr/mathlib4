@@ -48,7 +48,7 @@ once are the standard tableaux of shape `sh`. -/
 lemma tabSet_one (sh : List ℕ) :
     tabSet sh.sum sh (fun _ => 1) = {P | IsStdTab P ∧ shape P = sh} := by
   ext P
-  simp only [tabSet, Set.mem_setOf_eq, IsStdTab]
+  simp only [tabSet, Set.mem_ofPred_eq, IsStdTab]
   constructor
   · rintro ⟨htab, hsh, hlt, hcount⟩
     refine ⟨⟨htab, ?_⟩, hsh⟩

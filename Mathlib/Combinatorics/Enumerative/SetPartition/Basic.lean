@@ -68,7 +68,7 @@ lemma listUnion_perm {L L' : List (Finset α)} (hp : L.Perm L') : listUnion L = 
 omit [DecidableEq α] in
 lemma pairwise_disjoint_perm {L L' : List (Finset α)} (hp : L.Perm L')
     (h : L.Pairwise Disjoint) : L'.Pairwise Disjoint := by
-  have hs : Symmetric (Disjoint : Finset α → Finset α → Prop) := fun _ _ hd => hd.symm
+  have hs : ∀ ⦃A B : Finset α⦄, Disjoint A B → Disjoint B A := fun _ _ hd => hd.symm
   exact hp.pairwise h (fun {_ _} hd => hs hd)
 
 /-- Inside `orderedParts s l` with no zero size, the blocks are pairwise distinct. -/
@@ -118,7 +118,7 @@ lemma exists_finpartition_of_mem_orderedParts {s : Finset α} {l : List ℕ}
   · refine Finset.supIndep_iff_pairwiseDisjoint.2 ?_
     intro B hB C hC hBC
     simp only [Finset.mem_coe, List.mem_toFinset] at hB hC
-    exact hpw.forall (fun _ _ hd => hd.symm) hB hC hBC
+    exact hpw.forall hB hC hBC
   · simp only [List.mem_toFinset]
     intro hbot
     exact hne ⊥ hbot rfl

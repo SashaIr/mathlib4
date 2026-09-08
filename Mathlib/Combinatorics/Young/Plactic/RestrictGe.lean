@@ -36,7 +36,7 @@ lemma placticEquiv_filter_of_isUpperSet_of_placticStep
     by_cases hx : p x
     · have hy : p y := hp x y hxy hx
       have hz : p z := hp y z hyz.le hy
-      simp only [List.filter_append, List.filter_cons, hx, hy, hz, if_true]
+      simp only [List.filter_append, List.filter_cons, hx, hy, hz, ite_true]
       exact (PlacticStep.knuthAC hxy hyz _ _).plactic
     · simp only [List.filter_append, List.filter_cons, hx]
       by_cases hy : p y <;> by_cases hz : p z <;> simp [hy, hz, PlacticEquiv.refl]
@@ -44,7 +44,7 @@ lemma placticEquiv_filter_of_isUpperSet_of_placticStep
     by_cases hx : p x
     · have hy : p y := hp x y hxy.le hx
       have hz : p z := hp y z hyz hy
-      simp only [List.filter_append, List.filter_cons, hx, hy, hz, if_true]
+      simp only [List.filter_append, List.filter_cons, hx, hy, hz, ite_true]
       exact (PlacticStep.knuthCA hxy hyz _ _).plactic
     · simp only [List.filter_append, List.filter_cons, hx]
       by_cases hy : p y <;> by_cases hz : p z <;> simp [hy, hz, PlacticEquiv.refl]

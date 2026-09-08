@@ -168,22 +168,22 @@ private lemma greeneSize_transportCol (hw : IsStd w) (c : ℕ → Option ℕ) :
   classical
   refine Finset.card_nbij' (fun j => w.idxOf j) (fun i => w.getD i 0) ?_ ?_ ?_ ?_
   · intro j hj
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range, length_invStd] at hj ⊢
+    simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range, length_invStd] at hj ⊢
     obtain ⟨hjr, hjs⟩ := hj
     rw [transportCol, ite_eq_left hjr] at hjs
     exact ⟨hw.idxOf_lt hjr, hjs⟩
   · intro i hi
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range, length_invStd] at hi ⊢
+    simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range, length_invStd] at hi ⊢
     obtain ⟨hir, his⟩ := hi
     have hlt : w.getD i 0 < w.length := hw.getD_lt' hir
     refine ⟨hlt, ?_⟩
     rw [transportCol, ite_eq_left hlt, hw.idxOf_getD hir]
     exact his
   · intro j hj
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range, length_invStd] at hj
+    simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range, length_invStd] at hj
     exact hw.getD_idxOf hj.1
   · intro i hi
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_range] at hi
+    simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range] at hi
     exact hw.idxOf_getD hi.1
 
 private lemma greeneRow_le_greeneRow_invStd (hw : IsStd w) (k : ℕ) :

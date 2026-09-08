@@ -185,7 +185,7 @@ theorem kostkaNum_eq_kostka {lam : List ℕ} (hlam : IsPart lam) (mu : List ℕ)
     kostkaNum lam.length mu (contentOf lam) = kostka mu lam := by
   rw [kostkaNum, kostka]
   refine Nat.card_congr (Equiv.subtypeEquivRight fun t => ?_)
-  simp only [tabSet, Set.mem_setOf_eq, contentOf_apply]
+  simp only [tabSet, Set.mem_ofPred_eq, contentOf_apply]
   refine and_congr_right fun _ => and_congr_right fun _ => ?_
   constructor
   · rintro ⟨hlt, hcount⟩

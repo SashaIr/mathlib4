@@ -49,7 +49,7 @@ theorem placticEquiv_shiftn_iff (n : ℕ) :
   have hmono : ∀ ⦃x : ℕ⦄, x ∈ {x : ℕ | n ≤ x} → ∀ ⦃y : ℕ⦄, y ∈ {x : ℕ | n ≤ x} →
       x < y → x - n < y - n := by
     intro x hx y hy hxy
-    simp only [Set.mem_setOf_eq] at hx hy
+    simp only [Set.mem_ofPred_eq] at hx hy
     omega
   have hmap := placticEquiv_map_of_strictMonoOn (F := (· - n)) hmono h
     (fun x hx => by simpa using le_of_mem_shiftn hx)
@@ -67,7 +67,7 @@ theorem placticEquiv_sfilterleq (n : ℕ) (h : PlacticEquiv u v) :
   have hmono : ∀ ⦃x : ℕ⦄, x ∈ {x : ℕ | n ≤ x} → ∀ ⦃y : ℕ⦄, y ∈ {x : ℕ | n ≤ x} →
       x < y → x - n < y - n := by
     intro x hx y hy hxy
-    simp only [Set.mem_setOf_eq] at hx hy
+    simp only [Set.mem_ofPred_eq] at hx hy
     omega
   exact placticEquiv_map_of_strictMonoOn (F := (· - n)) hmono hfilter
     (fun x hx => by simpa using (List.mem_filter.1 hx).2)

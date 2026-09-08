@@ -39,7 +39,7 @@ lemma kostkaNum_congr (N : ℕ) (sh : List ℕ) {c d : ℕ → ℕ} (h : ∀ i <
     kostkaNum N sh c = kostkaNum N sh d := by
   have : tabSet N sh c = tabSet N sh d := by
     ext P
-    simp only [tabSet, Set.mem_setOf_eq]
+    simp only [tabSet, Set.mem_ofPred_eq]
     constructor
     · rintro ⟨h1, h2, h3, h4⟩
       exact ⟨h1, h2, h3, fun i hi => (h4 i hi).trans (h i hi)⟩

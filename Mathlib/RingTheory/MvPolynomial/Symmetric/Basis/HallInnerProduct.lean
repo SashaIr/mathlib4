@@ -127,7 +127,7 @@ lemma kostkaNum_alphabet {N N' : ℕ} {sh : List ℕ} {c : ℕ → ℕ} (hc : �
     (hle : N ≤ N') : kostkaNum N' sh c = kostkaNum N sh c := by
   have hset : tabSet N' sh c = tabSet N sh c := by
     ext P
-    simp only [tabSet, Set.mem_setOf_eq]
+    simp only [tabSet, Set.mem_ofPred_eq]
     refine and_congr_right fun hP => and_congr_right fun hsh => ?_
     constructor
     · rintro ⟨hlt, hcount⟩
