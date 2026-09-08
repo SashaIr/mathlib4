@@ -130,8 +130,8 @@ lemma le_length_of_isAddCorner {sh : List ℕ} {i : ℕ} (hc : IsAddCorner sh i)
   rcases hc with rfl | hc
   · exact Nat.zero_le _
   · by_contra hlt
-    push_neg at hlt
-    have h1 : sh.getD (i - 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
+    push Not at hlt
+    have : sh.getD (i - 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
     omega
 
 /-- Coq `is_part_incr_nth`. -/
