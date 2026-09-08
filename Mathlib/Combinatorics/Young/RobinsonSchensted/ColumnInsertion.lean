@@ -144,7 +144,7 @@ lemma filterMap_head?_sublist_flatten (L : List (List T)) :
     | nil => simpa using ih
     | cons a r =>
       simp only [List.filterMap_cons, List.head?_cons, List.flatten_cons, List.cons_append]
-      exact List.Sublist.cons₂ a (ih.trans (List.sublist_append_right r L.flatten))
+      exact List.Sublist.cons_cons a (ih.trans (List.sublist_append_right r L.flatten))
 
 omit [LinearOrder T] in
 lemma reverse_firstCol_sublist_toWord (t : List (List T)) :
