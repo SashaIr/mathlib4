@@ -69,7 +69,8 @@ lemma countLt_succ (v : ℕ) (r : List ℕ) : countLt (v + 1) r = countLt v r + 
 lemma IsRow.le_of_mem_cons {x : ℕ} {r : List ℕ} (h : IsRow (x :: r)) {y : ℕ} (hy : y ∈ r) :
     x ≤ y := by
   obtain ⟨n, hn, rfl⟩ := List.mem_iff_getElem.1 hy
-  simpa using h.getElem_le (i := 0) (j := n + 1) (by omega) (by simpa using hn)
+  have := h.getElem_le (by omega : 0 ≤ n + 1) (by simpa using hn)
+  grind
 
 /-- In a row, the entries smaller than `v` are exactly the first `countLt v r` ones. -/
 lemma IsRow.getElem_lt_iff {r : List ℕ} (h : IsRow r) {k : ℕ} (hk : k < r.length) (v : ℕ) :
@@ -90,7 +91,7 @@ lemma IsRow.getElem_lt_iff {r : List ℕ} (h : IsRow r) {k : ℕ} (hk : k < r.le
     omega
   · intro hlt
     by_contra hge
-    push_neg at hge
+    push Not at hge
     have hsplit : countLt v r = countLt v (r.take k) + countLt v (r.drop k) := by
       rw [countLt, countLt, countLt, ← List.countP_append, List.take_append_drop]
     have h0 : countLt v (r.drop k) = 0 := by
@@ -155,17 +156,14 @@ lemma IsRow.crystalE_eq {i : ℕ} {r : List ℕ} (h : IsRow r) :
       · rw [ite_eq_left h0, ite_eq_left h0]; rfl
       · rw [ite_eq_right h0, ite_eq_right h0]; rfl
     · have hc : r.count i = 0 := List.count_eq_zero.2 fun hmem => absurd (hx i hmem) (by omega)
-      have heps : crystalEps i r = 0 := by rw [hr.crystalEps_eq_count, hc]
-      have hcz : countLt (i + 1) r = 0 := countLt_eq_zero_of_forall (fun y hy => hx y hy)
-      have hne : ¬ (((i + 1) :: r).count (i + 1) = 0) := by
-        rw [List.count_cons_self]; omega
-      rw [crystalE_cons, ite_eq_left ⟨rfl, heps⟩, ite_eq_right hne, countLt_cons,
-        ite_eq_right (show ¬ (i + 1 < i + 1) by omega), hcz]
+      rw [crystalE_cons, ite_eq_left ⟨rfl, by rw [hr.crystalEps_eq_count, hc]⟩,
+        ite_eq_right (by rw [List.count_cons_self]; omega), countLt_cons, ite_eq_right (by omega),
+        countLt_eq_zero_of_forall (fun y hy => hx y hy)]
       rfl
     · have hc : r.count (i + 1) = 0 :=
         List.count_eq_zero.2 fun hmem => absurd (hx _ hmem) (by omega)
-      have h1 : ¬ (x = i + 1 ∧ crystalEps i r = 0) := by rintro ⟨h1, -⟩; omega
-      rw [crystalE_cons, ite_eq_right h1, ih hr, ite_eq_left hc, List.count_cons_of_ne (by omega), ite_eq_left hc]
+      rw [crystalE_cons, ite_eq_right (by rintro ⟨h1, -⟩; omega), ih hr,
+        ite_eq_left hc, List.count_cons_of_ne (by omega), ite_eq_left hc]
       rfl
 
 /-- On a row, the lowering operator changes the last letter `i` into an `i + 1`. -/
@@ -208,8 +206,8 @@ lemma IsRow.crystalF_eq {i : ℕ} {r : List ℕ} (h : IsRow r) :
         have h1 : ¬ (x = x ∧ crystalEps x r = 0) := by rintro ⟨-, h1⟩; exact heps h1
         have h2 : ¬ (x = x + 1 ∧ crystalEps x r ≤ 1) := by rintro ⟨h1, -⟩; omega
         have hne : ¬ ((x :: r).count x = 0) := by rw [List.count_cons_self]; omega
-        rw [crystalF_cons, ite_eq_right h1, ite_eq_right h2, ih hr, ite_eq_right hc, ite_eq_right hne, countLt_cons,
-          ite_eq_left (show x < x + 1 by omega)]
+        rw [crystalF_cons, ite_eq_right h1, ite_eq_right h2, ih hr, ite_eq_right hc,
+          ite_eq_right hne, countLt_cons, ite_eq_left (show x < x + 1 by omega)]
         simp only [Option.map_some, Option.some_inj]
         rw [show countLt (x + 1) r + 1 - 1 = (countLt (x + 1) r - 1) + 1 by omega,
           List.set_cons_succ]
