@@ -34,9 +34,9 @@ theorem exists_equiv_of_card_fiber_eq [Finite α] [Finite β] (f : α → I) (g 
     (h : ∀ i, Nat.card {x // f x = i} = Nat.card {y // g y = i}) :
     ∃ e : α ≃ β, ∀ x, g (e x) = f x := by
   have efib : ∀ i : I, {x // f x = i} ≃ {y // g y = i} := fun i => (Finite.card_eq.mp (h i)).some
-  refine ⟨(Equiv.sigmaFiberEquiv f).symm.trans
-    ((Equiv.sigmaCongrRight efib).trans (Equiv.sigmaFiberEquiv g)), fun x => ?_⟩
-  exact (efib (f x) ⟨x, rfl⟩).2
+  exact ⟨(Equiv.sigmaFiberEquiv f).symm.trans
+    ((Equiv.sigmaCongrRight efib).trans (Equiv.sigmaFiberEquiv g)), fun x =>
+    (efib (f x) ⟨x, rfl⟩).2⟩
 
 /-- The fiber of `i` in a finite subset `s`, as a subtype of the subtype attached to `s`,
 is in bijection with the corresponding filtered finset. -/
@@ -60,26 +60,19 @@ theorem exists_bijOn_of_card_fiber_eq [Nonempty β] [DecidableEq I] (s : Finset 
     (fun x => f x.1) (fun y => g y.1) fun i => by
       rw [Nat.card_congr (fiberSubtypeEquiv s f i), Nat.card_congr (fiberSubtypeEquiv t g i),
         Nat.card_eq_finsetCard, Nat.card_eq_finsetCard, h i]
-  classical
   set e : α → β := fun x => if hx : x ∈ s then (E ⟨x, hx⟩).1 else Classical.arbitrary β with he
   have hes : ∀ (x : α) (hx : x ∈ s), e x = (E ⟨x, hx⟩).1 := fun x hx => by
-    simp only [he, dite_eq_left hx]
-  refine ⟨e, ⟨?_, ?_, ?_⟩, ?_⟩
-  · intro x hx
-    simp only [Finset.mem_coe] at hx ⊢
+    simp [he, dite_eq_left hx]
+  refine ⟨e, ⟨fun x hx ↦ ?_, fun x hx y hy hxy ↦ ?_, fun y hy ↦ ?_⟩, fun x hx ↦ ?_⟩
+  · simp only [Finset.mem_coe] at hx ⊢
     rw [hes x hx]
     exact (E ⟨x, hx⟩).2
-  · intro x hx y hy hxy
-    simp only [Finset.mem_coe] at hx hy
+  · simp only [Finset.mem_coe] at hx hy
     rw [hes x hx, hes y hy] at hxy
     exact congrArg Subtype.val (E.injective (Subtype.ext hxy))
-  · intro y hy
-    simp only [Finset.mem_coe] at hy
+  · simp only [Finset.mem_coe] at hy
     refine ⟨(E.symm ⟨y, hy⟩).1, (E.symm ⟨y, hy⟩).2, ?_⟩
-    rw [hes _ (E.symm ⟨y, hy⟩).2]
-    simp [E.apply_symm_apply ⟨y, hy⟩]
-  · intro x hx
-    rw [hes x hx]
-    exact hE ⟨x, hx⟩
+    simp [hes _ (E.symm ⟨y, hy⟩).2]
+  · simp [hes x hx, hE]
 
 end Fintype
