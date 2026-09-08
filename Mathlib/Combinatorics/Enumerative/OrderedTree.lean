@@ -3,7 +3,7 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Catalan
+import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -71,7 +71,7 @@ theorem rec_ind {P : OrdTree → Prop} (h : ∀ f : List OrdTree, (∀ t ∈ f, 
 /-- The binary tree attached to an ordered tree by the rotation correspondence: the left
 subtree encodes the first subtree, the right subtree the remaining ones (Coq
 `ord_to_bintree`). -/
-def toBin : OrdTree → Tree Unit
+def toBin : OrdTree → BinaryTree Unit
   | node [] => .nil
   | node (t :: f) => .node () (toBin t) (toBin (node f))
 
@@ -82,20 +82,20 @@ def toBin : OrdTree → Tree Unit
 
 /-- The forest attached to a binary tree by the rotation correspondence (Coq
 `bin_to_forest`). -/
-def ofBinForest : Tree Unit → List OrdTree
+def ofBinForest : BinaryTree Unit → List OrdTree
   | .nil => []
   | .node _ l r => node (ofBinForest l) :: ofBinForest r
 
 @[simp] lemma ofBinForest_nil : ofBinForest .nil = [] := rfl
 
-@[simp] lemma ofBinForest_node (l r : Tree Unit) :
+@[simp] lemma ofBinForest_node (l r : BinaryTree Unit) :
     ofBinForest (.node () l r) = node (ofBinForest l) :: ofBinForest r := rfl
 
 /-- The ordered tree attached to a binary tree by the rotation correspondence (Coq
 `bin_to_ordtree`). -/
-def ofBin (t : Tree Unit) : OrdTree := node (ofBinForest t)
+def ofBin (t : BinaryTree Unit) : OrdTree := node (ofBinForest t)
 
-@[simp] lemma toBin_ofBin (t : Tree Unit) : toBin (ofBin t) = t := by
+@[simp] lemma toBin_ofBin (t : BinaryTree Unit) : toBin (ofBin t) = t := by
   induction t with
   | nil => rw [ofBin, ofBinForest_nil, toBin_nil]
   | node a l r ihl ihr =>
@@ -119,7 +119,7 @@ lemma ofBinForest_toBin_node : ∀ f : List OrdTree, (∀ t ∈ f, ofBin (toBin 
 
 
 /-- The **rotation correspondence**: ordered trees are in bijection with binary trees. -/
-def equivBin : OrdTree ≃ Tree Unit where
+def equivBin : OrdTree ≃ BinaryTree Unit where
   toFun := toBin
   invFun := ofBin
   left_inv := ofBin_toBin
@@ -165,14 +165,14 @@ lemma size_eq_one_iff {t : OrdTree} : t.size = 1 ↔ t = node [] := by
       omega
 
 /-- The rotation correspondence adds one node. -/
-lemma size_ofBin (t : Tree Unit) : (ofBin t).size = t.numNodes + 1 := by
+lemma size_ofBin (t : BinaryTree Unit) : (ofBin t).size = t.numNodes + 1 := by
   induction t with
   | nil => rw [ofBin, ofBinForest_nil, size_node]; simp
   | node a l r ihl ihr =>
     cases a
     rw [ofBin, ofBinForest_node, ← show ofBin l = node (ofBinForest l) from rfl,
       size_node_cons, ← show ofBin r = node (ofBinForest r) from rfl, ihl, ihr]
-    simp [Tree.numNodes]
+    simp [BinaryTree.numNodes]
     omega
 
 /-- The number of nodes of an ordered tree exceeds by one the number of internal nodes of
@@ -184,7 +184,7 @@ lemma size_eq_numNodes_toBin_add_one (t : OrdTree) : t.size = (toBin t).numNodes
 /-! ### Counting ordered trees -/
 
 /-- The rotation correspondence restricted to the trees of a given size. -/
-def sizeEquiv (n : ℕ) : {t : OrdTree // t.size = n + 1} ≃ {b : Tree Unit // b.numNodes = n} :=
+def sizeEquiv (n : ℕ) : {t : OrdTree // t.size = n + 1} ≃ {b : BinaryTree Unit // b.numNodes = n} :=
   equivBin.subtypeEquiv fun t => by
     change t.size = n + 1 ↔ (toBin t).numNodes = n
     rw [size_eq_numNodes_toBin_add_one]
@@ -195,9 +195,9 @@ trees with `n + 1` nodes (Coq `card_ordtreesz`). -/
 theorem nat_card_size_eq (n : ℕ) :
     Nat.card {t : OrdTree // t.size = n + 1} = catalan n := by
   rw [Nat.card_congr (sizeEquiv n),
-    Nat.card_congr (Equiv.subtypeEquivRight fun b : Tree Unit =>
-      (Tree.mem_treesOfNumNodesEq (x := b) (n := n)).symm),
-    Nat.card_eq_fintype_card, Fintype.card_coe, Tree.treesOfNumNodesEq_card_eq_catalan]
+    Nat.card_congr (Equiv.subtypeEquivRight fun b : BinaryTree Unit =>
+      (BinaryTree.mem_treesOfNumNodesEq (x := b) (n := n)).symm),
+    Nat.card_eq_fintype_card, Fintype.card_coe, BinaryTree.treesOfNumNodesEq_card_eq_catalan]
 
 /-! ### The depth -/
 
