@@ -123,10 +123,10 @@ theorem charBilin_isSimpleChar {c d : G → k} (hc : IsSimpleChar c) (hd : IsSim
   classical
   obtain ⟨V, hV, rfl⟩ := hc
   obtain ⟨W, hW, rfl⟩ := hd
-  haveI := hV
-  haveI := hW
+  have := hV
+  have := hW
   have hne : (Fintype.card G : k) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_ne_zero
-  letI : Invertible (Nat.card G : k) := invertibleOfNonzero
+  let _ : Invertible (Nat.card G : k) := invertibleOfNonzero
     (Nat.cast_ne_zero.mpr (Nat.ne_of_gt Nat.card_pos))
   have hkey := FDRep.char_orthonormal (k := k) V W
   have h2 : charBilin V.character W.character
@@ -181,10 +181,9 @@ theorem IsVirtualChar.of_character (V : FDRep k G) : IsVirtualChar V.character :
   obtain ⟨l, hl, hleq⟩ := exists_multiset_isSimpleChar V
   exact ⟨l, 0, hl, by simp, by simp [hleq]⟩
 
-omit [Fintype G] in
+omit [Finite G] in
 /-- A simple character does not vanish at the identity. -/
 theorem isSimpleChar_one_ne_zero {chi : G → k} (h : IsSimpleChar chi) : chi 1 ≠ 0 := by
-  haveI : Fintype G := Fintype.ofFinite G
   obtain ⟨V, hV, rfl⟩ := h
   intro h1
   have hfr : finrank k V.V = 0 := by
