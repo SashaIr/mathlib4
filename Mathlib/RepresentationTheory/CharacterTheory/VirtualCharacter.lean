@@ -126,11 +126,13 @@ theorem charBilin_isSimpleChar {c d : G → k} (hc : IsSimpleChar c) (hd : IsSim
   haveI := hV
   haveI := hW
   have hne : (Fintype.card G : k) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_ne_zero
-  haveI := invertibleOfNonzero hne
+  letI : Invertible (Nat.card G : k) := invertibleOfNonzero
+    (Nat.cast_ne_zero.mpr (Nat.ne_of_gt Nat.card_pos))
   have hkey := FDRep.char_orthonormal (k := k) V W
   have h2 : charBilin V.character W.character
       = (Fintype.card G : k) * (if Nonempty (V ≅ W) then 1 else 0) := by
-    rw [← hkey, smul_eq_mul, ← mul_assoc, mul_invOf_self, one_mul]
+    rw [← hkey, Fintype.card_eq_nat_card, ← mul_assoc,
+      mul_inv_cancel₀ (Nat.cast_ne_zero.mpr (Nat.ne_of_gt Nat.card_pos)), one_mul]
     rfl
   by_cases hVW : V.character = W.character
   · rw [ite_eq_left hVW]
