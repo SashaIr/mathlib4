@@ -114,7 +114,8 @@ lemma swap_lt_swap {a b : Fin N} (hab : a < b) (hne : (a, b) ≠ (c, d)) :
     by_cases h1 : x = c
     · rw [h1, Equiv.swap_apply_left, ite_eq_left rfl]
     by_cases h2 : x = d
-    · rw [h2, Equiv.swap_apply_right, ite_eq_right (show ¬((d : ℕ) = (c : ℕ)) by omega), ite_eq_left rfl]
+    · rw [h2, Equiv.swap_apply_right, ite_eq_right (show ¬((d : ℕ) = (c : ℕ)) by omega),
+        ite_eq_left rfl]
     · rw [Equiv.swap_apply_of_ne_of_ne h1 h2, ite_eq_right (fun h => h1 (Fin.ext h)),
         ite_eq_right (fun h => h2 (Fin.ext h))]
   have hab' : (a : ℕ) < (b : ℕ) := hab
@@ -284,8 +285,8 @@ theorem length_eq_invCount {n : ℕ} (σ : Equiv.Perm (Fin (n + 1))) :
 theorem sign_eq_invCount {n : ℕ} (σ : Equiv.Perm (Fin (n + 1))) :
     Equiv.Perm.sign σ = (-1) ^ invCount σ := by
   rw [← length_eq_invCount]
-  obtain ⟨w, hw, hσ⟩ := (permCoxeterSystem n).exists_reduced_word σ
-  rw [← hw, hσ]
+  obtain ⟨w, hw, hσ⟩ := (permCoxeterSystem n).exists_isReduced σ
+  rw [hσ, hw.eq]
   clear hw hσ
   induction w with
   | nil => simp [CoxeterSystem.wordProd_nil]
