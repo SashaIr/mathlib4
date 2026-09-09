@@ -130,7 +130,7 @@ lemma isTableau_addBox {q : List (List ℕ)} {i k : ℕ} (htab : IsTableau q)
       cases q with
       | nil =>
         rw [addBox_nil]
-        refine dominate_of_getElem (by simpa using hq0pos) ?_
+        refine dominate_of_getElem (Nat.succ_le_of_lt hq0pos) ?_
         intro m hm
         have hm0 : m = 0 := by simpa using hm
         subst hm0
@@ -307,7 +307,7 @@ lemma rowIdx_eq_of {Q : List (List ℕ)} {k i : ℕ} (hi : i < Q.length) (hmem :
   · intro j hji
     have := hlt j hji
     rw [List.getD_eq_getElem _ _ (by omega)] at this
-    simpa using this
+    simpa [rowIdx] using this
 
 lemma rowIdx_spec {Q : List (List ℕ)} {k : ℕ} (h : ∃ r ∈ Q, k ∈ r) :
     rowIdx Q k < Q.length ∧ k ∈ Q.getD (rowIdx Q k) [] ∧
@@ -319,7 +319,8 @@ lemma rowIdx_spec {Q : List (List ℕ)} {k : ℕ} (h : ∃ r ∈ Q, k ∈ r) :
   refine ⟨hlt, ?_, ?_⟩
   · have := List.findIdx_getElem (p := fun r => decide (k ∈ r)) (xs := Q) (w := hlt)
     rw [List.getD_eq_getElem _ _ hlt]
-    simpa using this
+    change k ∈ Q[rowIdx Q k]
+    exact this
   · intro j hj
     have := List.not_of_lt_findIdx (p := fun r => decide (k ∈ r)) (xs := Q) hj
     rw [List.getD_eq_getElem _ _ (by omega)]
