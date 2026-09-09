@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Word.Yamanouchi
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
+public import Mathlib.Combinatorics.Young.Word.Yamanouchi
 
 /-!
 # Standard tableaux and Yamanouchi words
@@ -32,6 +34,8 @@ words of length `n`.
 * `List.stdTabEquivYam` : standard tableaux with `n` boxes are in bijection with
   Yamanouchi words of length `n` (Coq `stdtab_of_yamK` / `yam_of_stdtabK`).
 -/
+
+@[expose] public section
 
 namespace List
 

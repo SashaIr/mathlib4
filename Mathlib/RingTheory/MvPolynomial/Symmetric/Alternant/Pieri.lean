@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
 
 /-!
 # The Pieri rule for alternants
@@ -25,6 +27,8 @@ involution exchanging two adjacent entries.
   then `c` is a horizontal strip above `a`.
 * `MvPolynomial.hsymm_mul_alt_strip` : the Pieri rule for alternants.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

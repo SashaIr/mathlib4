@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Tamari.Bijection
+module
+
+public import Mathlib.Combinatorics.Enumerative.Tamari.Bijection
 
 /-!
 # The Tamari order read on Tamari vectors
@@ -30,6 +32,8 @@ exists and no earlier block ends where the block of `i` does (`List.IsRotIdx`).
 * `Tree.tamariLE_iff_forall₂_le` : **the Tamari order is the componentwise order on the
   Tamari vectors**.
 -/
+
+@[expose] public section
 
 namespace List
 

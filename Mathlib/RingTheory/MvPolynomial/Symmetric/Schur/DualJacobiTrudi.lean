@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.JacobiTrudi
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.OmegaMul
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.OmegaMul
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.JacobiTrudi
 
 /-!
 # The dual Jacobi-Trudi (Nägelsbach-Kostka) formula
@@ -35,6 +37,8 @@ available in degree `n` for `n ≤ m` variables, the statement carries the hypot
 * `MvPolynomial.dualJtMatrix m R lam` : the matrix `(e_{lam'_i - i + j})`.
 * `MvPolynomial.schurPoly_eq_det_dualJtMatrix` : **the dual Jacobi-Trudi formula**.
 -/
+
+@[expose] public section
 
 open List
 

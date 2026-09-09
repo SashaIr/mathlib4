@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.GroupTheory.Perm.SymmetricGroup.Rank
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Rank
 
 /-!
 # Characterisation of the rank functions of permutations
@@ -31,6 +33,8 @@ column, hence they are the entries of a permutation matrix.
 * `Equiv.Perm.isPermRankFun_iff` : conversely, a function satisfying them is the rank function
   of a unique permutation (Coq `is_pmxsumP`).
 -/
+
+@[expose] public section
 
 open Equiv Finset
 

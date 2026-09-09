@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Tactic.LinearCombination
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # The Jacobi-Trudi formula
@@ -42,6 +44,8 @@ and cancelling `a_delta` gives the result.
 * `MvPolynomial.det_jtMatrix_mul_alt` : `det (jtMatrix lam) · a_delta = a_{lam + delta}`.
 * `MvPolynomial.schurPoly_eq_det_jtMatrix` : **the Jacobi-Trudi formula**.
 -/
+
+@[expose] public section
 
 open List
 
@@ -231,7 +235,7 @@ lemma det_jtMatrix_nil : (jtMatrix m R []).det = 1 := by
       simp only [List.getD_nil, Nat.cast_zero, zero_add]
       omega
     exact hsymmInt_of_neg hneg
-  rw [Matrix.det_of_upperTriangular htri]
+  rw [Matrix.det_of_isUpperTriangular htri]
   refine Finset.prod_eq_one fun i _ => ?_
   have hz : ((([] : List ℕ).getD i 0 : ℤ) + (i : ℕ) - (i : ℕ)) = 0 := by
     simp

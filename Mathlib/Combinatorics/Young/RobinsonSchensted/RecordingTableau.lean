@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Standard
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
+public import Mathlib.Combinatorics.Young.Tableau.Standard
 
 /-!
 # The recording tableau of the Robinson–Schensted correspondence
@@ -37,6 +39,8 @@ same shape, the second of which is standard, and this pair determines the word.
 * `List.RS_RSQ_injective` : the pair (insertion tableau, recording tableau) determines
   the word.
 -/
+
+@[expose] public section
 
 namespace List
 

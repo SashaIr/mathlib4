@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Combinatorics.Young.Greene.Defs
-import Mathlib.Combinatorics.Young.Plactic.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Combinatorics.Young.Greene.Defs
+public import Mathlib.Combinatorics.Young.Plactic.Basic
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Greene invariants are plactic invariants
@@ -20,6 +22,8 @@ A Lean 4 port of `theories/LRrule/Greene_inv.v` from
 * `List.greeneRow_placticEquiv` : Knuth equivalent words have the same Greene invariants
   `greeneRow · k`.
 -/
+
+@[expose] public section
 
 namespace List
 

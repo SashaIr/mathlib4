@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Order.Lattice.Nat
+module
+
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Greene invariants: definitions
@@ -24,6 +26,8 @@ nondecreasing.
 * `List.greeneRow w k` : the Greene invariant, the maximum of `greeneSize` over the
   `k`-colourings of `w`.
 -/
+
+@[expose] public section
 
 namespace List
 

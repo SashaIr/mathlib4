@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.GroupTheory.Perm.SymmetricGroup.Biclosed
-import Mathlib.GroupTheory.Perm.SymmetricGroup.WeakOrder
-import Mathlib.Order.Finite.Lattice
+module
+
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Biclosed
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.WeakOrder
+public import Mathlib.Order.Finite.Lattice
 
 /-!
 # The right weak order on the symmetric group is a lattice
@@ -35,6 +37,8 @@ structure.
   instances `PartialOrder`, `OrderBot`, `OrderTop`, `SemilatticeSup` and
   **`Lattice`**.
 -/
+
+@[expose] public section
 
 open Equiv Finset
 

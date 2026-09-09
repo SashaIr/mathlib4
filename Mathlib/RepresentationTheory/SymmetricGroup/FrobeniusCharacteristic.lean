@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Tactic.LinearCombination
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndex
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
-import Mathlib.GroupTheory.Perm.SymmetricGroup.Tower
+module
+
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Tower
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndex
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # The Frobenius characteristic map
@@ -42,6 +44,8 @@ product of class functions (induction from `S_m × S_n`, embedded in `S_{m+n}` b
   the signature characters are the complete homogeneous and the elementary symmetric
   polynomials `h_n` and `e_n`.
 -/
+
+@[expose] public section
 
 open Equiv MvPolynomial List
 
@@ -182,7 +186,8 @@ theorem frobChar_indProd (k : ℕ) {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : P
     refine Finset.sum_congr rfl fun x _ => ?_
     simp only [ite_smul, zero_smul]
     rw [Finset.sum_ite_eq Finset.univ (tinj m n x)
-      (fun sigma => (f x.1 * g x.2) • pProd k ℚ (cycleTypeList sigma)), ite_eq_left (Finset.mem_univ _)]
+      (fun sigma => (f x.1 * g x.2) • pProd k ℚ (cycleTypeList sigma)),
+      ite_eq_left (Finset.mem_univ _)]
   have hterm : ∀ sigma : Perm (Fin (m + n)),
       indProd f g sigma • pProd k ℚ (cycleTypeList sigma)
         = ((Nat.factorial m : ℚ) * (Nat.factorial n : ℚ))⁻¹ •

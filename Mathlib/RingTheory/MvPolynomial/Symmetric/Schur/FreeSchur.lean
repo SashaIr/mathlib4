@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.List.Permutation
-import Mathlib.Combinatorics.Young.LittlewoodRichardson.LangQ
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
-import Mathlib.RingTheory.MvPolynomial.WordLanguage
+module
+
+public import Mathlib.Combinatorics.Young.LittlewoodRichardson.LangQ
+public import Mathlib.Data.List.Permutation
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
+public import Mathlib.RingTheory.MvPolynomial.WordLanguage
 
 /-!
 # Free Schur functions and the Littlewood–Richardson rule for tableaux
@@ -35,6 +37,8 @@ ones into a Littlewood–Richardson triple.
 * `MvPolynomial.schurPoly_mul_eq_sum_LRtriple` : **the Littlewood–Richardson rule for
   tableaux** (Coq `LR_rule_tab`).
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -70,7 +74,7 @@ instance finite_langQ [Finite σ] (Q : List (List ℕ)) : Finite (langQ σ Q) :=
   have : u = v := congrArg Subtype.val h
   exact Subtype.ext this
 
-noncomputable instance fintype_langQ [Finite σ] (Q : List (List ℕ)) : Fintype (langQ σ Q) :=
+noncomputable instance fintypeLangQ [Finite σ] (Q : List (List ℕ)) : Fintype (langQ σ Q) :=
   Fintype.ofFinite _
 
 /-- The Robinson–Schensted correspondence as an equivalence between the language of a

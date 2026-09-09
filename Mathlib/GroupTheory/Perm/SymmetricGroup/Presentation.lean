@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.GroupTheory.Coxeter.Basic
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.GroupTheory.Perm.SymmetricGroup.SwapRelations
+module
+
+public import Mathlib.GroupTheory.Coxeter.Basic
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.SwapRelations
 
 /-!
 # The Coxeter presentation of the symmetric group
@@ -32,6 +34,8 @@ in the symmetric group moves the last point as soon as `i ≠ 0`.
 * `Equiv.Perm.permCoxeterSystem` : the resulting Coxeter system of type `A` on
   `Equiv.Perm (Fin (n + 1))`, whose simple reflections are the adjacent transpositions.
 -/
+
+@[expose] public section
 
 open Equiv CoxeterMatrix
 

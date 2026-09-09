@@ -3,16 +3,18 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
-import Mathlib.Order.Defs.PartialOrder
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Data.List.Induction
-import Mathlib.Data.List.Basic
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Induction
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Defs.PartialOrder
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Schensted's row insertion and the longest nondecreasing subsequence
@@ -46,6 +48,8 @@ of `w`.
 * `List.schensted_isGreatest` : Schensted's theorem, the length of `List.schensted w`
   is the maximal length of a nondecreasing subsequence of `w` (Coq `Sch_max_size`).
 -/
+
+@[expose] public section
 
 namespace List
 

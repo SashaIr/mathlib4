@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Word.Standardization
+module
+
+public import Mathlib.Combinatorics.Young.Word.Standardization
 
 /-!
 # Words with the same relative order have the same standardization
@@ -19,6 +21,8 @@ the truth of `w[i] ≤ w[j]` for `i < j` (Coq `eq_inv` and `eq_inv_std` in
 * `List.std_take_std` : standardizing a prefix of a standardized word is the same as
   standardizing the corresponding prefix of the original word.
 -/
+
+@[expose] public section
 
 namespace List
 

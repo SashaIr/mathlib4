@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Conjugate
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Conjugate
 
 /-!
 # Inclusion of Young diagrams and skew shapes
@@ -24,6 +26,8 @@ from [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 * `List.included_conjPart_iff` : inclusion is preserved and reflected by conjugation.
 * `List.sum_diffShape` : the size of a skew shape.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
 
 /-!
 # Linear independence of the Schur polynomials
@@ -23,6 +25,8 @@ vanishing linear combination shows that its coefficient vanishes.
 * `MvPolynomial.linearIndependent_schurPoly` : the Schur polynomials of the partitions of `n`
   with at most `m` parts are linearly independent.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

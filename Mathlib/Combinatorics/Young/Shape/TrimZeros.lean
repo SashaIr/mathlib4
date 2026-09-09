@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Data.List.DropRight
-import Mathlib.Combinatorics.Young.Shape.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Combinatorics.Young.Shape.Basic
+public import Mathlib.Data.List.DropRight
 
 /-!
 # Normalising a list of natural numbers by removing its trailing zeroes
@@ -26,6 +28,8 @@ This file provides `List.trimZeros` and `List.shapeOfFn` for that purpose.
   the sum.
 * `List.getD_shapeOfFn`, `List.sum_shapeOfFn`, `List.isPart_shapeOfFn`.
 -/
+
+@[expose] public section
 
 namespace List
 

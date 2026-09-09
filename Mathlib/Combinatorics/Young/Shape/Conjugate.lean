@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Basic
 
 /-!
 # The conjugate of a partition
@@ -25,6 +27,8 @@ A Lean 4 port of the conjugation part of `theories/Combi/partition.v` from
 * `List.inShape_conjPart` : `(r, c)` is a box of `sh` iff `(c, r)` is a box of `conjPart sh`.
 * `List.conjPart_conjPart` : conjugation is an involution on partitions.
 -/
+
+@[expose] public section
 
 namespace List
 

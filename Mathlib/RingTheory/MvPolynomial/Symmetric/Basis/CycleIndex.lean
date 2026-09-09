@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
-import Mathlib.Tactic.FieldSimp
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSum
-import Mathlib.GroupTheory.Perm.SymmetricGroup.CycleType
+module
+
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.CycleType
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSum
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # The cycle index formula
@@ -39,6 +41,8 @@ from the fact that removing one part `r` from `lam` divides `z_lam` by `r · m_r
   `e_n = ∑_{lam ⊢ n} (-1)^{n - ℓ(lam)} p_lam / z_lam`.
 * `MvPolynomial.sum_signed_inv_zcard` : `∑_{lam ⊢ n} (-1)^{n - ℓ(lam)} / z_lam = 0` for `n ≥ 2`.
 -/
+
+@[expose] public section
 
 open List
 
@@ -100,7 +104,8 @@ lemma coeff_psum_mul_hsymm (m n r : ℕ) (R : Type*) [CommRing R] (hr : r ≤ n)
       by_cases hd : ∑ j, d j = n
       · rw [ite_eq_left (show ∑ j, d j - r = n - r by rw [hd]), ite_eq_left ⟨hi, hd⟩]
       · rw [ite_eq_right (show ¬ (∑ j, d j - r = n - r) by omega), ite_eq_right (fun hc => hd hc.2)]
-    · rw [ite_eq_right (fun hc => hi (Finsupp.single_le_iff.1 hc)), ite_eq_right (fun hc => hi hc.1)]
+    · rw [ite_eq_right (fun hc => hi (Finsupp.single_le_iff.1 hc)),
+        ite_eq_right (fun hc => hi hc.1)]
   rw [Finset.sum_congr rfl fun i _ => hterm i]
   by_cases hd : ∑ j, d j = n
   · have hsimp : ∀ i : Fin m, (if r ≤ d i ∧ ∑ j, d j = n then (1 : R) else 0)

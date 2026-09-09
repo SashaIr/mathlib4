@@ -46,6 +46,9 @@ theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   grind
 
+theorem getD_tail : l.tail.getD n d = l.getD (n + 1) d := by
+  cases l <;> simp
+
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by
   grind

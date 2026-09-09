@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Bialternant
+module
+
+public import Mathlib.LinearAlgebra.Vandermonde
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Bialternant
 
 /-!
 # The alternant as a determinant, and the Vandermonde product
@@ -21,6 +23,8 @@ classical statement `s_lam = a_{lam + delta} / a_delta`.
 * `MvPolynomial.alt_partVec_eq_schurPoly_mul_vandermonde` : the bialternant formula, with the
   Vandermonde product made explicit.
 -/
+
+@[expose] public section
 
 open List
 

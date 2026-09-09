@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Combinatorics.Young.Shape.Dominance
-import Mathlib.Combinatorics.Young.Word.Yamanouchi
-import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+public import Mathlib.Combinatorics.Young.Shape.Dominance
+public import Mathlib.Combinatorics.Young.Word.Yamanouchi
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Content of a tableau, dominance, and Kostka numbers
@@ -41,6 +43,8 @@ the *superstandard* one, whose `i`-th row consists of `λ i` copies of `i`; in o
 * `List.partdom_evalseq_RS` : the shape of the insertion tableau of a word dominates the
   content of the word.
 -/
+
+@[expose] public section
 
 namespace List
 

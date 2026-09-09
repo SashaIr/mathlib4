@@ -38,8 +38,11 @@ The definition presents it as a natural number.
 
 ## TODO
 
-Prove that it actually counts the number of partitions as indicated.
-(When `m` contains `0`, the result requires to admit repetitions of the empty set as a part.)
+That these numbers count set partitions as indicated is proved in
+`Mathlib/Combinatorics/Enumerative/SetPartition/Bell.lean`: see
+`Finpartition.card_shapeParts` for `Multiset.bell` and `Finpartition.card_finpartition`
+for `Nat.bell`.  It remains to extend the former to multisets `m` containing `0`, which
+requires admitting repetitions of the empty set as a part.
 
 -/
 

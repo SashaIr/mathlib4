@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LRSymmetry
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Truncate
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Truncate
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LRSymmetry
 
 /-!
 # The ring of symmetric functions
@@ -62,6 +64,8 @@ variables, of bounded total degree and compatible with setting the last variable
 * `SymFunc.schurFunc_mul_schurFunc` : **the Littlewood–Richardson rule** for symmetric
   functions, `s_lam · s_mu = ∑_nu c^nu_{lam mu} · s_nu`.
 -/
+
+@[expose] public section
 
 open List
 

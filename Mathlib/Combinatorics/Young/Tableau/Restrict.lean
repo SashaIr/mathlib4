@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
-import Mathlib.Combinatorics.Young.Shape.NatPartition
-import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+public import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
+public import Mathlib.Combinatorics.Young.Shape.NatPartition
 
 /-!
 # Removing the largest letter of a tableau
@@ -34,6 +36,8 @@ the combinatorial content of the Pieri rule.
   `K_{sh, c} = ∑_{nu} K_{nu, c}`, the sum being over the shapes `nu` such that `sh / nu`
   is a horizontal strip with `c N` boxes.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -372,8 +376,8 @@ lemma count_flatten_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P) (
         exact (List.count_eq_zero_of_not_mem fun hc => hzero i hc hi).symm
       · rw [ite_eq_right hi]
         simp
-    · rw [ite_eq_right h, List.flatten_cons, List.flatten_cons, List.count_append, List.count_append,
-        count_ltFilter, ih hP.of_cons]
+    · rw [ite_eq_right h, List.flatten_cons, List.flatten_cons, List.count_append,
+        List.count_append, count_ltFilter, ih hP.of_cons]
       by_cases hi : i < N <;> simp [hi]
 
 /-! ### Adding the largest letter -/
@@ -673,10 +677,10 @@ theorem kostkaNum_succ (hsh : IsPart sh) (hm : m + c N = sh.sum) :
       = ∑ nu : {p : List ℕ // IsPart p ∧ p.sum = m},
           if HorizStrip sh nu.1 then kostkaNum N nu.1 c else 0 := by
   classical
-  haveI : ∀ nu : {p : List ℕ // IsPart p ∧ p.sum = m},
+  have : ∀ nu : {p : List ℕ // IsPart p ∧ p.sum = m},
       Finite {Q : List (List ℕ) // HorizStrip sh nu.1 ∧ Q ∈ tabSet N nu.1 c} := by
     intro nu
-    haveI : Finite (tabSet N nu.1 c) := finite_tabSet N nu.1 c
+    have : Finite (tabSet N nu.1 c) := finite_tabSet N nu.1 c
     refine Finite.of_injective (fun Q => (⟨Q.1, Q.2.2⟩ : tabSet N nu.1 c)) ?_
     intro x y h
     simp only [Subtype.mk.injEq] at h

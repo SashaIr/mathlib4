@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Combinatorics.Young.Shape.NatPartition
-import Mathlib.Combinatorics.Young.Shape.TrimZeros
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Combinatorics.Young.Shape.NatPartition
+public import Mathlib.Combinatorics.Young.Shape.TrimZeros
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
 
 /-!
 # Monomial symmetric polynomials
@@ -40,6 +42,8 @@ the permutations of the variables.
 * `MvPolynomial.linearIndependent_monomialSym` : the monomial symmetric polynomials of distinct
   shapes are linearly independent.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -236,7 +240,8 @@ lemma coeff_monomialSym [CommSemiring R] (lam : List ℕ) (d : Fin m →₀ ℕ)
   by_cases hd : d ∈ degOrbit (shapeContent m lam)
   · rw [ite_eq_left hd, Finset.sum_ite_eq' (degOrbit (shapeContent m lam)) d (fun _ => (1 : R)),
       ite_eq_left hd]
-  · rw [ite_eq_right hd, Finset.sum_eq_zero fun d' hd' => ite_eq_right (by rintro rfl; exact hd hd')]
+  · rw [ite_eq_right hd,
+      Finset.sum_eq_zero fun d' hd' => ite_eq_right (by rintro rfl; exact hd hd')]
 
 lemma coeff_monomialSym_shapeContent [CommSemiring R] (lam : List ℕ) :
     coeff (shapeContent m lam) (monomialSym m R lam) = 1 := by

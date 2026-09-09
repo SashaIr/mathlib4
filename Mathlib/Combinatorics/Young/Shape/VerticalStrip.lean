@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
 
 /-!
 # Vertical strips and the conjugation duality
@@ -32,6 +34,8 @@ conversely.
   `vb_strip_conj`), together with the equivalences `List.vertStrip_conjPart_iff` and
   `List.horizStrip_conjPart_iff` (Coq `vb_strip_conjE`, `hb_strip_conjE`).
 -/
+
+@[expose] public section
 
 namespace List
 

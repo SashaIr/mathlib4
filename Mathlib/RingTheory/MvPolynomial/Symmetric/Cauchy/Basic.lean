@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
 
 /-!
 # The Cauchy identity
@@ -31,6 +33,8 @@ Pieri rule `MvPolynomial.schurPoly_mul_hsymm` puts back on the `x` side.
   size `n`.
 * `MvPolynomial.cauchy` : the Cauchy identity.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

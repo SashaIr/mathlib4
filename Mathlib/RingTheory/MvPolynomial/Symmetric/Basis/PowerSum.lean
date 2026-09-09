@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basis
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basis
 
 /-!
 # Products of power sums and their expansion in the monomial symmetric polynomials
@@ -33,6 +35,8 @@ proved here).
 * `MvPolynomial.partdom_of_pCoeff_ne_zero` : the expansion is triangular for the dominance order.
 * `MvPolynomial.pCoeff_self_ne_zero` : the leading coefficient does not vanish.
 -/
+
+@[expose] public section
 
 open List
 
@@ -79,7 +83,7 @@ noncomputable def partWeight (m : ℕ) (lam : List ℕ) (f : Fin lam.length → 
 lemma partWeight_apply (lam : List ℕ) (f : Fin lam.length → Fin m) (j : Fin m) :
     partWeight m lam f j = ∑ i ∈ Finset.univ.filter fun i => f i = j, lam.get i := by
   classical
-  rw [partWeight, Finsupp.finset_sum_apply, Finset.sum_filter]
+  rw [partWeight, Finsupp.finsetSum_apply, Finset.sum_filter]
   exact Finset.sum_congr rfl fun i _ => by
     rw [Finsupp.single_apply]
 
@@ -88,7 +92,7 @@ lemma sum_partWeight (lam : List ℕ) (f : Fin lam.length → Fin m) :
   classical
   have h1 : ∑ j, partWeight m lam f j
       = ∑ j, ∑ i : Fin lam.length, (Finsupp.single (f i) (lam.get i) : Fin m →₀ ℕ) j :=
-    Finset.sum_congr rfl fun j _ => by rw [partWeight, Finsupp.finset_sum_apply]
+    Finset.sum_congr rfl fun j _ => by rw [partWeight, Finsupp.finsetSum_apply]
   rw [h1, Finset.sum_comm]
   have h2 : ∀ i : Fin lam.length,
       ∑ j, (Finsupp.single (f i) (lam.get i) : Fin m →₀ ℕ) j = lam.get i := by
@@ -114,7 +118,8 @@ lemma prod_X_pow_eq_monomial_sum_single {ι : Type*} (s : Finset ι) (a : ι →
   induction s using Finset.induction_on with
   | empty => simp
   | insert i s hi ih =>
-    rw [Finset.prod_insert hi, Finset.sum_insert hi, ih, X_pow_eq_monomial, monomial_mul, one_mul]
+    rw [Finset.prod_insert hi, Finset.sum_insert hi, ih, X_pow_eq_monomial,
+      monomial_mul_monomial, one_mul]
 
 /-- Expanding the product of power sums: `p_lam` is the sum of the monomials attached to
 the assignments of the parts of `lam` to the variables. -/

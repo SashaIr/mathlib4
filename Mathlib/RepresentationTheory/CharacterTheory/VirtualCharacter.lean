@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RepresentationTheory.CharacterTheory.Decomposition
+module
+
+public import Mathlib.RepresentationTheory.CharacterTheory.Decomposition
 
 /-!
 # Virtual characters of norm one
@@ -26,6 +28,8 @@ symmetric group.
 * `FDRep.exists_isSimpleChar_of_norm_one` : a difference of two characters whose norm is
   the order of the group is, up to sign, a simple character.
 -/
+
+@[expose] public section
 
 namespace FDRep
 
@@ -181,9 +185,10 @@ theorem IsVirtualChar.of_character (V : FDRep k G) : IsVirtualChar V.character :
   obtain ⟨l, hl, hleq⟩ := exists_multiset_isSimpleChar V
   exact ⟨l, 0, hl, by simp, by simp [hleq]⟩
 
-omit [Finite G] in
+omit [Fintype G] in
 /-- A simple character does not vanish at the identity. -/
 theorem isSimpleChar_one_ne_zero {chi : G → k} (h : IsSimpleChar chi) : chi 1 ≠ 0 := by
+  have : Fintype G := Fintype.ofFinite G
   obtain ⟨V, hV, rfl⟩ := h
   intro h1
   have hfr : finrank k V.V = 0 := by

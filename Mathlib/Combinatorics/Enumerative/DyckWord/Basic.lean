@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.DyckWord
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Combinatorics.Enumerative.DyckWord
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Dyck words
@@ -46,6 +48,8 @@ structure `DyckWord` of Mathlib plays the role of Coq's sigma type `Dyck`, and
   length `2 * n` (Coq `card_Dyck_hsz`, proved there by the rotation argument which is
   ported in `Mathlib/Combinatorics/Enumerative/DyckWord/Rotation.lean`).
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -125,7 +129,7 @@ lemma length_eq_count_add_count (w : List DyckStep) :
 
 /-! ### Dyck prefixes and Dyck words -/
 
-/- A word all of whose prefixes have nonnegative height (Coq `Dyck_prefix`). -/
+/-- A word all of whose prefixes have nonnegative height (Coq `Dyck_prefix`). -/
 def IsDyckPrefix (w : List DyckStep) : Prop := ∀ i, 0 ≤ dyckHeight (w.take i)
 
 /-- A Dyck word: a Dyck prefix of height `0` (Coq `Dyck_word`). -/

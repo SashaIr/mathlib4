@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Combinatorics.Young.Shape.Conjugate
-import Mathlib.Combinatorics.Young.Tableau.Standard
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Combinatorics.Young.Shape.Conjugate
+public import Mathlib.Combinatorics.Young.Tableau.Standard
 
 /-!
 # The conjugate of a tableau
@@ -32,6 +34,8 @@ preserve *standardness*, whose defining condition is symmetric in the two direct
 * `List.IsStdTab.conjTab` : the transpose of a standard tableau is a standard tableau
   (Coq `is_stdtab_conj`).
 -/
+
+@[expose] public section
 
 namespace List
 

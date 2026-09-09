@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Restrict
-import Mathlib.Combinatorics.Young.Word.Yamanouchi
-import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
+public import Mathlib.Combinatorics.Young.Tableau.Restrict
+public import Mathlib.Combinatorics.Young.Word.Yamanouchi
 
 /-!
 # Yamanouchi words and plactic classes
@@ -40,6 +42,8 @@ whose reading word is Yamanouchi, and the insertion tableau of a Yamanouchi word
   to `y` are exactly the Yamanouchi words of the same evaluation (Coq
   `yam_plactic_shape`).
 -/
+
+@[expose] public section
 
 namespace List
 

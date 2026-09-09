@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 
 /-!
 # The basis of products of elementary symmetric polynomials
@@ -32,6 +34,8 @@ with at most `m` parts form a basis of the symmetric homogeneous polynomials of 
 * `MvPolynomial.eProd_eq_sum_kostka` : the expansion `e_lam = ∑_nu K_{nu' lam} s_nu`.
 * `MvPolynomial.eBasis` : the basis of products of elementary symmetric polynomials.
 -/
+
+@[expose] public section
 
 open List
 
@@ -74,7 +78,8 @@ theorem schurPoly_conjPart_mul_esymm {mu : List ℕ} (hmu : IsPart mu) (r : ℕ)
   have hnupart : IsPart nu := (mem_partFinset.1 hnu).1
   by_cases hstrip : HorizStrip nu mu
   · rw [ite_eq_left hstrip, ite_eq_left ((vertStrip_conjPart_iff hnupart hmu).2 hstrip)]
-  · rw [ite_eq_right hstrip, ite_eq_right fun h => hstrip ((vertStrip_conjPart_iff hnupart hmu).1 h)]
+  · rw [ite_eq_right hstrip,
+      ite_eq_right fun h => hstrip ((vertStrip_conjPart_iff hnupart hmu).1 h)]
 
 /-! ### The products of elementary symmetric polynomials -/
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Word.Standardization
-import Mathlib.Data.List.Shuffle
+module
+
+public import Mathlib.Combinatorics.Young.Word.Standardization
+public import Mathlib.Data.List.Shuffle
 
 /-!
 # The shifted shuffle of two words
@@ -36,6 +38,8 @@ its letters `≥ n`, shifted down by `n`, spell `v`.
 * `List.IsStd.of_mem_shsh` : a shifted shuffle of two standard words is standard
   (Coq `std_shsh`).
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Monomial
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Monomial
 
 /-!
 # The monomial symmetric polynomials agree with those of Mathlib
@@ -19,6 +21,8 @@ development, which are indexed by the list-based partitions of Coq-Combi.
   the given partition, and `0` elsewhere.
 * `MvPolynomial.monomialSym_eq_msymm` : the two definitions agree.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

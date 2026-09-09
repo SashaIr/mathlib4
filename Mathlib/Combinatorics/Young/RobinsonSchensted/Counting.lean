@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.List.Permutation
-import Mathlib.Data.Set.Card
-import Mathlib.Combinatorics.Young.Shape.NatPartitionConj
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
+public import Mathlib.Combinatorics.Young.Shape.NatPartitionConj
+public import Mathlib.Data.List.Permutation
+public import Mathlib.Data.Set.Card
 
 /-!
 # Counting with the Robinson–Schensted correspondence
@@ -32,6 +34,8 @@ which is the counting form of the identity `∑_λ (f^λ)² = n!`.
 * `List.sum_sq_numStdTab` : `∑_λ (f^λ)² = n!`, the sum being over the partitions `λ`
   of `n` and `f^λ` denoting the number of standard tableaux of shape `λ`.
 -/
+
+@[expose] public section
 
 namespace List
 

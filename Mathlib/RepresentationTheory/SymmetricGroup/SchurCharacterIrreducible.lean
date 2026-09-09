@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.JacobiTrudi
-import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacter
-import Mathlib.GroupTheory.Perm.SymmetricGroup.YoungSubgroup
+module
+
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.RepresentationTheory.SymmetricGroup.YoungSubgroup
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacter
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.JacobiTrudi
 
 /-!
 # The Schur class functions are the irreducible characters of the symmetric group
@@ -38,6 +40,8 @@ identity, it is the character of a simple representation over `ℂ`.
 * `Equiv.Perm.isSimpleChar_perm_two_iff` : the irreducible characters of `S_2` are the trivial
   character and the signature (Coq `repr_S2`).
 -/
+
+@[expose] public section
 
 open Equiv MvPolynomial List FDRep
 

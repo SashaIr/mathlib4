@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Monoid
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Monoid
 
 /-!
 # Standardizing a tableau
@@ -31,6 +33,8 @@ standardization of the reading word of a tableau has the same shape as the table
 * `List.shape_RS_std_toWord` : the insertion tableau of the standardized reading word of
   a tableau has the shape of the tableau.
 -/
+
+@[expose] public section
 
 namespace List
 

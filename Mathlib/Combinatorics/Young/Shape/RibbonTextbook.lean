@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Combinatorics.Young.Shape.Ribbon
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Ribbon
+public import Mathlib.Logic.Relation
 
 /-!
 # The textbook definition of a ribbon
@@ -36,6 +38,8 @@ proves that, together with nonemptiness, they characterise the ribbons.
 * `List.isRibbon_iff_exists_ribbonOn` : **the textbook definition agrees with the
   operative one** (Coq `ribbon_textbook`).
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Combinatorics.Young.Plactic.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Basic
+public import Mathlib.Order.Monotone.Basic
 
 /-!
 # Knuth equivalence and increasing maps
@@ -20,6 +22,8 @@ its three letters.  This is the Lean 4 port of `plact_map_in_incr` in
   after applying a map which is strictly increasing on a set containing their letters.
 * `List.placticEquiv_map_of_strictMono` : the same for a globally strictly increasing map.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -8,8 +8,6 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.EquivFin
 
-@[expose] public section
-
 /-!
 # Lattice structure on a finite semilattice with an extremal element
 
@@ -25,6 +23,8 @@ provides as part of the lattice structure of `setpart` in `theories/Combi/setpar
 * `Finite.toLattice` : a finite meet-semilattice with a top element is a lattice.
 * `Finite.toLatticeOfSup` : a finite join-semilattice with a bottom element is a lattice.
 -/
+
+@[expose] public section
 
 open scoped Classical in
 /-- A finite meet-semilattice with a greatest element is a lattice: the join of `a` and `b`

@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.NatPartitionConj
-import Mathlib.Combinatorics.Young.RobinsonSchensted.AlphabetMap
-import Mathlib.Combinatorics.Young.LittlewoodRichardson.Rule
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
+module
+
+public import Mathlib.Combinatorics.Young.LittlewoodRichardson.Rule
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.AlphabetMap
+public import Mathlib.Combinatorics.Young.Shape.NatPartitionConj
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
 
 /-!
 # The Littlewood–Richardson rule for Schur polynomials
@@ -28,6 +30,8 @@ Littlewood–Richardson coefficient `List.lrCoeff`.
 * `MvPolynomial.schurPoly_mul_schurPoly` : the Littlewood–Richardson rule
   `s_λ · s_μ = ∑_ν c^ν_{λμ} · s_ν`.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

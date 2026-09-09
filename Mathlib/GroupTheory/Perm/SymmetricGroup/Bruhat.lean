@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.GroupTheory.Perm.SymmetricGroup.Rank
+module
+
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Rank
 
 /-!
 # The strong Bruhat order on the symmetric group
@@ -29,6 +31,8 @@ when all the values of the rank function of `t` are at most those of `s`.
   (`Equiv.Perm.bruhatLE_conj_revPerm_iff`, Coq `Bruhat_conj_max`).
 -/
 
+@[expose] public section
+
 open Equiv
 
 namespace Equiv.Perm
@@ -50,6 +54,7 @@ lemma bruhatLE_antisymm {s t : Perm (Fin n)} (hst : BruhatLE s t) (hts : BruhatL
   permRank_injective (funext fun i => funext fun j => le_antisymm (hts i j) (hst i j))
 
 /-- The Bruhat order is a partial order on the symmetric group. -/
+@[instance_reducible]
 def bruhatPartialOrder : PartialOrder (Perm (Fin n)) where
   le := BruhatLE
   le_refl := bruhatLE_refl

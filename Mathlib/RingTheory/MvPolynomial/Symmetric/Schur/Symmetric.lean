@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Fintype.Sort
-import Mathlib.Combinatorics.Young.Tableau.KostkaSymmetry
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.KostkaSymmetry
+public import Mathlib.Data.Fintype.Sort
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
 
 /-!
 # The Schur polynomials are symmetric
@@ -24,6 +26,8 @@ letters (`List.kostkaNum_permContent`), which is the combinatorial heart of the 
   Kostka numbers.
 * `MvPolynomial.schurPoly_isSymmetric` : the Schur polynomial is a symmetric polynomial.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

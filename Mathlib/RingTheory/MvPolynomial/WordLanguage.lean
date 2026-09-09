@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Data.Fintype.Sets
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Data.Fintype.Sets
 
 /-!
 # The generating polynomial of a language of words
@@ -34,6 +36,8 @@ same length, so that a word of the concatenation splits in only one way.
 * `MvPolynomial.polyLang_catLang` : **the generating polynomial of a concatenation is the
   product of the generating polynomials** (Coq `polylang_catlang`).
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -90,7 +94,7 @@ lemma catLangMap_surjective : Function.Surjective (catLangMap L₁ L₂) := by
 instance finite_catLang [Finite L₁] [Finite L₂] : Finite (catLang L₁ L₂) :=
   Finite.of_surjective _ (catLangMap_surjective (L₁ := L₁) (L₂ := L₂))
 
-noncomputable instance fintype_catLang [Finite L₁] [Finite L₂] : Fintype (catLang L₁ L₂) :=
+noncomputable instance fintypeCatLang [Finite L₁] [Finite L₂] : Fintype (catLang L₁ L₂) :=
   Fintype.ofFinite _
 
 /-- If all the words of the first language have the same length, a word of the concatenation

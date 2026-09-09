@@ -3,8 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.YoungDiagram
-import Mathlib.Combinatorics.Young.HookLength.Formula
+module
+
+public import Mathlib.Algebra.BigOperators.YoungDiagram
+public import Mathlib.Combinatorics.Young.HookLength.Formula
+public import Mathlib.Combinatorics.Young.Shape.YoungDiagram
 
 /-!
 # Hook lengths and the hook length formula for Mathlib's Young diagrams
@@ -30,21 +33,11 @@ given as a weakly decreasing list.  Through the dictionary of
 * `YoungDiagram.numStdTab_eq_factorial_div_hookProd` : the same, in division form.
 -/
 
+@[expose] public section
+
 namespace YoungDiagram
 
 open List
-
-/-- A product over the boxes of a Young diagram, computed row by row. -/
-lemma prod_cells {M : Type*} [CommMonoid M] (mu : YoungDiagram) (f : ℕ × ℕ → M) :
-    ∏ x ∈ mu.cells, f x
-      = ∏ r ∈ Finset.range (mu.colLen 0), ∏ c ∈ Finset.range (mu.rowLen r), f (r, c) := by
-  rw [cells_eq_biUnion, Finset.prod_biUnion]
-  · exact Finset.prod_congr rfl fun r _ => by
-      rw [Finset.prod_product, Finset.prod_singleton]
-  · intro i _ j _ hij
-    refine Finset.disjoint_left.2 fun ⟨a, b⟩ ha hb => ?_
-    simp only [Finset.mem_product, Finset.mem_singleton] at ha hb
-    exact hij (ha.1 ▸ hb.1 ▸ rfl)
 
 /-- The hook length of a box of a Young diagram: the number of boxes to its right in its
 row, plus the number of boxes below it in its column, plus one for the box itself. -/
@@ -76,13 +69,13 @@ of shape `mu`, multiplied by the product of the hook lengths of the boxes of `mu
 `(mu.card)!`. -/
 theorem numStdTab_mul_hookProd (mu : YoungDiagram) :
     mu.numStdTab * mu.hookProd = Nat.factorial mu.card := by
-  rw [numStdTab, hookProd_eq_hookProd, ← sum_rowLens]
+  rw [numStdTab, hookProd_eq_hookProd, card_eq_sum_rowLens]
   exact List.numStdTab_mul_hookProd (isPart_rowLens mu)
 
 /-- **The hook length formula for a Young diagram**, in division form. -/
 theorem numStdTab_eq_factorial_div_hookProd (mu : YoungDiagram) :
     mu.numStdTab = Nat.factorial mu.card / mu.hookProd := by
-  rw [numStdTab, hookProd_eq_hookProd, ← sum_rowLens]
+  rw [numStdTab, hookProd_eq_hookProd, card_eq_sum_rowLens]
   exact List.numStdTab_eq_factorial_div_hookProd (isPart_rowLens mu)
 
 end YoungDiagram

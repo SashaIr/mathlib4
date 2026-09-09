@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Combinatorics.Young.Tableau.StandardYamanouchi
-import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
+public import Mathlib.Combinatorics.Young.Tableau.StandardYamanouchi
 
 /-!
 # The plactic monoid and tableaux
@@ -37,6 +39,8 @@ tableaux: insert the reading word of the second tableau into the first one.
 * `List.placticMonoidEquivTableau` : the plactic monoid is in bijection with the set of
   tableaux, and this bijection turns the product into `List.tabMul`.
 -/
+
+@[expose] public section
 
 namespace List
 

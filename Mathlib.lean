@@ -3811,6 +3811,7 @@ public import Mathlib.Combinatorics.Young.Greene.ColumnTableau
 public import Mathlib.Combinatorics.Young.Greene.ColumnTheorem
 public import Mathlib.Combinatorics.Young.Greene.Defs
 public import Mathlib.Combinatorics.Young.Greene.Invariance
+public import Mathlib.Combinatorics.Young.Greene.Reverse
 public import Mathlib.Combinatorics.Young.Greene.Tableau
 public import Mathlib.Combinatorics.Young.Greene.Theorem
 public import Mathlib.Combinatorics.Young.HookLength.Basic
@@ -3866,6 +3867,7 @@ public import Mathlib.Combinatorics.Young.Shape.VerticalStrip
 public import Mathlib.Combinatorics.Young.Shape.YoungDiagram
 public import Mathlib.Combinatorics.Young.Tableau.Basic
 public import Mathlib.Combinatorics.Young.Tableau.Conjugate
+public import Mathlib.Combinatorics.Young.Tableau.ConjugateRestrict
 public import Mathlib.Combinatorics.Young.Tableau.HighestWeight
 public import Mathlib.Combinatorics.Young.Tableau.Kostka
 public import Mathlib.Combinatorics.Young.Tableau.KostkaSymmetry
@@ -5037,7 +5039,6 @@ public import Mathlib.GroupTheory.Perm.SymmetricGroup.SwapRelations
 public import Mathlib.GroupTheory.Perm.SymmetricGroup.Tower
 public import Mathlib.GroupTheory.Perm.SymmetricGroup.WeakOrder
 public import Mathlib.GroupTheory.Perm.SymmetricGroup.WeakOrderLattice
-public import Mathlib.GroupTheory.Perm.SymmetricGroup.YoungSubgroup
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Presentation
 public import Mathlib.GroupTheory.PresentedGroup
@@ -6663,6 +6664,7 @@ public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacter
 public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterIrreducible
 public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterLR
 public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterMN
+public import Mathlib.RepresentationTheory.SymmetricGroup.YoungSubgroup
 public import Mathlib.RepresentationTheory.Tannaka
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct

@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Set.Card
-import Mathlib.Combinatorics.Young.Crystal.RobinsonSchensted
+module
+
+public import Mathlib.Combinatorics.Young.Crystal.RobinsonSchensted
+public import Mathlib.Data.Set.Card
 
 /-!
 # The Littlewood–Richardson rule: the combinatorial statement
@@ -37,6 +39,8 @@ with the superstandard tableau as its highest weight element
   whose product with the superstandard tableau of shape `mu` is superstandard.
 * `List.lrCoeff_nil_right` : `c^lam_{lam, ∅} = 1`.
 -/
+
+@[expose] public section
 
 namespace List
 

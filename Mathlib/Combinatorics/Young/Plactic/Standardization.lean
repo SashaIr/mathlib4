@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Standardize
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.Standardize
 
 /-!
 # Standardization and the plactic monoid
@@ -26,6 +28,8 @@ the word.
   equivalence (Coq `std_plact`).
 * `List.shape_RS_std` : `shape (RS (std w)) = shape (RS w)` (Coq `shape_RS_std`).
 -/
+
+@[expose] public section
 
 namespace List
 

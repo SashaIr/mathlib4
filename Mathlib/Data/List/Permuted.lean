@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Fintype.List
-import Mathlib.Data.Nat.Choose.Multinomial
+module
+
+public import Mathlib.Data.Fintype.List
+public import Mathlib.Data.Nat.Choose.Multinomial
 
 /-!
 # Rearrangements of a word and the multinomial coefficient
@@ -30,6 +32,8 @@ its cardinality times the product of the factorials of the multiplicities is `(m
 On the way we record the factorial identity for the multiplicity function as a
 `Nat.multinomial` (`Multiset.prod_factorial_count_mul_multinomial`).
 -/
+
+@[expose] public section
 
 open Nat
 

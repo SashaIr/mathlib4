@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Fintype.Vector
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-import Mathlib.Combinatorics.Young.Tableau.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.Basic
+public import Mathlib.Data.Fintype.Vector
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!
 # Schur polynomials
@@ -30,6 +32,8 @@ Following `theories/MPoly/Schur_mpoly.v` of
 * `MvPolynomial.schurPoly_column` : the Schur polynomial of a one-column shape is the elementary
   symmetric polynomial.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -57,7 +61,7 @@ instance finite_SSYT [Finite σ] (sh : List ℕ) : Finite (SSYT σ sh) := by
     have hf : P.flatten = Q.flatten := congrArg Subtype.val h
     exact Subtype.ext (eq_of_shape_eq_of_flatten_eq (by rw [hPs, hQs]) hf)
 
-noncomputable instance fintype_SSYT [Finite σ] (sh : List ℕ) : Fintype (SSYT σ sh) :=
+noncomputable instance fintypeSSYT [Finite σ] (sh : List ℕ) : Fintype (SSYT σ sh) :=
   Fintype.ofFinite _
 
 /-! ### The Schur polynomial -/
@@ -96,7 +100,7 @@ theorem coeff_schurPoly [Fintype σ] (sh : List ℕ) (d : σ →₀ ℕ) :
   simp [Multiset.toFinsupp_eq_iff]
 
 /-- The empty shape has a unique tableau, the empty one. -/
-instance unique_SSYT_nil : Unique (SSYT σ ([] : List ℕ)) where
+instance uniqueSSYTNil : Unique (SSYT σ ([] : List ℕ)) where
   default := ⟨[], trivial, rfl⟩
   uniq := by
     rintro ⟨P, hP, hPs⟩

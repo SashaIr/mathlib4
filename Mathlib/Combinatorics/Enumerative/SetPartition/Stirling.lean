@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Stirling
-import Mathlib.Combinatorics.Enumerative.SetPartition.Bell
+module
+
+public import Mathlib.Combinatorics.Enumerative.SetPartition.Bell
+public import Mathlib.Combinatorics.Enumerative.Stirling
 
 /-!
 # The Stirling numbers of the second kind count set partitions
@@ -22,6 +24,8 @@ Ported from the Coq-Combi development (`Combi/set_partition.v`).
 * `Finpartition.stirlingSecond_eq_sum_multiset_bell` : the expansion of `Nat.stirlingSecond n k`
   as a sum over the partitions of `n` with `k` parts.
 -/
+
+@[expose] public section
 
 namespace Finpartition
 

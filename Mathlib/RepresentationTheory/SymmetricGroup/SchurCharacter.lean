@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.HookLength.Formula
-import Mathlib.RepresentationTheory.SymmetricGroup.FrobeniusIsometry
+module
+
+public import Mathlib.Combinatorics.Young.HookLength.Formula
+public import Mathlib.RepresentationTheory.SymmetricGroup.FrobeniusIsometry
 
 /-!
 # The Schur class functions of the symmetric group
@@ -41,6 +43,8 @@ combinatorial consequences are:
 * `Equiv.Perm.schurChar_row`, `Equiv.Perm.schurChar_column` : the class functions of the row and
   column shapes are the trivial and the signature characters.
 -/
+
+@[expose] public section
 
 open Equiv MvPolynomial List
 
@@ -254,7 +258,6 @@ theorem schurChar_column (mu : PartIdx n n) (hmu : mu.1 = List.replicate n 1) :
     have h2 : ((Equiv.Perm.sign tau : ℤ) : ℚ) * ((Equiv.Perm.sign tau : ℤ) : ℚ) = 1 := by
       rcases Int.units_eq_one_or (Equiv.Perm.sign tau) with h | h <;> rw [h] <;> norm_num
     push_cast
-    push_cast at h2
     linear_combination ((Equiv.Perm.sign sigma : ℤ) : ℚ) * h2
   · rw [frobChar_schurChar, hmu, schurPoly_column, frobChar_sign]
 

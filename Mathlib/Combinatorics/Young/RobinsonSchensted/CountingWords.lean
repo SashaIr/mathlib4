@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
 
 /-!
 # Counting words over a finite alphabet with the Robinson–Schensted correspondence
@@ -30,6 +32,8 @@ shape `λ` with entries in `Fin m` and `f^λ` is the number of standard tableaux
   words of length `n` over `Fin m`.
 * `List.sum_numTab_mul_numStdTab` : `∑_λ K_λ(m) · f^λ = m ^ n`.
 -/
+
+@[expose] public section
 
 namespace List
 

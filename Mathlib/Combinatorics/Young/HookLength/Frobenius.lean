@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.HookLength.Branching
-import Mathlib.Combinatorics.Young.HookLength.Vandermonde
+module
+
+public import Mathlib.Combinatorics.Young.HookLength.Branching
+public import Mathlib.Combinatorics.Young.HookLength.Vandermonde
 
 /-!
 # The Frobenius formula for the number of standard Young tableaux
@@ -33,6 +35,8 @@ resulting family has a repeated entry.
 
 * `List.numStdTab_mul_prod_factorial` : the Frobenius formula displayed above.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Word.Standardization
-import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+public import Mathlib.Combinatorics.Young.Word.Standardization
 
 /-!
 # Standard tableaux
@@ -30,6 +32,8 @@ that is, whose entries are exactly `0, …, n-1`.
 * `List.mem_toWord_iff_of_isStdTab` : the entries of a standard tableau are exactly
   `0, …, n-1`, where `n` is its number of boxes.
 -/
+
+@[expose] public section
 
 namespace List
 

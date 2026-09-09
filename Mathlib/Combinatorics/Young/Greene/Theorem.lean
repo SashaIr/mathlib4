@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Dominance
-import Mathlib.Combinatorics.Young.Greene.Invariance
-import Mathlib.Combinatorics.Young.Greene.Tableau
+module
+
+public import Mathlib.Combinatorics.Young.Greene.Invariance
+public import Mathlib.Combinatorics.Young.Greene.Tableau
+public import Mathlib.Combinatorics.Young.Shape.Dominance
 
 /-!
 # Greene's theorem for rows
@@ -25,6 +27,8 @@ tableau `List.RS w`.
 * `List.greeneRow_one` : the case `k = 1` recovers Schensted's theorem, the Greene
   invariant `greeneRow w 1` is the maximal length of a nondecreasing subsequence of `w`.
 -/
+
+@[expose] public section
 
 namespace List
 

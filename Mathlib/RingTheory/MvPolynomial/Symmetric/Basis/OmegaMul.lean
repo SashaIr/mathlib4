@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndex
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Omega
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndex
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Omega
 
 /-!
 # The involution `omega` is multiplicative, and its action on the power sums
@@ -20,6 +22,8 @@ is multiplicative and that it acts on the power sums by
 * `MvPolynomial.omegaSym_psum` : `omega p_r = (-1)^(r+1) p_r`.
 * `MvPolynomial.omegaSym_pSub` : `omega p_lam = (-1)^(|lam| - length lam) p_lam`.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

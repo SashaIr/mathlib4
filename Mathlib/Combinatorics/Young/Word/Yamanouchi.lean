@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Combinatorics.Young.Shape.Corners
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Combinatorics.Young.Shape.Corners
 
 /-!
 # Yamanouchi words
@@ -36,6 +38,8 @@ removing the zeroes, and the hyperstandard Yamanouchi word of a given evaluation
 * `List.evalseq_hyperYam`, `List.isYam_hyperYam` : for any partition `ev` there is
   a Yamanouchi word of evaluation `ev`.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -182,9 +186,6 @@ lemma count_decrYam (s : List ℕ) (i : ℕ) : (decrYam s).count i = s.count (i 
     | zero => simp [ih]
     | succ n =>
       simp only [decrYam_succ_cons, List.count_cons, ih, beq_iff_eq, Nat.add_right_cancel_iff]
-
-lemma getD_tail (l : List ℕ) (i : ℕ) : l.tail.getD i 0 = l.getD (i + 1) 0 := by
-  cases l <;> simp
 
 lemma getLastD_tail_ne_zero {l : List ℕ} (h : l.getLastD 1 ≠ 0) : l.tail.getLastD 1 ≠ 0 := by
   cases l with

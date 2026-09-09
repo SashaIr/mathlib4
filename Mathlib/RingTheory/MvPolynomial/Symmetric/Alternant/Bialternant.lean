@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Pieri
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Pieri
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
 
 /-!
 # The bialternant formula for Schur polynomials
@@ -31,6 +33,8 @@ the Kostka matrix lets us identify them.
 * `MvPolynomial.altPart_mul_hsymm` : the Pieri rule satisfied by the alternants `a_{lam+delta}`.
 * `MvPolynomial.alt_partVec_eq_schurPoly_mul` : the bialternant formula.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

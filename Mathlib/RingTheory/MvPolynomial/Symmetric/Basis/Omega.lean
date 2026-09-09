@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Elementary
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.HallInnerProduct
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Elementary
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.HallInnerProduct
 
 /-!
 # The involution `omega`
@@ -30,6 +32,8 @@ The hypothesis `n ≤ m` guarantees that conjugation is a permutation of the par
 * `MvPolynomial.omegaSym_hSub` : `omega h_lam = e_lam`.
 * `MvPolynomial.omegaSym_eSubOfPart` : `omega e_lam = h_lam`.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

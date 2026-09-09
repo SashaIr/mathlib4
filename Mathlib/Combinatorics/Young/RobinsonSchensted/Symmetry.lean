@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Restrict
-import Mathlib.Combinatorics.Young.Plactic.Standardization
-import Mathlib.Combinatorics.Young.RobinsonSchensted.RestrictRecording
-import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
-import Mathlib.Combinatorics.Young.Word.InverseStandardFilter
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Restrict
+public import Mathlib.Combinatorics.Young.Plactic.Standardization
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.RestrictRecording
+public import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
+public import Mathlib.Combinatorics.Young.Word.InverseStandardFilter
 
 /-!
 # Symmetry of the Robinson–Schensted correspondence
@@ -35,6 +37,8 @@ restrictions (`List.eq_of_shape_dropMax_eq`), the two tableaux are equal.
 * `List.IsInvSeq.RS_eq_RSQ` : the same statement for a pair of inverse standard words
   (Coq `invseqRSPQE`).
 -/
+
+@[expose] public section
 
 namespace List
 

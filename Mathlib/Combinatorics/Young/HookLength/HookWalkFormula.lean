@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.HookLength.Formula
-import Mathlib.Combinatorics.Young.HookLength.HookWalk
+module
+
+public import Mathlib.Combinatorics.Young.HookLength.Formula
+public import Mathlib.Combinatorics.Young.HookLength.HookWalk
 
 /-!
 # The Greene–Nijenhuis–Wilf proof of the hook length formula
@@ -34,6 +36,8 @@ formula follows by induction on the number of boxes.
 * `List.sum_hookWalkProb_cells_div_sum` : the walk started at a uniformly chosen box ends at
   a corner with the branching probability `f^(lam ∖ c) / f^lam`.
 -/
+
+@[expose] public section
 
 namespace List
 

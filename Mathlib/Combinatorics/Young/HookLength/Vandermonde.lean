@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.LinearAlgebra.Vandermonde
+module
+
+public import Mathlib.LinearAlgebra.Vandermonde
 
 /-!
 # A shift identity for the Vandermonde product
@@ -33,6 +35,8 @@ computed by multilinearity and by a Leibniz expansion respectively.
 * `List.det_fallMat` : the determinant of the falling factorial matrix is `vdmProd`.
 * `List.sum_mul_vdmProd_update` : the shift identity displayed above.
 -/
+
+@[expose] public section
 
 namespace List
 

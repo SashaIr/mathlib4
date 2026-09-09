@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
 
 /-!
 # Schensted insertion under a map of the alphabet
@@ -19,6 +21,8 @@ the alphabet `τ`.
 * `List.insTab_mapTab` : `insTab (mapTab f P) (f l) = mapTab f (insTab P l)`.
 * `List.RS_map` : `RS (w.map f) = mapTab f (RS w)`.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # The Erdős–Szekeres theorem
@@ -29,6 +31,8 @@ and check that the pair of labels determines the position.
 
 * `List.erdos_szekeres` : the theorem above.
 -/
+
+@[expose] public section
 
 namespace List
 

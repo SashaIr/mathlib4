@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.SymmetricFunctions.Grading
+module
+
+public import Mathlib.RingTheory.SymmetricFunctions.Grading
 
 /-!
 # The involution `omega` as an automorphism of the ring of symmetric functions
@@ -30,6 +32,8 @@ algebra automorphism of order two.
 * `SymFunc.omegaSymFunc_schurFunc`, `SymFunc.omegaSymFunc_hsymFunc`,
   `SymFunc.omegaSymFunc_psymFunc` : its values on the classical symmetric functions.
 -/
+
+@[expose] public section
 
 namespace SymFunc
 

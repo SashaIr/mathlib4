@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndex
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndex
 
 /-!
 # The cycle index sum of an arbitrary family
@@ -26,6 +28,8 @@ This is used to identify the Cauchy kernel with its power sum expansion in
 * `MvPolynomial.eq_genCycleIndexSum_of_rec` : that recursion, together with `F 0 = 1`,
   characterises it.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

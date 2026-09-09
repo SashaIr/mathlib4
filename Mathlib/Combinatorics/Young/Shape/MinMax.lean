@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Basic
 
 /-!
 # The componentwise minimum and maximum of two partitions
@@ -21,6 +23,8 @@ These are used to describe the shapes lying between two partitions: a shape `nu`
 * `List.partMin` : the componentwise minimum.
 * `List.partMax` : the componentwise maximum.
 -/
+
+@[expose] public section
 
 namespace List
 

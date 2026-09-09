@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Kostka
-import Mathlib.Combinatorics.Young.Tableau.Semistandard
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.Kostka
+public import Mathlib.Combinatorics.Young.Tableau.Semistandard
 
 /-!
 # The superstandard tableau is the highest weight tableau
@@ -19,6 +21,8 @@ dictionary of `Mathlib.Combinatorics.Young.Tableau.Semistandard`.
 * `List.ssytOfTableau_superTab` : the two canonical tableaux of a shape agree.
 * `List.tableauOfSSYT_highestWeight` : the same statement, read in the other direction.
 -/
+
+@[expose] public section
 
 namespace List
 

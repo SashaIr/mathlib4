@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Standardization
-import Mathlib.Combinatorics.Young.RobinsonSchensted.RestrictRecording
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Symmetry
-import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
-import Mathlib.Combinatorics.Young.Word.StandardizationCongr
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Standardization
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.RestrictRecording
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Symmetry
+public import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
+public import Mathlib.Combinatorics.Young.Word.StandardizationCongr
 
 /-!
 # The recording tableau of a standardized word
@@ -24,6 +26,8 @@ the standardized word is the recording tableau of the word.
 * `List.RSQ_std` : `RSQ (std w) = RSQ w`.
 * `List.RS_invStd_std` : **`RS (invStd (std w)) = RSQ w`** (Coq `RSinvstdE`).
 -/
+
+@[expose] public section
 
 namespace List
 

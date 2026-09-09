@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Shuffles of two words
@@ -41,6 +43,8 @@ coefficient `(|u| + |v|).choose |u|`.
   satisfying a predicate and of the subword of the other letters, and this decomposition
   is the only one of this form.
 -/
+
+@[expose] public section
 
 namespace List
 

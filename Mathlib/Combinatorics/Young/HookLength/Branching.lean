@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Restrict
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
+public import Mathlib.Combinatorics.Young.Tableau.Restrict
 
 /-!
 # The branching rule for standard Young tableaux
@@ -32,6 +34,8 @@ removable corner.
   one box less is `lam` with a removable corner removed.
 * `List.numStdTab_branching` : the branching rule.
 -/
+
+@[expose] public section
 
 namespace List
 

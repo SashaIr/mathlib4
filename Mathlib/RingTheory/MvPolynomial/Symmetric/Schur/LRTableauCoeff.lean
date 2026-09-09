@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.FreeSchur
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LRSymmetry
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.FreeSchur
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LRSymmetry
 
 /-!
 # Counting the tableaux of a Littlewood–Richardson support
@@ -33,6 +35,8 @@ through their shapes (Coq `LRtab_coeff_shapeE`).
 * `MvPolynomial.LRtabCoeff_eq_of_shape_eq` : it only depends on the shapes of `Q₁` and `Q₂`
   (Coq `LRtab_coeff_shapeE`).
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

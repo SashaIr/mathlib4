@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LRSymmetry
-import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterIrreducible
-import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterMN
+module
+
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterIrreducible
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterMN
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LRSymmetry
 
 /-!
 # The Littlewood–Richardson rule for the characters of the symmetric group
@@ -23,6 +25,8 @@ sum, over the partitions `ν` of `m + n`, of `c^ν_{λμ}` copies of `χ^ν` (Co
 * `Equiv.Perm.indProd_schurChar` : **the Littlewood–Richardson rule for characters**,
   `χ^λ ⊙ χ^μ = ∑_ν c^ν_{λμ} χ^ν`.
 -/
+
+@[expose] public section
 
 open Equiv MvPolynomial List
 

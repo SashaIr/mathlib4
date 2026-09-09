@@ -3,12 +3,14 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
-import Mathlib.Data.List.GetD
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Order.Bounds.Basic
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.List.GetD
+public import Mathlib.Order.Bounds.Basic
 
 /-!
 # Standardization of a word
@@ -39,6 +41,8 @@ permutation of `0, …, n-1`, and it has the same pattern of relative order as `
 * `List.length_schensted_std` : `w` and `List.std w` have nondecreasing subsequences of
   the same lengths, so their Schensted rows have the same length.
 -/
+
+@[expose] public section
 
 namespace List
 

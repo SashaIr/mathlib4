@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.HorizontalDiamond
-import Mathlib.Combinatorics.Young.Shape.Finset
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Branching
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Finset
+public import Mathlib.Combinatorics.Young.Shape.HorizontalDiamond
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Branching
 
 /-!
 # The Pieri rule
@@ -23,6 +25,8 @@ combinatorial input is the diamond identity `List.card_upDiamond_eq_card_downDia
 
 * `MvPolynomial.schurPoly_mul_hsymm` : the Pieri rule.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

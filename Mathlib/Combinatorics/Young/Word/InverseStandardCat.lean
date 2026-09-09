@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Word.InverseStandard
-import Mathlib.Combinatorics.Young.Word.ShiftedShuffle
+module
+
+public import Mathlib.Combinatorics.Young.Word.InverseStandard
+public import Mathlib.Combinatorics.Young.Word.ShiftedShuffle
 
 /-!
 # The inverse standardization of a concatenation
@@ -37,6 +39,8 @@ Consequently `invStd (std (u ++ v))` is a shifted shuffle of `invStd (std u)` an
 * `List.invStd_std_append_mem_shsh` : `invStd (std (u ++ v))` is a shifted shuffle of
   `invStd (std u)` and `invStd (std v)` (Coq `invstd_cat_in_shsh`).
 -/
+
+@[expose] public section
 
 namespace List
 

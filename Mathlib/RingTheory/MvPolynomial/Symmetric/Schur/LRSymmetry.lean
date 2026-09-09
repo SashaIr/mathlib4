@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.OmegaMul
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LittlewoodRichardson
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.OmegaMul
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LittlewoodRichardson
 
 /-!
 # Symmetries of the Littlewood–Richardson coefficients
@@ -28,6 +30,8 @@ of the involution `omega` for the second.
 * `MvPolynomial.lrCoeff_conjPart` : `c^{nu'}_{lam', mu'} = c^nu_{lam, mu}` (Coq
   `LRtab_coeff_conj`).
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

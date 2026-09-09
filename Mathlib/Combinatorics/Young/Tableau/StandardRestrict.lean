@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
-import Mathlib.Combinatorics.Young.Tableau.Restrict
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
+public import Mathlib.Combinatorics.Young.Tableau.Restrict
 
 /-!
 # A standard tableau is determined by the shapes of its restrictions
@@ -21,6 +23,8 @@ shapes are equal: this is the description of a standard tableau as a chain of sh
 * `List.eq_of_shape_dropMax_eq` : **two standard tableaux whose restrictions have the same
   shapes are equal**.
 -/
+
+@[expose] public section
 
 namespace List
 

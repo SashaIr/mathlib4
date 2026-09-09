@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Kostka
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.Kostka
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
 
 /-!
 # Schur polynomials and Kostka numbers
@@ -29,6 +31,8 @@ monomial of content `sh` itself occurs exactly once.  In other words
 * `MvPolynomial.coeff_schurPoly_self` : the coefficient of the monomial of content `sh` in
   `s_sh` is `1`.
 -/
+
+@[expose] public section
 
 /-! ### Tableaux under a map of the alphabet -/
 

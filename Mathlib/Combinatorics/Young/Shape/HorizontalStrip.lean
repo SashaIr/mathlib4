@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Combinatorics.Young.Shape.Included
-import Mathlib.Combinatorics.Young.Shape.TrimZeros
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Included
+public import Mathlib.Combinatorics.Young.Shape.TrimZeros
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Horizontal strips and the commutation of the Pieri rule
@@ -38,6 +40,8 @@ product of intervals `loBd i ≤ nu_i ≤ hiBd i`, and that the reflection
 
 * `List.card_midSet_symm` : the commutation of the Pieri rule described above.
 -/
+
+@[expose] public section
 
 namespace List
 

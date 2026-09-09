@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
 
 /-!
 # Restricting the recording tableau
@@ -16,6 +18,8 @@ recording tableau of the prefix of length `k` of `w`.
 
 * `List.dropMax_RSQ` : `dropMax k (RSQ w) = RSQ (w.take k)`.
 -/
+
+@[expose] public section
 
 namespace List
 

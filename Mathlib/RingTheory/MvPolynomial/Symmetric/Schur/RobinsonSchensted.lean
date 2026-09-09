@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
 
 /-!
 # The Robinson–Schensted expansion of a power of the sum of the variables
@@ -24,6 +26,8 @@ tableaux of shape `λ` and `s_λ` is the Schur polynomial of shape `λ`.
   length `n`.
 * `MvPolynomial.sum_numStdTab_smul_schurPoly` : the identity `∑_λ f^λ · s_λ = (∑ i, X i) ^ n`.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -49,7 +53,7 @@ instance finite_stdTabOfShape (sh : List ℕ) :
     have hf : P.flatten = Q.flatten := congrArg Subtype.val h
     exact Subtype.ext (eq_of_shape_eq_of_flatten_eq (by rw [hP.2, hQ.2]) hf)
 
-noncomputable instance fintype_stdTabOfShape (sh : List ℕ) :
+noncomputable instance fintypeStdTabOfShape (sh : List ℕ) :
     Fintype {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = sh} :=
   Fintype.ofFinite _
 
@@ -113,7 +117,7 @@ instance finite_tabPairS [Finite σ] (n : ℕ) : Finite (tabPairS σ n) := by
   have : Fintype σ := Fintype.ofFinite σ
   exact Finite.of_equiv _ (wordEquivTabPairS (σ := σ) n)
 
-noncomputable instance fintype_tabPairS (n : ℕ) : Fintype (tabPairS σ n) :=
+noncomputable instance fintypeTabPairS (n : ℕ) : Fintype (tabPairS σ n) :=
   Fintype.ofFinite _
 
 /-- The common shape of such a pair, as a partition of `n`. -/

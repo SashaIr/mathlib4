@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
-import Mathlib.Combinatorics.Young.Shape.MinMax
+module
+
+public import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
+public import Mathlib.Combinatorics.Young.Shape.MinMax
 
 /-!
 # The diamond identity for horizontal strips
@@ -37,14 +39,13 @@ interpolating between `partMax rho.tail tau.tail` and `partMin rho tau`, while t
 * `List.card_upDiamond_eq_card_downDiamondLe` : the diamond identity.
 -/
 
+@[expose] public section
+
 namespace List
 
 open List
 
-/-! ### Two small list lemmas -/
-
-lemma getD_tail (l : List ℕ) (i : ℕ) : l.tail.getD i 0 = l.getD (i + 1) 0 := by
-  cases l <;> simp
+/-! ### A small list lemma -/
 
 lemma sum_tail_add_getD_zero (l : List ℕ) : l.tail.sum + l.getD 0 0 = l.sum := by
   cases l with

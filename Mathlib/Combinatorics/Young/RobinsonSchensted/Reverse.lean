@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Greene.Reverse
-import Mathlib.Combinatorics.Young.Plactic.Restrict
-import Mathlib.Combinatorics.Young.Plactic.Standardization
-import Mathlib.Combinatorics.Young.Tableau.ConjugateRestrict
-import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
+module
+
+public import Mathlib.Combinatorics.Young.Greene.Reverse
+public import Mathlib.Combinatorics.Young.Plactic.Restrict
+public import Mathlib.Combinatorics.Young.Plactic.Standardization
+public import Mathlib.Combinatorics.Young.Tableau.ConjugateRestrict
+public import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
 
 /-!
 # The insertion tableau of a reversed standard word
@@ -27,6 +29,8 @@ shapes of its restrictions (`List.eq_of_shape_dropMax_eq`).
 
 * `List.RS_reverse` : `RS w.reverse = conjTab (RS w)` for a standard word `w`.
 -/
+
+@[expose] public section
 
 namespace List
 

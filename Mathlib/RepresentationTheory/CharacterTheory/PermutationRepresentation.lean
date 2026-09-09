@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RepresentationTheory.CharacterTheory.VirtualCharacter
+module
+
+public import Mathlib.RepresentationTheory.CharacterTheory.VirtualCharacter
 
 /-!
 # Permutation representations and their characters
@@ -25,6 +27,8 @@ representation induced from the trivial character of `H` will be computed.
 * `FDRep.sum_card_fixedPoints_quotient_mul` : for a class function `F` on `G`,
   `∑_σ #Fix_{G/H}(σ) · F σ = [G : H] · ∑_{h ∈ H} F h`.
 -/
+
+@[expose] public section
 
 namespace FDRep
 

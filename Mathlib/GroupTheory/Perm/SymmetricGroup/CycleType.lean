@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.GroupTheory.Perm.Centralizer
-import Mathlib.Combinatorics.Young.Shape.Finset
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Finset
+public import Mathlib.GroupTheory.Perm.Centralizer
 
 /-!
 # Cycle types of permutations
@@ -39,6 +41,8 @@ partition `Equiv.Perm.cycleTypeList`.
   type `λ`, times `z_λ`, is `n !`.
 * `Equiv.Perm.sum_one_div_zcard` : `∑_{λ ⊢ n} 1 / z_λ = 1`.
 -/
+
+@[expose] public section
 
 open Equiv Finset Nat List
 

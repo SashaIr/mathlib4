@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.GroupTheory.Coxeter.Length
-import Mathlib.GroupTheory.Perm.SymmetricGroup.Presentation
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.GroupTheory.Coxeter.Length
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Presentation
 
 /-!
 # Inversions of a permutation and the Coxeter length
@@ -30,6 +32,8 @@ to write it.
   `N.choose 2`, with equality for the reversal permutation, which therefore is the longest
   element of the symmetric group.
 -/
+
+@[expose] public section
 
 open Equiv Finset
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Greene.Defs
+module
+
+public import Mathlib.Combinatorics.Young.Greene.Defs
 
 /-!
 # Greene column invariants: definitions
@@ -23,6 +25,8 @@ colours.
   colour classes are strictly decreasing.
 * `List.greeneCol w k` : the Greene column invariant.
 -/
+
+@[expose] public section
 
 namespace List
 

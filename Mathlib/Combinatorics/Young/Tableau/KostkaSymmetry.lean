@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Combinatorics.Young.Tableau.Restrict
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.Restrict
+public import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Symmetry of the Kostka numbers
@@ -27,6 +29,8 @@ the multiplicities of the two letters.
   letters.
 * `List.kostkaNum_permContent` : invariance under an arbitrary permutation of the letters.
 -/
+
+@[expose] public section
 
 namespace List
 

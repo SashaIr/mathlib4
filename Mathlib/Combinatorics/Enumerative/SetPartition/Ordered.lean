@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Tactic.Ring
 
 /-!
 # Ordered set partitions with prescribed block sizes
@@ -28,6 +30,8 @@ lists `[B₁, …, B_r]` of pairwise disjoint blocks covering a finite set `s`, 
 * `Finpartition.card_orderedParts_mul_prod_factorial` : the multinomial count
   `(orderedParts s l).card * (l.map (·!)).prod = s.card !`.
 -/
+
+@[expose] public section
 
 namespace Finpartition
 

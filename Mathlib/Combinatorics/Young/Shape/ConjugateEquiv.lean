@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Combinatorics.Young.Shape.Conjugate
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Conjugate
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Conjugation as a bijection of partitions
@@ -22,6 +24,8 @@ Here we package conjugation of partitions as an explicit `Equiv`.
 * `List.conjPartEquivLengthLe` : conjugation is a bijection between the partitions of `n`
   with at most `k` parts and the partitions of `n` all of whose parts are at most `k`.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Greene.ColumnTheorem
-import Mathlib.Combinatorics.Young.Greene.Theorem
+module
+
+public import Mathlib.Combinatorics.Young.Greene.ColumnTheorem
+public import Mathlib.Combinatorics.Young.Greene.Theorem
 
 /-!
 # Reversing a word with distinct letters
@@ -29,6 +31,8 @@ insertion tableau of the word.
 * `List.shape_RS_reverse_of_nodup` : the shape of the insertion tableau of `w.reverse` is
   the conjugate of the shape of the insertion tableau of `w`.
 -/
+
+@[expose] public section
 
 namespace List
 

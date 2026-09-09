@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Crystal operators on words
@@ -32,6 +34,8 @@ changes the leftmost remaining `i + 1` into an `i`, and `f i` changes the rightm
 * `List.crystalPhi_eq_zero_iff` : there is no unmatched `i + 1` iff every suffix contains at
   least as many letters `i` as letters `i + 1`.
 -/
+
+@[expose] public section
 
 namespace List
 

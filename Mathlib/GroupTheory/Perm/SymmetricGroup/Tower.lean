@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Tactic.Abel
-import Mathlib.GroupTheory.Perm.SymmetricGroup.CycleType
+module
+
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.CycleType
+public import Mathlib.Tactic.Abel
 
 /-!
 # The tower of symmetric groups
@@ -32,6 +34,8 @@ this is the composition of `Equiv.Perm.sumCongr` with the transport of structure
 * `Equiv.Perm.cycleTypeList_tinj` : the list-based cycle type of `tinj (u, v)` is the union of
   those of `u` and `v`.
 -/
+
+@[expose] public section
 
 open Equiv
 

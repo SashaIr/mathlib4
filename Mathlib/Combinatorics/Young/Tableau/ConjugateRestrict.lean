@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Conjugate
-import Mathlib.Combinatorics.Young.Tableau.Restrict
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.Conjugate
+public import Mathlib.Combinatorics.Young.Tableau.Restrict
 
 /-!
 # Restricting the transpose of a standard tableau
@@ -21,6 +23,8 @@ correspondence for reversed words needs.
 * `List.shape_dropMax_conjTab` : `shape (dropMax k (conjTab t)) = conjPart (shape (dropMax k t))`
   for a standard tableau `t`.
 -/
+
+@[expose] public section
 
 namespace List
 

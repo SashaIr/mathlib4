@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Elementary
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.HallInnerProduct
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Elementary
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.HallInnerProduct
 
 /-!
 # Truncating the number of variables
@@ -37,6 +39,8 @@ as `n ≤ m ≤ M`.
   `MvPolynomial.truncVars_pProd`).
 * `MvPolynomial.hallInner_truncSub` : the Hall scalar product is invariant under truncation.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

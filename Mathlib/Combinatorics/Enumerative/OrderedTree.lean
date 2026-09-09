@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Catalan.Tree
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Ordered trees
@@ -39,6 +41,7 @@ by the Catalan number `catalan n`.  Binary trees are Mathlib's `Tree Unit`, as i
   `depth_tree_eq2P`).
 -/
 
+@[expose] public section
 
 /-- An **ordered tree** (or plane tree): a root together with an ordered list of ordered
 trees, its subtrees (Coq `ordtree`). -/

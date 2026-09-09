@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSumOrtho
-import Mathlib.RepresentationTheory.SymmetricGroup.FrobeniusCharacteristic
+module
+
+public import Mathlib.RepresentationTheory.SymmetricGroup.FrobeniusCharacteristic
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSumOrtho
 
 /-!
 # The Frobenius characteristic is an isometry
@@ -30,6 +32,8 @@ characteristic map takes the usual scalar product of class functions of the symm
 * `Equiv.Perm.exists_isClassFun_frobCharSub_eq` : it is also surjective onto the symmetric
   homogeneous polynomials of degree `n`.
 -/
+
+@[expose] public section
 
 open Equiv MvPolynomial List
 

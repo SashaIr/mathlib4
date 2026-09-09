@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Cauchy.Basic
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndexGeneral
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CycleIndexGeneral
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Cauchy.Basic
 
 /-!
 # The Cauchy kernel in terms of the power sums
@@ -31,6 +33,8 @@ using the recursion `n · h_n = ∑_{r=1}^n p_r · h_{n-r}`.
 * `MvPolynomial.nsmul_cauchyRHS` : the recursion satisfied by the Cauchy kernel.
 * `MvPolynomial.power_sum_cauchy` : the Cauchy identity in terms of the power sums.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

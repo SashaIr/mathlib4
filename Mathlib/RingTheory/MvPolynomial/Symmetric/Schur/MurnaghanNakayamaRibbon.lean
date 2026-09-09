@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Ribbon
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.MurnaghanNakayama
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Ribbon
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.MurnaghanNakayama
 
 /-!
 # The shapes of the Murnaghan-Nakayama rule are ribbons
@@ -29,6 +31,8 @@ sense of `Mathlib/Combinatorics/Young/Shape/Ribbon.lean` (Coq `ribbon_on`), and 
 * `MvPolynomial.psum_mul_schurPoly_sum_ribbon` : the Murnaghan-Nakayama rule as a sum over the
   shapes `mu` such that `mu / lam` is a ribbon.
 -/
+
+@[expose] public section
 
 open List
 

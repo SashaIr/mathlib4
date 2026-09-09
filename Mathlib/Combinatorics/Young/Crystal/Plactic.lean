@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Crystal.Basic
-import Mathlib.Combinatorics.Young.Plactic.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Crystal.Basic
+public import Mathlib.Combinatorics.Young.Plactic.Basic
 
 /-!
 # The crystal operators and the plactic congruence
@@ -23,6 +25,8 @@ words appearing in the two Knuth transformations.
 * `List.crystalE_of_placticEquiv` : the raising operator is defined on a word iff it is
   defined on any Knuth equivalent word, and the results are Knuth equivalent.
 -/
+
+@[expose] public section
 
 namespace List
 

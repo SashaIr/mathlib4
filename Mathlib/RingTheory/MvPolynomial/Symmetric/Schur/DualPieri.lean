@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.VerticalStrip
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Bialternant
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.ElementaryHomogeneous
+module
+
+public import Mathlib.Combinatorics.Young.Shape.VerticalStrip
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Bialternant
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.ElementaryHomogeneous
 
 /-!
 # The dual Pieri rule
@@ -25,6 +27,8 @@ two equal exponents, hence vanish.
 * `MvPolynomial.esymm_mul_alt` : `e_r * a_a = ∑_{d 0-1, |d| = r} a_{a+d}`.
 * `MvPolynomial.schurPoly_mul_esymm` : the dual Pieri rule.
 -/
+
+@[expose] public section
 
 open List
 
@@ -57,7 +61,6 @@ lemma esymm_eq_sum_zeroOneAntidiag (m r : ℕ) (R : Type*) [CommRing R] :
       rw [indicVec_apply]; split_ifs <;> omega⟩
   · intro d hd
     obtain ⟨hsum, hone⟩ := mem_zeroOneAntidiag.1 hd
-    change d.support ∈ Finset.powersetCard r (univ : Finset (Fin m))
     refine Finset.mem_powersetCard.2 ⟨Finset.subset_univ _, ?_⟩
     have hsupp : ∑ i ∈ d.support, d i = ∑ i, d i :=
       Finset.sum_subset (Finset.subset_univ _) (fun i _ h => Finsupp.notMem_support_iff.1 h)
@@ -68,12 +71,10 @@ lemma esymm_eq_sum_zeroOneAntidiag (m r : ℕ) (R : Type*) [CommRing R] :
     rw [Finset.sum_congr rfl hone', Finset.sum_const, smul_eq_mul, mul_one] at hsupp
     omega
   · intro S hS
-    change (indicVec S).support = S
     ext i
     simp [Finsupp.mem_support_iff]
   · intro d hd
     obtain ⟨-, hone⟩ := mem_zeroOneAntidiag.1 hd
-    change indicVec d.support = d
     refine Finsupp.ext fun i => ?_
     rw [indicVec_apply]
     by_cases h : i ∈ d.support
@@ -274,7 +275,6 @@ theorem altPart_mul_esymm {mu : List ℕ} (hmu : IsPart mu) (r : ℕ) :
     obtain ⟨hlam', hlen⟩ := Finset.mem_filter.1 hlam
     obtain ⟨hlam'', hstrip⟩ := Finset.mem_filter.1 hlam'
     obtain ⟨hpart, -⟩ := mem_partFinset.1 hlam''
-    change vecPart m (partVec m mu + ⇑(stripFinsupp m mu lam)) = lam
     rw [add_stripFinsupp hstrip.1, vecPart_partVec hpart hlen]
   · intro d hd
     obtain ⟨hd0, -⟩ := Finset.mem_filter.1 hd

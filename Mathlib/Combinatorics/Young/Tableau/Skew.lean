@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Included
-import Mathlib.Combinatorics.Young.Tableau.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Included
+public import Mathlib.Combinatorics.Young.Tableau.Basic
 
 /-!
 # Skew tableaux
@@ -36,6 +38,8 @@ domination after dropping that many entries.
 * `List.included_outerShape` and `List.diffShape_outerShape` : the inner shape is
   included in the outer shape, and the skew shape between them is the shape of the rows.
 -/
+
+@[expose] public section
 
 namespace List
 

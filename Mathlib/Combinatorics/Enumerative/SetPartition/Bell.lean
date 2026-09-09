@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Combinatorics.Enumerative.Partition.Basic
-import Mathlib.Combinatorics.Enumerative.SetPartition.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Combinatorics.Enumerative.SetPartition.Basic
 
 /-!
 # The Bell numbers count set partitions
@@ -20,6 +22,8 @@ Ported from the Coq-Combi development (`Combi/set_partition.v`).
 * `Finpartition.nat_bell_eq_sum_multiset_bell` : `Nat.bell n` is the sum of `Multiset.bell p`
   over the partitions `p` of `n`.
 -/
+
+@[expose] public section
 
 namespace Finpartition
 

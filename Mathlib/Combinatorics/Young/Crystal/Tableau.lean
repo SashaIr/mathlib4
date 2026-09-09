@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Skew
-import Mathlib.Combinatorics.Young.Crystal.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Crystal.Basic
+public import Mathlib.Combinatorics.Young.Tableau.Skew
 
 /-!
 # Crystal operators on skew tableaux
@@ -29,6 +31,8 @@ decide whether the operator acts on the top row of the tableau or on the rows be
 * `List.exists_isSkewTableau_crystalE` and `List.exists_isSkewTableau_crystalF` : the
   crystal operators preserve reading words of skew tableaux of a given shape.
 -/
+
+@[expose] public section
 
 namespace List
 

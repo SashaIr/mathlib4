@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
 
 /-!
 # The branching rule for Schur polynomials
@@ -21,6 +23,8 @@ of a tableau.
 
 * `MvPolynomial.schurPoly_branching` : the branching rule.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -43,7 +47,7 @@ lemma mapDomain_castSucc_apply_castSucc (u : Fin m →₀ ℕ) (i : Fin m) :
 
 lemma mapDomain_castSucc_apply_last (u : Fin m →₀ ℕ) :
     (Finsupp.mapDomain Fin.castSucc u) (Fin.last m) = 0 := by
-  refine Finsupp.mapDomain_notin_range u (Fin.last m) ?_
+  refine Finsupp.mapDomain_of_notMem_range u (Fin.last m) ?_
   rintro ⟨i, hi⟩
   exact (Fin.castSucc_lt_last i).ne hi
 
@@ -71,7 +75,7 @@ lemma coeff_rename_castSucc_mul_pow (P : MvPolynomial (Fin m) R) (j : ℕ)
       = if d (Fin.last m) = j then coeff (restrictLast d) P else 0 := by
   induction P using MvPolynomial.induction_on' with
   | monomial u a =>
-    rw [rename_monomial, X_pow_eq_monomial, monomial_mul, mul_one, coeff_monomial,
+    rw [rename_monomial, X_pow_eq_monomial, monomial_mul_monomial, mul_one, coeff_monomial,
       coeff_monomial]
     by_cases hlast : d (Fin.last m) = j
     · rw [ite_eq_left hlast]
@@ -130,8 +134,8 @@ theorem schurPoly_branching (lam : List ℕ) (hlam : IsPart lam) :
     · rw [ite_eq_left hlast, Nat.cast_sum]
       refine Finset.sum_congr rfl fun nu _ => ?_
       by_cases hstrip : HorizStrip lam nu.1
-      · rw [ite_eq_left hstrip, ite_eq_left hstrip, coeff_rename_castSucc_mul_pow, ite_eq_left hlast,
-          coeff_schurPoly_eq_kostkaNum]
+      · rw [ite_eq_left hstrip, ite_eq_left hstrip, coeff_rename_castSucc_mul_pow,
+          ite_eq_left hlast, coeff_schurPoly_eq_kostkaNum]
         exact congrArg _ (kostkaNum_congr m nu.1
           fun i hi => (finContent_castSucc d i hi).symm)
       · rw [ite_eq_right hstrip, ite_eq_right hstrip, coeff_zero, Nat.cast_zero]

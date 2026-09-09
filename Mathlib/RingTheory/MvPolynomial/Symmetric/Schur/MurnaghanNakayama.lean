@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.PowerSum
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.PowerSum
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 
 /-!
 # The Murnaghan–Nakayama rule
@@ -41,6 +43,8 @@ when the modified entry does not collide with another entry of the vector.
   the resulting shape is a partition of `|lam| + r` containing `lam`.
 * `MvPolynomial.psum_mul_schurPoly` : **the Murnaghan–Nakayama rule**.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

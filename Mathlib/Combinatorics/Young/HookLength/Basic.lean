@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Combinatorics.Young.Shape.Conjugate
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Combinatorics.Young.Shape.Conjugate
+public import Mathlib.Data.Nat.Factorial.BigOperators
 
 /-!
 # Hook lengths
@@ -36,6 +38,8 @@ row `r` are exactly the numbers `1, …, colHook sh r` from which the numbers
   the product of the differences `colHook sh r - colHook sh s` for `s > r`, is
   `(colHook sh r)!`.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -94,7 +98,7 @@ lemma lt_getD_conjPart {r c : ℕ} (hsh : IsPart sh) (h : c < sh.getD r 0) :
 private def hookCompl (sh : List ℕ) (c : ℕ) : ℕ := c + sh.length - (conjPart sh).getD c 0
 
 /-- The hook length of a box and its complement add up to the first column hook length. -/
-lemma hookLength_add_hookCompl (hsh : IsPart sh) {r c : ℕ} (hr : r < sh.length)
+private lemma hookLength_add_hookCompl (hsh : IsPart sh) {r c : ℕ} (hr : r < sh.length)
     (hc : c < sh.getD r 0) :
     hookLength sh r c + hookCompl sh c = colHook sh r := by
   have h1 : r < (conjPart sh).getD c 0 := lt_getD_conjPart hsh hc
@@ -111,7 +115,7 @@ lemma one_le_hookLength (hsh : IsPart sh) {r c : ℕ} (hc : c < sh.getD r 0) :
 
 /-- The complement of a hook length is strictly smaller than the first column hook length of
 its row. -/
-lemma hookCompl_lt (hsh : IsPart sh) {r c : ℕ} (hr : r < sh.length) (hc : c < sh.getD r 0) :
+private lemma hookCompl_lt (hsh : IsPart sh) {r c : ℕ} (hr : r < sh.length) (hc : c < sh.getD r 0) :
     hookCompl sh c < colHook sh r := by
   have h1 : r < (conjPart sh).getD c 0 := lt_getD_conjPart hsh hc
   have h2 : (conjPart sh).getD c 0 ≤ sh.length := getD_conjPart_le hsh c
@@ -120,7 +124,7 @@ lemma hookCompl_lt (hsh : IsPart sh) {r c : ℕ} (hr : r < sh.length) (hc : c < 
   omega
 
 /-- The complement of the hook lengths is strictly increasing along a row. -/
-lemma hookCompl_strictMono (hsh : IsPart sh) {c c' : ℕ} (h : c < c') :
+private lemma hookCompl_strictMono (hsh : IsPart sh) {c c' : ℕ} (h : c < c') :
     hookCompl sh c < hookCompl sh c' := by
   have h1 : (conjPart sh).getD c' 0 ≤ (conjPart sh).getD c 0 :=
     (isPart_conjPart hsh).getD_antitone (le_of_lt h)
@@ -138,7 +142,7 @@ lemma colHook_strictAnti (hsh : IsPart sh) {r s : ℕ} (hrs : r < s) (hs : s < s
 
 /-- The complement of a hook length of the row `r` is never a first column hook length of a
 row below `r`. -/
-lemma hookCompl_ne_colHook (hsh : IsPart sh) {c s : ℕ} (hs : s < sh.length) :
+private lemma hookCompl_ne_colHook (hsh : IsPart sh) {c s : ℕ} (hs : s < sh.length) :
     hookCompl sh c ≠ colHook sh s := by
   have h2 : (conjPart sh).getD c 0 ≤ sh.length := getD_conjPart_le hsh c
   rcases lt_or_ge c (sh.getD s 0) with hcs | hcs

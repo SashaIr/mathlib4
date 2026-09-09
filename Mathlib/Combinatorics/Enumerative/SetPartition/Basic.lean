@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Bell
-import Mathlib.GroupTheory.Perm.DomMulAct
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Combinatorics.Enumerative.SetPartition.Ordered
+module
+
+public import Mathlib.Combinatorics.Enumerative.Bell
+public import Mathlib.Combinatorics.Enumerative.SetPartition.Ordered
+public import Mathlib.GroupTheory.Perm.DomMulAct
+public import Mathlib.Order.Partition.Finpartition
 
 /-!
 # Counting set partitions with prescribed block sizes
@@ -28,6 +30,8 @@ Ported from the Coq-Combi development (`Combi/set_partition.v`).
 * `Finpartition.card_shapeParts_replicate` : the case of blocks all of the same size, counted by
   `Nat.uniformBell`.
 -/
+
+@[expose] public section
 
 namespace Finpartition
 

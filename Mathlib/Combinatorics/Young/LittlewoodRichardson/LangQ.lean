@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.List.Permutation
-import Mathlib.Combinatorics.Young.RobinsonSchensted.RecordingStandardization
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Reverse
-import Mathlib.Combinatorics.Young.Word.InverseStandardCat
-import Mathlib.Combinatorics.Young.Word.ShiftedShufflePlactic
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.RecordingStandardization
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Reverse
+public import Mathlib.Combinatorics.Young.Word.InverseStandardCat
+public import Mathlib.Combinatorics.Young.Word.ShiftedShufflePlactic
+public import Mathlib.Data.List.Permutation
 
 /-!
 # Free Schur functions as languages, and Littlewood–Richardson triples
@@ -47,6 +49,8 @@ tableaux `t` making `(t₁, t₂, t)` a Littlewood–Richardson triple.
   by a search over a finite list of words, and the resulting decision procedure
   `List.decidableLRtriple` (Coq `pred_LRtriple` and `LRtripleP`).
 -/
+
+@[expose] public section
 
 namespace List
 

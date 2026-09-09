@@ -3,7 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.DyckWord.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Combinatorics.Enumerative.DyckWord.Basic
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The cycle lemma and the enumeration of Dyck words
@@ -47,6 +53,8 @@ of length `2 * n` are `n + 1` times as many as the Dyck words (Coq
 * `List.card_balanced_eq_succ_mul_catalan` : the balanced words of length `2 * n` are
   `n + 1` times as many as the Dyck words of length `2 * n` (Coq `card_bal_Dyck_hsz`).
 -/
+
+@[expose] public section
 
 namespace List
 

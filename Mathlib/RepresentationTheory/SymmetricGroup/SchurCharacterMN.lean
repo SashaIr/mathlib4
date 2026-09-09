@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.MurnaghanNakayamaRibbon
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Truncate
-import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacter
+module
+
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacter
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Truncate
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.MurnaghanNakayamaRibbon
 
 /-!
 # The Murnaghan-Nakayama rule for the characters of the symmetric group
@@ -32,6 +34,8 @@ As a consequence the Schur class functions take integer values.
   unless the shape is a hook.
 * `Equiv.Perm.exists_intCast_schurChar` : the values of the Schur class functions are integers.
 -/
+
+@[expose] public section
 
 open Equiv MvPolynomial Finset List
 

@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Combinatorics.Young.Shape.Corners
-import Mathlib.Combinatorics.Young.HookLength.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Combinatorics.Young.HookLength.Basic
+public import Mathlib.Combinatorics.Young.Shape.Corners
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Linarith
 
 /-!
 # The hook walk
@@ -38,6 +40,8 @@ coordinates.
   ending at a given corner `(al, be)`, starting from a box `(a, b)` with `a ≤ al` and
   `b ≤ be`.
 -/
+
+@[expose] public section
 
 namespace List
 

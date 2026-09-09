@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Tamari.Order
-import Mathlib.Order.Finite.Lattice
+module
+
+public import Mathlib.Combinatorics.Enumerative.Tamari.Order
+public import Mathlib.Order.Finite.Lattice
 
 /-!
 # The Tamari lattice
@@ -31,6 +33,8 @@ comb is the greatest one, so the join then exists for general reasons
   the greatest element and the left comb the smallest one.
 * `Tree.TamariOfCard.instLattice` : **the Tamari lattice**.
 -/
+
+@[expose] public section
 
 namespace List
 

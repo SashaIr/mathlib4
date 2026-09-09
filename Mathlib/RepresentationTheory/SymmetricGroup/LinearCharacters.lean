@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.GroupTheory.Perm.Sign
+module
+
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # The linear characters of the symmetric group
@@ -31,6 +33,8 @@ the number of transpositions needed to write it, that is on its signature.
 * `Equiv.Perm.eq_one_or_eq_signChar` : a morphism from the symmetric group to the invertible
   complex numbers is either trivial or the signature (Coq `repr1`).
 -/
+
+@[expose] public section
 
 open Equiv
 

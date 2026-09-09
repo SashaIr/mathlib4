@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.Young.Shape.Conjugate
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.Young.Shape.Conjugate
 
 /-!
 # The dominance order on partitions
@@ -27,6 +29,8 @@ A Lean 4 port of the dominance order part of `theories/Combi/partition.v` from
 * `List.partdom_conjPart_iff` (Coq `partdom_conj_intpartn`) : conjugation is an
   order-reversing involution for the dominance order on partitions of a given size.
 -/
+
+@[expose] public section
 
 namespace List
 

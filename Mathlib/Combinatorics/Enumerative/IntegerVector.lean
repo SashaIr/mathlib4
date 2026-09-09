@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Combinatorics.Young.Tableau.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Tableau.Basic
+public import Mathlib.Data.List.Nodup
 
 /-!
 # Integer vectors of given sum and length, and cuttings of a list
@@ -35,6 +37,8 @@ list into a given number of consecutive slices.
 * `List.mem_cut3_iff` : `(a, b, c) ∈ cut3 s` if and only if `s = a ++ b ++ c` (Coq
   `cat3_equiv_cut3`).
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
 
 /-!
 # Reverse insertion at a removable corner
@@ -23,6 +25,8 @@ removed letters upwards.  When the box removed is a *removable corner* of the sh
 * `List.invInsTab_spec` : reverse insertion at a removable corner succeeds and undoes
   insertion in a tableau (Coq `invinstabnrowK`).
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Greene.ColumnDefs
-import Mathlib.Combinatorics.Young.Greene.Invariance
+module
+
+public import Mathlib.Combinatorics.Young.Greene.ColumnDefs
+public import Mathlib.Combinatorics.Young.Greene.Invariance
 
 /-!
 # Greene column invariants are plactic invariants
@@ -21,6 +23,8 @@ elementary Knuth transformations, hence are invariants of the plactic class of a
 * `List.greeneCol_placticEquiv` : Knuth equivalent words have the same Greene column
   invariants (Coq `Greene_col_invar_plactic`).
 -/
+
+@[expose] public section
 
 namespace List
 

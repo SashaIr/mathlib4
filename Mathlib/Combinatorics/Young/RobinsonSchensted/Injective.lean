@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Corners
-import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+public import Mathlib.Combinatorics.Young.Shape.Corners
 
 /-!
 # Reverse insertion and injectivity of the Robinson–Schensted map
@@ -37,6 +39,8 @@ Robinson–Schensted map injective.
   (Coq `RS_bij_1`).
 * `List.RSmap_injective` : the Robinson–Schensted map is injective.
 -/
+
+@[expose] public section
 
 namespace List
 

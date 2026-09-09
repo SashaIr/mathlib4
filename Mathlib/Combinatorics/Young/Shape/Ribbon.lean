@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Combinatorics.Young.Shape.Included
-import Mathlib.Combinatorics.Young.Shape.TrimZeros
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Combinatorics.Young.Shape.Included
+public import Mathlib.Combinatorics.Young.Shape.TrimZeros
 
 /-!
 # Ribbon border strips
@@ -39,6 +41,8 @@ number of rows it occupies.
 * `List.exists_ribbonOn_nil_iff` : a partition is a ribbon over the empty shape exactly
   when it is a hook.
 -/
+
+@[expose] public section
 
 namespace List
 

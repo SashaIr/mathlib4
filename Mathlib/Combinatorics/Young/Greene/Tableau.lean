@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.Young.Tableau.Basic
-import Mathlib.Combinatorics.Young.Greene.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.Young.Greene.Defs
+public import Mathlib.Combinatorics.Young.Tableau.Basic
 
 /-!
 # The Greene invariants of the reading word of a tableau
@@ -24,6 +26,8 @@ sum of the lengths of the `k` first rows of `t`.
 * `List.coordOf t i` : the coordinates (row, column) of the position `i` of the reading
   word.
 -/
+
+@[expose] public section
 
 namespace List
 

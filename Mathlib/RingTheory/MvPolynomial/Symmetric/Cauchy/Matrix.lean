@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.HallInnerProduct
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.HallInnerProduct
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 
 /-!
 # Cauchy kernels and their matrices
@@ -30,6 +32,8 @@ between the Cauchy identity and the Hall scalar product.
   applying a linear map to the second family.
 * `MvPolynomial.hallInner_eq_matrix` : the Hall scalar product in terms of the coordinate matrices.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -117,7 +121,7 @@ lemma schurReprMat_comp [CommRing R]
     conv_lhs => rw [← (schurBasis m n R).sum_repr (v lam)]
     exact Finset.sum_congr rfl fun rho _ => by rw [schurBasis_apply]
   rw [hv, map_sum, map_sum]
-  simp only [map_smul, Finsupp.coe_finset_sum, Finset.sum_apply, Finsupp.coe_smul,
+  simp only [map_smul, Finsupp.coe_finsetSum, Finset.sum_apply, Finsupp.coe_smul,
     Pi.smul_apply, smul_eq_mul, schurReprMat_apply]
 
 /-! ### Cauchy kernels -/

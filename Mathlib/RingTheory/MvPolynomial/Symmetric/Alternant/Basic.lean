@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+module
+
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!
 # Alternants
@@ -25,6 +27,8 @@ weight `r`.
 * `MvPolynomial.alt_eq_zero_of_eq` : an alternant with two equal exponents vanishes.
 * `MvPolynomial.hsymm_mul_alt` : `h_r * alt a = ∑_{|d| = r} alt (a + d)`.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.YoungDiagram
-import Mathlib.Combinatorics.Young.Shape.Included
-import Mathlib.Combinatorics.Young.Shape.NatPartitionConj
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Included
+public import Mathlib.Combinatorics.Young.Shape.NatPartitionConj
+public import Mathlib.Combinatorics.Young.YoungDiagram
 
 /-!
 # Shapes and Mathlib's Young diagrams
@@ -41,28 +43,7 @@ connects both with Mathlib's `Nat.Partition`.
 * `Nat.Partition.youngDiagram_conj` : the conjugate of `Nat.Partition` is the transpose.
 -/
 
-namespace YoungDiagram
-
-/-- The boxes of a Young diagram, row by row. -/
-lemma cells_eq_biUnion (mu : YoungDiagram) :
-    mu.cells = (Finset.range (mu.colLen 0)).biUnion
-      fun r => {r} ×ˢ Finset.range (mu.rowLen r) := by
-  ext ⟨r, c⟩
-  simp only [Finset.mem_biUnion, Finset.mem_range, Finset.mem_product, Finset.mem_singleton,
-    mem_cells]
-  constructor
-  · intro hrc
-    exact ⟨r, mem_iff_lt_colLen.1 (mu.up_left_mem (le_refl r) (Nat.zero_le c) hrc), rfl,
-      mem_iff_lt_rowLen.1 hrc⟩
-  · rintro ⟨i, _, rfl, hc⟩
-    exact mem_iff_lt_rowLen.2 hc
-
-/-- The number of boxes of a Young diagram is the sum of its row lengths. -/
-lemma sum_rowLens (mu : YoungDiagram) : mu.rowLens.sum = mu.card := by
-  conv_rhs => rw [← ofRowLens_to_rowLens_eq_self (μ := mu)]
-  exact (YoungDiagram.card_cellsOfRowLens _).symm
-
-end YoungDiagram
+@[expose] public section
 
 namespace List
 
@@ -227,7 +208,7 @@ boxes. -/
 def listPartEquivYoungDiagramCard (n : ℕ) :
     {p : List ℕ // IsPart p ∧ p.sum = n} ≃ {mu : YoungDiagram // mu.card = n} where
   toFun p := ⟨youngDiagram p.1 p.2.1, by rw [card_youngDiagram, p.2.2]⟩
-  invFun mu := ⟨mu.1.rowLens, isPart_rowLens mu.1, by rw [YoungDiagram.sum_rowLens, mu.2]⟩
+  invFun mu := ⟨mu.1.rowLens, isPart_rowLens mu.1, by rw [← YoungDiagram.card_eq_sum_rowLens, mu.2]⟩
   left_inv p := Subtype.ext (rowLens_youngDiagram p.2.1)
   right_inv mu := Subtype.ext (youngDiagram_rowLens mu.1)
 

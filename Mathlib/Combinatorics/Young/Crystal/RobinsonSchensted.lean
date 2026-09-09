@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Kostka
-import Mathlib.Combinatorics.Young.Crystal.Plactic
-import Mathlib.Combinatorics.Young.Crystal.Tableau
-import Mathlib.Combinatorics.Young.Plactic.Monoid
+module
+
+public import Mathlib.Combinatorics.Young.Crystal.Plactic
+public import Mathlib.Combinatorics.Young.Crystal.Tableau
+public import Mathlib.Combinatorics.Young.Plactic.Monoid
+public import Mathlib.Combinatorics.Young.Tableau.Kostka
 
 /-!
 # The crystal operators, tableaux and the Robinson–Schensted correspondence
@@ -36,6 +38,8 @@ its highest weight element.
 * `List.reflTransGen_tabRaise_superTab` : every tableau is connected to the superstandard
   tableau of its shape by raising operators.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -262,7 +266,8 @@ lemma crystalPhi_toWord_superTabFrom {lam : List ℕ} (h : IsPart lam) (k : ℕ)
         rw [hrow.crystalEps_eq_count, List.count_replicate]
         simp
       have hcount := crystalPhi_le_count k (toWord (superTabFrom (k + 1) lam))
-      rw [count_toWord_superTabFrom, ite_eq_left (show k + 1 ≤ k + 1 by omega), Nat.sub_self] at hcount
+      rw [count_toWord_superTabFrom, ite_eq_left (show k + 1 ≤ k + 1 by omega),
+        Nat.sub_self] at hcount
       rw [heps]
       omega
     · rw [ih hpart (k + 1) i (by omega)]

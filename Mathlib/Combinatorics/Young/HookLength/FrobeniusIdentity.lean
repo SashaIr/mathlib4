@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.HookLength.Formula
+module
+
+public import Mathlib.Combinatorics.Young.HookLength.Formula
 
 /-!
 # The Frobenius identity
@@ -29,6 +31,8 @@ or, dividing by `(n !)²` in the rationals,
 * `List.inv_factorial_eq_sum_inv_sq_hookProd` : its rational form
   (Coq `Frobenius_ident_rat`).
 -/
+
+@[expose] public section
 
 namespace List
 

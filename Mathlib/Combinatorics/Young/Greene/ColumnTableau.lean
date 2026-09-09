@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Greene.ColumnDefs
-import Mathlib.Combinatorics.Young.Greene.Tableau
+module
+
+public import Mathlib.Combinatorics.Young.Greene.ColumnDefs
+public import Mathlib.Combinatorics.Young.Greene.Tableau
 
 /-!
 # The Greene column invariants of the reading word of a tableau
@@ -25,6 +27,8 @@ is the number of boxes of `t` lying in the `k` first columns, that is
 
 * `List.greeneCol_toWord` : the Greene column invariant of the reading word of a tableau.
 -/
+
+@[expose] public section
 
 namespace List
 

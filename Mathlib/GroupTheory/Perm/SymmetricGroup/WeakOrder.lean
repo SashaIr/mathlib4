@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.GroupTheory.Perm.SymmetricGroup.Inversions
+module
+
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Inversions
 
 /-!
 # The right weak order on the symmetric group
@@ -35,6 +37,8 @@ after replacing the permutations by their inverses, the theorem that
   characterisation by inclusion of inversion sets, together with the fact that it is a
   partial order.
 -/
+
+@[expose] public section
 
 open Equiv Finset List
 

@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Standardization
-import Mathlib.Combinatorics.Young.Tableau.Restrict
-import Mathlib.Combinatorics.Young.Word.InverseStandard
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Standardization
+public import Mathlib.Combinatorics.Young.Tableau.Restrict
+public import Mathlib.Combinatorics.Young.Word.InverseStandard
 
 /-!
 # Restricting the inverse of a standard word
@@ -20,6 +22,8 @@ is the inverse of the standardisation of that prefix.
 * `List.std_of_isStd` : a standard word is its own standardisation.
 * `List.ltFilter_invStd` : `ltFilter k (invStd w) = invStd (std (w.take k))`.
 -/
+
+@[expose] public section
 
 namespace List
 

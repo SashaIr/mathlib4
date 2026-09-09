@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 
 /-!
 # The dual Cauchy identity
@@ -29,6 +31,8 @@ strips, which is `List.vertStrip_conjPart_iff`.
   polynomials.
 * `MvPolynomial.dual_cauchy` : the dual Cauchy identity.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

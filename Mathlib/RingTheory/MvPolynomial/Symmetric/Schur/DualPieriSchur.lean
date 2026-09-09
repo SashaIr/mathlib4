@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieri
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Vandermonde
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Vandermonde
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieri
 
 /-!
 # The dual Pieri rule for Schur polynomials
@@ -25,6 +27,8 @@ be cancelled; the statement over an arbitrary commutative semiring follows by ba
 * `MvPolynomial.altPart_nil_ne_zero` : the Vandermonde alternant is nonzero over `ℤ`.
 * `MvPolynomial.schurPoly_mul_esymm` : **the dual Pieri rule**.
 -/
+
+@[expose] public section
 
 open List
 

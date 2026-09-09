@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.Included
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Included
 
 /-!
 # Adding and removing a corner box of a partition
@@ -26,6 +28,8 @@ A Lean 4 port of the corner part of `theories/Combi/partition.v` from
 * `List.decrNth_incrNth` / `List.incrNth_decrNth` : the two operations are
   mutually inverse.
 -/
+
+@[expose] public section
 
 namespace List
 

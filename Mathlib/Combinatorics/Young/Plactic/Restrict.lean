@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Monoid
-import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
-import Mathlib.Combinatorics.Young.Tableau.Restrict
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Monoid
+public import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
+public import Mathlib.Combinatorics.Young.Tableau.Restrict
 
 /-!
 # Restricting a word to its small letters
@@ -25,6 +27,8 @@ word is the restriction of the insertion tableau (Coq `filter_gtnX_RS` in
 * `List.RS_ltFilter` : **`RS (ltFilter N w) = dropMax N (RS w)`**.
 -/
 
+@[expose] public section
+
 namespace List
 
 open List
@@ -41,7 +45,7 @@ lemma placticEquiv_ltFilter_of_placticStep {u v : List ℕ} (h : PlacticStep u v
     · have hy : y < N := hyz.trans hz
       have hx : x < N := lt_of_le_of_lt hxy hy
       simp only [ltFilter, List.filter_append, List.filter_cons, hx, hy, hz, decide_true,
-        if_true]
+        ite_true]
       exact (PlacticStep.knuthAC hxy hyz _ _).plactic
     · simp only [ltFilter, List.filter_append, List.filter_cons, hz, decide_false]
       by_cases hx : x < N <;> by_cases hy : y < N <;>
@@ -51,7 +55,7 @@ lemma placticEquiv_ltFilter_of_placticStep {u v : List ℕ} (h : PlacticStep u v
     · have hy : y < N := lt_of_le_of_lt hyz hz
       have hx : x < N := hxy.trans hy
       simp only [ltFilter, List.filter_append, List.filter_cons, hx, hy, hz, decide_true,
-        if_true]
+        ite_true]
       exact (PlacticStep.knuthCA hxy hyz _ _).plactic
     · simp only [ltFilter, List.filter_append, List.filter_cons, hz, decide_false]
       by_cases hx : x < N <;> by_cases hy : y < N <;>

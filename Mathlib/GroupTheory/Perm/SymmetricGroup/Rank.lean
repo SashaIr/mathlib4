@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Fintype.Fin
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # The rank function of a permutation
@@ -32,6 +34,8 @@ order, which is done in `Mathlib/GroupTheory/Perm/SymmetricGroup/Bruhat.lean`.
 * `Equiv.Perm.permRank_revPerm_mul`, `Equiv.Perm.permRank_mul_revPerm` : the rank functions of
   `Fin.revPerm * s` and of `s * Fin.revPerm`.
 -/
+
+@[expose] public section
 
 open Equiv Finset
 

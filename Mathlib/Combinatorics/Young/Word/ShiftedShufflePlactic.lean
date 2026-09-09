@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Map
-import Mathlib.Combinatorics.Young.Plactic.Restrict
-import Mathlib.Combinatorics.Young.Plactic.RestrictGe
-import Mathlib.Combinatorics.Young.Word.ShiftedShuffle
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Map
+public import Mathlib.Combinatorics.Young.Plactic.Restrict
+public import Mathlib.Combinatorics.Young.Plactic.RestrictGe
+public import Mathlib.Combinatorics.Young.Word.ShiftedShuffle
 
 /-!
 # Schützenberger's theorem: the shifted shuffle is compatible with the plactic congruence
@@ -29,6 +31,8 @@ for the free Schur functions.
 * `List.exists_placticEquiv_mem_shsh` : **Schützenberger's theorem** (Coq
   `Schutzenberger_shuffle_plact`).
 -/
+
+@[expose] public section
 
 namespace List
 

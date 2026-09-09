@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSumBasis
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSumBasis
 
 /-!
 # The Hall scalar product
@@ -27,6 +29,8 @@ dual bases for it.
   `x^mu` in `f`.
 * `MvPolynomial.hallInner_hSub_mSub` : the bases `h` and `m` are dual to each other.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

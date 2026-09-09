@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
 
 /-!
 # The plactic monoid
@@ -34,6 +36,8 @@ equivalent to the reading word of its Robinson–Schensted insertion tableau (Co
   insertion tableau (Coq `congr_RS`).
 * `List.plactic_of_RS_eq` : words with the same insertion tableau are Knuth equivalent.
 -/
+
+@[expose] public section
 
 namespace List
 

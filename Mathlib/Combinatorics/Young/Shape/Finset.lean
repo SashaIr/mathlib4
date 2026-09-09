@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.NatPartition
+module
+
+public import Mathlib.Combinatorics.Young.Shape.NatPartition
 
 /-!
 # Partitions as a finite set of lists
@@ -18,6 +20,8 @@ partitions of size at most `N`.
 * `List.partFinset n` : the partitions of `n`.
 * `List.partFinsetLe N` : the partitions of size at most `N`.
 -/
+
+@[expose] public section
 
 namespace List
 

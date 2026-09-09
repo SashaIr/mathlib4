@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Tableau.Basic
-import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
+module
+
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
+public import Mathlib.Combinatorics.Young.Tableau.Basic
 
 /-!
 # The Robinson–Schensted insertion tableau
@@ -34,6 +36,8 @@ the Schensted row `List.schensted w`.
 * `List.RS_first_row_isGreatest` : the length of the first row of `List.RS w` is the
   maximal length of a nondecreasing subsequence of `w`.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Shape.ConjugateEquiv
-import Mathlib.Combinatorics.Young.Shape.NatPartition
-import Mathlib.Combinatorics.Young.Shape.Dominance
+module
+
+public import Mathlib.Combinatorics.Young.Shape.ConjugateEquiv
+public import Mathlib.Combinatorics.Young.Shape.Dominance
+public import Mathlib.Combinatorics.Young.Shape.NatPartition
 
 /-!
 # Conjugation of Mathlib's integer partitions
@@ -30,6 +32,8 @@ diagram of `p`.
   bijection with the partitions of `n` whose parts are all at most `k`.
 * `Nat.Partition.partdom_conj_iff` : conjugation reverses the dominance order.
 -/
+
+@[expose] public section
 
 namespace Nat.Partition
 

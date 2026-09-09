@@ -3,10 +3,12 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Greene.ColumnInvariance
-import Mathlib.Combinatorics.Young.Greene.ColumnTableau
-import Mathlib.Combinatorics.Young.Greene.Theorem
-import Mathlib.Combinatorics.Young.RobinsonSchensted.ColumnInsertion
+module
+
+public import Mathlib.Combinatorics.Young.Greene.ColumnInvariance
+public import Mathlib.Combinatorics.Young.Greene.ColumnTableau
+public import Mathlib.Combinatorics.Young.Greene.Theorem
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.ColumnInsertion
 
 /-!
 # Greene's theorem for columns
@@ -26,6 +28,8 @@ shape of the Robinson-Schensted tableau `List.RS w`.
 * `List.greeneCol_one` : the case `k = 1` recovers the dual of Schensted's theorem, the
   invariant `greeneCol w 1` is the maximal length of a strictly decreasing subsequence.
 -/
+
+@[expose] public section
 
 namespace List
 

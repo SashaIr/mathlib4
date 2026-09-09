@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Cauchy.Matrix
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Cauchy.PowerSum
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Cauchy.Matrix
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Cauchy.PowerSum
 
 /-!
 # Orthogonality of the power sums
@@ -17,6 +19,8 @@ sums are orthogonal for the Hall scalar product, with `⟨p_lam, p_lam⟩ = z_la
 
 * `MvPolynomial.hallInner_pSub` : `⟨p_lam, p_mu⟩ = z_lam` if `lam = mu` and `0` otherwise.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
@@ -84,7 +88,7 @@ lemma eq_sum_hallInner_smul_of_dual [CommRing R]
     mul_eq_one_comm.2 (mul_transpose_eq_one_of_hallInner_dual u v h)
   refine (schurBasis m n R).repr.injective (Finsupp.ext fun nu => ?_)
   rw [map_sum]
-  simp only [Finsupp.coe_finset_sum, Finset.sum_apply, map_smul, Finsupp.coe_smul,
+  simp only [Finsupp.coe_finsetSum, Finset.sum_apply, map_smul, Finsupp.coe_smul,
     Pi.smul_apply, smul_eq_mul]
   have hterm : ∀ lam : PartIdx n m,
       hallInner m n R f (v lam) * (schurBasis m n R).repr (u lam) nu

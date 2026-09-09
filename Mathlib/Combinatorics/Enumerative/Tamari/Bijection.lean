@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Tamari.Vector
+module
+
+public import Mathlib.Combinatorics.Enumerative.Tamari.Vector
 
 /-!
 # Binary trees are in bijection with Tamari vectors
@@ -33,6 +35,8 @@ is what the auxiliary operation `Tree.catLeft` does.
   between binary trees and Tamari vectors, and between the trees with `n` nodes and the
   Tamari vectors of length `n` (Coq `bintreeoftype_TamariVector_bij`).
 -/
+
+@[expose] public section
 
 namespace List
 

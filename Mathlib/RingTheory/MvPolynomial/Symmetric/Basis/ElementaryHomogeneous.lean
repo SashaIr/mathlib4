@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
+module
+
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
 
 /-!
 # The relation between the elementary and the complete homogeneous symmetric polynomials
@@ -26,6 +28,8 @@ vanishes because the support of `e` is nonempty.
 * `MvPolynomial.indicVec S` : the `0-1` exponent vector of a finite set of variables.
 * `MvPolynomial.sum_neg_one_pow_esymm_mul_hsymm` : the relation above.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

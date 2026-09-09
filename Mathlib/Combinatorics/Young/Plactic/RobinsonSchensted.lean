@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Basic
 
 /-!
 # Knuth equivalent words have the same insertion tableau
@@ -38,6 +40,8 @@ related by (at most) one elementary Knuth transformation.
 * `List.placticEquiv_iff_RS_eq` : two words are Knuth equivalent if and only if they have
   the same insertion tableau.
 -/
+
+@[expose] public section
 
 namespace List
 

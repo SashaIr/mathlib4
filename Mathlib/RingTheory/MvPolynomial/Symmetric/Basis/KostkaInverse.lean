@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneous
 
 /-!
 # Inverse Kostka numbers
@@ -33,6 +35,8 @@ polynomials.
 * `MvPolynomial.schurPoly_eq_sum_kostkaInv` : `s_lam = ∑_mu K⁻¹_{lam mu} h_mu`, over any
   commutative ring and in any number of variables.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

@@ -3,7 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Basic
+
+import Mathlib.Tactic.Ring
 
 /-!
 # Power sums and alternants
@@ -23,6 +27,8 @@ the alternant by `(-1) ^ (k - j)`.
 * `MvPolynomial.alt_moveVec` : `alt b = (-1) ^ (k - j) • alt (moveVec b j k)`.
 * `MvPolynomial.sum_moveVec` : moving an entry does not change the sum of the entries.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

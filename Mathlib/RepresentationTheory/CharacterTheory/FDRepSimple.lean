@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RepresentationTheory.FinGroupCharZero
-import Mathlib.RepresentationTheory.Irreducible
+module
+
+public import Mathlib.RepresentationTheory.FinGroupCharZero
+public import Mathlib.RepresentationTheory.Irreducible
 
 /-!
 # Simple objects of `FDRep` and decomposition of characters
@@ -27,6 +29,8 @@ symmetric group; it is proved here.
 * `FDRep.exists_subrepresentation_of_not_simple` : conversely, a nonzero object of
   `FDRep k G` which is not simple has a subrepresentation other than `⊥` and `⊤`.
 -/
+
+@[expose] public section
 
 namespace FDRep
 

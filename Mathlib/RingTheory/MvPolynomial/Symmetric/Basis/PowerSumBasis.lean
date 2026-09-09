@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSum
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.PowerSum
 
 /-!
 # The basis of products of power sums
@@ -29,6 +31,8 @@ in two variables, so the `p_lam` do not form a basis over `ℤ`.)
 * `MvPolynomial.span_pProd` : the `p_lam` span the symmetric homogeneous polynomials.
 * `MvPolynomial.pBasis` : the resulting basis.
 -/
+
+@[expose] public section
 
 open List
 

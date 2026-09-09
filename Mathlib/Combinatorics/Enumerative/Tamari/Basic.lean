@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Rotations of binary trees and the Tamari order
@@ -35,6 +37,8 @@ the smallest element.
 * `Tree.tamariLE_flipTree_iff` : mirroring a binary tree reverses the Tamari order (Coq
   `rotations_flip`).
 -/
+
+@[expose] public section
 
 namespace BinaryTree
 

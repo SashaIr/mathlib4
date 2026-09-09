@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Greene.Theorem
-import Mathlib.Combinatorics.Young.Word.Standardization
+module
+
+public import Mathlib.Combinatorics.Young.Greene.Theorem
+public import Mathlib.Combinatorics.Young.Word.Standardization
 
 /-!
 # The inverse of a standard word
@@ -32,6 +34,8 @@ of `i` in `w`.
 * `List.shape_RS_invStd` : consequently, a standard word and its inverse have Robinson–
   Schensted tableaux of the same shape.
 -/
+
+@[expose] public section
 
 namespace List
 

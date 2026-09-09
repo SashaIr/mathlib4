@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.SymmetricFunctions.Basic
+module
+
+public import Mathlib.RingTheory.SymmetricFunctions.Basic
 
 /-!
 # The ring of symmetric functions is a graded algebra
@@ -24,6 +26,8 @@ uniquely a finite sum of homogeneous ones.
   direct sum of its homogeneous parts**.
 * `SymFunc.symFuncGradedAlgebra` : **the ring of symmetric functions is a graded algebra**.
 -/
+
+@[expose] public section
 
 namespace SymFunc
 

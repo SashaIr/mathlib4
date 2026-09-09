@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.Plactic.Basic
+module
+
+public import Mathlib.Combinatorics.Young.Plactic.Basic
 
 /-!
 # Restricting a word to its large letters
@@ -21,6 +23,8 @@ the counterpart, for upper sets, of
 * `List.placticEquiv_filter_of_isUpperSet` : Knuth equivalent words have Knuth equivalent
   restrictions to an upper set of letters.
 -/
+
+@[expose] public section
 
 namespace List
 

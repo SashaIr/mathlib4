@@ -3,7 +3,9 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.SetTheory.Cardinal.NatCard
+module
+
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Bijections between fibered sets
@@ -22,6 +24,8 @@ bijection *fiberwise*, that is by a bijection commuting with the two maps.
 * `Fintype.exists_bijOn_of_card_fiber_eq` : the same statement for two finite subsets of two
   types, in the form of a `Set.BijOn` (Coq `fbbijP`).
 -/
+
+@[expose] public section
 
 namespace Fintype
 

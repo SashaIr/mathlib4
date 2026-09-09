@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.Combinatorics.Young.Shape.Finset
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Monomial
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LinearIndependent
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
+module
+
+public import Mathlib.Combinatorics.Young.Shape.Finset
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Monomial
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LinearIndependent
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
 
 /-!
 # The Schur polynomials form a basis of the symmetric polynomials
@@ -31,6 +33,8 @@ monomial symmetric polynomial is a combination of Schur polynomials
   parts span the symmetric homogeneous polynomials of degree `n`.
 * `MvPolynomial.schurBasis` : the corresponding basis.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

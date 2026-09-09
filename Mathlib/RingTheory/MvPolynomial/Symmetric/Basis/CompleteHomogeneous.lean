@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Pieri
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basis
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basis
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Pieri
 
 /-!
 # The products of complete homogeneous symmetric polynomials form a basis
@@ -25,6 +27,8 @@ homogeneous polynomials of degree `n` in `m` variables.
 * `MvPolynomial.span_hProd` : they span the symmetric homogeneous polynomials of degree `n`.
 * `MvPolynomial.hBasis` : the resulting basis.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

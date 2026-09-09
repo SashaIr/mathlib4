@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Enumerative.Partition.Basic
-import Mathlib.Combinatorics.Young.Shape.Basic
+module
+
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Combinatorics.Young.Shape.Basic
 
 /-!
 # Comparison with Mathlib's partitions
@@ -23,6 +25,8 @@ is a bijection from Mathlib's partitions of `n` onto the list-based partitions o
 * `List.listPartEquivNatPartition` : the list-based partitions of `n` are in bijection
   with `Nat.Partition n`.
 -/
+
+@[expose] public section
 
 namespace List
 

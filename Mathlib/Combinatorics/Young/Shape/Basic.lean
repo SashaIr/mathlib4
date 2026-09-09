@@ -3,8 +3,10 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.Data.List.GetD
 
 /-!
 # Integer partitions and shapes
@@ -32,6 +34,8 @@ Everywhere, the `i`-th part of a shape `sh` is `sh.getD i 0`, which is `0` when
 * `List.IsPart.ext_getD` : two partitions with the same parts are equal.
 * `List.IsPart.length_le_sum`, `List.IsPart.sum_le_headD_mul_length` : size bounds.
 -/
+
+@[expose] public section
 
 namespace List
 

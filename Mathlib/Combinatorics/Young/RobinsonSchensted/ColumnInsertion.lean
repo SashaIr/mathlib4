@@ -3,11 +3,13 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Data.List.Sublists
-import Mathlib.Tactic.Order
-import Mathlib.Tactic.Ring
-import Mathlib.Combinatorics.Young.Plactic.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Combinatorics.Young.Plactic.Basic
+public import Mathlib.Data.List.Sublists
+public import Mathlib.Tactic.Order
+public import Mathlib.Tactic.Ring
 
 /-!
 # The number of rows of the insertion tableau
@@ -38,6 +40,8 @@ strictly decreasing subsequence meets each row at most once).
 * `List.length_le_mul_schensted` : a word is no longer than the product of the lengths of
   its longest nondecreasing and longest strictly decreasing subsequences.
 -/
+
+@[expose] public section
 
 namespace List
 

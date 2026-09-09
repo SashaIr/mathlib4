@@ -3,9 +3,11 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
-import Mathlib.Combinatorics.Young.SemistandardTableau
-import Mathlib.Combinatorics.Young.Tableau.Basic
-import Mathlib.Combinatorics.Young.Shape.YoungDiagram
+module
+
+public import Mathlib.Combinatorics.Young.SemistandardTableau
+public import Mathlib.Combinatorics.Young.Shape.YoungDiagram
+public import Mathlib.Combinatorics.Young.Tableau.Basic
 
 /-!
 # Tableaux and Mathlib's semistandard Young tableaux
@@ -33,6 +35,8 @@ semistandard Young tableau.
 * `List.entry_tableauOfSSYT` : the entries are preserved by the dictionary.
 * `List.sizeTab_eq_card` : the number of boxes agrees.
 -/
+
+@[expose] public section
 
 namespace List
 
