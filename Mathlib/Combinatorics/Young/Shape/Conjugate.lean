@@ -101,13 +101,11 @@ lemma isPart_replicate_one (n : ℕ) : IsPart (List.replicate n 1) := by
 /-- Coq `is_part_incr_first_n`. -/
 lemma IsPart.incrFirstN {sh : List ℕ} (h : IsPart sh) (n : ℕ) : IsPart (incrFirstN sh n) := by
   rw [isPart_iff_getD_pos]
-  constructor
-  · intro i
-    rw [getD_incrFirstN, getD_incrFirstN]
+  refine ⟨fun i ↦ ?_, fun i hi ↦ ?_⟩
+  · rw [getD_incrFirstN, getD_incrFirstN]
     have hmono := h.getD_succ_le i
     split_ifs with h1 h2 h2 <;> omega
-  · intro i hi
-    rw [length_incrFirstN] at hi
+  · rw [length_incrFirstN] at hi
     rw [getD_incrFirstN]
     split_ifs with h1
     · omega
@@ -143,13 +141,11 @@ lemma length_conjPart {sh : List ℕ} (h : IsPart sh) : (conjPart sh).length = s
   induction sh with
   | nil => simp
   | cons a s ih =>
-    have hs : (conjPart s).length = s.headD 0 := ih h.2
     have hhead : s.headD 0 ≤ a := by
       cases s with
       | nil => simp
       | cons b t => simpa using h.1
-    simp only [conjPart_cons, length_incrFirstN, hs, List.headD_cons]
-    omega
+    aesop
 
 /-- Coq `conj_nseq`. -/
 lemma conjPart_replicate_one {n : ℕ} (hn : 0 < n) : conjPart (List.replicate n 1) = [n] := by
@@ -193,21 +189,13 @@ lemma inShape_conjPart {sh : List ℕ} (h : IsPart sh) (r c : ℕ) :
     cases r with
     | zero =>
       simp only [InShape, hval, List.getD_cons_zero]
-      constructor
-      · intro hca; simp [hca]
-      · intro hpos
-        by_contra hca
-        rw [ite_eq_right hca, hzero hca] at hpos
-        omega
+      refine ⟨fun hca ↦ by simp [hca], fun hpos ↦ by aesop⟩
     | succ k =>
       have hIH := ih hs k c
       simp only [InShape, hval, List.getD_cons_succ] at hIH ⊢
       by_cases hca : c < a
       · rw [ite_eq_left hca]; omega
-      · rw [ite_eq_right hca, hzero hca]
-        simp only [Nat.add_zero]
-        rw [hzero hca] at hIH
-        omega
+      · rw [ite_eq_right hca, hzero hca]; aesop
 
 /-- Coq `conj_leqE`. -/
 lemma getD_le_conjPart_iff {sh : List ℕ} (h : IsPart sh) (i j : ℕ) :

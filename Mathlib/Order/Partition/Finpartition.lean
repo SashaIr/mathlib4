@@ -839,7 +839,7 @@ noncomputable instance instLattice : Lattice (Finpartition s) := Finite.toLattic
 /-- The join of two partitions is the finest partition coarser than both. -/
 theorem sup_eq_iff {P Q R : Finpartition s} :
     P ⊔ Q = R ↔ P ≤ R ∧ Q ≤ R ∧ ∀ T : Finpartition s, P ≤ T → Q ≤ T → R ≤ T := by
-  constructor
+  refine ⟨?_, ?_⟩
   · rintro rfl
     exact ⟨le_sup_left, le_sup_right, fun _ h h' => sup_le h h'⟩
   · rintro ⟨hP, hQ, hmin⟩
