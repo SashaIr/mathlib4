@@ -3,6 +3,7 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Combinatorics.Young.Tableau.StandardYamanouchi
 import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
 
@@ -193,7 +194,8 @@ theorem placticMonoidEquivTableau_mul (a b : PlacticMonoid T) :
 
 /-- The plactic monoid is isomorphic, as a monoid, to the tableaux with the plactic
 product. -/
-def placticMonoidMulEquivTableau : PlacticMonoid T ≃* {t : List (List T) // IsTableau t} :=
+def placticMonoidMulEquivTableau :
+  MulEquiv (PlacticMonoid T) {t : List (List T) // IsTableau t} :=
   { placticMonoidEquivTableau with
     map_mul' := fun a b => Subtype.ext (placticMonoidEquivTableau_mul a b) }
 
