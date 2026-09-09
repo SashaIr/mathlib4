@@ -220,8 +220,11 @@ lemma degree_mapDomain {alpha beta : Type*} (f : alpha → beta) (d : alpha →�
     (Finsupp.mapDomain f d).degree = d.degree := by
   classical
   have h1 : (Finsupp.mapDomain f d).degree = (Finsupp.mapDomain f d).sum fun _ v => v := by
-    simp [Finsupp.degree, Finsupp.sum]
-  have h2 : d.degree = d.sum fun _ v => v := by simp [Finsupp.degree, Finsupp.sum]
+    change ∑ i ∈ (Finsupp.mapDomain f d).support, (Finsupp.mapDomain f d) i = _
+    rfl
+  have h2 : d.degree = d.sum fun _ v => v := by
+    change (∑ i ∈ d.support, d i) = _
+    rfl
   rw [h1, h2, Finsupp.sum_mapDomain_index (fun _ => rfl) (fun _ _ _ => rfl)]
 
 /-- The homogeneous components of a symmetric polynomial are symmetric. -/
