@@ -134,7 +134,7 @@ theorem isHomogeneous_schurPoly [Fintype σ] (sh : List ℕ) :
     have h := Finsupp.card_toMultiset (Multiset.toFinsupp (toWord T.1 : Multiset σ))
     rw [Multiset.toFinsupp_toMultiset] at h
     rw [h, Finsupp.degree]
-    simp [Finsupp.sum]
+    rfl
   rw [hdeg]
   simpa using hlen
 
