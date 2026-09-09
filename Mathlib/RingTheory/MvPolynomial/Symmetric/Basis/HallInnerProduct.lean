@@ -47,7 +47,7 @@ lemma isHomogeneous_monomialSym [CommSemiring R] {lam : List ℕ} (hlam : IsPart
   rw [Finsupp.degree]
   have h1 : ∑ i ∈ d.support, d i = ∑ i : Fin m, d i :=
     Finset.sum_subset (Finset.subset_univ _) fun i _ hi => Finsupp.notMem_support_iff.1 hi
-  simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  change (∑ i ∈ d.support, d i) = n
   rw [h1, sum_eq_of_mem_degOrbit_shapeContent hlam hlen hd, hsum]
 
 lemma monomialSym_mem_symHomogeneousSubmodule [CommRing R] (lam : PartIdx n m) :

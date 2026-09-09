@@ -43,7 +43,7 @@ abbrev PartIdx (n m : ℕ) : Type := {p : List ℕ // IsPart p ∧ p.sum = n ∧
 
 /-- The submodule of the symmetric homogeneous polynomials of degree `n` in `m`
 variables. -/
-def symHomogeneousSubmodule (m n : ℕ) (R : Type*) [CommSemiring R] :
+noncomputable def symHomogeneousSubmodule (m n : ℕ) (R : Type*) [CommSemiring R] :
     Submodule R (MvPolynomial (Fin m) R) :=
   homogeneousSubmodule (Fin m) R n ⊓ (symmetricSubalgebra (Fin m) R).toSubmodule
 

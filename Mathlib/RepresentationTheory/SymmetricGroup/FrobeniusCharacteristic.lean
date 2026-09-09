@@ -176,6 +176,8 @@ theorem frobChar_indProd (k : ℕ) {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : P
         fun sigma => ?_
       simp only [Equiv.trans_apply, Equiv.coe_mulLeft, Equiv.coe_mulRight,
         cycleTypeList_conj sigma tau]
+      refine Finset.sum_congr rfl fun x _ => ?_
+      by_cases hx : tinj m n x = tau⁻¹ * sigma * tau <;> simp [hx]
     rw [h1, Finset.sum_comm]
     refine Finset.sum_congr rfl fun x _ => ?_
     simp only [ite_smul, zero_smul]
@@ -292,9 +294,14 @@ product `h_l = h_{l_1} ⋯ h_{l_r}` of complete homogeneous symmetric polynomial
 theorem frobChar_indTrivYoung (k : ℕ) (l : List ℕ) :
     frobChar k (indTrivYoung l) = hProd k ℚ l := by
   induction l with
-  | nil => simpa using frobChar_one k 0
+  | nil => simpa [indTrivYoung] using frobChar_one k 0
   | cons a t ih =>
-    rw [indTrivYoung, frobChar_indProd, frobChar_one, ih, hProd, hProd, List.map_cons,
+    rw [indTrivYoung]
+    change frobChar k (indProd (fun _ : Perm (Fin a) => (1 : ℚ))
+      (fun x : Perm (Fin t.sum) => indTrivYoung t x)) = _
+    rw [frobChar_indProd (k := k) (m := a) (n := t.sum)
+      (f := fun _ => 1) (g := fun x => indTrivYoung t x),
+      frobChar_one, ih, hProd, hProd, List.map_cons,
       List.prod_cons]
 
 end Equiv.Perm

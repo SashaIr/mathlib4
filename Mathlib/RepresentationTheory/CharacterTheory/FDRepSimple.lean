@@ -41,10 +41,9 @@ variable {k G V W : Type u} [Field k] [Group G] [AddCommGroup V] [Module k V]
 
 /-- The morphisms `FDRep.of ρ ⟶ FDRep.of σ` are exactly the intertwining maps from `ρ` to
 `σ`. -/
-def fdrepHomEquivIntertwiningMap (ρ : Representation k G V) (σ : Representation k G W) :
+noncomputable def fdrepHomEquivIntertwiningMap (ρ : Representation k G V) (σ : Representation k G W) :
     (FDRep.of ρ ⟶ FDRep.of σ) ≃ₗ[k] IntertwiningMap ρ σ where
-  toFun f := ⟨f.hom.hom.hom, fun g v => by
-    simpa using congrArg (fun u : (FDRep.of ρ).V ⟶ (FDRep.of σ).V => u.hom.hom v) (f.comm g)⟩
+  toFun f := ⟨f.hom.hom.hom, fun g => f.hom.hom.isIntertwining' g⟩
   invFun f := ⟨FGModuleCat.ofHom f.toLinearMap, by
     intro g
     ext v

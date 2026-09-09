@@ -66,7 +66,7 @@ lemma exists_perm_of_degMultiset_eq {d d' : Fin m →₀ ℕ} (h : degMultiset d
     have hc := congrArg (Multiset.count n) h
     rw [degMultiset, degMultiset, Multiset.count_map, Multiset.count_map] at hc
     rw [Fintype.card_subtype, Fintype.card_subtype]
-    simpa [eq_comm] using hc
+    simpa [Finset.filter, eq_comm] using hc
   let e0 : (Σ n : ℕ, {i : Fin m // d i = n}) ≃ (Σ n : ℕ, {i : Fin m // d' i = n}) :=
     Equiv.sigmaCongrRight fun n => Fintype.equivOfCardEq (hcard n)
   exact ⟨(Equiv.sigmaFiberEquiv (d : Fin m → ℕ)).symm.trans
