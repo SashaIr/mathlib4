@@ -320,7 +320,7 @@ lemma rowIdx_spec {Q : List (List ℕ)} {k : ℕ} (h : ∃ r ∈ Q, k ∈ r) :
   · have := List.findIdx_getElem (p := fun r => decide (k ∈ r)) (xs := Q) (w := hlt)
     rw [List.getD_eq_getElem _ _ hlt]
     change k ∈ Q[rowIdx Q k]
-    exact this
+    exact of_decide_eq_true this
   · intro j hj
     have := List.not_of_lt_findIdx (p := fun r => decide (k ∈ r)) (xs := Q) hj
     rw [List.getD_eq_getElem _ _ (by omega)]
