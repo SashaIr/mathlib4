@@ -56,7 +56,7 @@ lemma IsTamariVector.take_of_cons {v0 : ℕ} {v : List ℕ} (h : IsTamariVector 
   obtain ⟨-, h2⟩ := isTamariVector_iff.1 htail
   have hlent : (v.take v0).length = v0 := by simp [hlen]
   have hget : ∀ i < v0, (v.take v0).getD i 0 = v.getD i 0 := fun i hi => by
-    simp only [List.getD_eq_getElem?_getD, List.getElem?_take, hi, if_true]
+    simp only [List.getD_eq_getElem?_getD, List.getElem?_take, hi, ite_true]
   rw [isTamariVector_iff]
   refine ⟨fun i hi => ?_, fun i j hij hj => ?_⟩
   · rw [hlent] at hi ⊢
@@ -99,7 +99,7 @@ lemma catLeft_assoc (a b c : BinaryTree Unit) :
   | node x l r ihl _ => cases x; simp [ihl]
 
 /-- Grafting concatenates the vectors of the sizes of the right subtrees. -/
-@[simp] lemma rightSizes_catLeft (a b : Tree Unit) :
+@[simp] lemma rightSizes_catLeft (a b : BinaryTree Unit) :
     List.rightSizes (catLeft a b) = List.rightSizes a ++ List.rightSizes b := by
   induction b with
   | nil => simp
@@ -203,8 +203,8 @@ decreasing_by
 
 /-- **Binary trees with `n` nodes are in bijection with Tamari vectors of length `n`**
 (Coq `bintreeoftype_TamariVector_bij`). -/
-def equivTamariVectorOfCard (n : ℕ) :
-    {t : BinaryTree Unit // t.numNodes = n} ≃ {v : List ℕ // List.IsTamariVector v ∧ v.length = n} :=
+def equivTamariVectorOfCard (n : ℕ) : {t : BinaryTree Unit // t.numNodes = n} ≃
+    {v : List ℕ // List.IsTamariVector v ∧ v.length = n} :=
   (equivTamariVector.subtypeEquiv (fun t => by
     simp only [equivTamariVector_apply_coe, List.length_rightSizes])).trans
     (Equiv.subtypeSubtypeEquivSubtypeInter _ _)

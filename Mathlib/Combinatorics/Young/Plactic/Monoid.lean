@@ -123,6 +123,7 @@ instance tableauMonoid : Monoid {t : List (List T) // IsTableau t} where
 /-! ### The plactic monoid -/
 
 /-- Knuth equivalence as a setoid on words. -/
+@[instance_reducible]
 def placticSetoid (T : Type*) [LinearOrder T] : Setoid (List T) where
   r := PlacticEquiv
   iseqv := ⟨PlacticEquiv.refl, PlacticEquiv.symm, PlacticEquiv.trans⟩

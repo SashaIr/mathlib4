@@ -167,8 +167,8 @@ theorem rightSizesSum_le_of_tamariLE {t u : BinaryTree Unit} (h : TamariLE t u) 
 
 /-- Two distinct comparable trees have distinct sums of the sizes of the right
 subtrees. -/
-theorem rightSizesSum_lt_of_tamariLE_of_ne {t u : BinaryTree Unit} (h : TamariLE t u) (hne : t ≠ u) :
-    rightSizesSum t < rightSizesSum u := by
+theorem rightSizesSum_lt_of_tamariLE_of_ne {t u : BinaryTree Unit} (h : TamariLE t u)
+    (hne : t ≠ u) : rightSizesSum t < rightSizesSum u := by
   rcases Relation.reflTransGen_iff_eq_or_transGen.1 h with rfl | h
   · exact absurd rfl hne
   · clear hne
@@ -186,6 +186,7 @@ theorem tamariLE_antisymm {t u : BinaryTree Unit} (htu : TamariLE t u) (hut : Ta
   omega
 
 /-- The Tamari order is a partial order on binary trees. -/
+@[instance_reducible]
 def tamariPartialOrder : PartialOrder (BinaryTree Unit) where
   le := TamariLE
   le_refl := tamariLE_refl
@@ -223,7 +224,8 @@ def combRight : ℕ → BinaryTree Unit
 
 /-- A tree admits no rotation exactly when it is a right comb (Coq
 `rightcomb_rotationsE`). -/
-theorem rotations_eq_nil_iff {t : BinaryTree Unit} : rotations t = [] ↔ t = combRight t.numNodes := by
+theorem rotations_eq_nil_iff {t : BinaryTree Unit} : rotations t = [] ↔
+    t = combRight t.numNodes := by
   constructor
   · intro h
     induction t with
@@ -231,7 +233,8 @@ theorem rotations_eq_nil_iff {t : BinaryTree Unit} : rotations t = [] ↔ t = co
     | node a l r ihl ihr =>
       cases a
       rw [rotations_node] at h
-      have hnil : ∀ s : List (BinaryTree Unit), ∀ u : List (BinaryTree Unit), s ++ u = [] → s = [] ∧ u = [] :=
+      have hnil : ∀ s : List (BinaryTree Unit), ∀ u :
+          List (BinaryTree Unit), s ++ u = [] → s = [] ∧ u = [] :=
         fun s u hsu => List.append_eq_nil_iff.1 hsu
       obtain ⟨hroot, hrest⟩ := hnil _ _ h
       obtain ⟨hl, hr⟩ := hnil _ _ hrest

@@ -319,7 +319,6 @@ theorem sum_alt_badSet {a : Fin m → ℕ} (ha : Antitone a) (r : ℕ) :
       exact this.symm
     exact hne0 (alt_eq_zero_of_eq hIJ hvalue)
   · intro d hd
-    change flipFinsupp a (flipFinsupp a d) = d
     have hfl := add_flipFinsupp ha (flipFinsupp a d)
     rw [add_flipFinsupp ha d, flipPerm_comp] at hfl
     have hsq : ((a + ⇑d) ∘ (flipPerm a (a + ⇑d))) ∘ (flipPerm a (a + ⇑d)) = a + ⇑d := by

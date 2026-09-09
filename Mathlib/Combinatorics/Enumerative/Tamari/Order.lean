@@ -208,7 +208,8 @@ lemma exists_mem_rotations_root {l r : BinaryTree Unit} {i : ℕ}
       intro z c
       rw [← hlenx]
       exact getD_append_cons_self
-    have hnn : ∀ z w : BinaryTree Unit, (BinaryTree.node () z w).numNodes = z.numNodes + w.numNodes + 1 := by
+    have hnn : ∀ z w : BinaryTree Unit, (BinaryTree.node () z w).numNodes =
+        z.numNodes + w.numNodes + 1 := by
       intro z w
       simp only [BinaryTree.numNodes]
     rw [rightSizes_node] at heq hne
@@ -255,7 +256,8 @@ theorem exists_mem_rotations_rightSizes_eq :
     intro i h
     have hlenl : (rightSizes l).length = l.numNodes := length_rightSizes l
     have hlenr : (rightSizes r).length = r.numNodes := length_rightSizes r
-    have hv : rightSizes (BinaryTree.node () l r) = rightSizes l ++ r.numNodes :: rightSizes r := rfl
+    have hv : rightSizes (BinaryTree.node () l r) =
+        rightSizes l ++ r.numNodes :: rightSizes r := rfl
     rw [hv] at h ⊢
     have hlenv : (rightSizes l ++ r.numNodes :: rightSizes r).length
         = l.numNodes + 1 + r.numNodes := by

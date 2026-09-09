@@ -67,7 +67,6 @@ lemma getD_eq_card_filter_of_isStd {u : List ℕ} (hu : IsStd u) {i : ℕ} (hi :
       exact ⟨hu.getD_lt hj.1, hj.2⟩
     · intro j hj j' hj' hjj
       simp only [Finset.mem_filter, Finset.mem_range] at hj hj'
-      simp only [] at hjj
       rw [List.getD_eq_getElem _ _ hj.1, List.getD_eq_getElem _ _ hj'.1] at hjj
       exact (Nodup.getElem_inj_iff hu.nodup).mp hjj
     · intro m hm
