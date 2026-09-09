@@ -240,7 +240,7 @@ lemma getD_yamTabAux (d : ℕ) (sh : List ℕ) (i : ℕ) :
 copies of the letter `i`. -/
 lemma getD_yamTab (sh : List ℕ) (i : ℕ) :
     (yamTab sh).getD i [] = List.replicate (sh.getD i 0) i := by
-  simpa using getD_yamTabAux 0 sh i
+  simpa [yamTab] using getD_yamTabAux 0 sh i
 
 lemma hyperYamRev_concat (l : List ℕ) (m : ℕ) :
     hyperYamRev (l ++ [m]) = (hyperYamRev l).map (· + 1) ++ List.replicate m 0 := by
@@ -265,7 +265,7 @@ lemma toWord_yamTabAux (d : ℕ) (sh : List ℕ) :
 /-- The reading word of the Yamanouchi tableau of shape `sh` is the hyperstandard
 Yamanouchi word of evaluation `sh` (Coq `to_word_yamtab`). -/
 lemma toWord_yamTab (sh : List ℕ) : toWord (yamTab sh) = hyperYam sh := by
-  simpa using toWord_yamTabAux 0 sh
+  simpa [yamTab] using toWord_yamTabAux 0 sh
 
 /-- Coq `yamtabP`: the Yamanouchi tableau of a partition shape is a tableau. -/
 lemma isTableau_yamTab {sh : List ℕ} (h : IsPart sh) : IsTableau (yamTab sh) := by
