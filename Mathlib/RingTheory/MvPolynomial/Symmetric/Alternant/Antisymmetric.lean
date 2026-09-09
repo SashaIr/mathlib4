@@ -112,9 +112,9 @@ theorem vandermonde_ne_zero (m : ℕ) (A : Type*) [CommRing A] [IsDomain A] :
   intro hzero
   have hcoeff : coeff (Finsupp.single i 1) (X i - X j : MvPolynomial (Fin m) A) = 1 := by
     have h2 : coeff (Finsupp.single i 1) (X j : MvPolynomial (Fin m) A) = 0 := by
-      rw [coeff_X']
+      rw [coeff_X]
       exact ite_eq_right fun h ↦ hij (Finsupp.single_left_injective one_ne_zero h).symm
-    rw [coeff_sub, coeff_X, h2, sub_zero]
+    rw [coeff_sub, coeff_X, ite_eq_left rfl, h2, sub_zero]
   rw [hzero, coeff_zero] at hcoeff
   exact zero_ne_one hcoeff
 
