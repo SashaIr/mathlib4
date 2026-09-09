@@ -204,6 +204,7 @@ lemma getD_superTabFrom (i : ℕ) (lam : List ℕ) (j : ℕ) :
 
 lemma getD_superTab (lam : List ℕ) (j : ℕ) :
     (superTab lam).getD j [] = List.replicate (lam.getD j 0) j := by
+  change (superTabFrom 0 lam).getD j [] = _
   simpa using getD_superTabFrom 0 lam j
 
 lemma isTableau_superTabFrom (i : ℕ) {lam : List ℕ} (h : IsPart lam) :
@@ -248,6 +249,7 @@ lemma count_toWord_superTabFrom (i : ℕ) (lam : List ℕ) (j : ℕ) :
 
 lemma count_toWord_superTab (lam : List ℕ) (j : ℕ) :
     (toWord (superTab lam)).count j = lam.getD j 0 := by
+  change (toWord (superTabFrom 0 lam)).count j = _
   simpa using count_toWord_superTabFrom 0 lam j
 
 /-- The content of the superstandard tableau of a partition is that partition. -/
