@@ -102,14 +102,14 @@ lemma forall₂_le_vctRotate {i : ℕ} : Forall₂ (· ≤ ·) v (vctRotate v i)
 
 end List
 
-namespace Tree
+namespace BinaryTree
 
 open List
 
 /-! ### A rotation increases the vector -/
 
 /-- A rotation increases the vector of the sizes of the right subtrees, componentwise. -/
-theorem forall₂_le_rightSizes_of_mem_rotations {t u : Tree Unit} (h : u ∈ rotations t) :
+theorem forall₂_le_rightSizes_of_mem_rotations {t u : BinaryTree Unit} (h : u ∈ rotations t) :
     Forall₂ (· ≤ ·) (rightSizes t) (rightSizes u) := by
   induction t generalizing u with
   | nil => simp at h
@@ -125,7 +125,7 @@ theorem forall₂_le_rightSizes_of_mem_rotations {t u : Tree Unit} (h : u ∈ ro
         cases b
         simp only [rightSizes_node, List.append_assoc, List.cons_append]
         refine List.rel_append (forall₂_same.2 fun _ _ => le_refl _) (List.Forall₂.cons ?_ ?_)
-        · simp only [Tree.numNodes]
+        · simp only [BinaryTree.numNodes]
           omega
         · exact List.rel_append (forall₂_same.2 fun _ _ => le_refl _)
             (List.Forall₂.cons (le_refl _) (forall₂_same.2 fun _ _ => le_refl _))
@@ -137,7 +137,7 @@ theorem forall₂_le_rightSizes_of_mem_rotations {t u : Tree Unit} (h : u ∈ ro
         (List.Forall₂.cons (numNodes_of_mem_rotations hrr).ge (ihr hrr))
 
 /-- Comparable trees for the Tamari order have componentwise comparable vectors. -/
-theorem forall₂_le_rightSizes_of_tamariLE {t u : Tree Unit} (h : TamariLE t u) :
+theorem forall₂_le_rightSizes_of_tamariLE {t u : BinaryTree Unit} (h : TamariLE t u) :
     Forall₂ (· ≤ ·) (rightSizes t) (rightSizes u) := by
   induction h with
   | refl => exact forall₂_same.2 fun _ _ => le_refl _
@@ -148,7 +148,7 @@ theorem forall₂_le_rightSizes_of_tamariLE {t u : Tree Unit} (h : TamariLE t u)
     · exact le_trans ((forall₂_le_iff_getD.1 ih).2 i)
         ((forall₂_le_iff_getD.1 (forall₂_le_rightSizes_of_mem_rotations hstep)).2 i)
 
-end Tree
+end BinaryTree
 
 /-! ### Every rotation of the vector comes from a rotation of the tree -/
 
@@ -181,12 +181,12 @@ lemma set_append_cons_self : (l ++ x :: m).set l.length y = l ++ y :: m := by
 
 end List
 
-namespace Tree
+namespace BinaryTree
 
 open List
 
 /-- The block `[i, i + vᵢ]` of a node of a tree stays inside the tree. -/
-lemma add_getD_rightSizes_lt {t : Tree Unit} {i : ℕ} (h : i < t.numNodes) :
+lemma add_getD_rightSizes_lt {t : BinaryTree Unit} {i : ℕ} (h : i < t.numNodes) :
     i + (rightSizes t).getD i 0 < t.numNodes := by
   have := (isTamariVector_iff.1 (isTamariVector_rightSizes t)).1 i (by simpa using h)
   rw [length_rightSizes] at this
@@ -194,12 +194,12 @@ lemma add_getD_rightSizes_lt {t : Tree Unit} {i : ℕ} (h : i < t.numNodes) :
 
 /-- The rotation at the root: if the block of `i` fills the left subtree `l` of the root,
 then `i` is the root of `l` and the rotation at `i` is the rotation at the root. -/
-lemma exists_mem_rotations_root {l r : Tree Unit} {i : ℕ}
+lemma exists_mem_rotations_root {l r : BinaryTree Unit} {i : ℕ}
     (heq : i + (rightSizes l).getD i 0 + 1 = l.numNodes)
     (hne : ∀ p < i, p + (rightSizes l).getD p 0 ≠ i + (rightSizes l).getD i 0) :
     ∃ u ∈ rotations (node () l r), rightSizes u = vctRotate (rightSizes (node () l r)) i := by
   match l with
-  | .nil => simp only [Tree.numNodes] at heq; omega
+  | .nil => simp only [BinaryTree.numNodes] at heq; omega
   | .node b x y =>
     cases b
     have hlenx : (rightSizes x).length = x.numNodes := length_rightSizes x
@@ -208,9 +208,9 @@ lemma exists_mem_rotations_root {l r : Tree Unit} {i : ℕ}
       intro z c
       rw [← hlenx]
       exact getD_append_cons_self
-    have hnn : ∀ z w : Tree Unit, (Tree.node () z w).numNodes = z.numNodes + w.numNodes + 1 := by
+    have hnn : ∀ z w : BinaryTree Unit, (BinaryTree.node () z w).numNodes = z.numNodes + w.numNodes + 1 := by
       intro z w
-      simp only [Tree.numNodes]
+      simp only [BinaryTree.numNodes]
     rw [rightSizes_node] at heq hne
     rw [hnn] at heq
     -- the index `i` is the root of `l`, that is `i = |x|`
@@ -222,12 +222,12 @@ lemma exists_mem_rotations_root {l r : Tree Unit} {i : ℕ}
       · exact hi
       · exact absurd (by rw [hgetX]; omega) (hne x.numNodes hi)
     subst hix
-    refine ⟨Tree.node () x (Tree.node () y r), by rw [rotations_node]; simp, ?_⟩
-    have h1 : rightSizes (Tree.node () x (Tree.node () y r))
+    refine ⟨BinaryTree.node () x (BinaryTree.node () y r), by rw [rotations_node]; simp, ?_⟩
+    have h1 : rightSizes (BinaryTree.node () x (BinaryTree.node () y r))
         = rightSizes x ++ (y.numNodes + r.numNodes + 1) ::
             (rightSizes y ++ r.numNodes :: rightSizes r) := by
       rw [rightSizes_node, rightSizes_node, hnn]
-    have h2 : rightSizes (Tree.node () (Tree.node () x y) r)
+    have h2 : rightSizes (BinaryTree.node () (BinaryTree.node () x y) r)
         = rightSizes x ++ y.numNodes :: (rightSizes y ++ r.numNodes :: rightSizes r) := by
       simp only [rightSizes_node, List.append_assoc, List.cons_append]
     have h3 : (rightSizes x ++ y.numNodes :: (rightSizes y ++ r.numNodes :: rightSizes r)).getD
@@ -243,7 +243,7 @@ lemma exists_mem_rotations_root {l r : Tree Unit} {i : ℕ}
 `i` is the index of a rotation of `List.rightSizes t`, there is a rotation `u` of `t` whose
 vector is the rotated vector. -/
 theorem exists_mem_rotations_rightSizes_eq :
-    ∀ {t : Tree Unit} {i : ℕ}, IsRotIdx (rightSizes t) i →
+  ∀ {t : BinaryTree Unit} {i : ℕ}, IsRotIdx (rightSizes t) i →
       ∃ u ∈ rotations t, rightSizes u = vctRotate (rightSizes t) i := by
   intro t
   induction t with
@@ -255,7 +255,7 @@ theorem exists_mem_rotations_rightSizes_eq :
     intro i h
     have hlenl : (rightSizes l).length = l.numNodes := length_rightSizes l
     have hlenr : (rightSizes r).length = r.numNodes := length_rightSizes r
-    have hv : rightSizes (Tree.node () l r) = rightSizes l ++ r.numNodes :: rightSizes r := rfl
+    have hv : rightSizes (BinaryTree.node () l r) = rightSizes l ++ r.numNodes :: rightSizes r := rfl
     rw [hv] at h ⊢
     have hlenv : (rightSizes l ++ r.numNodes :: rightSizes r).length
         = l.numNodes + 1 + r.numNodes := by
@@ -272,7 +272,7 @@ theorem exists_mem_rotations_rightSizes_eq :
       have hblock : i + (rightSizes l).getD i 0 < l.numNodes := add_getD_rightSizes_lt hi
       rcases lt_or_eq_of_le (Nat.succ_le_of_lt hblock) with hlt | heq
       · obtain ⟨ul, hul, hres⟩ := ihl ⟨by omega, hne_l⟩
-        refine ⟨Tree.node () ul r, by rw [rotations_node]; simp [hul], ?_⟩
+        refine ⟨BinaryTree.node () ul r, by rw [rotations_node]; simp [hul], ?_⟩
         rw [rightSizes_node, hres, vctRotate, vctRotate, hgi,
           getD_append_cons_left
             (by omega : i + (rightSizes l).getD i 0 + 1 < (rightSizes l).length),
@@ -302,13 +302,13 @@ theorem exists_mem_rotations_rightSizes_eq :
         rw [hgi, hgi] at hp'
         omega
       obtain ⟨ur, hur, hres⟩ := ihr ⟨by omega, hne_r⟩
-      refine ⟨Tree.node () l ur, by rw [rotations_node]; simp [hur], ?_⟩
+      refine ⟨BinaryTree.node () l ur, by rw [rotations_node]; simp [hur], ?_⟩
       rw [rightSizes_node, hres, numNodes_of_mem_rotations hur, vctRotate, vctRotate, hgi,
         show l.numNodes + 1 + k + (rightSizes r).getD k 0 + 1
           = l.numNodes + 1 + (k + (rightSizes r).getD k 0 + 1) by omega, hgi, ← hlenl,
         set_append_cons_right]
 
-end Tree
+end BinaryTree
 
 /-! ### The Tamari order is the componentwise order -/
 
@@ -333,13 +333,13 @@ lemma eq_of_forall₂_le_of_sum_eq {v w : List ℕ} (h : Forall₂ (· ≤ ·) v
 
 end List
 
-namespace Tree
+namespace BinaryTree
 
 open List
 
 /-- If the vector of `t` is componentwise smaller than that of `u` and they are not equal,
 the least index where they differ is the index of a rotation of the vector of `t`. -/
-lemma isRotIdx_find {t u : Tree Unit} (h : Forall₂ (· ≤ ·) (rightSizes t) (rightSizes u))
+lemma isRotIdx_find {t u : BinaryTree Unit} (h : Forall₂ (· ≤ ·) (rightSizes t) (rightSizes u))
     {i : ℕ} (hlt : (rightSizes t).getD i 0 < (rightSizes u).getD i 0)
     (hmin : ∀ p < i, (rightSizes t).getD p 0 = (rightSizes u).getD p 0) :
     IsRotIdx (rightSizes t) i := by
@@ -357,7 +357,7 @@ lemma isRotIdx_find {t u : Tree Unit} (h : Forall₂ (· ≤ ·) (rightSizes t) 
 
 /-- **The componentwise order on the vectors implies the Tamari order.** -/
 theorem tamariLE_of_forall₂_le_aux :
-    ∀ (d : ℕ) {t u : Tree Unit}, (rightSizes u).sum - (rightSizes t).sum ≤ d →
+    ∀ (d : ℕ) {t u : BinaryTree Unit}, (rightSizes u).sum - (rightSizes t).sum ≤ d →
       Forall₂ (· ≤ ·) (rightSizes t) (rightSizes u) → TamariLE t u := by
   intro d
   induction d with
@@ -410,15 +410,15 @@ theorem tamariLE_of_forall₂_le_aux :
       exact tamariLE_trans (tamariLE_of_mem_rotations ht') (ih (by omega) hle')
 
 /-- **The componentwise order on the vectors implies the Tamari order.** -/
-theorem tamariLE_of_forall₂_le {t u : Tree Unit}
+theorem tamariLE_of_forall₂_le {t u : BinaryTree Unit}
     (h : Forall₂ (· ≤ ·) (rightSizes t) (rightSizes u)) : TamariLE t u :=
   tamariLE_of_forall₂_le_aux _ le_rfl h
 
 /-- **The Tamari order is the componentwise order on the Tamari vectors**: a binary tree is
 below another one for the Tamari order exactly when the sizes of the right subtrees of its
 nodes, read in infix order, are all at most those of the other one. -/
-theorem tamariLE_iff_forall₂_le {t u : Tree Unit} :
+theorem tamariLE_iff_forall₂_le {t u : BinaryTree Unit} :
     TamariLE t u ↔ Forall₂ (· ≤ ·) (rightSizes t) (rightSizes u) :=
   ⟨forall₂_le_rightSizes_of_tamariLE, tamariLE_of_forall₂_le⟩
 
-end Tree
+end BinaryTree
