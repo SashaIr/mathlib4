@@ -94,13 +94,12 @@ lemma IsPart.zero_notMem {sh : List ℕ} (h : IsPart sh) : (0 : ℕ) ∉ sh := b
   induction sh with
   | nil => simp
   | cons a s ih =>
-    obtain ⟨h1, h2⟩ := h
     have ha : a ≠ 0 := by
-      have := (IsPart.headD_ne_zero (sh := a :: s) ⟨h1, h2⟩)
+      have := (IsPart.headD_ne_zero (sh := a :: s) h)
       simp only [List.headD_cons] at this
       exact this
     simp only [List.mem_cons, not_or]
-    exact ⟨fun hc => ha hc.symm, ih h2⟩
+    exact ⟨fun hc => ha hc.symm, ih h.2⟩
 
 lemma IsPart.headD_pos {sh : List ℕ} (h : IsPart sh) (hne : sh ≠ []) : 0 < sh.headD 0 := by
   cases sh with
@@ -146,8 +145,7 @@ lemma IsPart.getD_antitone {sh : List ℕ} (h : IsPart sh) {i j : ℕ} (hij : i 
   | succ k ih =>
     rcases Nat.lt_or_ge i (k + 1) with hk | hk
     · exact le_trans (h.getD_succ_le k) (ih (by omega))
-    · have : i = k + 1 := by omega
-      simp [this]
+    · simp [show i = k + 1 by omega]
 
 /-- A list which decreases pointwise and whose last entry is nonzero is a partition. -/
 lemma isPart_of_getD {sh : List ℕ} (hlast : sh.getLastD 1 ≠ 0)
@@ -155,14 +153,13 @@ lemma isPart_of_getD {sh : List ℕ} (hlast : sh.getLastD 1 ≠ 0)
   induction sh with
   | nil => exact isPart_nil
   | cons a s ih =>
-    refine ⟨?_, ih ?_ ?_⟩
+    refine ⟨?_, ih ?_ fun i ↦ by simpa using h (i + 1)⟩
     · cases s with
       | nil => simp only [List.headD_nil]; simp at hlast; omega
       | cons b t => simpa using h 0
     · cases s with
       | nil => simp
       | cons b t => simpa using hlast
-    · intro i; simpa using h (i + 1)
 
 lemma IsPart.getLastD_ne_zero {sh : List ℕ} (h : IsPart sh) : sh.getLastD 1 ≠ 0 := by
   induction sh with
@@ -188,10 +185,8 @@ lemma isPart_iff_getD_le {sh : List ℕ} :
 /-- Coq `is_part_sortedE`: a partition is a weakly decreasing list of nonzero parts. -/
 lemma isPart_iff_chain {sh : List ℕ} :
     IsPart sh ↔ List.IsChain (· ≥ ·) sh ∧ (0 : ℕ) ∉ sh := by
-  constructor
-  · intro h
-    refine ⟨?_, h.zero_notMem⟩
-    induction sh with
+  refine ⟨fun h ↦ ⟨?_, h.zero_notMem⟩, ?_⟩
+  · induction sh with
     | nil => exact List.IsChain.nil
     | cons a s ih =>
       obtain ⟨h1, h2⟩ := h
@@ -229,8 +224,8 @@ lemma getLastD_eq_getD {sh : List ℕ} (d : ℕ) (h : sh ≠ []) :
 the parts inside the list are positive. -/
 lemma isPart_iff_getD_pos {sh : List ℕ} :
     IsPart sh ↔ (∀ i, sh.getD (i + 1) 0 ≤ sh.getD i 0) ∧ ∀ i, i < sh.length → 0 < sh.getD i 0 := by
-  refine ⟨fun h => ⟨h.getD_succ_le, fun _ hi => h.getD_pos hi⟩, fun ⟨hmono, hpos⟩ => ?_⟩
-  refine isPart_of_getD ?_ hmono
+  refine ⟨fun h => ⟨h.getD_succ_le, fun _ hi => h.getD_pos hi⟩,
+    fun ⟨hmono, hpos⟩ => isPart_of_getD ?_ hmono⟩
   cases sh with
   | nil => simp
   | cons a s =>
@@ -270,10 +265,7 @@ lemma IsPart.eq_nil_of_sum_eq_zero {sh : List ℕ} (h : IsPart sh) (hs : sh.sum 
   cases sh with
   | nil => rfl
   | cons a s =>
-    exfalso
-    have ha : a ≠ 0 := by
-      have := h.headD_ne_zero
-      simpa using this
+    have ha : a ≠ 0 := by simpa using h.headD_ne_zero
     simp only [List.sum_cons] at hs
     omega
 
@@ -317,16 +309,10 @@ lemma ext_getD_of_getLastD_ne_zero {p q : List ℕ} (hp : p.getLastD 1 ≠ 0) (h
   have key : ∀ a b : List ℕ, a.getLastD 1 ≠ 0 → (∀ i, a.getD i 0 = b.getD i 0) →
       a.length ≤ b.length := by
     intro a b ha hab
-    by_contra hlt
-    push Not at hlt
-    have hane : a ≠ [] := by
-      intro hc
-      rw [hc] at hlt
-      simp at hlt
-    have h1 : a.getD (a.length - 1) 0 ≠ 0 := by
-      rw [← getLastD_eq_getD 1 hane]; exact ha
-    have h2 : b.getD (a.length - 1) 0 = 0 :=
-      List.getD_eq_default _ _ (by omega)
+    by_contra! hlt
+    have hane : a ≠ [] := fun hc ↦ by simp [hc] at hlt
+    have h1 : a.getD (a.length - 1) 0 ≠ 0 := by rwa [← getLastD_eq_getD 1 hane]
+    have h2 : b.getD (a.length - 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
     exact h1 (by rw [hab, h2])
   have hlen : p.length = q.length :=
     le_antisymm (key p q hp h) (key q p hq fun i => (h i).symm)
