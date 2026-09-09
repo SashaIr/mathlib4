@@ -46,7 +46,10 @@ def youngSubgroup : (l : List ℕ) → Subgroup (Perm (Fin l.sum))
 theorem card_youngSubgroup (l : List ℕ) :
     Nat.card (youngSubgroup l) = (l.map Nat.factorial).prod := by
   induction l with
-  | nil => simp [youngSubgroup, Nat.card_eq_fintype_card]
+  | nil =>
+    change Nat.card (⊤ : Subgroup (Perm (Fin 0))) = 1
+    rw [Subgroup.card_top, Nat.card_perm, Nat.card_eq_fintype_card, Fintype.card_fin]
+    simp
   | cons a t ih =>
     have e1 : youngSubgroup (a :: t) ≃ ((⊤ : Subgroup (Perm (Fin a))).prod (youngSubgroup t)) :=
       (Subgroup.equivMapOfInjective _ _ (tinj_injective a t.sum)).symm.toEquiv
