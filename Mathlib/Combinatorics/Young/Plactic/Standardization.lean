@@ -39,21 +39,6 @@ lemma isStd_of_nodup_of_lt {v : List ℕ} (hnd : v.Nodup) (hlt : ∀ x ∈ v, x 
     List.subperm_of_subset hnd (fun x hx => by simpa using hlt x hx)
   exact hsub.perm_of_length_le (by simp)
 
-lemma IsStd.nodup {v : List ℕ} (hv : IsStd v) : v.Nodup :=
-  hv.nodup_iff.2 List.nodup_range
-
-lemma IsStd.getD_lt {v : List ℕ} (hv : IsStd v) {i : ℕ} (hi : i < v.length) :
-    v.getD i 0 < v.length := by
-  have : v.getD i 0 ∈ v := by
-    rw [List.getD_eq_getElem _ _ hi]; exact List.getElem_mem hi
-  have := hv.mem_iff.1 this
-  simpa using this
-
-lemma IsStd.perm {u v : List ℕ} (hu : IsStd u) (h : u.Perm v) : IsStd v := by
-  have hlen : v.length = u.length := h.length_eq.symm
-  rw [IsStd, hlen]
-  exact h.symm.trans hu
-
 /-- In a standard word, the letter at position `i` is the number of positions carrying a
 smaller letter. -/
 lemma getD_eq_card_filter_of_isStd {u : List ℕ} (hu : IsStd u) {i : ℕ} (hi : i < u.length) :
@@ -167,7 +152,7 @@ theorem std_swap_eq {p s : List T} {a b : T} (hab : a ≠ b) {P S : List ℕ} {A
     omega
   have hstdU : IsStd (P ++ A :: B :: S) := hU ▸ std_isStd u
   have hVstd : IsStd (P ++ B :: A :: S) :=
-    hstdU.perm (List.Perm.append_left P (List.Perm.swap _ _ _))
+    hstdU.of_perm (List.Perm.append_left P (List.Perm.swap _ _ _)).symm
   have hlenV : (P ++ B :: A :: S).length = w.length := by
     simp [hlenw, hP, hlenS]; omega
   refine (eq_of_isStd_of_lt_iff hVstd (std_isStd w) (by simp [hlenV]) ?_).symm ▸ rfl

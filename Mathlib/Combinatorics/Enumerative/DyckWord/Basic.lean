@@ -125,7 +125,7 @@ lemma length_eq_count_add_count (w : List DyckStep) :
 
 /-! ### Dyck prefixes and Dyck words -/
 
-/-- A word all of whose prefixes have nonnegative height (Coq `Dyck_prefix`). -/
+/- A word all of whose prefixes have nonnegative height (Coq `Dyck_prefix`). -/
 def IsDyckPrefix (w : List DyckStep) : Prop := ∀ i, 0 ≤ dyckHeight (w.take i)
 
 /-- A Dyck word: a Dyck prefix of height `0` (Coq `Dyck_word`). -/
@@ -292,13 +292,6 @@ theorem even_length_of_isDyckWord {w : List DyckStep} (h : IsDyckWord w) : Even 
   have h2 := length_eq_count_add_count w
   exact ⟨w.count U, by omega⟩
 
-/-- The length of a bundled Dyck word is twice its semilength. -/
-lemma length_toList (p : DyckWord) : p.toList.length = 2 * p.semilength := by
-  have h := p.count_U_eq_count_D
-  have h2 := length_eq_count_add_count p.toList
-  simp only [DyckWord.semilength]
-  omega
-
 /-! ### The bijection with binary trees -/
 
 /-- Dyck words, as lists, are Mathlib's bundled Dyck words. -/
@@ -325,7 +318,7 @@ lemma dyckOfTree_eq (t : BinaryTree Unit) : dyckOfTree t = (DyckWord.ofTree t).t
 lemma length_dyckOfTree (t : BinaryTree Unit) : (dyckOfTree t).length = 2 * t.numNodes := by
   have h : (DyckWord.ofTree t).semilength = t.numNodes := by
     rw [← DyckWord.numNodes_toTree, DyckWord.toTree_ofTree]
-  rw [dyckOfTree_eq, length_toList, h]
+  rw [dyckOfTree_eq, ← DyckWord.two_mul_semilength_eq_length, h]
 
 /-! ### The number of Dyck words of a given length -/
 
@@ -335,11 +328,12 @@ def isDyckWordLengthEquiv (n : ℕ) :
     {w : List DyckStep // IsDyckWord w ∧ w.length = 2 * n} ≃
       {p : DyckWord // p.semilength = n} where
   toFun w := ⟨toDyckWord w.2.1, by
-    have h := length_toList (toDyckWord w.2.1)
+    have h := (DyckWord.two_mul_semilength_eq_length (p := toDyckWord w.2.1)).symm
     rw [toList_toDyckWord] at h
     have h2 := w.2.2
     omega⟩
-  invFun p := ⟨p.1.toList, isDyckWord_toList _, by rw [length_toList, p.2]⟩
+  invFun p := ⟨p.1.toList, isDyckWord_toList _, by
+    rw [← DyckWord.two_mul_semilength_eq_length, p.2]⟩
   left_inv w := rfl
   right_inv p := by ext1; rfl
 

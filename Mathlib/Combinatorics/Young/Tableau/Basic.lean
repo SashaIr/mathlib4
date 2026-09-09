@@ -30,6 +30,8 @@ larger and not longer.
 * `List.isPart_shape` : the shape of a tableau is a partition.
 * `List.IsTableau.row_le` / `List.IsTableau.col_lt` : rows are weakly increasing
   and columns are strictly increasing.
+* `List.IsTableau.index_le_getElem` : in a tableau of natural numbers, the entries of the
+  `i`-th row are at least `i`.
 * `List.length_toWord` : the reading word has one letter per box.
 -/
 
@@ -316,5 +318,14 @@ lemma IsTableau.col_lt {t : List (List T)} (h : IsTableau t) {i c : ℕ}
     (t.getD i [])[c]'(lt_of_lt_of_le hc (h.dominate_getD (Nat.lt_succ_self i)).length_le)
       < (t.getD (i + 1) [])[c] :=
   (h.dominate_getD (Nat.lt_succ_self i)).getElem_lt c hc
+
+lemma IsTableau.index_le_getElem {t : List (List ℕ)} (h : IsTableau t) {i c : ℕ}
+    (hc : c < (t.getD i []).length) : i ≤ (t.getD i [])[c] := by
+  induction i with
+  | zero => exact Nat.zero_le _
+  | succ i ih =>
+    have hlen : c < (t.getD i []).length :=
+      lt_of_lt_of_le hc (h.dominate_getD (Nat.lt_succ_self i)).length_le
+    exact Nat.succ_le_of_lt (lt_of_le_of_lt (ih hlen) (h.col_lt hc))
 
 end List

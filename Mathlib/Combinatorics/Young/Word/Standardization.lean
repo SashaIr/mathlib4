@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
+import Mathlib.Data.List.GetD
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Fintype.EquivFin
@@ -52,6 +53,17 @@ def IsStd (u : List ℕ) : Prop := u.Perm (List.range u.length)
 
 instance decidableIsStd (u : List ℕ) : Decidable (IsStd u) :=
   inferInstanceAs (Decidable (u.Perm (List.range u.length)))
+
+/-- A standard word has no repeated letter. -/
+lemma IsStd.nodup {u : List ℕ} (hu : IsStd u) : u.Nodup := hu.nodup_iff.2 nodup_range
+
+/-- The letters of a standard word are smaller than its length. -/
+lemma IsStd.getD_lt {u : List ℕ} (hu : IsStd u) {i : ℕ} (hi : i < u.length) :
+    u.getD i 0 < u.length := by
+  have hmem : u.getD i 0 ∈ u := by
+    rw [List.getD_eq_getElem _ _ hi]
+    exact List.getElem_mem hi
+  simpa using hu.mem_iff.1 hmem
 
 /-! ### The standardization order on positions -/
 

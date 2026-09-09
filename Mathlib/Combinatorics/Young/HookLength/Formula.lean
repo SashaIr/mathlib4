@@ -32,6 +32,7 @@ which is exactly what is needed to turn the Frobenius formula into the hook leng
 
 * `List.prod_factorial_frobVec_eq` : `∏_i x_i ! = (∏ hook lengths) · ∏_{i < j} (x_j - x_i)`.
 * `List.numStdTab_mul_hookProd` : the hook length formula.
+* `List.numStdTab_pos` : there is at least one standard tableau of any partition shape.
 -/
 
 namespace List
@@ -195,6 +196,11 @@ theorem numStdTab_mul_hookProd (hsh : IsPart sh) :
     push_cast at hfrob ⊢
     linarith
   exact Nat.eq_of_mul_eq_mul_right hDpos (by exact_mod_cast hcast)
+
+/-- The number of standard Young tableaux of a shape which is a partition is positive. -/
+lemma numStdTab_pos (hsh : IsPart sh) : 0 < numStdTab sh :=
+  Nat.pos_of_ne_zero fun h => Nat.factorial_ne_zero sh.sum <| by
+    rw [← numStdTab_mul_hookProd hsh, h, zero_mul]
 
 /-- The product of the hook lengths of a partition is positive. -/
 lemma hookProd_pos (hsh : IsPart sh) : 0 < hookProd sh := by

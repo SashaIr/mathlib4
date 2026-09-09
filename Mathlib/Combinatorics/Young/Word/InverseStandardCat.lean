@@ -115,7 +115,7 @@ theorem filter_lt_invStd_std_append (u v : List T) :
     have hxu : x < u.length := mem_range.1 hx
     rw [hL, List.mem_filter]
     exact ⟨hstdA.mem_of_lt (by omega), by simpa using hxu⟩
-  have hnodupL : L.Nodup := (List.filter_sublist).nodup hstdA.nodup'
+  have hnodupL : L.Nodup := (List.filter_sublist).nodup hstdA.nodup
   have hpermL : L.Perm (range u.length) :=
     (List.subperm_of_subset hnodupL hsubL).antisymm
       (List.subperm_of_subset nodup_range hsupL)
@@ -158,7 +158,7 @@ theorem sfilterleq_invStd_std_append (u v : List T) :
     rw [hF] at *
     rw [List.mem_filter]
     exact ⟨hstdA.mem_of_lt (by omega), by simp⟩
-  have hnodupF : F.Nodup := (List.filter_sublist).nodup hstdA.nodup'
+  have hnodupF : F.Nodup := (List.filter_sublist).nodup hstdA.nodup
   have hnodup : (sfilterleq u.length A).Nodup := by
     refine hnodupF.map_on ?_
     intro x hx y hy hxy

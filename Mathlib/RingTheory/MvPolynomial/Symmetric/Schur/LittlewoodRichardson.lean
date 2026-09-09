@@ -69,7 +69,7 @@ lemma mapTab_val_mem_lrPairs {lam mu : List ℕ} {V : List (List (Fin m))}
     (mapTab Fin.val q.1.1.1, mapTab Fin.val q.1.2.1) ∈ lrPairs lam mu (mapTab Fin.val V) := by
   refine ⟨isTableau_mapTab_val q.1.1.2.1, by rw [shape_mapTab, q.1.1.2.2],
     isTableau_mapTab_val q.1.2.2.1, by rw [shape_mapTab, q.1.2.2.2], ?_⟩
-  rw [toWord_mapTab, toWord_mapTab, ← List.map_append, RS_map strictMono_val, q.2]
+  rw [toWord_mapTab, toWord_mapTab, ← List.map_append, RS_map Fin.val_strictMono, q.2]
 
 /-- Transfer of the pairs of tableaux from the alphabet `Fin m` to the alphabet `ℕ`. -/
 lemma card_prodFiber_eq_ncard_lrPairs (lam mu : List ℕ) (V : List (List (Fin m))) :
@@ -93,11 +93,11 @@ lemma card_prodFiber_eq_ncard_lrPairs (lam mu : List ℕ) (V : List (List (Fin m
     subst hA'; subst hB'
     have hRS' : RS (toWord A' ++ toWord B') = V := by
       apply mapTab_injective (Fin.val_injective (n := m))
-      rw [← RS_map strictMono_val, List.map_append, ← toWord_mapTab, ← toWord_mapTab]
+      rw [← RS_map Fin.val_strictMono, List.map_append, ← toWord_mapTab, ← toWord_mapTab]
       exact hRS
-    refine ⟨⟨(⟨A', isTableau_of_isTableau_mapTab strictMono_val hA,
+    refine ⟨⟨(⟨A', isTableau_of_isTableau_mapTab Fin.val_strictMono hA,
       by rw [← shape_mapTab (Fin.val : Fin m → ℕ) A', hshA]⟩,
-      ⟨B', isTableau_of_isTableau_mapTab strictMono_val hB,
+      ⟨B', isTableau_of_isTableau_mapTab Fin.val_strictMono hB,
       by rw [← shape_mapTab (Fin.val : Fin m → ℕ) B', hshB]⟩), hRS'⟩, rfl⟩
 
 /-- Over the alphabet `Fin m`, the number of pairs of tableaux of shapes `lam` and `mu`

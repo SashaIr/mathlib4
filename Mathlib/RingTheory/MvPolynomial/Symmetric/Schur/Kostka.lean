@@ -129,11 +129,9 @@ open List MvPolynomial
 
 variable {m : ℕ} {R : Type*} [CommSemiring R]
 
-lemma strictMono_val : StrictMono (Fin.val : Fin m → ℕ) := fun _ _ h => h
-
 lemma isTableau_mapTab_val {P : List (List (Fin m))} (hP : IsTableau P) :
     IsTableau (mapTab (Fin.val : Fin m → ℕ) P) :=
-  isTableau_mapTab strictMono_val hP
+  isTableau_mapTab Fin.val_strictMono hP
 
 lemma count_map_val (l : List (Fin m)) (i : ℕ) :
     (l.map Fin.val).count i = if h : i < m then l.count ⟨i, h⟩ else 0 := by
@@ -244,7 +242,7 @@ lemma mapTab_val_superTabFin (sh : List ℕ) (hlen : sh.length ≤ m) :
 
 lemma isTableau_superTabFin {sh : List ℕ} (hsh : IsPart sh) (hlen : sh.length ≤ m) :
     IsTableau (superTabFin m sh hlen) :=
-  isTableau_of_isTableau_mapTab strictMono_val
+  isTableau_of_isTableau_mapTab Fin.val_strictMono
     (by rw [mapTab_val_superTabFin]; exact isTableau_superTab hsh)
 
 lemma shape_superTabFin (sh : List ℕ) (hlen : sh.length ≤ m) :

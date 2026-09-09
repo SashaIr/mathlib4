@@ -250,15 +250,6 @@ theorem charBilin_schurCharC (lam : PartIdx n n) :
   push_cast
   ring
 
-/-- The number of standard Young tableaux of a given shape is positive. -/
-lemma numStdTab_pos {sh : List ℕ} (hsh : IsPart sh) : 0 < numStdTab sh := by
-  rcases Nat.eq_zero_or_pos (numStdTab sh) with h | h
-  · exfalso
-    have := numStdTab_mul_hookProd hsh
-    rw [h, zero_mul] at this
-    exact (Nat.factorial_ne_zero sh.sum) this.symm
-  · exact h
-
 /-- **The Schur class functions are the irreducible characters of the symmetric group**:
 the class function `schurChar lam`, viewed with complex values, is the character of a
 simple representation of `S_n` over `ℂ`. -/

@@ -38,7 +38,7 @@ lemma ltFilter_reverse (N : ℕ) (w : List ℕ) : ltFilter N w.reverse = (ltFilt
 tableau of the word** (Coq `RS_rev_uniq`). -/
 theorem RS_reverse {w : List ℕ} (hw : IsStd w) : RS w.reverse = conjTab (RS w) := by
   have hstd : IsStdTab (RS w) := isStdTab_RS hw
-  refine eq_of_shape_dropMax_eq (isStdTab_RS (IsStd.perm hw (List.reverse_perm w).symm))
+  refine eq_of_shape_dropMax_eq (isStdTab_RS (IsStd.of_perm hw (List.reverse_perm w)))
     hstd.conjTab fun k => ?_
   rw [shape_dropMax_conjTab hstd, ← RS_ltFilter, ← RS_ltFilter, ltFilter_reverse]
   exact shape_RS_reverse_of_nodup ((IsStd.nodup hw).filter _)

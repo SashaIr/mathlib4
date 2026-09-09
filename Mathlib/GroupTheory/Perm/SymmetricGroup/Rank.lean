@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 import Mathlib.Algebra.Group.End
+import Mathlib.Data.Fintype.Fin
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
@@ -43,21 +44,6 @@ variable {n : ℕ}
 `s k < j`.  This is the Coq matrix `mxsum (perm_mx s) i j`. -/
 def permRank (s : Perm (Fin n)) (i j : ℕ) : ℕ :=
   #{k ∈ (univ : Finset (Fin n)) | k.val < i ∧ (s k).val < j}
-
-/-- The number of elements of `Fin n` below `m` is `min m n`. -/
-lemma card_filter_val_lt (n m : ℕ) :
-    #{k ∈ (univ : Finset (Fin n)) | k.val < m} = min m n := by
-  have h : ({k ∈ (univ : Finset (Fin n)) | k.val < m}).map ⟨Fin.val, Fin.val_injective⟩
-      = {x ∈ range n | x < m} := by
-    ext x
-    simp only [mem_map, mem_filter, mem_univ, true_and, Function.Embedding.coeFn_mk, mem_range]
-    constructor
-    · rintro ⟨k, hk, rfl⟩
-      exact ⟨k.isLt, hk⟩
-    · rintro ⟨hx, hxm⟩
-      exact ⟨⟨x, hx⟩, hxm, rfl⟩
-  rw [← Finset.card_map ⟨Fin.val, Fin.val_injective⟩, h,
-    show {x ∈ range n | x < m} = range (min m n) by ext x; simp; omega, card_range]
 
 @[simp] lemma permRank_zero_left (s : Perm (Fin n)) (j : ℕ) : permRank s 0 j = 0 := by
   simp [permRank]
@@ -123,7 +109,7 @@ lemma permRank_succ_right (s : Perm (Fin n)) (i j : ℕ) :
 
 /-- The rank function is bounded by its first argument. -/
 lemma permRank_le_left (s : Perm (Fin n)) (i j : ℕ) : permRank s i j ≤ min i n := by
-  rw [← card_filter_val_lt n i]
+  rw [min_comm, ← Fin.card_filter_val_lt]
   refine Finset.card_le_card fun k hk => ?_
   simp only [mem_filter, mem_univ, true_and] at hk ⊢
   exact hk.1
@@ -175,7 +161,7 @@ lemma permRank_of_le_right (s : Perm (Fin n)) (i : ℕ) {j : ℕ} (hj : n ≤ j)
   · rw [min_eq_right h, permRank_of_le_right s i h]
 
 @[simp] lemma permRank_top_left (s : Perm (Fin n)) (j : ℕ) : permRank s n j = min j n := by
-  rw [permRank, ← card_filter_val_lt n j]
+  rw [permRank, min_comm, ← Fin.card_filter_val_lt]
   refine Finset.card_equiv s fun k => ?_
   simp only [mem_filter, mem_univ, true_and, and_iff_right_iff_imp]
   exact fun _ => k.isLt
@@ -189,7 +175,7 @@ lemma le_permRank_add (s : Perm (Fin n)) (i j : ℕ) :
   classical
   set A : Finset (Fin n) := {k ∈ (univ : Finset (Fin n)) | k.val < i} with hA
   set B : Finset (Fin n) := {k ∈ (univ : Finset (Fin n)) | (s k).val < j} with hB
-  have hcardA : #A = min i n := card_filter_val_lt n i
+  have hcardA : #A = min i n := Fin.card_filter_val_lt.trans (min_comm n i)
   have hcardB : #B = min j n := by
     rw [hB, ← permRank_top_left s j, permRank]
     exact congrArg _ (Finset.filter_congr fun k _ => by simp [k.isLt])
@@ -204,7 +190,7 @@ lemma le_permRank_add (s : Perm (Fin n)) (i j : ℕ) :
 
 /-- The rank function of the identity (Coq `perm_mxsum1`). -/
 lemma permRank_one (i j : ℕ) : permRank (1 : Perm (Fin n)) i j = min (min i j) n := by
-  rw [permRank, ← card_filter_val_lt n (min i j)]
+  rw [permRank, min_comm, ← Fin.card_filter_val_lt]
   exact congrArg _ (Finset.filter_congr fun k _ => by simp)
 
 /-- The rank function of the longest element (Coq `perm_mxsum_maxperm`). -/
@@ -268,7 +254,7 @@ lemma permRank_revPerm_mul (s : Perm (Fin n)) (i j : ℕ) :
   have hle : permRank s i (n - j) ≤ min i n := permRank_le_left _ _ _
   have hsplit : permRank s i (n - j)
       + permRank ((Fin.revPerm : Perm (Fin n)) * s) i j = min i n := by
-    rw [permRank, permRank, ← card_filter_val_lt n i, ← Finset.card_union_of_disjoint]
+    rw [permRank, permRank, min_comm, ← Fin.card_filter_val_lt, ← Finset.card_union_of_disjoint]
     · congr 1
       ext k
       have hk := (s k).isLt

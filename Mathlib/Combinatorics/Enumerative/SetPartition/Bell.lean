@@ -77,7 +77,7 @@ lemma card_filter_part_eq {s : Finset α} {a : α} (ha : a ∈ s) {B : Finset α
       Finpartition.extend_parts, Finset.erase_insert hBQ]
 
 /-- **The Bell numbers count set partitions.** -/
-theorem card_finpartition_aux :
+private theorem card_finpartition_aux :
     ∀ (n : ℕ) (s : Finset α), s.card = n → Fintype.card (Finpartition s) = Nat.bell n := by
   intro n
   induction n using Nat.strong_induction_on with

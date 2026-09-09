@@ -223,17 +223,6 @@ theorem perm_toWord_conjTab {t : List (List ℕ)} (h : IsPart (shape t)) :
 
 /-! ### Conjugating a standard tableau -/
 
-/-- The rows of a standard tableau are duplicate-free. -/
-lemma IsStdTab.nodup_getD {t : List (List ℕ)} (h : IsStdTab t) (i : ℕ) :
-    (t.getD i []).Nodup := by
-  rcases Nat.lt_or_ge i t.length with hi | hi
-  · have hnd : (toWord t).Nodup := h.2.nodup_iff.2 List.nodup_range
-    refine hnd.sublist ?_
-    rw [toWord]
-    exact List.sublist_flatten_of_mem
-      (by rw [List.getD_eq_getElem _ _ hi]; exact List.mem_reverse.2 (List.getElem_mem hi))
-  · rw [List.getD_eq_default _ _ hi]; exact List.nodup_nil
-
 /-- The rows of a standard tableau increase strictly. -/
 lemma IsStdTab.row_lt {t : List (List ℕ)} (h : IsStdTab t) {i c c' : ℕ} (hcc : c < c')
     (hc' : c' < (t.getD i []).length) :

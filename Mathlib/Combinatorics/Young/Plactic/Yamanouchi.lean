@@ -283,16 +283,6 @@ lemma isTableau_yamTab {sh : List ℕ} (h : IsPart sh) : IsTableau (yamTab sh) :
 
 /-! ### Uniqueness of the Yamanouchi tableau -/
 
-/-- In a tableau of natural numbers, the entries of the `i`-th row are at least `i`. -/
-lemma IsTableau.index_le_getElem {t : List (List ℕ)} (h : IsTableau t) {i c : ℕ}
-    (hc : c < (t.getD i []).length) : i ≤ (t.getD i [])[c] := by
-  induction i with
-  | zero => exact Nat.zero_le _
-  | succ i ih =>
-    have hlen : c < (t.getD i []).length :=
-      lt_of_lt_of_le hc (h.dominate_getD (Nat.lt_succ_self i)).length_le
-    exact Nat.succ_le_of_lt (lt_of_le_of_lt (ih hlen) (h.col_lt hc))
-
 /-- Splitting the reading word of a tableau at its `i`-th row. -/
 lemma toWord_eq_append_getD_append {t : List (List ℕ)} {i : ℕ} (hi : i < t.length) :
     toWord t = toWord (t.drop (i + 1)) ++ (t.getD i [] ++ toWord (t.take i)) := by

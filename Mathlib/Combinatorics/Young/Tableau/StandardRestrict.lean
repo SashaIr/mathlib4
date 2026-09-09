@@ -62,18 +62,6 @@ lemma length_ltFilter_succ (m : ℕ) {r : List ℕ} (hr : r.Nodup) :
       rw [ltFilter_cons_of_ge _ (by omega), ltFilter_cons_of_ge _ (by omega)]
       simp only [ih hnd, hmem]
 
-/-- The rows of a standard tableau have no repeated letter. -/
-lemma nodup_getD_of_isStdTab {P : List (List ℕ)} (hP : IsStdTab P) (i : ℕ) :
-    (P.getD i []).Nodup := by
-  rcases Nat.lt_or_ge i P.length with hi | hi
-  · have hword : (toWord P).Nodup := hP.2.nodup_iff.2 List.nodup_range
-    rw [toWord, List.nodup_flatten] at hword
-    refine hword.1 _ ?_
-    rw [List.getD_eq_getElem _ _ hi, List.mem_reverse]
-    exact List.getElem_mem hi
-  · rw [List.getD_eq_default _ _ hi]
-    exact List.nodup_nil
-
 /-- The letters of a standard tableau are smaller than its size. -/
 lemma lt_sizeTab_of_mem_flatten {P : List (List ℕ)} (hP : IsStdTab P) {x : ℕ}
     (hx : x ∈ P.flatten) : x < sizeTab P := by
@@ -89,8 +77,8 @@ lemma mem_getD_iff_of_shape_dropMax_eq {P Q : List (List ℕ)} (hP : IsStdTab P)
     intro k
     have hk := congrArg (fun s => s.getD i 0) (h k)
     simpa only [getD_shape_dropMax hP.1, getD_shape_dropMax hQ.1] using hk
-  have h1 := length_ltFilter_succ m (nodup_getD_of_isStdTab hP i)
-  have h2 := length_ltFilter_succ m (nodup_getD_of_isStdTab hQ i)
+  have h1 := length_ltFilter_succ m (hP.nodup_getD i)
+  have h2 := length_ltFilter_succ m (hQ.nodup_getD i)
   have e1 := key m
   have e2 := key (m + 1)
   refine ⟨fun hp => ?_, fun hq => ?_⟩

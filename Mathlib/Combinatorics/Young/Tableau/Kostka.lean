@@ -80,24 +80,10 @@ lemma sum_take_evalseq (w : List ℕ) (k : ℕ) :
 
 /-! ### Entries of the `i`-th row are at least `i` -/
 
-/-- In a tableau with natural number entries, every entry of the `i`-th row is at least
-`i`, because the entries increase strictly down the columns. -/
-lemma le_of_getElem_tableau {t : List (List ℕ)} (ht : IsTableau t) (i c : ℕ)
-    (hc : c < (t.getD i []).length) : i ≤ (t.getD i [])[c] := by
-  induction i with
-  | zero => exact Nat.zero_le _
-  | succ m ih =>
-    have hlen : (t.getD (m + 1) []).length ≤ (t.getD m []).length :=
-      (ht.dominate_getD (Nat.lt_succ_self m)).length_le
-    have hc' : c < (t.getD m []).length := lt_of_lt_of_le hc hlen
-    have h1 : (t.getD m [])[c] < (t.getD (m + 1) [])[c] := ht.col_lt hc
-    have h2 := ih hc'
-    omega
-
 lemma le_of_mem_getD_tableau {t : List (List ℕ)} (ht : IsTableau t) (i : ℕ) {x : ℕ}
     (hx : x ∈ t.getD i []) : i ≤ x := by
   obtain ⟨c, hc, rfl⟩ := List.mem_iff_getElem.1 hx
-  exact le_of_getElem_tableau ht i c hc
+  exact ht.index_le_getElem hc
 
 /-- Rows of index at least `k` contain no letter smaller than `k`. -/
 lemma countP_lt_row_eq_zero {t : List (List ℕ)} (ht : IsTableau t) {i k : ℕ} (hik : k ≤ i) :

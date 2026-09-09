@@ -55,8 +55,6 @@ def invStd (w : List ℕ) : List ℕ := (range w.length).map fun i => w.idxOf i
 lemma IsStd.mem_of_lt (hw : IsStd w) {i : ℕ} (hi : i < w.length) : i ∈ w :=
   hw.mem_iff.2 (mem_range.2 hi)
 
-lemma IsStd.nodup' (hw : IsStd w) : w.Nodup := hw.nodup_iff.2 nodup_range
-
 lemma IsStd.idxOf_lt (hw : IsStd w) {i : ℕ} (hi : i < w.length) : w.idxOf i < w.length :=
   idxOf_lt_length_iff.2 (hw.mem_of_lt hi)
 
@@ -65,7 +63,7 @@ lemma IsStd.getElem_idxOf (hw : IsStd w) {i : ℕ} (hi : i < w.length) :
   List.getElem_idxOf _
 
 lemma IsStd.idxOf_getElem (hw : IsStd w) {j : ℕ} (hj : j < w.length) : w.idxOf w[j] = j :=
-  Nodup.idxOf_getElem hw.nodup' j hj
+  Nodup.idxOf_getElem (IsStd.nodup hw) j hj
 
 lemma IsStd.getElem_lt (hw : IsStd w) {j : ℕ} (hj : j < w.length) : w[j] < w.length := by
   have := hw.mem_iff (a := w[j])
@@ -97,7 +95,7 @@ theorem invStd_invStd (hw : IsStd w) : invStd (invStd w) = w := by
   rw [getElem_invStd]
   calc (invStd w).idxOf i
       = (invStd w).idxOf ((invStd w)[w[i]]'(by simpa using hw.getElem_lt hiw)) := by rw [hkey]
-    _ = w[i] := Nodup.idxOf_getElem (isStd_invStd hw).nodup' _ _
+    _ = w[i] := Nodup.idxOf_getElem (IsStd.nodup (isStd_invStd hw)) _ _
 
 /-! ### Inverse sequences -/
 
@@ -108,10 +106,6 @@ def IsInvSeq (u v : List ℕ) : Prop :=
 
 lemma getD_invStd {i : ℕ} (hi : i < w.length) : (invStd w).getD i 0 = w.idxOf i := by
   rw [List.getD_eq_getElem _ _ (by simpa using hi), getElem_invStd]
-
-lemma IsStd.getD_lt' (hw : IsStd w) {i : ℕ} (hi : i < w.length) : w.getD i 0 < w.length := by
-  rw [List.getD_eq_getElem _ _ hi]
-  exact hw.getElem_lt hi
 
 lemma IsStd.getD_idxOf (hw : IsStd w) {i : ℕ} (hi : i < w.length) :
     w.getD (w.idxOf i) 0 = i := by
@@ -126,7 +120,8 @@ lemma IsStd.idxOf_getD (hw : IsStd w) {j : ℕ} (hj : j < w.length) :
 /-- A standard word and its inverse are inverse sequences. -/
 lemma isInvSeq_invStd (hw : IsStd w) : IsInvSeq w (invStd w) := by
   refine ⟨by simp, fun i hi => ?_⟩
-  have hlt : w.getD i 0 < (invStd w).length := by simpa using hw.getD_lt' hi
+  have hlt : w.getD i 0 < (invStd w).length := by
+    simpa using IsStd.getD_lt hw hi
   exact ⟨hlt, by rw [getD_invStd (by simpa using hlt), hw.idxOf_getD hi]⟩
 
 /-- The inverse of a standard word and the word itself are inverse sequences. -/
@@ -175,7 +170,7 @@ private lemma greeneSize_transportCol (hw : IsStd w) (c : ℕ → Option ℕ) :
   · intro i hi
     simp only [Finset.coe_filter, Set.mem_ofPred_eq, Finset.mem_range, length_invStd] at hi ⊢
     obtain ⟨hir, his⟩ := hi
-    have hlt : w.getD i 0 < w.length := hw.getD_lt' hir
+    have hlt : w.getD i 0 < w.length := IsStd.getD_lt hw hir
     refine ⟨hlt, ?_⟩
     rw [transportCol, ite_eq_left hlt, hw.idxOf_getD hir]
     exact his

@@ -100,12 +100,6 @@ lemma bumped_isSome_of_lt_mem {r : List T} {l c : T} (hc : c ∈ r) (hlc : l < c
   have : insPos r l < r.length := lt_of_le_of_lt hle hi
   exact ⟨r[insPos r l], List.getElem?_eq_getElem this⟩
 
-lemma bumped_eq_none_of_forall_le' {r : List T} {l : T} (h : ∀ c ∈ r, c ≤ l) :
-    bumped r l = none := by
-  rcases hb : bumped r l with _ | b
-  · rfl
-  · exact absurd (h b (mem_of_bumped hb)) (not_le.2 (lt_of_bumped hb))
-
 /-- The bumped entry is the smallest entry of the row which is larger than `l`. -/
 lemma bumped_le_of_lt_mem {r : List T} (hr : IsRow r) {l b c : T} (hb : bumped r l = some b)
     (hc : c ∈ r) (hlc : l < c) : b ≤ c := by

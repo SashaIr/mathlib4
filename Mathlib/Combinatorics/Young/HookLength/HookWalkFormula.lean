@@ -488,15 +488,6 @@ theorem numStdTab_mul_hookProd_hookWalk (hlam : IsPart lam) :
     numStdTab lam * hookProd lam = Nat.factorial lam.sum :=
   numStdTab_mul_hookProd_aux lam.sum lam hlam rfl
 
-/-- The number of standard Young tableaux of a shape which is a partition is positive. -/
-lemma numStdTab_pos_of_isPart (hlam : IsPart lam) : 0 < numStdTab lam := by
-  rcases Nat.eq_zero_or_pos (numStdTab lam) with h | h
-  · exfalso
-    have := numStdTab_mul_hookProd_hookWalk hlam
-    rw [h, zero_mul] at this
-    exact absurd this.symm (Nat.factorial_pos lam.sum).ne'
-  · exact h
-
 /-- **The hook walk ends at a corner with the branching probability**: the walk started at a
 uniformly chosen box of a partition `lam` of `n` ends at the corner of the row `al` with
 probability `f^(lam ∖ al) / f^lam`, the ratio of the numbers of standard Young tableaux.
@@ -515,9 +506,9 @@ theorem sum_hookWalkProb_cells_div_sum (hlam : IsPart lam) (hal : IsRemCorner la
   have hlamf := numStdTab_mul_hookProd_hookWalk hlam
   have hmuf := numStdTab_mul_hookProd_hookWalk hmu
   rw [hsum] at hmuf
-  have hnum : (0 : ℚ) < numStdTab lam := by exact_mod_cast numStdTab_pos_of_isPart hlam
+  have hnum : (0 : ℚ) < numStdTab lam := by exact_mod_cast numStdTab_pos hlam
   have hnumu : (0 : ℚ) < numStdTab (decrNth lam al) := by
-    exact_mod_cast numStdTab_pos_of_isPart hmu
+    exact_mod_cast numStdTab_pos hmu
   have hprod : (0 : ℚ) < hookProd lam := by exact_mod_cast hookProd_pos hlam
   have hprodmu : (0 : ℚ) < hookProd (decrNth lam al) := by exact_mod_cast hookProd_pos hmu
   have hfac : (Nat.factorial lam.sum : ℚ) = lam.sum * Nat.factorial (lam.sum - 1) := by

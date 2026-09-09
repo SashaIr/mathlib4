@@ -114,7 +114,7 @@ theorem card_ssyt_eq_kostkaNum (sh : List ℕ) (d : Fin m →₀ ℕ) :
     exact Subtype.ext (Subtype.ext (mapTab_injective Fin.val_injective h'))
   · rintro ⟨P, hPtab, hPsh, hPlt, hPcount⟩
     obtain ⟨Q, rfl⟩ := exists_mapTab_val hPlt
-    have hQtab : IsTableau Q := isTableau_of_isTableau_mapTab strictMono_val hPtab
+    have hQtab : IsTableau Q := isTableau_of_isTableau_mapTab Fin.val_strictMono hPtab
     have hQsh : shape Q = sh := by rwa [shape_mapTab] at hPsh
     exact ⟨⟨⟨Q, hQtab, hQsh⟩, (hcount_iff Q).2 hPcount⟩, rfl⟩
 

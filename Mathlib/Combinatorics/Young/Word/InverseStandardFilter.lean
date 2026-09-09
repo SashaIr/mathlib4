@@ -110,7 +110,7 @@ private lemma mem_ltFilter_invStd (hw : IsStd w) (x : ℕ) :
 private lemma perm_ltFilter_invStd (hw : IsStd w) :
     (ltFilter k (invStd w)).Perm (List.range (min k w.length)) := by
   refine (List.perm_ext_iff_of_nodup ?_ List.nodup_range).2 fun x => ?_
-  · exact ((isStd_invStd hw).nodup').filter _
+  · exact ((isStd_invStd hw).nodup).filter _
   · rw [mem_ltFilter_invStd hw, List.mem_range]
 
 private lemma length_ltFilter_invStd (hw : IsStd w) :
@@ -129,7 +129,7 @@ private lemma idxOf_ltFilter_invStd (hw : IsStd w) {j : ℕ} (hj : j < min k w.l
   have hjw : j < w.length := lt_of_lt_of_le hj (min_le_right _ _)
   have hjk : j < k := lt_of_lt_of_le hj (min_le_left _ _)
   set v := w.getD j 0 with hv
-  have hvn : v < w.length := hw.getD_lt' hjw
+  have hvn : v < w.length := hw.getD_lt hjw
   have hidx : w.idxOf v = j := hw.idxOf_getD hjw
   have hinj : ∀ x ∈ smallPos w k, w.idxOf x = w.idxOf v → x = v := by
     intro x hx hxv
@@ -158,7 +158,7 @@ private lemma getElem_std_take (hw : IsStd w) {j : ℕ} (hj : j < min k w.length
     rw [List.getElem_take, List.getD_eq_getElem _ _ hq2]
   have hjA : j < (w.take k).length := by rw [hlen]; exact hj
   set v := w.getD j 0 with hv
-  have hvn : v < w.length := hw.getD_lt' hjw
+  have hvn : v < w.length := hw.getD_lt hjw
   have hcount : ((List.range v).filter fun i => decide (w.idxOf i < k)).length
       = ((Finset.range v).filter fun i => w.idxOf i < k).card := rfl
   rw [getElem_std, stdRank, hcount]
