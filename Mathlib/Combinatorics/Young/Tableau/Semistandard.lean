@@ -38,20 +38,20 @@ namespace List
 
 open List
 
-variable {t : List (List ℕ)} {mu : YoungDiagram}
+variable {t : List (List ℕ)} {μ : YoungDiagram}
 
 /-! ### From tableaux to semistandard Young tableaux -/
 
-/-- The rows of a tableau whose shape is the list of row lengths of `mu` have the lengths
-prescribed by `mu`. -/
-lemma length_getD_of_shape_eq (hshape : shape t = mu.rowLens) (i : ℕ) :
-    (t.getD i []).length = mu.rowLen i := by
+/-- The rows of a tableau whose shape is the list of row lengths of `μ` have the lengths
+prescribed by `μ`. -/
+lemma length_getD_of_shape_eq (hshape : shape t = μ.rowLens) (i : ℕ) :
+    (t.getD i []).length = μ.rowLen i := by
   rw [← getD_shape, hshape, YoungDiagram.getD_rowLens]
 
 /-- **A Coq-Combi tableau is a semistandard Young tableau**: the entry function of a
-tableau of shape `mu.rowLens` is a semistandard Young tableau of shape `mu`. -/
-def ssytOfTableau (mu : YoungDiagram) (htab : IsTableau t) (hshape : shape t = mu.rowLens) :
-    SemistandardYoungTableau mu where
+tableau of shape `μ.rowLens` is a semistandard Young tableau of shape `μ`. -/
+def ssytOfTableau (μ : YoungDiagram) (htab : IsTableau t) (hshape : shape t = μ.rowLens) :
+    SemistandardYoungTableau μ where
   entry i j := (t.getD i []).getD j 0
   row_weak' {i j1 j2} hj hcell := by
     have h2 : j2 < (t.getD i []).length := by
@@ -72,54 +72,54 @@ def ssytOfTableau (mu : YoungDiagram) (htab : IsTableau t) (hshape : shape t = m
     rw [length_getD_of_shape_eq hshape]
     exact not_lt.1 fun h => hcell (YoungDiagram.mem_iff_lt_rowLen.2 h)
 
-@[simp] lemma ssytOfTableau_apply (mu : YoungDiagram) (htab : IsTableau t)
-    (hshape : shape t = mu.rowLens) (i j : ℕ) :
-    ssytOfTableau mu htab hshape i j = (t.getD i []).getD j 0 := rfl
+@[simp] lemma ssytOfTableau_apply (μ : YoungDiagram) (htab : IsTableau t)
+    (hshape : shape t = μ.rowLens) (i j : ℕ) :
+    ssytOfTableau μ htab hshape i j = (t.getD i []).getD j 0 := rfl
 
 /-! ### From semistandard Young tableaux to tableaux -/
 
 /-- The list of rows of a semistandard Young tableau. -/
-def tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) : List (List ℕ) :=
-  (List.range (mu.colLen 0)).map fun i => (List.range (mu.rowLen i)).map (T i)
+def tableauOfSSYT (μ : YoungDiagram) (T : SemistandardYoungTableau μ) : List (List ℕ) :=
+  (List.range (μ.colLen 0)).map fun i => (List.range (μ.rowLen i)).map (T i)
 
-@[simp] lemma length_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) :
-    (tableauOfSSYT mu T).length = mu.colLen 0 := by
+@[simp] lemma length_tableauOfSSYT (μ : YoungDiagram) (T : SemistandardYoungTableau μ) :
+    (tableauOfSSYT μ T).length = μ.colLen 0 := by
   simp [tableauOfSSYT]
 
-lemma getD_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) (i : ℕ) :
-    (tableauOfSSYT mu T).getD i [] = (List.range (mu.rowLen i)).map (T i) := by
-  rcases Nat.lt_or_ge i (mu.colLen 0) with hi | hi
+lemma getD_tableauOfSSYT (μ : YoungDiagram) (T : SemistandardYoungTableau μ) (i : ℕ) :
+    (tableauOfSSYT μ T).getD i [] = (List.range (μ.rowLen i)).map (T i) := by
+  rcases Nat.lt_or_ge i (μ.colLen 0) with hi | hi
   · rw [List.getD_eq_getElem _ _ (by simpa using hi)]
     simp [tableauOfSSYT]
-  · have hrow : mu.rowLen i = 0 := by
+  · have hrow : μ.rowLen i = 0 := by
       by_contra hc
-      have : (i, 0) ∈ mu := YoungDiagram.mem_iff_lt_rowLen.2 (by omega)
+      have : (i, 0) ∈ μ := YoungDiagram.mem_iff_lt_rowLen.2 (by omega)
       exact absurd (YoungDiagram.mem_iff_lt_colLen.1 this) (by omega)
     rw [List.getD_eq_default _ _ (by simpa using hi), hrow]
     simp
 
 /-- The entries are preserved: the `(i, j)` entry of the tableau of rows of `T` is
 `T i j`. -/
-lemma entry_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu)
-    (i j : ℕ) : (((tableauOfSSYT mu T).getD i []).getD j 0) = T i j := by
+lemma entry_tableauOfSSYT (μ : YoungDiagram) (T : SemistandardYoungTableau μ)
+    (i j : ℕ) : (((tableauOfSSYT μ T).getD i []).getD j 0) = T i j := by
   rw [getD_tableauOfSSYT]
-  rcases Nat.lt_or_ge j (mu.rowLen i) with hj | hj
+  rcases Nat.lt_or_ge j (μ.rowLen i) with hj | hj
   · rw [List.getD_eq_getElem _ _ (by simpa using hj)]
     simp
   · rw [List.getD_eq_default _ _ (by simpa using hj)]
     exact (T.zeros fun hc => absurd (YoungDiagram.mem_iff_lt_rowLen.1 hc) (by omega)).symm
 
-/-- The shape of the tableau of rows of `T` is the list of row lengths of `mu`. -/
-@[simp] lemma shape_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) :
-    shape (tableauOfSSYT mu T) = mu.rowLens := by
+/-- The shape of the tableau of rows of `T` is the list of row lengths of `μ`. -/
+@[simp] lemma shape_tableauOfSSYT (μ : YoungDiagram) (T : SemistandardYoungTableau μ) :
+    shape (tableauOfSSYT μ T) = μ.rowLens := by
   simp [shape, tableauOfSSYT, YoungDiagram.rowLens, List.map_map, Function.comp_def]
 
 /-- The rows of a semistandard Young tableau form a Coq-Combi tableau. -/
-lemma isTableau_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau mu) :
-    IsTableau (tableauOfSSYT mu T) := by
+lemma isTableau_tableauOfSSYT (μ : YoungDiagram) (T : SemistandardYoungTableau μ) :
+    IsTableau (tableauOfSSYT μ T) := by
   refine isTableau_of_getD (fun i hi => ?_) (fun i => ?_) (fun i => ?_)
   · rw [length_tableauOfSSYT] at hi
-    have hrow : 0 < mu.rowLen i :=
+    have hrow : 0 < μ.rowLen i :=
       YoungDiagram.mem_iff_lt_rowLen.1 (YoungDiagram.mem_iff_lt_colLen.2 hi)
     rw [getD_tableauOfSSYT]
     simp only [ne_eq, List.map_eq_nil_iff, List.range_eq_nil]
@@ -131,7 +131,7 @@ lemma isTableau_tableauOfSSYT (mu : YoungDiagram) (T : SemistandardYoungTableau 
     simp only [List.getElem_range] at *
     exact T.row_weak hab (YoungDiagram.mem_iff_lt_rowLen.2 (by simpa using hb))
   · rw [getD_tableauOfSSYT, getD_tableauOfSSYT]
-    refine dominate_of_getElem (by simpa using mu.rowLen_anti i (i + 1) (Nat.le_succ i)) ?_
+    refine dominate_of_getElem (by simpa using μ.rowLen_anti i (i + 1) (Nat.le_succ i)) ?_
     intro j hj
     simp only [List.length_map, List.length_range] at hj
     simp only [List.getElem_map, List.getElem_range]
@@ -156,14 +156,14 @@ lemma eq_of_shape_eq_of_getD_eq {a b : List (List ℕ)} (hs : shape a = shape b)
 
 /-- **The tableaux of a given shape are the semistandard Young tableaux of the
 corresponding Young diagram.** -/
-def tableauEquivSSYT (mu : YoungDiagram) :
-    {t : List (List ℕ) // IsTableau t ∧ shape t = mu.rowLens} ≃
-      SemistandardYoungTableau mu where
-  toFun t := ssytOfTableau mu t.2.1 t.2.2
-  invFun T := ⟨tableauOfSSYT mu T, isTableau_tableauOfSSYT mu T, shape_tableauOfSSYT mu T⟩
+def tableauEquivSSYT (μ : YoungDiagram) :
+    {t : List (List ℕ) // IsTableau t ∧ shape t = μ.rowLens} ≃
+      SemistandardYoungTableau μ where
+  toFun t := ssytOfTableau μ t.2.1 t.2.2
+  invFun T := ⟨tableauOfSSYT μ T, isTableau_tableauOfSSYT μ T, shape_tableauOfSSYT μ T⟩
   left_inv t := Subtype.ext <| eq_of_shape_eq_of_getD_eq
-    (by rw [shape_tableauOfSSYT, t.2.2]) fun i j => entry_tableauOfSSYT mu _ i j
-  right_inv T := SemistandardYoungTableau.ext fun i j => entry_tableauOfSSYT mu T i j
+    (by rw [shape_tableauOfSSYT, t.2.2]) fun i j => entry_tableauOfSSYT μ _ i j
+  right_inv T := SemistandardYoungTableau.ext fun i j => entry_tableauOfSSYT μ T i j
 
 /-- **The tableaux of shape `sh` are the semistandard Young tableaux of the Young diagram
 of `sh`.** -/
