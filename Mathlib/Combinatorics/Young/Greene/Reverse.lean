@@ -49,12 +49,27 @@ lemma greeneSize_revCol (w : List T) (c : ℕ → Option ℕ) :
     greeneSize w (revCol w.length c) = greeneSize w c := by
   rw [greeneSize, greeneSize]
   refine Finset.card_bij' (fun i _ => w.length - 1 - i) (fun i _ => w.length - 1 - i)
-    ?_ ?_ ?_ ?_ <;> intro i hi <;>
-    simp only [Finset.mem_filter, Finset.mem_range, revCol] at hi ⊢
-  · exact ⟨by omega, hi.2⟩
-  · exact ⟨by omega, by rw [show w.length - 1 - (w.length - 1 - i) = i by omega]; exact hi.2⟩
-  · omega
-  · omega
+    ?_ ?_ ?_ ?_ <;> intro i hi
+  · rcases Finset.mem_filter.1 hi with ⟨hi_range, hi_color⟩
+    have hi_range := Finset.mem_range.1 hi_range
+    have hn : 0 < w.length := by omega
+    have hpred : w.length - 1 < w.length := Nat.sub_lt hn (by omega)
+    apply Finset.mem_filter.2
+    exact ⟨Finset.mem_range.2 (lt_of_le_of_lt (Nat.sub_le _ _) hpred), hi_color⟩
+  · rcases Finset.mem_filter.1 hi with ⟨hi_range, hi_color⟩
+    have hi_range := Finset.mem_range.1 hi_range
+    have hn : 0 < w.length := by omega
+    have hpred : w.length - 1 < w.length := Nat.sub_lt hn (by omega)
+    apply Finset.mem_filter.2
+    exact ⟨Finset.mem_range.2 (lt_of_le_of_lt (Nat.sub_le _ _) hpred),
+      by simp only [revCol]
+         rw [show w.length - 1 - (w.length - 1 - i) = i by omega]
+         exact hi_color⟩
+  · have hi_range := Finset.mem_range.1 (Finset.mem_filter.1 hi).1
+    simp only [revCol] at hi ⊢
+    omega
+  · have hi_range := Finset.mem_range.1 (Finset.mem_filter.1 hi).1
+    omega
 
 /-! ### Exchanging nondecreasing and strictly decreasing colourings -/
 
