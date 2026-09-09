@@ -95,7 +95,9 @@ lemma getD_getD_conjTab {t : List (List ℕ)} (h : IsPart (shape t)) {i j : ℕ}
     (hij : InShape (shape t) (i, j)) :
     ((conjTab t).getD j []).getD i 0 = (t.getD i []).getD j 0 := by
   rw [getD_conjTab t (lt_headD_shape_of_inShape h hij),
-    List.getD_eq_getElem _ _ (by simpa using (inShape_conjPart h i j).1 hij)]
+    List.getD_eq_getElem _ _ (by
+      simpa [List.length_map, List.length_range, InShape] using
+        (inShape_conjPart h i j).1 hij)]
   simp
 
 /-- The entries of the transpose, in `getElem` form. -/
@@ -146,7 +148,8 @@ private lemma coe_eq_sum_singleton_range (l : List ℕ) {C : ℕ} (hC : l.length
   have hsub : Finset.range l.length ⊆ Finset.range C := by
     intro x hx; simp only [Finset.mem_range] at hx ⊢; omega
   rw [← Finset.sum_subset hsub
-    (fun x _ hx => by simp only [Finset.mem_range] at hx; rw [ite_eq_right hx]), coe_eq_sum_singleton l]
+    (fun x _ hx => by simp only [Finset.mem_range] at hx; rw [ite_eq_right hx]),
+    coe_eq_sum_singleton l]
   exact Finset.sum_congr rfl fun j hj => by rw [ite_eq_left (Finset.mem_range.1 hj)]
 
 /-- The reading word and the concatenation have the same entries. -/
