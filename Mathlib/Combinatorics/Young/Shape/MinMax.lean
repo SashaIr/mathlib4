@@ -63,15 +63,12 @@ lemma isPart_partMin : ∀ {s t : List ℕ}, IsPart s → IsPart t → IsPart (p
         | cons c t' => simpa using ht.1
       have key : ∀ l : List ℕ, l = partMin s t → l.headD 1 ≤ min a b := by
         rintro (_ | ⟨x, l⟩) hl
-        · simp only [List.headD_nil]
-          have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
+        · have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
           have hb : 0 < (b :: t).headD 0 := ht.headD_pos (by simp)
-          simp only [List.headD_cons] at ha hb
-          omega
+          grind
         · have hx : x = (partMin s t).getD 0 0 := by rw [← hl]; rfl
           rw [getD_partMin] at hx
-          simp only [List.headD_cons]
-          omega
+          grind
       exact key _ rfl
 
 /-! ### The componentwise maximum -/
@@ -115,14 +112,11 @@ lemma isPart_partMax : ∀ {s t : List ℕ}, IsPart s → IsPart t → IsPart (p
         | cons c t' => simpa using ht.1
       have key : ∀ l : List ℕ, l = partMax s t → l.headD 1 ≤ max a b := by
         rintro (_ | ⟨x, l⟩) hl
-        · simp only [List.headD_nil]
-          have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
-          simp only [List.headD_cons] at ha
-          omega
+        · have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
+          grind
         · have hx : x = (partMax s t).getD 0 0 := by rw [← hl]; rfl
           rw [getD_partMax] at hx
-          simp only [List.headD_cons]
-          omega
+          grind
       exact key _ rfl
 
 /-! ### Sums -/
