@@ -41,11 +41,10 @@ variable {k G V W : Type u} [Field k] [Group G] [AddCommGroup V] [Module k V]
 
 /-- The morphisms `FDRep.of ρ ⟶ FDRep.of σ` are exactly the intertwining maps from `ρ` to
 `σ`. -/
-noncomputable def fdrepHomEquivIntertwiningMap (ρ : Representation k G V) (σ : Representation k G W) :
-    (FDRep.of ρ ⟶ FDRep.of σ) ≃ₗ[k] IntertwiningMap ρ σ where
+noncomputable def fdrepHomEquivIntertwiningMap (ρ : Representation k G V)
+    (σ : Representation k G W) : (FDRep.of ρ ⟶ FDRep.of σ) ≃ₗ[k] IntertwiningMap ρ σ where
   toFun f := ⟨f.hom.hom.hom, fun g => by
     ext1
-    simp only [FGModuleCat.obj_carrier]
     exact ConcreteCategory.congr_hom ((forget (FGModuleCat k)).congr_map (f.comm g)) _⟩
   invFun f := ⟨FGModuleCat.ofHom f.toLinearMap, by
     intro g
@@ -66,7 +65,7 @@ theorem simple_of_isIrreducible (ρ : Representation k G V) [ρ.IsIrreducible] :
   have hb : Function.Bijective (algebraMap k (IntertwiningMap ρ ρ)) :=
     Representation.IsIrreducible.algebraMap_intertwiningMap_bijective_of_isAlgClosed
   have h := (LinearEquiv.ofBijective (Algebra.linearMap k (IntertwiningMap ρ ρ)) hb).finrank_eq
-  simpa using h.symm
+  simp [h.symm]
 
 /-- A nonzero object of `FDRep k G` which is not simple has a subrepresentation which is
 neither `⊥` nor `⊤`. -/
