@@ -12,7 +12,7 @@ import Mathlib.GroupTheory.Perm.SymmetricGroup.SwapRelations
 
 Following `theories/SymGroup/presentSn.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove that the symmetric group
-`Equiv.Perm (Fin (n + 1))` is the Coxeter group of type `Aₙ`: the adjacent transpositions
+`Equiv.Perm (Fin (n + 1))` is the Coxeter group of type `A`: the adjacent transpositions
 `(i, i+1)` generate it, and the only relations between them are the Coxeter relations
 `s_i² = 1`, `(s_i s_{i+1})³ = 1` and `(s_i s_j)² = 1` for `|i - j| ≥ 2`.
 
@@ -26,10 +26,10 @@ in the symmetric group moves the last point as soon as `i ≠ 0`.
 ## Main definitions and results
 
 * `Equiv.Perm.adjSwap` : the adjacent transposition `(i, i+1)` of `Fin (n + 1)`.
-* `Equiv.Perm.permOfCox` : the morphism from the Coxeter group of type `Aₙ` to
+* `Equiv.Perm.permOfCox` : the morphism from the Coxeter group of type `A` to
   `Equiv.Perm (Fin (n + 1))`.
 * `Equiv.Perm.permOfCox_bijective` : it is an isomorphism.
-* `Equiv.Perm.permCoxeterSystem` : the resulting Coxeter system of type `Aₙ` on
+* `Equiv.Perm.permCoxeterSystem` : the resulting Coxeter system of type `A` on
   `Equiv.Perm (Fin (n + 1))`, whose simple reflections are the adjacent transpositions.
 -/
 
@@ -44,20 +44,20 @@ namespace Equiv.Perm
 def adjSwap (n : ℕ) (i : Fin n) : Equiv.Perm (Fin (n + 1)) :=
   Equiv.swap i.castSucc i.succ
 
-/-- The adjacent transpositions satisfy the Coxeter relations of type `Aₙ`. -/
-lemma isLiftable_adjSwap (n : ℕ) : (CoxeterMatrix.Aₙ n).IsLiftable (adjSwap n) := by
+/-- The adjacent transpositions satisfy the Coxeter relations of type `A`. -/
+lemma isLiftable_adjSwap (n : ℕ) : (CoxeterMatrix.A n).IsLiftable (adjSwap n) := by
   intro i j
   have hcs : ∀ a : Fin n, ((a.castSucc : Fin (n + 1)) : ℕ) = (a : ℕ) := fun _ => rfl
   have hsc : ∀ a : Fin n, ((a.succ : Fin (n + 1)) : ℕ) = (a : ℕ) + 1 := fun _ => rfl
   by_cases hij : i = j
   · subst hij
-    have hM : (CoxeterMatrix.Aₙ n) i i = 1 := by
-      simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, ite_eq_left]
+    have hM : (CoxeterMatrix.A n) i i = 1 := by
+      simp only [CoxeterMatrix.A, Matrix.of_apply, ite_eq_left]
     rw [hM, pow_one, adjSwap, Equiv.swap_mul_self]
   · have hne : (i : ℕ) ≠ (j : ℕ) := fun h => hij (Fin.ext h)
     by_cases hadj : (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j
-    · have hM : (CoxeterMatrix.Aₙ n) i j = 3 := by
-        simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, ite_eq_right hij, ite_eq_left hadj]
+    · have hM : (CoxeterMatrix.A n) i j = 3 := by
+        simp only [CoxeterMatrix.A, Matrix.of_apply, ite_eq_right hij, ite_eq_left hadj]
       rw [hM, adjSwap, adjSwap]
       rcases hadj with h | h
       · have he : (j.succ : Fin (n + 1)) = i.castSucc := Fin.ext (by rw [hsc, hcs]; omega)
@@ -72,8 +72,8 @@ lemma isLiftable_adjSwap (n : ℕ) : (CoxeterMatrix.Aₙ n).IsLiftable (adjSwap 
         have h3 : (i.castSucc : Fin (n + 1)) ≠ j.succ := Fin.ne_of_val_ne (by rw [hcs, hsc]; omega)
         rw [← he]
         exact swap_mul_swap_pow_three h1 h2 h3
-    · have hM : (CoxeterMatrix.Aₙ n) i j = 2 := by
-        simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, ite_eq_right hij, ite_eq_right hadj]
+    · have hM : (CoxeterMatrix.A n) i j = 2 := by
+        simp only [CoxeterMatrix.A, Matrix.of_apply, ite_eq_right hij, ite_eq_right hadj]
       push Not at hadj
       obtain ⟨h1, h2⟩ := hadj
       rw [hM, adjSwap, adjSwap]
@@ -82,14 +82,14 @@ lemma isLiftable_adjSwap (n : ℕ) : (CoxeterMatrix.Aₙ n).IsLiftable (adjSwap 
         (Fin.ne_of_val_ne (by rw [hsc, hcs]; omega))
         (Fin.ne_of_val_ne (by rw [hsc, hsc]; omega))
 
-/-- The morphism from the Coxeter group of type `Aₙ` to the symmetric group of
+/-- The morphism from the Coxeter group of type `A` to the symmetric group of
 `Fin (n + 1)`, sending the `i`-th simple reflection to the transposition `(i, i+1)`. -/
-noncomputable def permOfCox (n : ℕ) : (CoxeterMatrix.Aₙ n).Group →* Equiv.Perm (Fin (n + 1)) :=
-  (CoxeterMatrix.Aₙ n).toCoxeterSystem.lift ⟨adjSwap n, isLiftable_adjSwap n⟩
+noncomputable def permOfCox (n : ℕ) : (CoxeterMatrix.A n).Group →* Equiv.Perm (Fin (n + 1)) :=
+  (CoxeterMatrix.A n).toCoxeterSystem.lift ⟨adjSwap n, isLiftable_adjSwap n⟩
 
 @[simp] lemma permOfCox_simple (n : ℕ) (i : Fin n) :
-    permOfCox n ((CoxeterMatrix.Aₙ n).simple i) = adjSwap n i :=
-  (CoxeterMatrix.Aₙ n).toCoxeterSystem.lift_apply_simple (isLiftable_adjSwap n) i
+    permOfCox n ((CoxeterMatrix.A n).simple i) = adjSwap n i :=
+  (CoxeterMatrix.A n).toCoxeterSystem.lift_apply_simple (isLiftable_adjSwap n) i
 
 /-- The adjacent transpositions generate the symmetric group, so `permOfCox` is
 surjective. -/
@@ -100,7 +100,7 @@ theorem permOfCox_surjective (n : ℕ) : Function.Surjective (permOfCox n) := by
     rw [Equiv.Perm.mclosure_swap_castSucc_succ]
     exact Submonoid.mem_top sigma
   induction hmem using Submonoid.closure_induction with
-  | mem x hx => obtain ⟨i, rfl⟩ := hx; exact ⟨(CoxeterMatrix.Aₙ n).simple i, permOfCox_simple n i⟩
+  | mem x hx => obtain ⟨i, rfl⟩ := hx; exact ⟨(CoxeterMatrix.A n).simple i, permOfCox_simple n i⟩
   | one => exact ⟨1, map_one _⟩
   | mul x y _ _ hx hy =>
       obtain ⟨a, rfl⟩ := hx
@@ -111,11 +111,11 @@ theorem permOfCox_surjective (n : ℕ) : Function.Surjective (permOfCox n) := by
 
 /-- The `k`-th simple reflection of the Coxeter group of type `A_N`, with the convention
 that it is the identity when `k` is out of range. -/
-noncomputable def coxGen (N k : ℕ) : (CoxeterMatrix.Aₙ N).Group :=
-  if h : k < N then (CoxeterMatrix.Aₙ N).simple ⟨k, h⟩ else 1
+noncomputable def coxGen (N k : ℕ) : (CoxeterMatrix.A N).Group :=
+  if h : k < N then (CoxeterMatrix.A N).simple ⟨k, h⟩ else 1
 
 lemma coxGen_of_lt {N k : ℕ} (h : k < N) :
-    coxGen N k = (CoxeterMatrix.Aₙ N).simple ⟨k, h⟩ := dite_eq_left h
+    coxGen N k = (CoxeterMatrix.A N).simple ⟨k, h⟩ := dite_eq_left h
 
 lemma coxGen_of_le {N k : ℕ} (h : N ≤ k) : coxGen N k = 1 := dite_eq_right (by omega)
 
@@ -142,35 +142,35 @@ lemma braid_of_cube {G : Type*} [Group G] {a b : G} (ha : a * a = 1) (hb : b * b
 @[simp] lemma coxGen_mul_self (N k : ℕ) : coxGen N k * coxGen N k = 1 := by
   rw [coxGen]
   split_ifs with h
-  · exact (CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_self _
+  · exact (CoxeterMatrix.A N).toCoxeterSystem.simple_mul_simple_self _
   · exact mul_one 1
 
 lemma coxGen_comm {N k l : ℕ} (h : k + 1 < l) :
     coxGen N k * coxGen N l = coxGen N l * coxGen N k := by
   by_cases hl : l < N
   · have hk : k < N := by omega
-    have hM : (CoxeterMatrix.Aₙ N) ⟨k, hk⟩ ⟨l, hl⟩ = 2 := by
-      simp only [CoxeterMatrix.Aₙ, Matrix.of_apply]
+    have hM : (CoxeterMatrix.A N) ⟨k, hk⟩ ⟨l, hl⟩ = 2 := by
+      simp only [CoxeterMatrix.A, Matrix.of_apply]
       rw [ite_eq_right (by simp only [Fin.mk.injEq]; omega), ite_eq_right (by omega)]
-    have hpow := (CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_pow ⟨k, hk⟩ ⟨l, hl⟩
+    have hpow := (CoxeterMatrix.A N).toCoxeterSystem.simple_mul_simple_pow ⟨k, hk⟩ ⟨l, hl⟩
     rw [hM] at hpow
     rw [coxGen_of_lt hk, coxGen_of_lt hl]
-    exact mul_comm_of_sq ((CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_self _)
-      ((CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_self _) hpow
+    exact mul_comm_of_sq ((CoxeterMatrix.A N).toCoxeterSystem.simple_mul_simple_self _)
+      ((CoxeterMatrix.A N).toCoxeterSystem.simple_mul_simple_self _) hpow
   · rw [coxGen_of_le (by omega : N ≤ l), mul_one, one_mul]
 
 lemma coxGen_braid {N k : ℕ} (h : k + 1 < N) :
     coxGen N k * coxGen N (k + 1) * coxGen N k
       = coxGen N (k + 1) * coxGen N k * coxGen N (k + 1) := by
   have hk : k < N := by omega
-  have hM : (CoxeterMatrix.Aₙ N) ⟨k, hk⟩ ⟨k + 1, h⟩ = 3 := by
-    simp only [CoxeterMatrix.Aₙ, Matrix.of_apply]
+  have hM : (CoxeterMatrix.A N) ⟨k, hk⟩ ⟨k + 1, h⟩ = 3 := by
+    simp only [CoxeterMatrix.A, Matrix.of_apply]
     rw [ite_eq_right (by simp only [Fin.mk.injEq]; omega), ite_eq_left (Or.inr trivial)]
-  have hpow := (CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_pow ⟨k, hk⟩ ⟨k + 1, h⟩
+  have hpow := (CoxeterMatrix.A N).toCoxeterSystem.simple_mul_simple_pow ⟨k, hk⟩ ⟨k + 1, h⟩
   rw [hM] at hpow
   rw [coxGen_of_lt hk, coxGen_of_lt h]
-  exact braid_of_cube ((CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_self _)
-    ((CoxeterMatrix.Aₙ N).toCoxeterSystem.simple_mul_simple_self _) hpow
+  exact braid_of_cube ((CoxeterMatrix.A N).toCoxeterSystem.simple_mul_simple_self _)
+    ((CoxeterMatrix.A N).toCoxeterSystem.simple_mul_simple_self _) hpow
 
 lemma permOfCox_coxGen {N k : ℕ} (h : k < N) :
     permOfCox N (coxGen N k) = adjSwap N ⟨k, h⟩ := by
@@ -179,7 +179,7 @@ lemma permOfCox_coxGen {N k : ℕ} (h : k < N) :
 /-! ### The coset representatives -/
 
 /-- The coset representative `t_i = s_{N-1} s_{N-2} ⋯ s_{N-i}`. -/
-noncomputable def cosetRep (N : ℕ) : ℕ → (CoxeterMatrix.Aₙ N).Group
+noncomputable def cosetRep (N : ℕ) : ℕ → (CoxeterMatrix.A N).Group
   | 0 => 1
   | (i + 1) => cosetRep N i * coxGen N (N - 1 - i)
 
@@ -241,24 +241,24 @@ lemma cosetRep_mul_coxGen_of_lt {N : ℕ} : ∀ (i j : ℕ), i ≤ N → N - i <
 
 /-! ### The embedding of the smaller Coxeter group -/
 
-lemma Aₙ_castSucc (n : ℕ) (i j : Fin n) :
-    (CoxeterMatrix.Aₙ (n + 1)) i.castSucc j.castSucc = (CoxeterMatrix.Aₙ n) i j := by
-  simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, Fin.castSucc_inj, Fin.val_castSucc]
+lemma A_castSucc (n : ℕ) (i j : Fin n) :
+    (CoxeterMatrix.A (n + 1)) i.castSucc j.castSucc = (CoxeterMatrix.A n) i j := by
+  simp only [CoxeterMatrix.A, Matrix.of_apply, Fin.castSucc_inj, Fin.val_castSucc]
 
 /-- The morphism from the Coxeter group of type `A_n` to the Coxeter group of type
 `A_{n+1}` sending the `i`-th simple reflection to the `i`-th simple reflection. -/
 noncomputable def coxEmbed (n : ℕ) :
-    (CoxeterMatrix.Aₙ n).Group →* (CoxeterMatrix.Aₙ (n + 1)).Group :=
-  (CoxeterMatrix.Aₙ n).toCoxeterSystem.lift
-    ⟨fun i => (CoxeterMatrix.Aₙ (n + 1)).simple i.castSucc, by
+    (CoxeterMatrix.A n).Group →* (CoxeterMatrix.A (n + 1)).Group :=
+  (CoxeterMatrix.A n).toCoxeterSystem.lift
+    ⟨fun i => (CoxeterMatrix.A (n + 1)).simple i.castSucc, by
       intro i j
-      rw [← Aₙ_castSucc n i j]
-      exact (CoxeterMatrix.Aₙ (n + 1)).toCoxeterSystem.simple_mul_simple_pow _ _⟩
+      rw [← A_castSucc n i j]
+      exact (CoxeterMatrix.A (n + 1)).toCoxeterSystem.simple_mul_simple_pow _ _⟩
 
 @[simp] lemma coxEmbed_simple (n : ℕ) (i : Fin n) :
-    coxEmbed n ((CoxeterMatrix.Aₙ n).simple i)
-      = (CoxeterMatrix.Aₙ (n + 1)).simple i.castSucc :=
-  (CoxeterMatrix.Aₙ n).toCoxeterSystem.lift_apply_simple _ i
+    coxEmbed n ((CoxeterMatrix.A n).simple i)
+      = (CoxeterMatrix.A (n + 1)).simple i.castSucc :=
+  (CoxeterMatrix.A n).toCoxeterSystem.lift_apply_simple _ i
 
 lemma coxEmbed_coxGen {n k : ℕ} (h : k < n) : coxEmbed n (coxGen n k) = coxGen (n + 1) k := by
   rw [coxGen_of_lt h, coxEmbed_simple, coxGen_of_lt (show k < n + 1 by omega)]
@@ -268,9 +268,9 @@ lemma coxEmbed_coxGen {n k : ℕ} (h : k < n) : coxEmbed n (coxGen n k) = coxGen
 
 /-- Every element of the Coxeter group of type `A_{n+1}` is the product of an element
 coming from the Coxeter group of type `A_n` by one of the `n + 2` coset representatives. -/
-lemma exists_coxEmbed_mul_cosetRep_step (n : ℕ) (v : (CoxeterMatrix.Aₙ n).Group) (i j : ℕ)
+lemma exists_coxEmbed_mul_cosetRep_step (n : ℕ) (v : (CoxeterMatrix.A n).Group) (i j : ℕ)
     (hi : i ≤ n + 1) (hj : j < n + 1) :
-    ∃ (v' : (CoxeterMatrix.Aₙ n).Group) (i' : ℕ), i' ≤ n + 1 ∧
+    ∃ (v' : (CoxeterMatrix.A n).Group) (i' : ℕ), i' ≤ n + 1 ∧
       coxEmbed n v * cosetRep (n + 1) i * coxGen (n + 1) j
         = coxEmbed n v' * cosetRep (n + 1) i' := by
   set N := n + 1 with hN
@@ -289,25 +289,25 @@ lemma exists_coxEmbed_mul_cosetRep_step (n : ℕ) (v : (CoxeterMatrix.Aₙ n).Gr
       rw [map_mul, coxEmbed_coxGen (show j - 1 < n by omega), mul_assoc, mul_assoc,
         ← cosetRep_mul_coxGen_of_lt i j hi hlt hj]
 
-theorem exists_coxEmbed_mul_cosetRep (n : ℕ) (w : (CoxeterMatrix.Aₙ (n + 1)).Group) :
-    ∃ (v : (CoxeterMatrix.Aₙ n).Group) (i : ℕ), i ≤ n + 1
+theorem exists_coxEmbed_mul_cosetRep (n : ℕ) (w : (CoxeterMatrix.A (n + 1)).Group) :
+    ∃ (v : (CoxeterMatrix.A n).Group) (i : ℕ), i ≤ n + 1
       ∧ w = coxEmbed n v * cosetRep (n + 1) i := by
-  suffices h : ∀ (v : (CoxeterMatrix.Aₙ n).Group) (i : ℕ), i ≤ n + 1 →
-      ∃ (v' : (CoxeterMatrix.Aₙ n).Group) (i' : ℕ), i' ≤ n + 1 ∧
+  suffices h : ∀ (v : (CoxeterMatrix.A n).Group) (i : ℕ), i ≤ n + 1 →
+      ∃ (v' : (CoxeterMatrix.A n).Group) (i' : ℕ), i' ≤ n + 1 ∧
         coxEmbed n v * cosetRep (n + 1) i * w = coxEmbed n v' * cosetRep (n + 1) i' by
     obtain ⟨v, i, hi, heq⟩ := h 1 0 (by omega)
     rw [map_one, cosetRep_zero, one_mul, one_mul] at heq
     exact ⟨v, i, hi, heq⟩
-  have hmem : w ∈ Submonoid.closure (Set.range (CoxeterMatrix.Aₙ (n + 1)).simple) := by
+  have hmem : w ∈ Submonoid.closure (Set.range (CoxeterMatrix.A (n + 1)).simple) := by
     rw [← CoxeterMatrix.toCoxeterSystem_simple,
-      (CoxeterMatrix.Aₙ (n + 1)).toCoxeterSystem.submonoid_closure_range_simple]
+      (CoxeterMatrix.A (n + 1)).toCoxeterSystem.submonoid_closure_range_simple]
     exact Submonoid.mem_top w
   induction hmem using Submonoid.closure_induction with
   | mem x hx =>
       obtain ⟨j, rfl⟩ := hx
       intro v i hi
       have hj : (j : ℕ) < n + 1 := j.isLt
-      have : (CoxeterMatrix.Aₙ (n + 1)).simple j = coxGen (n + 1) (j : ℕ) := by
+      have : (CoxeterMatrix.A (n + 1)).simple j = coxGen (n + 1) (j : ℕ) := by
         rw [coxGen_of_lt hj]
       rw [this]
       exact exists_coxEmbed_mul_cosetRep_step n v i j hi hj
@@ -333,10 +333,10 @@ lemma swap_castSucc_apply_castSucc (n : ℕ) (a b y : Fin (n + 1)) :
 
 /-- The image of an element coming from the smaller Coxeter group permutes the points
 `Fin.castSucc x` among themselves. -/
-lemma permOfCox_coxEmbed_castSucc (n : ℕ) (v : (CoxeterMatrix.Aₙ n).Group) (x : Fin (n + 1)) :
+lemma permOfCox_coxEmbed_castSucc (n : ℕ) (v : (CoxeterMatrix.A n).Group) (x : Fin (n + 1)) :
     permOfCox (n + 1) (coxEmbed n v) x.castSucc = (permOfCox n v x).castSucc := by
   revert x
-  refine (CoxeterMatrix.Aₙ n).toCoxeterSystem.simple_induction
+  refine (CoxeterMatrix.A n).toCoxeterSystem.simple_induction
     (p := fun w => ∀ x : Fin (n + 1),
       permOfCox (n + 1) (coxEmbed n w) x.castSucc = (permOfCox n w x).castSucc) v ?_ ?_ ?_
   · intro i x
@@ -351,9 +351,9 @@ lemma permOfCox_coxEmbed_castSucc (n : ℕ) (v : (CoxeterMatrix.Aₙ n).Group) (
     rw [hw', hw]
 
 /-- The image of an element coming from the smaller Coxeter group fixes the last point. -/
-lemma permOfCox_coxEmbed_last (n : ℕ) (v : (CoxeterMatrix.Aₙ n).Group) :
+lemma permOfCox_coxEmbed_last (n : ℕ) (v : (CoxeterMatrix.A n).Group) :
     permOfCox (n + 1) (coxEmbed n v) (Fin.last (n + 1)) = Fin.last (n + 1) := by
-  refine (CoxeterMatrix.Aₙ n).toCoxeterSystem.simple_induction
+  refine (CoxeterMatrix.A n).toCoxeterSystem.simple_induction
     (p := fun w => permOfCox (n + 1) (coxEmbed n w) (Fin.last (n + 1)) = Fin.last (n + 1))
     v ?_ ?_ ?_
   · intro i
@@ -415,9 +415,9 @@ lemma permOfCox_cosetRep_last_ne (N i : ℕ) (hN : 0 < N) (hi : 0 < i) (hiN : i 
 theorem permOfCox_injective (n : ℕ) : Function.Injective (permOfCox n) := by
   induction n with
   | zero =>
-      have htriv : ∀ w : (CoxeterMatrix.Aₙ 0).Group, w = 1 := by
+      have htriv : ∀ w : (CoxeterMatrix.A 0).Group, w = 1 := by
         intro w
-        refine (CoxeterMatrix.Aₙ 0).toCoxeterSystem.simple_induction (p := fun w => w = 1) w
+        refine (CoxeterMatrix.A 0).toCoxeterSystem.simple_induction (p := fun w => w = 1) w
           (fun i => i.elim0) rfl ?_
         intro a b ha hb
         rw [ha, hb, mul_one]
@@ -448,10 +448,10 @@ theorem permOfCox_injective (n : ℕ) : Function.Injective (permOfCox n) := by
 theorem permOfCox_bijective (n : ℕ) : Function.Bijective (permOfCox n) :=
   ⟨permOfCox_injective n, permOfCox_surjective n⟩
 
-/-- **The symmetric group is the Coxeter group of type `Aₙ`**: the Coxeter system on
+/-- **The symmetric group is the Coxeter group of type `A`**: the Coxeter system on
 `Equiv.Perm (Fin (n + 1))` whose simple reflections are the adjacent transpositions. -/
 noncomputable def permCoxeterSystem (n : ℕ) :
-    CoxeterSystem (CoxeterMatrix.Aₙ n) (Equiv.Perm (Fin (n + 1))) :=
+    CoxeterSystem (CoxeterMatrix.A n) (Equiv.Perm (Fin (n + 1))) :=
   ⟨(MulEquiv.ofBijective (permOfCox n) (permOfCox_bijective n)).symm⟩
 
 @[simp] lemma permCoxeterSystem_simple (n : ℕ) (i : Fin n) :
@@ -459,6 +459,6 @@ noncomputable def permCoxeterSystem (n : ℕ) :
   permOfCox_simple n i
 
 instance instIsCoxeterGroupPerm (n : ℕ) : IsCoxeterGroup (Equiv.Perm (Fin (n + 1))) :=
-  ⟨⟨Fin n, CoxeterMatrix.Aₙ n, ⟨permCoxeterSystem n⟩⟩⟩
+  ⟨⟨Fin n, CoxeterMatrix.A n, ⟨permCoxeterSystem n⟩⟩⟩
 
 end Equiv.Perm
