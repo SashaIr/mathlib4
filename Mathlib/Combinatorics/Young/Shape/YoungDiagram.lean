@@ -43,32 +43,6 @@ connects both with Mathlib's `Nat.Partition`.
 
 namespace YoungDiagram
 
-/-- The number of boxes of the diagram built from a list of row lengths. -/
-lemma card_cellsOfRowLens (w : List ℕ) : (YoungDiagram.cellsOfRowLens w).card = w.sum := by
-  induction w with
-  | nil => simp [YoungDiagram.cellsOfRowLens]
-  | cons a w ih =>
-    rw [YoungDiagram.cellsOfRowLens, Finset.card_union_of_disjoint, Finset.card_map, ih,
-      Finset.card_product, Finset.card_singleton, Finset.card_range, one_mul, List.sum_cons]
-    refine Finset.disjoint_left.2 ?_
-    rintro ⟨x, y⟩ hx hy
-    simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_map,
-      Function.Embedding.prodMap, Function.Embedding.coeFn_mk] at hx hy
-    obtain ⟨⟨u, v⟩, _, huv⟩ := hy
-    simp at huv
-    omega
-
-/-- The `i`-th entry of the list of row lengths, with the convention that entries out of
-range are `0`. -/
-lemma getD_rowLens (mu : YoungDiagram) (i : ℕ) : mu.rowLens.getD i 0 = mu.rowLen i := by
-  rcases Nat.lt_or_ge i mu.rowLens.length with hi | hi
-  · rw [List.getD_eq_getElem _ _ hi, get_rowLens]
-  · rw [List.getD_eq_default _ _ hi]
-    rw [length_rowLens] at hi
-    by_contra hc
-    have : (i, 0) ∈ mu := mem_iff_lt_rowLen.2 (by omega)
-    exact absurd (mem_iff_lt_colLen.1 this) (by omega)
-
 /-- The boxes of a Young diagram, row by row. -/
 lemma cells_eq_biUnion (mu : YoungDiagram) :
     mu.cells = (Finset.range (mu.colLen 0)).biUnion
@@ -86,7 +60,7 @@ lemma cells_eq_biUnion (mu : YoungDiagram) :
 /-- The number of boxes of a Young diagram is the sum of its row lengths. -/
 lemma sum_rowLens (mu : YoungDiagram) : mu.rowLens.sum = mu.card := by
   conv_rhs => rw [← ofRowLens_to_rowLens_eq_self (μ := mu)]
-  exact (card_cellsOfRowLens _).symm
+  exact (YoungDiagram.card_cellsOfRowLens _).symm
 
 end YoungDiagram
 
