@@ -216,10 +216,8 @@ lemma greeneCol_knuthAC_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
     (wc := fun j => if j = 0 then c (p.length + 1) else if j = 1 then c (p.length + 0)
       else c (p.length + 2)) rfl rfl hc Function.injective_id (fun _ h => h) ?_ ?_ ?_ ?_ ?_ ?_
   · intro j x _ hwc
-    simp only at hwc
     split_ifs at hwc <;> exact hc.lt_of_colour hwc
   · intro i j x hij hj h1 h2
-    simp only at h1 h2
     interval_cases j
     · exact absurd hij (Nat.not_lt_zero i)
     · interval_cases i
@@ -232,7 +230,6 @@ lemma greeneCol_knuthAC_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
           (by norm_num) h1 h2
         simpa using this
   · intro i j x hi hj hci hwc
-    simp only at hwc
     interval_cases j
     · rw [ite_eq_left rfl] at hwc
       simpa using dcol_pre_mid (m := [X, Z, Y]) rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
@@ -242,7 +239,6 @@ lemma greeneCol_knuthAC_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
       simpa using dcol_pre_mid (m := [X, Z, Y]) rfl hc hi (show (2:ℕ) < 3 by norm_num) hci hwc
   · intro j i x hj hi hwc hcs
     rw [Option.map_id] at hcs
-    simp only at hwc
     interval_cases j
     · rw [ite_eq_left rfl] at hwc
       simpa using dcol_mid_suf (m := [X, Z, Y]) rfl hc (show (1:ℕ) < 3 by norm_num) hi hwc hcs
@@ -265,10 +261,8 @@ lemma greeneCol_knuthCA_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
     (wc := fun j => if j = 0 then c (p.length + 0) else if j = 1 then c (p.length + 2)
       else c (p.length + 1)) rfl rfl hc Function.injective_id (fun _ h => h) ?_ ?_ ?_ ?_ ?_ ?_
   · intro j x _ hwc
-    simp only at hwc
     split_ifs at hwc <;> exact hc.lt_of_colour hwc
   · intro i j x hij hj h1 h2
-    simp only at h1 h2
     interval_cases j
     · exact absurd hij (Nat.not_lt_zero i)
     · interval_cases i
@@ -281,7 +275,6 @@ lemma greeneCol_knuthCA_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
       · simpa using hXY
       · simpa using lt_of_lt_of_le hXY hYZ
   · intro i j x hi hj hci hwc
-    simp only at hwc
     interval_cases j
     · rw [ite_eq_left rfl] at hwc
       simpa using dcol_pre_mid (m := [Y, X, Z]) rfl hc hi (show (0:ℕ) < 3 by norm_num) hci hwc
@@ -291,7 +284,6 @@ lemma greeneCol_knuthCA_le {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
       simpa using dcol_pre_mid (m := [Y, X, Z]) rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
   · intro j i x hj hi hwc hcs
     rw [Option.map_id] at hcs
-    simp only at hwc
     interval_cases j
     · rw [ite_eq_left rfl] at hwc
       simpa using dcol_mid_suf (m := [Y, X, Z]) rfl hc (show (0:ℕ) < 3 by norm_num) hi hwc hcs
@@ -321,12 +313,10 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
         (wc := fun j => if j = 0 then none else some g) rfl rfl hc Function.injective_id
         (fun _ h => h) ?_ ?_ ?_ ?_ ?_ ?_
       · intro j x _ hwc
-        simp only at hwc
         split_ifs at hwc
         obtain rfl : x = g := by simpa using hwc.symm
         exact hc.lt_of_colour hg0
       · intro i j x hij hj h1 h2
-        simp only at h1 h2
         interval_cases j
         · exact absurd hij (Nat.not_lt_zero i)
         · interval_cases i
@@ -335,7 +325,6 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
           · simp at h1
           · simpa using hYZ
       · intro i j x hi hj hci hwc
-        simp only at hwc
         interval_cases j
         · simp at hwc
         · obtain rfl : x = g := by simpa using hwc.symm
@@ -347,7 +336,6 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
           simpa using hYZ.trans this
       · intro j i x hj hi hwc hcs
         rw [Option.map_id] at hcs
-        simp only at hwc
         interval_cases j
         · simp at hwc
         · obtain rfl : x = g := by simpa using hwc.symm
@@ -375,14 +363,12 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
         (wc := fun j => if j = 0 then some h else some g) rfl rfl hc (swapNat_injective g h)
         (fun x hx => swapNat_lt (hc.lt_of_colour hg0) (hc.lt_of_colour hc2) hx) ?_ ?_ ?_ ?_ ?_ ?_
       · intro j x _ hwc
-        simp only at hwc
         split_ifs at hwc
         · obtain rfl : x = h := by simpa using hwc.symm
           exact hc.lt_of_colour hc2
         · obtain rfl : x = g := by simpa using hwc.symm
           exact hc.lt_of_colour hg0
       · intro i j x hij hj h1 h2
-        simp only at h1 h2
         interval_cases j
         · exact absurd hij (Nat.not_lt_zero i)
         · interval_cases i
@@ -393,7 +379,6 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
             exact absurd ((Option.some.inj h2).trans (Option.some.inj h1).symm) hgh
           · simpa using hYZ
       · intro i j x hi hj hci hwc
-        simp only at hwc
         interval_cases j
         · obtain rfl : x = h := by simpa using hwc.symm
           have := dcol_pre_mid (m := [Z, X, Y]) rfl hc hi (show (2:ℕ) < 3 by norm_num) hci hc2
@@ -408,7 +393,6 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
           simpa using hYZ.trans this
       · intro j i x hj hi hwc hcs
         have hcs2 := map_swapNat_eq_some hcs
-        simp only at hwc
         interval_cases j
         · obtain rfl : x = h := by simpa using hwc.symm
           rw [swapNat_right] at hcs2
@@ -448,10 +432,8 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
       (wc := fun j => if j = 0 then c (p.length + 1) else if j = 1 then c (p.length + 0)
         else c (p.length + 2)) rfl rfl hc Function.injective_id (fun _ h => h) ?_ ?_ ?_ ?_ ?_ ?_
     · intro j x _ hwc
-      simp only at hwc
       split_ifs at hwc <;> exact hc.lt_of_colour hwc
     · intro i j x hij hj h1 h2
-      simp only at h1 h2
       interval_cases j
       · exact absurd hij (Nat.not_lt_zero i)
       · interval_cases i
@@ -470,7 +452,6 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
             (by norm_num) h1 h2
           simpa using this
     · intro i j x hi hj hci hwc
-      simp only at hwc
       interval_cases j
       · rw [ite_eq_left rfl] at hwc
         simpa using dcol_pre_mid (m := [Z, X, Y]) rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
@@ -480,7 +461,6 @@ lemma greeneCol_knuthAC_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X ≤ Y) 
         simpa using dcol_pre_mid (m := [Z, X, Y]) rfl hc hi (show (2:ℕ) < 3 by norm_num) hci hwc
     · intro j i x hj hi hwc hcs
       rw [Option.map_id] at hcs
-      simp only at hwc
       interval_cases j
       · rw [ite_eq_left rfl] at hwc
         simpa using dcol_mid_suf (m := [Z, X, Y]) rfl hc (show (1:ℕ) < 3 by norm_num) hi hwc hcs
@@ -510,19 +490,16 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
         (wc := fun j => if j = 2 then none else some g) rfl rfl hc Function.injective_id
         (fun _ h => h) ?_ ?_ ?_ ?_ ?_ ?_
       · intro j x _ hwc
-        simp only at hwc
         split_ifs at hwc
         obtain rfl : x = g := by simpa using hwc.symm
         exact hc.lt_of_colour hg1
       · intro i j x hij hj h1 h2
-        simp only at h1 h2
         interval_cases j
         · exact absurd hij (Nat.not_lt_zero i)
         · interval_cases i
           · simpa using hXY
         · simp at h2
       · intro i j x hi hj hci hwc
-        simp only at hwc
         interval_cases j
         · obtain rfl : x = g := by simpa using hwc.symm
           have := dcol_pre_mid (m := [Y, Z, X]) rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hg1
@@ -535,7 +512,6 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
         · simp at hwc
       · intro j i x hj hi hwc hcs
         rw [Option.map_id] at hcs
-        simp only at hwc
         interval_cases j
         · obtain rfl : x = g := by simpa using hwc.symm
           have := dcol_mid_suf (m := [Y, Z, X]) rfl hc (show (2:ℕ) < 3 by norm_num) hi hg2 hcs
@@ -561,14 +537,12 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
         (wc := fun j => if j = 2 then some g else some h) rfl rfl hc (swapNat_injective g h)
         (fun x hx => swapNat_lt (hc.lt_of_colour hg1) (hc.lt_of_colour hc0) hx) ?_ ?_ ?_ ?_ ?_ ?_
       · intro j x _ hwc
-        simp only at hwc
         split_ifs at hwc
         · obtain rfl : x = g := by simpa using hwc.symm
           exact hc.lt_of_colour hg1
         · obtain rfl : x = h := by simpa using hwc.symm
           exact hc.lt_of_colour hc0
       · intro i j x hij hj h1 h2
-        simp only at h1 h2
         interval_cases j
         · exact absurd hij (Nat.not_lt_zero i)
         · interval_cases i
@@ -579,7 +553,6 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
           · simp only [ite_eq_right (by norm_num : ¬(1:ℕ) = 2)] at h1 h2
             exact absurd ((Option.some.inj h2).trans (Option.some.inj h1).symm) hgh
       · intro i j x hi hj hci hwc
-        simp only at hwc
         interval_cases j
         · obtain rfl : x = h := by simpa using hwc.symm
           simpa using dcol_pre_mid (m := [Y, Z, X]) rfl hc hi (show (0:ℕ) < 3 by norm_num)
@@ -593,7 +566,6 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
             hci hg1
       · intro j i x hj hi hwc hcs
         have hcs2 := map_swapNat_eq_some hcs
-        simp only at hwc
         interval_cases j
         · obtain rfl : x = h := by simpa using hwc.symm
           rw [swapNat_right] at hcs2
@@ -634,10 +606,8 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
       (wc := fun j => if j = 0 then c (p.length + 0) else if j = 1 then c (p.length + 2)
         else c (p.length + 1)) rfl rfl hc Function.injective_id (fun _ h => h) ?_ ?_ ?_ ?_ ?_ ?_
     · intro j x _ hwc
-      simp only at hwc
       split_ifs at hwc <;> exact hc.lt_of_colour hwc
     · intro i j x hij hj h1 h2
-      simp only at h1 h2
       interval_cases j
       · exact absurd hij (Nat.not_lt_zero i)
       · interval_cases i
@@ -656,7 +626,6 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
           rw [ite_eq_right (by norm_num), ite_eq_right (by norm_num)] at h2
           exact absurd ⟨x, h2, h1⟩ hgen
     · intro i j x hi hj hci hwc
-      simp only at hwc
       interval_cases j
       · rw [ite_eq_left rfl] at hwc
         simpa using dcol_pre_mid (m := [Y, Z, X]) rfl hc hi (show (0:ℕ) < 3 by norm_num) hci hwc
@@ -666,7 +635,6 @@ lemma greeneCol_knuthCA_ge {k : ℕ} (p s : List T) {X Y Z : T} (hXY : X < Y) (h
         simpa using dcol_pre_mid (m := [Y, Z, X]) rfl hc hi (show (1:ℕ) < 3 by norm_num) hci hwc
     · intro j i x hj hi hwc hcs
       rw [Option.map_id] at hcs
-      simp only at hwc
       interval_cases j
       · rw [ite_eq_left rfl] at hwc
         simpa using dcol_mid_suf (m := [Y, Z, X]) rfl hc (show (0:ℕ) < 3 by norm_num) hi hwc hcs
