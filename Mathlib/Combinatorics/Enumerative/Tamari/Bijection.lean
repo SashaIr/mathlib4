@@ -72,27 +72,27 @@ lemma IsTamariVector.take_of_cons {v0 : ℕ} {v : List ℕ} (h : IsTamariVector 
 
 end List
 
-namespace Tree
+namespace BinaryTree
 
 /-! ### Grafting along the left spine -/
 
 /-- The tree obtained by grafting `a` at the bottom of the left spine of `b` (Coq
 `cat_left`). -/
-def catLeft : Tree Unit → Tree Unit → Tree Unit
+def catLeft : BinaryTree Unit → BinaryTree Unit → BinaryTree Unit
   | a, .nil => a
   | a, .node _ l r => .node () (catLeft a l) r
 
-@[simp] lemma catLeft_nil (a : Tree Unit) : catLeft a .nil = a := rfl
+@[simp] lemma catLeft_nil (a : BinaryTree Unit) : catLeft a .nil = a := rfl
 
-@[simp] lemma catLeft_node (a l r : Tree Unit) :
-    catLeft a (Tree.node () l r) = Tree.node () (catLeft a l) r := rfl
+@[simp] lemma catLeft_node (a l r : BinaryTree Unit) :
+  catLeft a (BinaryTree.node () l r) = BinaryTree.node () (catLeft a l) r := rfl
 
-@[simp] lemma nil_catLeft (t : Tree Unit) : catLeft .nil t = t := by
+@[simp] lemma nil_catLeft (t : BinaryTree Unit) : catLeft .nil t = t := by
   induction t with
   | nil => rfl
   | node a l r ihl _ => cases a; rw [catLeft_node, ihl]
 
-lemma catLeft_assoc (a b c : Tree Unit) :
+lemma catLeft_assoc (a b c : BinaryTree Unit) :
     catLeft (catLeft a b) c = catLeft a (catLeft b c) := by
   induction c with
   | nil => rfl
@@ -109,43 +109,43 @@ lemma catLeft_assoc (a b c : Tree Unit) :
 
 /-- Auxiliary function for `Tree.fromVct`: `Tree.fromVctAux lft v` grafts the tree built
 from `v` at the bottom of the left spine of `lft` (Coq `from_vct_rec`). -/
-def fromVctAux : Tree Unit → List ℕ → Tree Unit
+def fromVctAux : BinaryTree Unit → List ℕ → BinaryTree Unit
   | lft, [] => lft
-  | lft, v0 :: v => fromVctAux (Tree.node () lft (fromVctAux .nil (v.take v0))) (v.drop v0)
+  | lft, v0 :: v => fromVctAux (BinaryTree.node () lft (fromVctAux .nil (v.take v0))) (v.drop v0)
 termination_by _ v => v.length
 
 /-- The binary tree associated to a Tamari vector (Coq `from_vct`). -/
-def fromVct (v : List ℕ) : Tree Unit := fromVctAux .nil v
+def fromVct (v : List ℕ) : BinaryTree Unit := fromVctAux .nil v
 
-lemma fromVctAux_nil (lft : Tree Unit) : fromVctAux lft [] = lft := by rw [fromVctAux]
+lemma fromVctAux_nil (lft : BinaryTree Unit) : fromVctAux lft [] = lft := by rw [fromVctAux]
 
-lemma fromVctAux_cons (lft : Tree Unit) (v0 : ℕ) (v : List ℕ) :
+lemma fromVctAux_cons (lft : BinaryTree Unit) (v0 : ℕ) (v : List ℕ) :
     fromVctAux lft (v0 :: v)
-      = fromVctAux (Tree.node () lft (fromVctAux .nil (v.take v0))) (v.drop v0) := by
+      = fromVctAux (BinaryTree.node () lft (fromVctAux .nil (v.take v0))) (v.drop v0) := by
   rw [fromVctAux]
 
 @[simp] lemma fromVct_nil : fromVct [] = .nil := fromVctAux_nil _
 
 lemma fromVct_cons (v0 : ℕ) (v : List ℕ) :
     fromVct (v0 :: v)
-      = fromVctAux (Tree.node () .nil (fromVct (v.take v0))) (v.drop v0) :=
+      = fromVctAux (BinaryTree.node () .nil (fromVct (v.take v0))) (v.drop v0) :=
   fromVctAux_cons _ _ _
 
 /-- The auxiliary function only grafts the tree built from its second argument. -/
-theorem fromVctAux_eq_catLeft (lft : Tree Unit) (v : List ℕ) :
+theorem fromVctAux_eq_catLeft (lft : BinaryTree Unit) (v : List ℕ) :
     fromVctAux lft v = catLeft lft (fromVct v) := by
   match v with
   | [] => rw [fromVctAux_nil, fromVct_nil, catLeft_nil]
   | v0 :: v =>
     rw [fromVctAux_cons, fromVct, fromVctAux_cons,
-      fromVctAux_eq_catLeft (Tree.node () lft _),
-      fromVctAux_eq_catLeft (Tree.node () .nil _), ← catLeft_assoc]
+    fromVctAux_eq_catLeft (BinaryTree.node () lft _),
+    fromVctAux_eq_catLeft (BinaryTree.node () .nil _), ← catLeft_assoc]
     simp
 termination_by v.length
 
 /-! ### The two-sided inverse -/
 
-theorem fromVctAux_rightSizes_append (t : Tree Unit) (lft : Tree Unit) (w : List ℕ) :
+theorem fromVctAux_rightSizes_append (t : BinaryTree Unit) (lft : BinaryTree Unit) (w : List ℕ) :
     fromVctAux lft (List.rightSizes t ++ w) = fromVctAux (catLeft lft t) w := by
   match t with
   | .nil => simp [List.rightSizes]
@@ -164,7 +164,7 @@ theorem fromVctAux_rightSizes_append (t : Tree Unit) (lft : Tree Unit) (w : List
 termination_by t.numNodes
 
 /-- **`Tree.fromVct` is a left inverse of `List.rightSizes`** (Coq `right_sizesK`). -/
-theorem fromVct_rightSizes (t : Tree Unit) : fromVct (List.rightSizes t) = t := by
+theorem fromVct_rightSizes (t : BinaryTree Unit) : fromVct (List.rightSizes t) = t := by
   have := fromVctAux_rightSizes_append t .nil []
   rwa [List.append_nil, fromVctAux_nil, nil_catLeft, ← fromVct] at this
 
@@ -195,7 +195,7 @@ decreasing_by
 
 /-- **Binary trees are in bijection with Tamari vectors** (Coq
 `bintreeoftype_TamariVector_bij`). -/
-@[simps] def equivTamariVector : Tree Unit ≃ {v : List ℕ // List.IsTamariVector v} where
+@[simps] def equivTamariVector : BinaryTree Unit ≃ {v : List ℕ // List.IsTamariVector v} where
   toFun t := ⟨List.rightSizes t, List.isTamariVector_rightSizes t⟩
   invFun v := fromVct v.1
   left_inv t := fromVct_rightSizes t
@@ -204,9 +204,9 @@ decreasing_by
 /-- **Binary trees with `n` nodes are in bijection with Tamari vectors of length `n`**
 (Coq `bintreeoftype_TamariVector_bij`). -/
 def equivTamariVectorOfCard (n : ℕ) :
-    {t : Tree Unit // t.numNodes = n} ≃ {v : List ℕ // List.IsTamariVector v ∧ v.length = n} :=
+    {t : BinaryTree Unit // t.numNodes = n} ≃ {v : List ℕ // List.IsTamariVector v ∧ v.length = n} :=
   (equivTamariVector.subtypeEquiv (fun t => by
     simp only [equivTamariVector_apply_coe, List.length_rightSizes])).trans
     (Equiv.subtypeSubtypeEquivSubtypeInter _ _)
 
-end Tree
+end BinaryTree
