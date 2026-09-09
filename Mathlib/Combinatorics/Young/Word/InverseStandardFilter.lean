@@ -190,7 +190,6 @@ private lemma getElem_std_take (hw : IsStd w) {j : ℕ} (hj : j < min k w.length
     rw [hAq, hw.idxOf_getD hqn]
     exact lt_of_lt_of_le hq' (min_le_left _ _)
   · intro i hi
-    dsimp only
     have h1 := Finset.mem_filter.1 hi
     have hiv : i < v := Finset.mem_range.1 h1.1
     have hin : i < w.length := hiv.trans hvn
