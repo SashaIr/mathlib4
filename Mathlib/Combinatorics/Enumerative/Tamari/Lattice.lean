@@ -76,7 +76,7 @@ theorem isTamariVector_zipWith_min {v w : List ℕ} (hv : IsTamariVector v)
 
 end List
 
-namespace Tree
+namespace BinaryTree
 
 open List
 
@@ -97,34 +97,34 @@ instance finite_tamariVector (n : ℕ) :
     · rw [List.getD_eq_default _ _ (by rw [v.2.2]; omega),
         List.getD_eq_default _ _ (by rw [w.2.2]; omega)]
 
-instance finite_treeOfCard (n : ℕ) : Finite {t : Tree Unit // t.numNodes = n} :=
+instance finite_treeOfCard (n : ℕ) : Finite {t : BinaryTree Unit // t.numNodes = n} :=
   Finite.of_equiv _ (equivTamariVectorOfCard n).symm
 
 /-! ### The meet of two trees -/
 
 /-- The tree whose vector is the componentwise minimum of the vectors of `t` and `u`; it is
 the meet of `t` and `u` for the Tamari order when they have the same number of nodes. -/
-def tamariInf (t u : Tree Unit) : Tree Unit :=
+def tamariInf (t u : BinaryTree Unit) : BinaryTree Unit :=
   fromVct (List.zipWith min (rightSizes t) (rightSizes u))
 
-lemma rightSizes_tamariInf {t u : Tree Unit} (h : t.numNodes = u.numNodes) :
+lemma rightSizes_tamariInf {t u : BinaryTree Unit} (h : t.numNodes = u.numNodes) :
     rightSizes (tamariInf t u) = List.zipWith min (rightSizes t) (rightSizes u) :=
   rightSizes_fromVct (isTamariVector_zipWith_min (isTamariVector_rightSizes t)
     (isTamariVector_rightSizes u) (by simp [h]))
 
-@[simp] lemma numNodes_tamariInf {t u : Tree Unit} (h : t.numNodes = u.numNodes) :
+@[simp] lemma numNodes_tamariInf {t u : BinaryTree Unit} (h : t.numNodes = u.numNodes) :
     (tamariInf t u).numNodes = t.numNodes := by
   rw [← length_rightSizes, rightSizes_tamariInf h, length_zipWith_min _ _ (by simp [h]),
     length_rightSizes]
 
-lemma tamariInf_le_left {t u : Tree Unit} (h : t.numNodes = u.numNodes) :
+lemma tamariInf_le_left {t u : BinaryTree Unit} (h : t.numNodes = u.numNodes) :
     TamariLE (tamariInf t u) t := by
   refine tamariLE_of_forall₂_le (forall₂_le_iff_getD.2 ⟨?_, fun i => ?_⟩)
   · rw [rightSizes_tamariInf h, length_zipWith_min _ _ (by simp [h])]
   · rw [rightSizes_tamariInf h, getD_zipWith_min (by simp [h])]
     exact min_le_left _ _
 
-lemma tamariInf_le_right {t u : Tree Unit} (h : t.numNodes = u.numNodes) :
+lemma tamariInf_le_right {t u : BinaryTree Unit} (h : t.numNodes = u.numNodes) :
     TamariLE (tamariInf t u) u := by
   refine tamariLE_of_forall₂_le (forall₂_le_iff_getD.2 ⟨?_, fun i => ?_⟩)
   · rw [rightSizes_tamariInf h, length_zipWith_min _ _ (by simp [h])]
@@ -132,7 +132,7 @@ lemma tamariInf_le_right {t u : Tree Unit} (h : t.numNodes = u.numNodes) :
   · rw [rightSizes_tamariInf h, getD_zipWith_min (by simp [h])]
     exact min_le_right _ _
 
-lemma le_tamariInf {t u s : Tree Unit} (h : t.numNodes = u.numNodes) (hst : TamariLE s t)
+lemma le_tamariInf {t u s : BinaryTree Unit} (h : t.numNodes = u.numNodes) (hst : TamariLE s t)
     (hsu : TamariLE s u) : TamariLE s (tamariInf t u) := by
   obtain ⟨hlen, hle⟩ := forall₂_le_iff_getD.1 (forall₂_le_rightSizes_of_tamariLE hst)
   obtain ⟨-, hle'⟩ := forall₂_le_iff_getD.1 (forall₂_le_rightSizes_of_tamariLE hsu)
@@ -145,13 +145,13 @@ lemma le_tamariInf {t u s : Tree Unit} (h : t.numNodes = u.numNodes) (hst : Tama
 /-! ### The Tamari lattice -/
 
 /-- The binary trees with `n` nodes, ordered by the Tamari order. -/
-def TamariOfCard (n : ℕ) : Type := {t : Tree Unit // t.numNodes = n}
+def TamariOfCard (n : ℕ) : Type := {t : BinaryTree Unit // t.numNodes = n}
 
 namespace TamariOfCard
 
 variable {n : ℕ}
 
-instance : CoeOut (TamariOfCard n) (Tree Unit) := ⟨Subtype.val⟩
+instance : CoeOut (TamariOfCard n) (BinaryTree Unit) := ⟨Subtype.val⟩
 
 instance : Finite (TamariOfCard n) := finite_treeOfCard n
 
@@ -197,4 +197,4 @@ noncomputable instance instLattice : Lattice (TamariOfCard n) := Finite.toLattic
 
 end TamariOfCard
 
-end Tree
+end BinaryTree
