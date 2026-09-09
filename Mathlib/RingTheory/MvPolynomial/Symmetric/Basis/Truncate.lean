@@ -252,7 +252,7 @@ lemma mapDomain_castLE_shapeContent (h : m ≤ M) {lam : List ℕ} (hlen : lam.l
   · have hcast : i = Fin.castLE h ⟨i, hi⟩ := Fin.ext rfl
     rw [hcast, Finsupp.mapDomain_apply (Fin.castLE_injective h)]
     simp
-  · rw [Finsupp.mapDomain_notin_range, shapeContent_apply,
+  · rw [Finsupp.mapDomain_of_notMem_range, shapeContent_apply,
       List.getD_eq_default _ _ (by omega)]
     rintro ⟨j, rfl⟩
     exact hi (by simp)
@@ -325,7 +325,7 @@ variables**: the module of symmetric homogeneous polynomials of degree `n` does 
 on the number of variables. -/
 noncomputable def truncEquiv (hn : n ≤ m) (h : m ≤ M) (R : Type*) [CommRing R] :
     symHomogeneousSubmodule M n R ≃ₗ[R] symHomogeneousSubmodule m n R :=
-  LinearEquiv.ofLinear (truncSub h n R)
+  LinearEquiv.ofLinearMap (truncSub h n R)
     ((mBasis m n R).constr R fun mu => mSub M n R (partIdxEquiv hn (hn.trans h) mu))
     (by
       refine (mBasis m n R).ext fun mu => ?_

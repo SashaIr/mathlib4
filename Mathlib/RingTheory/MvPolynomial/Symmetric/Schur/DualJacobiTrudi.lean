@@ -276,7 +276,7 @@ theorem schurPoly_conjPart_eq_det {lam : List ℕ} (hlam : IsPart lam) (hnm : la
       = ∑ sigma : Equiv.Perm (Fin m),
           (Equiv.Perm.sign sigma : ℤ) • ∏ i, esymmInt m R (jtArg lam sigma i) := by
     rw [map_sum]
-    rw [AddSubmonoidClass.coe_finset_sum]
+    rw [AddSubmonoidClass.coe_finsetSum]
     refine Finset.sum_congr rfl fun sigma _ => ?_
     rw [map_zsmul, AddSubgroupClass.coe_zsmul, omegaSym_jtTermSub hnm hlen sigma]
   rw [← hL, hX, hR, Matrix.det_apply]

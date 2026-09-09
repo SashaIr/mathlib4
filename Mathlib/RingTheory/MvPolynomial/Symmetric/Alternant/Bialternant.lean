@@ -282,7 +282,6 @@ theorem altPart_mul_hsymm {mu : List ℕ} (hmu : IsPart mu) (r : ℕ) :
     obtain ⟨hlam', hlen⟩ := Finset.mem_filter.1 hlam
     obtain ⟨hlam'', hstrip⟩ := Finset.mem_filter.1 hlam'
     obtain ⟨hpart, -⟩ := mem_partFinset.1 hlam''
-    change vecPart m (partVec m mu + ⇑(stripFinsupp m mu lam)) = lam
     rw [add_stripFinsupp hstrip.included, vecPart_partVec hpart hlen]
   · -- the summands agree
     intro d hd

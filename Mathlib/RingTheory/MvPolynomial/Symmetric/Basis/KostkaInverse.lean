@@ -161,7 +161,7 @@ theorem kostkaInv_self {lam : List ℕ} (hlam : IsPart lam) (hsum : lam.sum = n)
   classical
   have horth := sum_kostka_mul_kostkaInv_partIdx (partIdxOfMem hlam hsum)
     (partIdxOfMem hlam hsum)
-  simp only [partIdxOfMem_val, if_true] at horth
+  simp only [partIdxOfMem_val, ite_true] at horth
   have hsingle : ∀ mu' ∈ (Finset.univ : Finset (PartIdx n n)), mu' ≠ partIdxOfMem hlam hsum →
       (kostka lam mu'.1 : ℤ) * kostkaInv n lam mu'.1 = 0 := by
     intro mu' _ hne

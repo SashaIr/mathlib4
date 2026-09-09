@@ -113,6 +113,7 @@ theorem symFuncHomogeneous_isInternal (R : Type*) [CommRing R] :
 
 /-- **The ring of symmetric functions is a graded algebra**, graded by the homogeneous
 symmetric functions of each degree. -/
+@[instance_reducible]
 noncomputable def symFuncGradedAlgebra (R : Type*) [CommRing R] :
     GradedAlgebra fun n => symFuncHomogeneous n R :=
   { symFuncHomogeneous_gradedMonoid R,
