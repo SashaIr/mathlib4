@@ -3,6 +3,7 @@ Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
+import Mathlib.Order.Monotone.Basic
 import Mathlib.Combinatorics.Young.Plactic.Basic
 
 /-!
@@ -66,6 +67,6 @@ theorem placticEquiv_map_of_strictMonoOn {S : Set T} {F : T → T'}
 theorem placticEquiv_map_of_strictMono {F : T → T'} (hF : StrictMono F) {u v : List T}
     (h : PlacticEquiv u v) : PlacticEquiv (u.map F) (v.map F) :=
   placticEquiv_map_of_strictMonoOn (S := Set.univ) (fun _ _ _ _ hxy => hF hxy) h
-    fun _ _ => Set.mem_univ _
+    (fun _ _ => by simp)
 
 end List
