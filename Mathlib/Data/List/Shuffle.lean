@@ -92,24 +92,20 @@ lemma isShuffle_nil_right (u : List T) : IsShuffle u [] u := by
   | cons a u ih => exact ih.left
 
 @[simp] lemma isShuffle_nil_left_iff {v w : List T} : IsShuffle [] v w ↔ w = v := by
-  constructor
-  · intro h
-    induction v generalizing w with
-    | nil => cases h; rfl
-    | cons b v ih =>
-      cases h with
-      | right h => rw [ih h]
-  · rintro rfl; exact isShuffle_nil_left _
+  refine ⟨fun h ↦ ?_, by rintro rfl; exact isShuffle_nil_left _⟩
+  induction v generalizing w with
+  | nil => cases h; rfl
+  | cons b v ih =>
+    cases h with
+    | right h => rw [ih h]
 
 @[simp] lemma isShuffle_nil_right_iff {u w : List T} : IsShuffle u [] w ↔ w = u := by
-  constructor
-  · intro h
-    induction u generalizing w with
-    | nil => cases h; rfl
-    | cons a u ih =>
-      cases h with
-      | left h => rw [ih h]
-  · rintro rfl; exact isShuffle_nil_right _
+  refine ⟨fun h ↦ ?_, by rintro rfl; exact isShuffle_nil_right _⟩
+  induction u generalizing w with
+  | nil => cases h; rfl
+  | cons a u ih =>
+    cases h with
+    | left h => rw [ih h]
 
 /-- Membership in `shuffle u v` is described by `IsShuffle` (Coq `mem_shuffle`). -/
 theorem mem_shuffle_iff : ∀ (u v w : List T), w ∈ shuffle u v ↔ IsShuffle u v w
@@ -117,12 +113,11 @@ theorem mem_shuffle_iff : ∀ (u v w : List T), w ∈ shuffle u v ↔ IsShuffle 
   | a :: u, [], w => by simp
   | a :: u, b :: v, w => by
     rw [shuffle_cons_cons, List.mem_append, List.mem_map, List.mem_map]
-    constructor
+    refine ⟨?_, fun h ↦ ?_⟩
     · rintro (⟨w', hw', rfl⟩ | ⟨w', hw', rfl⟩)
       · exact (((mem_shuffle_iff u (b :: v) w').mp hw').left)
       · exact (((mem_shuffle_iff (a :: u) v w').mp hw').right)
-    · intro h
-      cases h with
+    · cases h with
       | left h =>
         exact Or.inl ⟨_, (mem_shuffle_iff u (b :: v) _).mpr h, rfl⟩
       | right h =>
@@ -137,13 +132,11 @@ theorem length_shuffle : ∀ u v : List T,
   | [], v => by simp
   | a :: u, [] => by simp
   | a :: u, b :: v => by
-    rw [shuffle_cons_cons, List.length_append, List.length_map, List.length_map,
-      length_shuffle u (b :: v), length_shuffle (a :: u) v]
-    simp only [List.length_cons]
-    rw [show u.length + (v.length + 1) = u.length + v.length + 1 by ring,
+    simp [shuffle_cons_cons, length_shuffle u (b :: v), length_shuffle (a :: u) v,
+      show u.length + (v.length + 1) = u.length + v.length + 1 by ring,
       show u.length + 1 + v.length = u.length + v.length + 1 by ring,
-      show u.length + 1 + (v.length + 1) = (u.length + v.length + 1) + 1 by ring]
-    exact (Nat.choose_succ_succ' (u.length + v.length + 1) u.length).symm
+      show u.length + 1 + (v.length + 1) = (u.length + v.length + 1) + 1 by ring,
+      Nat.choose_succ_succ']
   termination_by u v => u.length + v.length
 
 /-! ### Basic properties of the shuffles -/
@@ -153,9 +146,7 @@ theorem perm_append_of_isShuffle {u v w : List T} (h : IsShuffle u v w) : w.Perm
   induction h with
   | nil => exact List.Perm.refl _
   | left _ ih => exact ih.cons _
-  | right _ ih =>
-      refine List.Perm.trans (ih.cons _) ?_
-      exact (List.perm_middle).symm
+  | right _ ih => exact List.Perm.trans (ih.cons _) (List.perm_middle).symm
 
 theorem perm_append_of_mem_shuffle {u v w : List T} (h : w ∈ shuffle u v) :
     w.Perm (u ++ v) :=
@@ -207,9 +198,8 @@ theorem shuffle_perm_comm : ∀ u v : List T, (shuffle u v).Perm (shuffle v u)
   | a :: u, [] => by simp
   | a :: u, b :: v => by
     rw [shuffle_cons_cons, shuffle_cons_cons]
-    refine List.Perm.trans ?_ (List.perm_append_comm)
-    exact List.Perm.append ((shuffle_perm_comm u (b :: v)).map _)
-      ((shuffle_perm_comm (a :: u) v).map _)
+    exact List.Perm.trans (List.Perm.append ((shuffle_perm_comm u (b :: v)).map _)
+      ((shuffle_perm_comm (a :: u) v).map _)) (List.perm_append_comm)
   termination_by u v => u.length + v.length
 
 theorem mem_shuffle_comm {u v w : List T} : w ∈ shuffle u v ↔ w ∈ shuffle v u :=

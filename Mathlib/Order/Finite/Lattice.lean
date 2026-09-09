@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Lattice
 
 @[expose] public section
 
@@ -41,18 +38,13 @@ noncomputable def Finite.toLattice (α : Type*) [SemilatticeInf α] [OrderTop α
   letI := Fintype.ofFinite α
   { ‹SemilatticeInf α› with
     sup := fun a b => (Finset.univ.filter fun c => a ≤ c ∧ b ≤ c).inf id
-    le_sup_left := fun a b => by
-      refine Finset.le_inf fun c hc => ?_
+    le_sup_left := fun a b => Finset.le_inf fun c hc => by
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hc
       exact hc.1
-    le_sup_right := fun a b => by
-      refine Finset.le_inf fun c hc => ?_
+    le_sup_right := fun a b => Finset.le_inf fun c hc => by
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hc
       exact hc.2
-    sup_le := fun a b c hac hbc => by
-      refine Finset.inf_le (f := id) ?_
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      exact ⟨hac, hbc⟩ }
+    sup_le := fun a b c hac hbc => Finset.inf_le (f := id) (by simp [hac, hbc]) }
 
 open scoped Classical in
 /-- A finite join-semilattice with a least element is a lattice: the meet of `a` and `b`
@@ -66,15 +58,10 @@ noncomputable def Finite.toLatticeOfSup (α : Type*) [SemilatticeSup α] [OrderB
   letI := Fintype.ofFinite α
   { ‹SemilatticeSup α› with
     inf := fun a b => (Finset.univ.filter fun c => c ≤ a ∧ c ≤ b).sup id
-    inf_le_left := fun a b => by
-      refine Finset.sup_le fun c hc => ?_
+    inf_le_left := fun a b => Finset.sup_le fun c hc => by
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hc
       exact hc.1
-    inf_le_right := fun a b => by
-      refine Finset.sup_le fun c hc => ?_
+    inf_le_right := fun a b =>  Finset.sup_le fun c hc => by
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hc
       exact hc.2
-    le_inf := fun a b c hab hac => by
-      refine Finset.le_sup (f := id) ?_
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      exact ⟨hab, hac⟩ }
+    le_inf := fun a b c hab hac => Finset.le_sup (f := id) (by simp [hab, hac]) }
