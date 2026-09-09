@@ -115,7 +115,9 @@ theorem polyLang_catLang [Fintype L₁] [Fintype L₂] {d : ℕ} (h : IsHomLang 
   have hprod : polyLang R (catLang L₁ L₂)
       = ∑ p : L₁ × L₂, commWord R p.1.1 * commWord R p.2.1 := by
     refine (Fintype.sum_equiv (catLangEquiv (L₂ := L₂) h) _ _ fun p => ?_).symm
-    simp [catLangEquiv, catLangMap]
+    change commWord R p.1.1 * commWord R p.2.1 =
+      commWord R (p.1.1 ++ p.2.1)
+    exact (commWord_append (R := R) p.1.1 p.2.1).symm
   rw [hprod, Fintype.sum_prod_type, polyLang, polyLang, Finset.sum_mul_sum]
 
 end MvPolynomial
