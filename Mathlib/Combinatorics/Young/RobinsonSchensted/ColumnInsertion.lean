@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Data.List.Sublists
 import Mathlib.Tactic.Order
 import Mathlib.Tactic.Ring
 import Mathlib.Combinatorics.Young.Plactic.Basic
@@ -141,7 +142,7 @@ lemma filterMap_head?_sublist_flatten (L : List (List T)) :
   | nil => simp
   | cons r L ih =>
     cases r with
-    | nil => simpa using ih
+    | nil => simpa [List.filterMap_cons] using ih
     | cons a r =>
       simp only [List.filterMap_cons, List.head?_cons, List.flatten_cons, List.cons_append]
       exact List.Sublist.cons_cons a (ih.trans (List.sublist_append_right r L.flatten))
@@ -169,8 +170,8 @@ theorem isGreatest_decLengths_toWord {t : List (List T)} (ht : IsTableau t) :
 lemma sublist_three_cases {α : Type*} {S : List α} {a b c : α} (h : S.Sublist [a, b, c]) :
     S = [] ∨ S = [a] ∨ S = [b] ∨ S = [c] ∨ S = [a, b] ∨ S = [a, c] ∨ S = [b, c] ∨
       S = [a, b, c] := by
-  have h2 := List.mem_sublists.2 h
-  simp [List.sublists] at h2
+  have h2 := List.mem_sublists'.2 h
+  simp [List.sublists'] at h2
   tauto
 
 lemma exists_repl_of_sublist {S B : List T} (h : S.Sublist B) (hdec : S.Pairwise (· > ·)) :
