@@ -99,7 +99,9 @@ theorem exists_multiset_isSimpleChar (X : FDRep k G) :
           refine hUtop ?_
           have hUrank : finrank k U.toSubmodule = finrank k X := by omega
           have : U.toSubmodule = ⊤ := Submodule.eq_top_of_finrank_eq hUrank
-          exact Subrepresentation.toSubmodule_injective (by simpa using this)
+          exact Subrepresentation.toSubmodule_injective (by
+            change U.toSubmodule = (⊤ : Submodule k X.V)
+            exact this)
         · exact h
       -- the two pieces, as objects of `FDRep k G`
       set A : FDRep k G := FDRep.of U.toRepresentation with hA
