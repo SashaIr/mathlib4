@@ -43,7 +43,10 @@ variable {k G V W : Type u} [Field k] [Group G] [AddCommGroup V] [Module k V]
 `σ`. -/
 noncomputable def fdrepHomEquivIntertwiningMap (ρ : Representation k G V) (σ : Representation k G W) :
     (FDRep.of ρ ⟶ FDRep.of σ) ≃ₗ[k] IntertwiningMap ρ σ where
-  toFun f := ⟨f.hom.hom.hom, fun g => f.hom.hom.isIntertwining' g⟩
+  toFun f := ⟨f.hom.hom.hom, fun g => by
+    ext1
+    simp only [FGModuleCat.obj_carrier]
+    exact ConcreteCategory.congr_hom ((forget (FGModuleCat k)).congr_map (f.comm g)) _⟩
   invFun f := ⟨FGModuleCat.ofHom f.toLinearMap, by
     intro g
     ext v
