@@ -130,10 +130,9 @@ theorem omegaSymFunc_mul (f g : SymFunc R) :
     (fun f1 f2 h1 h2 g => by rw [add_mul, map_add, map_add, h1, h2, add_mul]) f g
   refine DirectSum.Decomposition.inductionOn (fun n => symFuncHomogeneous n R)
     (motive := fun g => omegaSymFunc R (fa.1 * g) = omegaSymFunc R fa.1 * omegaSymFunc R g)
-    (by dsimp only; rw [mul_zero, map_zero, mul_zero])
+    (by rw [mul_zero, map_zero, mul_zero])
     (fun {b} gb => ?_)
-    (fun g1 g2 h1 h2 => by dsimp only; rw [mul_add, map_add, map_add, h1, h2, mul_add])
-  dsimp only
+    (fun g1 g2 h1 h2 => by rw [mul_add, map_add, map_add, h1, h2, mul_add])
   rw [omegaSymFunc_of_mem (SymFunc.IsHomogeneous.mul fa.2 gb.2), omegaSymFunc_of_mem fa.2,
     omegaSymFunc_of_mem gb.2, omegaFunc_mul rfl fa gb]
 
@@ -148,10 +147,9 @@ theorem omegaSymFunc_omegaSymFunc (f : SymFunc R) :
     omegaSymFunc R (omegaSymFunc R f) = f := by
   refine DirectSum.Decomposition.inductionOn (fun n => symFuncHomogeneous n R)
     (motive := fun f => omegaSymFunc R (omegaSymFunc R f) = f)
-    (by dsimp only; rw [map_zero, map_zero])
+    (by rw [map_zero, map_zero])
     (fun {a} fa => ?_)
-    (fun f1 f2 h1 h2 => by dsimp only; rw [map_add, map_add, h1, h2]) f
-  dsimp only
+    (fun f1 f2 h1 h2 => by rw [map_add, map_add, h1, h2]) f
   rw [omegaSymFunc_of_mem fa.2, omegaSymFunc_of_mem (omegaFunc a R fa).2]
   exact congrArg Subtype.val (omegaFunc_omegaFunc fa)
 
