@@ -105,13 +105,14 @@ lemma moveVec_swap (b : Fin m → ℕ) (j : ℕ) (k k' : Fin m)
   · rw [ite_eq_left hmid, ite_eq_left ⟨hmid.1, by omega⟩]
     have h1 : (⟨(i : ℕ) - 1, lt_of_le_of_lt (Nat.sub_le _ _) i.isLt⟩ : Fin m) ≠ k' := by
       intro h
-      have := congrArg (fun x : Fin m => (x : ℕ)) h
-      simp only at this
+      have hi := congrArg (fun x : Fin m => (x : ℕ)) h
+      change (i : ℕ) - 1 = (k' : ℕ) at hi
+      rw [hk'] at hi
       omega
     have h2 : (⟨(i : ℕ) - 1, lt_of_le_of_lt (Nat.sub_le _ _) i.isLt⟩ : Fin m) ≠ k := by
       intro h
-      have := congrArg (fun x : Fin m => (x : ℕ)) h
-      simp only at this
+      have hi := congrArg (fun x : Fin m => (x : ℕ)) h
+      change (i : ℕ) - 1 = (k : ℕ) at hi
       omega
     simp [Function.comp_apply, Equiv.swap_apply_of_ne_of_ne h1 h2]
   rw [ite_eq_right hmid]
@@ -125,8 +126,8 @@ lemma moveVec_swap (b : Fin m → ℕ) (j : ℕ) (k k' : Fin m)
     simp [Function.comp_apply, Equiv.swap_apply_right]
   · rw [ite_eq_right (by omega)]
     have h1 : i ≠ k' := fun h => by
-      have := congrArg (fun x : Fin m => (x : ℕ)) h
-      simp only at this
+      have hi := congrArg (fun x : Fin m => (x : ℕ)) h
+      rw [hk'] at hi
       omega
     have h2 : i ≠ k := fun h => hik (congrArg (fun x : Fin m => (x : ℕ)) h)
     simp [Function.comp_apply, Equiv.swap_apply_of_ne_of_ne h1 h2]
