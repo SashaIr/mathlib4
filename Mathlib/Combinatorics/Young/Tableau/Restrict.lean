@@ -15,10 +15,10 @@ public import Mathlib.Combinatorics.Young.Shape.NatPartition
 
 Let `P` be a Young tableau whose entries are letters `< N + 1`.  Removing from `P` all the
 boxes containing the largest letter `N` leaves a tableau with entries `< N`, whose shape
-`nu` is obtained from the shape of `P` by removing a horizontal strip.  Conversely, given
-a tableau of shape `nu` with entries `< N` and a shape `sh` such that `sh / nu` is a
-horizontal strip, filling the boxes of `sh / nu` with the letter `N` produces a tableau of
-shape `sh`.
+`ν` is obtained from the shape of `P` by removing a horizontal strip.  Conversely, given
+a tableau of shape `ν` with entries `< N` and a shape `μ` such that `μ / ν` is a
+horizontal strip, filling the boxes of `μ / ν` with the letter `N` produces a tableau of
+shape `μ`.
 
 This is the recursive description of Young tableaux by the letter they contain, and it is
 the combinatorial content of the Pieri rule.
@@ -27,14 +27,14 @@ the combinatorial content of the Pieri rule.
 
 * `Young.ltFilter N r` : the letters `< N` of a row `r`.
 * `Young.dropMax N P` : the tableau `P` with all the letters `N` removed.
-* `Young.addMax N sh Q` : the tableau `Q` completed to the shape `sh` by letters `N`.
-* `Young.tabSet N sh c` : the tableaux of shape `sh`, entries `< N` and content `c`.
-* `Young.kostkaNum N sh c` : the number of such tableaux.
+* `Young.addMax N μ Q` : the tableau `Q` completed to the shape `μ` by letters `N`.
+* `Young.tabSet N μ c` : the tableaux of shape `μ`, entries `< N` and content `c`.
+* `Young.kostkaNum N μ c` : the number of such tableaux.
 
 ## Main results
 
 * `Young.kostkaNum_succ` : the recursion
-  `K_{sh, c} = ∑_{nu} K_{nu, c}`, the sum being over the shapes `nu` such that `sh / nu`
+  `K_{μ, c} = ∑_{ν} K_{ν, c}`, the sum being over the shapes `ν` such that `μ / ν`
   is a horizontal strip with `c N` boxes.
 -/
 
@@ -341,13 +341,13 @@ lemma count_flatten_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P) (
 
 /-! ### Adding the largest letter -/
 
-/-- The tableau `Q` completed to the shape `sh` by boxes filled with the letter `N`. -/
-def addMax (N : ℕ) (sh : List ℕ) (Q : List (List ℕ)) : List (List ℕ) :=
-  List.ofFn fun i : Fin sh.length =>
-    Q.getD i [] ++ List.replicate (sh.getD i 0 - (Q.getD i []).length) N
+/-- The tableau `Q` completed to the shape `μ` by boxes filled with the letter `N`. -/
+def addMax (N : ℕ) (μ : List ℕ) (Q : List (List ℕ)) : List (List ℕ) :=
+  List.ofFn fun i : Fin μ.length =>
+    Q.getD i [] ++ List.replicate (μ.getD i 0 - (Q.getD i []).length) N
 
-@[simp] lemma length_addMax (N : ℕ) (sh : List ℕ) (Q : List (List ℕ)) :
-    (addMax N sh Q).length = sh.length := by simp [addMax]
+@[simp] lemma length_addMax (N : ℕ) (μ : List ℕ) (Q : List (List ℕ)) :
+    (addMax N μ Q).length = μ.length := by simp [addMax]
 
 @[simp] lemma ltFilter_replicate (N k : ℕ) : ltFilter N (List.replicate k N) = [] := by
   rw [ltFilter, List.filter_eq_nil_iff]
@@ -357,33 +357,33 @@ def addMax (N : ℕ) (sh : List ℕ) (Q : List (List ℕ)) : List (List ℕ) :=
 
 section AddMax
 
-variable {N : ℕ} {sh : List ℕ} {Q : List (List ℕ)}
+variable {N : ℕ} {μ : List ℕ} {Q : List (List ℕ)}
 
-lemma getD_addMax (hstrip : HorizStrip sh (shape Q)) (i : ℕ) :
-    (addMax N sh Q).getD i [] =
-      Q.getD i [] ++ List.replicate (sh.getD i 0 - (Q.getD i []).length) N := by
-  rcases lt_or_ge i sh.length with hi | hi
+lemma getD_addMax (hstrip : HorizStrip μ (shape Q)) (i : ℕ) :
+    (addMax N μ Q).getD i [] =
+      Q.getD i [] ++ List.replicate (μ.getD i 0 - (Q.getD i []).length) N := by
+  rcases lt_or_ge i μ.length with hi | hi
   · rw [List.getD_eq_getElem _ _ (by simpa using hi)]
     simp [addMax, List.getElem?_eq_getElem hi]
-  · have hQlen : Q.length ≤ sh.length := by
+  · have hQlen : Q.length ≤ μ.length := by
       have := hstrip.included.length_le
       simpa [shape] using this
     have hQi : Q.getD i [] = [] := List.getD_eq_default _ _ (by omega)
-    have hshi : sh.getD i 0 = 0 := List.getD_eq_default _ _ hi
-    rw [List.getD_eq_default _ _ (by simpa using hi), hQi, hshi]
+    have hμi : μ.getD i 0 = 0 := List.getD_eq_default _ _ hi
+    rw [List.getD_eq_default _ _ (by simpa using hi), hQi, hμi]
     simp
 
-lemma length_getD_addMax (hstrip : HorizStrip sh (shape Q)) (i : ℕ) :
-    ((addMax N sh Q).getD i []).length = sh.getD i 0 := by
-  have hle : (Q.getD i []).length ≤ sh.getD i 0 := by
+lemma length_getD_addMax (hstrip : HorizStrip μ (shape Q)) (i : ℕ) :
+    ((addMax N μ Q).getD i []).length = μ.getD i 0 := by
+  have hle : (Q.getD i []).length ≤ μ.getD i 0 := by
     have := hstrip.included.getD_le i
     rwa [getD_shape] at this
   rw [getD_addMax hstrip]
   simp only [List.length_append, List.length_replicate]
   omega
 
-lemma shape_addMax (hstrip : HorizStrip sh (shape Q)) :
-    shape (addMax N sh Q) = sh := by
+lemma shape_addMax (hstrip : HorizStrip μ (shape Q)) :
+    shape (addMax N μ Q) = μ := by
   refine List.ext_getElem (by simp [shape]) fun i h1 h2 => ?_
   rw [← List.getD_eq_getElem _ _ h1, ← List.getD_eq_getElem _ _ h2, getD_shape]
   exact length_getD_addMax hstrip i
@@ -398,16 +398,16 @@ lemma isRow_append_replicate {r : List ℕ} (hr : IsRow r) (hle : ∀ x ∈ r, x
   · rw [List.eq_of_mem_replicate hy]
     exact hle x hx
 
-lemma isTableau_addMax (hsh : IsPart sh) (hQ : IsTableau Q) (hstrip : HorizStrip sh (shape Q))
-    (hlt : ∀ x ∈ Q.flatten, x < N) : IsTableau (addMax N sh Q) := by
-  have hlen : ∀ i, ((addMax N sh Q).getD i []).length = sh.getD i 0 :=
+lemma isTableau_addMax (hμ : IsPart μ) (hQ : IsTableau Q) (hstrip : HorizStrip μ (shape Q))
+    (hlt : ∀ x ∈ Q.flatten, x < N) : IsTableau (addMax N μ Q) := by
+  have hlen : ∀ i, ((addMax N μ Q).getD i []).length = μ.getD i 0 :=
     length_getD_addMax hstrip
-  have hQle : ∀ i, (Q.getD i []).length ≤ sh.getD i 0 := by
+  have hQle : ∀ i, (Q.getD i []).length ≤ μ.getD i 0 := by
     intro i
     have := hstrip.included.getD_le i
     rwa [getD_shape] at this
   refine isTableau_of_getD (fun i hi => ?_) (fun i => ?_) (fun i => ?_)
-  · have hpos : 0 < sh.getD i 0 := hsh.getD_pos (by simpa using hi)
+  · have hpos : 0 < μ.getD i 0 := hμ.getD_pos (by simpa using hi)
     intro hc
     rw [← hlen i, hc] at hpos
     simp at hpos
@@ -415,11 +415,11 @@ lemma isTableau_addMax (hsh : IsPart sh) (hQ : IsTableau Q) (hstrip : HorizStrip
     exact isRow_append_replicate (hQ.isRow_getD i)
       (fun x hx => le_of_lt (hlt x (mem_flatten_of_mem_getD hx))) _
   · -- domination
-    refine dominate_of_getElem (by rw [hlen, hlen]; exact hsh.getD_succ_le i) fun c hc => ?_
+    refine dominate_of_getElem (by rw [hlen, hlen]; exact hμ.getD_succ_le i) fun c hc => ?_
     rw [hlen] at hc
-    have hcv : c < ((addMax N sh Q).getD i []).length := by
+    have hcv : c < ((addMax N μ Q).getD i []).length := by
       rw [hlen]
-      exact lt_of_lt_of_le hc (hsh.getD_succ_le i)
+      exact lt_of_lt_of_le hc (hμ.getD_succ_le i)
     have hrow1 := getD_addMax (N := N) hstrip (i + 1)
     have hrow0 := getD_addMax (N := N) hstrip i
     by_cases hcq : c < (Q.getD (i + 1) []).length
@@ -427,11 +427,11 @@ lemma isTableau_addMax (hsh : IsPart sh) (hQ : IsTableau Q) (hstrip : HorizStrip
       have hdomQ : Dominate (Q.getD (i + 1) []) (Q.getD i []) :=
         hQ.dominate_getD (Nat.lt_succ_self i)
       have hci : c < (Q.getD i []).length := lt_of_lt_of_le hcq hdomQ.length_le
-      have h1 : ((addMax N sh Q).getD (i + 1) [])[c]'(by rw [hlen]; exact hc)
+      have h1 : ((addMax N μ Q).getD (i + 1) [])[c]'(by rw [hlen]; exact hc)
           = (Q.getD (i + 1) [])[c]'hcq := by
         rw [List.getElem_of_eq hrow1]
         exact List.getElem_append_left hcq
-      have h2 : ((addMax N sh Q).getD i [])[c]'hcv = (Q.getD i [])[c]'hci := by
+      have h2 : ((addMax N μ Q).getD i [])[c]'hcv = (Q.getD i [])[c]'hci := by
         rw [List.getElem_of_eq hrow0]
         exact List.getElem_append_left hci
       rw [h1, h2]
@@ -442,17 +442,17 @@ lemma isTableau_addMax (hsh : IsPart sh) (hQ : IsTableau Q) (hstrip : HorizStrip
         have := hstrip.getD_succ_le i
         rw [getD_shape] at this
         omega
-      have h1 : ((addMax N sh Q).getD (i + 1) [])[c]'(by rw [hlen]; exact hc) = N := by
+      have h1 : ((addMax N μ Q).getD (i + 1) [])[c]'(by rw [hlen]; exact hc) = N := by
         rw [List.getElem_of_eq hrow1, List.getElem_append_right hcq]
         simp
-      have h2 : ((addMax N sh Q).getD i [])[c]'hcv = (Q.getD i [])[c]'hci := by
+      have h2 : ((addMax N μ Q).getD i [])[c]'hcv = (Q.getD i [])[c]'hci := by
         rw [List.getElem_of_eq hrow0]
         exact List.getElem_append_left hci
       rw [h1, h2]
       exact hlt _ (mem_flatten_of_mem_getD (List.getElem_mem hci))
 
-lemma lt_of_mem_flatten_addMax (hstrip : HorizStrip sh (shape Q))
-    (hlt : ∀ x ∈ Q.flatten, x < N) {x : ℕ} (hx : x ∈ (addMax N sh Q).flatten) : x < N + 1 := by
+lemma lt_of_mem_flatten_addMax (hstrip : HorizStrip μ (shape Q))
+    (hlt : ∀ x ∈ Q.flatten, x < N) {x : ℕ} (hx : x ∈ (addMax N μ Q).flatten) : x < N + 1 := by
   obtain ⟨j, hj⟩ := mem_getD_of_mem_flatten hx
   rw [getD_addMax hstrip, List.mem_append] at hj
   rcases hj with hj | hj
@@ -461,9 +461,9 @@ lemma lt_of_mem_flatten_addMax (hstrip : HorizStrip sh (shape Q))
     exact Nat.lt_succ_self N
 
 /-- Adding and then removing the largest letter gives back the original tableau. -/
-lemma dropMax_addMax (hsh : IsPart sh) (hQ : IsTableau Q) (hstrip : HorizStrip sh (shape Q))
-    (hlt : ∀ x ∈ Q.flatten, x < N) : dropMax N (addMax N sh Q) = Q := by
-  have hA : IsTableau (addMax N sh Q) := isTableau_addMax hsh hQ hstrip hlt
+lemma dropMax_addMax (hμ : IsPart μ) (hQ : IsTableau Q) (hstrip : HorizStrip μ (shape Q))
+    (hlt : ∀ x ∈ Q.flatten, x < N) : dropMax N (addMax N μ Q) = Q := by
+  have hA : IsTableau (addMax N μ Q) := isTableau_addMax hμ hQ hstrip hlt
   refine eq_of_getD_eq (fun i _ => getD_dropMax_ne_nil (N := N) (by assumption))
     (fun i hi => hQ.getD_ne_nil hi) fun i => ?_
   rw [getD_dropMax hA, getD_addMax hstrip, ltFilter, List.filter_append]
@@ -472,7 +472,7 @@ lemma dropMax_addMax (hsh : IsPart sh) (hQ : IsTableau Q) (hstrip : HorizStrip s
     intro x hx
     simpa using hlt x (mem_flatten_of_mem_getD hx)
   have h2 : List.filter (fun x => decide (x < N))
-      (List.replicate (sh.getD i 0 - (Q.getD i []).length) N) = [] := ltFilter_replicate _ _
+      (List.replicate (μ.getD i 0 - (Q.getD i []).length) N) = [] := ltFilter_replicate _ _
   rw [h1, h2, List.append_nil]
 
 end AddMax
@@ -518,28 +518,28 @@ lemma sum_shape_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P)
     rw [← length_flatten_eq_sum_shape, length_eq_sum_count hlt]
   rw [h1, h2, Finset.sum_range_succ]
 
-/-- The tableaux of shape `sh` with entries `< N` and content `c`. -/
-def tabSet (N : ℕ) (sh : List ℕ) (c : ℕ → ℕ) : Set (List (List ℕ)) :=
-  {P | IsTableau P ∧ shape P = sh ∧ (∀ x ∈ P.flatten, x < N) ∧ ∀ i < N, P.flatten.count i = c i}
+/-- The tableaux of shape `μ` with entries `< N` and content `c`. -/
+def tabSet (N : ℕ) (μ : List ℕ) (c : ℕ → ℕ) : Set (List (List ℕ)) :=
+  {P | IsTableau P ∧ shape P = μ ∧ (∀ x ∈ P.flatten, x < N) ∧ ∀ i < N, P.flatten.count i = c i}
 
-/-- The number of tableaux of shape `sh` with entries `< N` and content `c`: a Kostka
+/-- The number of tableaux of shape `μ` with entries `< N` and content `c`: a Kostka
 number. -/
-noncomputable def kostkaNum (N : ℕ) (sh : List ℕ) (c : ℕ → ℕ) : ℕ := Nat.card (tabSet N sh c)
+noncomputable def kostkaNum (N : ℕ) (μ : List ℕ) (c : ℕ → ℕ) : ℕ := Nat.card (tabSet N μ c)
 
-instance finite_tabSet (N : ℕ) (sh : List ℕ) (c : ℕ → ℕ) : Finite (tabSet N sh c) := by
+instance finite_tabSet (N : ℕ) (μ : List ℕ) (c : ℕ → ℕ) : Finite (tabSet N μ c) := by
   refine Finite.of_injective
-    (β := Fin sh.sum → Fin (N + 1))
+    (β := Fin μ.sum → Fin (N + 1))
     (fun P i => ((⟨min (P.1.flatten.getD i 0) N, by omega⟩ : Fin (N + 1)))) ?_
   intro X Y h
   obtain ⟨hP, hPsh, hPlt, -⟩ := X.2
   obtain ⟨hR, hRsh, hRlt, -⟩ := Y.2
   set P := X.1 with hPdef
   set R := Y.1 with hRdef
-  have hlenP : P.flatten.length = sh.sum := by rw [length_flatten_eq_sum_shape, hPsh]
-  have hlenR : R.flatten.length = sh.sum := by rw [length_flatten_eq_sum_shape, hRsh]
+  have hlenP : P.flatten.length = μ.sum := by rw [length_flatten_eq_sum_shape, hPsh]
+  have hlenR : R.flatten.length = μ.sum := by rw [length_flatten_eq_sum_shape, hRsh]
   have hflat : P.flatten = R.flatten := by
     refine List.ext_getElem (by rw [hlenP, hlenR]) fun i h1 h2 => ?_
-    have hi : i < sh.sum := by rwa [hlenP] at h1
+    have hi : i < μ.sum := by rwa [hlenP] at h1
     have := congrFun h ⟨i, hi⟩
     simp only [Fin.mk.injEq] at this
     have hP1 : P.flatten.getD i 0 = P.flatten[i] := List.getD_eq_getElem _ _ h1
@@ -552,16 +552,16 @@ instance finite_tabSet (N : ℕ) (sh : List ℕ) (c : ℕ → ℕ) : Finite (tab
 
 /-! ### The recursion on the largest letter -/
 
-/-- The pairs consisting of a shape `nu` of size `m` such that `sh / nu` is a horizontal
-strip, together with a tableau of shape `nu`, entries `< N` and content `c`. -/
-def pairSet (N : ℕ) (sh : List ℕ) (c : ℕ → ℕ) (m : ℕ) : Set ((List ℕ) × List (List ℕ)) :=
-  {x | (IsPart x.1 ∧ x.1.sum = m) ∧ HorizStrip sh x.1 ∧ x.2 ∈ tabSet N x.1 c}
+/-- The pairs consisting of a shape `ν` of size `m` such that `μ / ν` is a horizontal
+strip, together with a tableau of shape `ν`, entries `< N` and content `c`. -/
+def pairSet (N : ℕ) (μ : List ℕ) (c : ℕ → ℕ) (m : ℕ) : Set ((List ℕ) × List (List ℕ)) :=
+  {x | (IsPart x.1 ∧ x.1.sum = m) ∧ HorizStrip μ x.1 ∧ x.2 ∈ tabSet N x.1 c}
 
-variable {N : ℕ} {sh : List ℕ} {c : ℕ → ℕ} {m : ℕ}
+variable {N : ℕ} {μ : List ℕ} {c : ℕ → ℕ} {m : ℕ}
 
-lemma dropMax_mem_pairSet (hm : m + c N = sh.sum) {P : List (List ℕ)}
-    (hP : P ∈ tabSet (N + 1) sh c) :
-    (shape (dropMax N P), dropMax N P) ∈ pairSet N sh c m := by
+lemma dropMax_mem_pairSet (hm : m + c N = μ.sum) {P : List (List ℕ)}
+    (hP : P ∈ tabSet (N + 1) μ c) :
+    (shape (dropMax N P), dropMax N P) ∈ pairSet N μ c m := by
   obtain ⟨hPtab, hPsh, hPlt, hPcount⟩ := hP
   have hcountN : P.flatten.count N = c N := hPcount N (Nat.lt_succ_self N)
   have hsum := sum_shape_dropMax hPtab hPlt
@@ -572,15 +572,15 @@ lemma dropMax_mem_pairSet (hm : m + c N = sh.sum) {P : List (List ℕ)}
   rw [count_flatten_dropMax hPtab, ite_eq_left hi]
   exact hPcount i (by omega)
 
-lemma addMax_mem_tabSet (hsh : IsPart sh) (hm : m + c N = sh.sum)
-    {x : (List ℕ) × List (List ℕ)} (hx : x ∈ pairSet N sh c m) :
-    addMax N sh x.2 ∈ tabSet (N + 1) sh c := by
-  obtain ⟨⟨hnu, hnusum⟩, hstrip, hQtab, hQsh, hQlt, hQcount⟩ := hx
-  have hstrip' : HorizStrip sh (shape x.2) := by rw [hQsh]; exact hstrip
-  have hAtab : IsTableau (addMax N sh x.2) := isTableau_addMax hsh hQtab hstrip' hQlt
-  have hAlt : ∀ y ∈ (addMax N sh x.2).flatten, y < N + 1 :=
+lemma addMax_mem_tabSet (hμ : IsPart μ) (hm : m + c N = μ.sum)
+    {x : (List ℕ) × List (List ℕ)} (hx : x ∈ pairSet N μ c m) :
+    addMax N μ x.2 ∈ tabSet (N + 1) μ c := by
+  obtain ⟨⟨hν, hνsum⟩, hstrip, hQtab, hQsh, hQlt, hQcount⟩ := hx
+  have hstrip' : HorizStrip μ (shape x.2) := by rw [hQsh]; exact hstrip
+  have hAtab : IsTableau (addMax N μ x.2) := isTableau_addMax hμ hQtab hstrip' hQlt
+  have hAlt : ∀ y ∈ (addMax N μ x.2).flatten, y < N + 1 :=
     fun y hy => lt_of_mem_flatten_addMax hstrip' hQlt hy
-  have hdrop : dropMax N (addMax N sh x.2) = x.2 := dropMax_addMax hsh hQtab hstrip' hQlt
+  have hdrop : dropMax N (addMax N μ x.2) = x.2 := dropMax_addMax hμ hQtab hstrip' hQlt
   refine ⟨hAtab, shape_addMax hstrip', hAlt, fun i hi => ?_⟩
   rcases lt_or_ge i N with hiN | hiN
   · have := count_flatten_dropMax hAtab (N := N) i
@@ -590,38 +590,38 @@ lemma addMax_mem_tabSet (hsh : IsPart sh) (hm : m + c N = sh.sum)
   · have hiN' : i = N := by omega
     subst hiN'
     have hsum := sum_shape_dropMax hAtab hAlt
-    rw [hdrop, hQsh, shape_addMax hstrip', hnusum] at hsum
+    rw [hdrop, hQsh, shape_addMax hstrip', hνsum] at hsum
     omega
 
-lemma addMax_dropMax_of_mem {P : List (List ℕ)} (hP : P ∈ tabSet (N + 1) sh c) :
-    addMax N sh (dropMax N P) = P := by
+lemma addMax_dropMax_of_mem {P : List (List ℕ)} (hP : P ∈ tabSet (N + 1) μ c) :
+    addMax N μ (dropMax N P) = P := by
   obtain ⟨hPtab, hPsh, hPlt, -⟩ := hP
   rw [← hPsh]
   exact addMax_dropMax hPtab hPlt
 
-lemma dropMax_addMax_of_mem (hsh : IsPart sh) {x : (List ℕ) × List (List ℕ)}
-    (hx : x ∈ pairSet N sh c m) :
-    (shape (dropMax N (addMax N sh x.2)), dropMax N (addMax N sh x.2)) = x := by
-  obtain ⟨⟨hnu, hnusum⟩, hstrip, hQtab, hQsh, hQlt, -⟩ := hx
-  have hstrip' : HorizStrip sh (shape x.2) := by rw [hQsh]; exact hstrip
-  have hdrop : dropMax N (addMax N sh x.2) = x.2 := dropMax_addMax hsh hQtab hstrip' hQlt
+lemma dropMax_addMax_of_mem (hμ : IsPart μ) {x : (List ℕ) × List (List ℕ)}
+    (hx : x ∈ pairSet N μ c m) :
+    (shape (dropMax N (addMax N μ x.2)), dropMax N (addMax N μ x.2)) = x := by
+  obtain ⟨⟨hν, hνsum⟩, hstrip, hQtab, hQsh, hQlt, -⟩ := hx
+  have hstrip' : HorizStrip μ (shape x.2) := by rw [hQsh]; exact hstrip
+  have hdrop : dropMax N (addMax N μ x.2) = x.2 := dropMax_addMax hμ hQtab hstrip' hQlt
   rw [hdrop, hQsh]
 
-/-- Removing the largest letter is a bijection between the tableaux of shape `sh` with
-letters `< N + 1` and content `c` and the pairs of a shape `nu` with `sh / nu` a
-horizontal strip and a tableau of shape `nu` with letters `< N` and content `c`. -/
-noncomputable def dropMaxEquiv (hsh : IsPart sh) (hm : m + c N = sh.sum) :
-    (tabSet (N + 1) sh c) ≃ (pairSet N sh c m) where
+/-- Removing the largest letter is a bijection between the tableaux of shape `μ` with
+letters `< N + 1` and content `c` and the pairs of a shape `ν` with `μ / ν` a
+horizontal strip and a tableau of shape `ν` with letters `< N` and content `c`. -/
+noncomputable def dropMaxEquiv (hμ : IsPart μ) (hm : m + c N = μ.sum) :
+    (tabSet (N + 1) μ c) ≃ (pairSet N μ c m) where
   toFun P := ⟨(shape (dropMax N P.1), dropMax N P.1), dropMax_mem_pairSet hm P.2⟩
-  invFun x := ⟨addMax N sh x.1.2, addMax_mem_tabSet hsh hm x.2⟩
+  invFun x := ⟨addMax N μ x.1.2, addMax_mem_tabSet hμ hm x.2⟩
   left_inv P := Subtype.ext (addMax_dropMax_of_mem P.2)
-  right_inv x := Subtype.ext (dropMax_addMax_of_mem hsh x.2)
+  right_inv x := Subtype.ext (dropMax_addMax_of_mem hμ x.2)
 
 /-- The pairs of a shape and a tableau, sorted by shape. -/
-def pairSetEquivSigma (N : ℕ) (sh : List ℕ) (c : ℕ → ℕ) (m : ℕ) :
-    (pairSet N sh c m) ≃
-      Σ nu : {p : List ℕ // IsPart p ∧ p.sum = m},
-        {Q : List (List ℕ) // HorizStrip sh nu.1 ∧ Q ∈ tabSet N nu.1 c} where
+def pairSetEquivSigma (N : ℕ) (μ : List ℕ) (c : ℕ → ℕ) (m : ℕ) :
+    (pairSet N μ c m) ≃
+      Σ ν : {p : List ℕ // IsPart p ∧ p.sum = m},
+        {Q : List (List ℕ) // HorizStrip μ ν.1 ∧ Q ∈ tabSet N ν.1 c} where
   toFun x := ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
   invFun s := ⟨(s.1.1, s.2.1), ⟨s.1.2, s.2.2⟩⟩
   left_inv _ := rfl
@@ -631,27 +631,27 @@ open Classical in
 /-- **The recursion on the largest letter**: a tableau with letters `< N + 1` is a tableau
 with letters `< N` together with a horizontal strip of boxes filled with the letter `N`.
 This is the combinatorial content of the Pieri rule. -/
-theorem kostkaNum_succ (hsh : IsPart sh) (hm : m + c N = sh.sum) :
-    kostkaNum (N + 1) sh c
-      = ∑ nu : {p : List ℕ // IsPart p ∧ p.sum = m},
-          if HorizStrip sh nu.1 then kostkaNum N nu.1 c else 0 := by
+theorem kostkaNum_succ (hμ : IsPart μ) (hm : m + c N = μ.sum) :
+    kostkaNum (N + 1) μ c
+      = ∑ ν : {p : List ℕ // IsPart p ∧ p.sum = m},
+          if HorizStrip μ ν.1 then kostkaNum N ν.1 c else 0 := by
   classical
-  have : ∀ nu : {p : List ℕ // IsPart p ∧ p.sum = m},
-      Finite {Q : List (List ℕ) // HorizStrip sh nu.1 ∧ Q ∈ tabSet N nu.1 c} := by
-    intro nu
-    have : Finite (tabSet N nu.1 c) := finite_tabSet N nu.1 c
-    refine Finite.of_injective (fun Q => (⟨Q.1, Q.2.2⟩ : tabSet N nu.1 c)) ?_
+  have : ∀ ν : {p : List ℕ // IsPart p ∧ p.sum = m},
+      Finite {Q : List (List ℕ) // HorizStrip μ ν.1 ∧ Q ∈ tabSet N ν.1 c} := by
+    intro ν
+    have : Finite (tabSet N ν.1 c) := finite_tabSet N ν.1 c
+    refine Finite.of_injective (fun Q => (⟨Q.1, Q.2.2⟩ : tabSet N ν.1 c)) ?_
     intro x y h
     simp only [Subtype.mk.injEq] at h
     exact Subtype.ext h
-  rw [kostkaNum, Nat.card_congr ((dropMaxEquiv hsh hm).trans (pairSetEquivSigma N sh c m)),
+  rw [kostkaNum, Nat.card_congr ((dropMaxEquiv hμ hm).trans (pairSetEquivSigma N μ c m)),
     Nat.card_sigma]
-  refine Finset.sum_congr rfl fun nu _ => ?_
-  by_cases hstrip : HorizStrip sh nu.1
+  refine Finset.sum_congr rfl fun ν _ => ?_
+  by_cases hstrip : HorizStrip μ ν.1
   · rw [ite_eq_left hstrip, kostkaNum]
     exact Nat.card_congr (Equiv.subtypeEquivRight fun Q => and_iff_right hstrip)
   · rw [ite_eq_right hstrip]
-    have : IsEmpty {Q : List (List ℕ) // HorizStrip sh nu.1 ∧ Q ∈ tabSet N nu.1 c} :=
+    have : IsEmpty {Q : List (List ℕ) // HorizStrip μ ν.1 ∧ Q ∈ tabSet N ν.1 c} :=
       ⟨fun Q => hstrip Q.2.1⟩
     exact Nat.card_of_isEmpty
 

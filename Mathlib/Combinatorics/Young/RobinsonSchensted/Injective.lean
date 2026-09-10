@@ -261,21 +261,21 @@ lemma shape_insTab (t : List (List T)) (l : T) :
 
 /-- A partition to which one box has been added at the end of row `i`, and which is still
 a partition, has an addable corner at row `i`. -/
-lemma isAddCorner_of_isPart_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh)
-    (h' : IsPart (incrNth sh i)) : IsAddCorner sh i := by
+lemma isAddCorner_of_isPart_incrNth {μ : List ℕ} {i : ℕ} (h : IsPart μ)
+    (h' : IsPart (incrNth μ i)) : IsAddCorner μ i := by
   rcases Nat.eq_zero_or_pos i with rfl | hi
   · exact Or.inl rfl
   refine Or.inr ?_
   by_contra hcon
   push Not at hcon
-  have hanti : sh.getD i 0 ≤ sh.getD (i - 1) 0 := h.getD_antitone (by omega)
-  have heq : sh.getD i 0 = sh.getD (i - 1) 0 := le_antisymm hanti hcon
-  have h1 : (incrNth sh i).getD i 0 = sh.getD i 0 + 1 := by
+  have hanti : μ.getD i 0 ≤ μ.getD (i - 1) 0 := h.getD_antitone (by omega)
+  have heq : μ.getD i 0 = μ.getD (i - 1) 0 := le_antisymm hanti hcon
+  have h1 : (incrNth μ i).getD i 0 = μ.getD i 0 + 1 := by
     rw [getD_incrNth]; simp
-  have h2 : (incrNth sh i).getD (i - 1) 0 = sh.getD (i - 1) 0 := by
+  have h2 : (incrNth μ i).getD (i - 1) 0 = μ.getD (i - 1) 0 := by
     rw [getD_incrNth, ite_eq_right (by omega : ¬ i = i - 1)]
     omega
-  have h3 : (incrNth sh i).getD i 0 ≤ (incrNth sh i).getD (i - 1) 0 :=
+  have h3 : (incrNth μ i).getD i 0 ≤ (incrNth μ i).getD (i - 1) 0 :=
     h'.getD_antitone (by omega)
   omega
 

@@ -15,7 +15,7 @@ Following `theories/MPoly/Cauchy.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we expand the Cauchy kernel in the
 power sums: degree by degree,
 
-`∑_{lam ⊢ n} s_lam(x) s_lam(y) = ∑_{lam ⊢ n} p_lam(x) p_lam(y) / z_lam`
+`∑_{η ⊢ n} s_η(x) s_η(y) = ∑_{η ⊢ n} p_η(x) p_η(y) / z_η`
 
 over a commutative ring containing the rationals.
 
@@ -219,10 +219,10 @@ theorem cauchyRHS_eq_genCycleIndexSum (m k n : ℕ) (R : Type*) [CommRing R] [Al
   exact nsmul_cauchyRHS m k n R
 
 /-- The product of the family `p_r(x) p_r(y)` over a partition. -/
-lemma genProd_psum_mul (m k : ℕ) (R : Type*) [CommRing R] (lam : List ℕ) :
-    genProd (fun r => C (psum (Fin m) R r) * psum (Fin k) (MvPolynomial (Fin m) R) r) lam
-      = C (pProd m R lam) * pProd k (MvPolynomial (Fin m) R) lam := by
-  induction lam with
+lemma genProd_psum_mul (m k : ℕ) (R : Type*) [CommRing R] (η : List ℕ) :
+    genProd (fun r => C (psum (Fin m) R r) * psum (Fin k) (MvPolynomial (Fin m) R) r) η
+      = C (pProd m R η) * pProd k (MvPolynomial (Fin m) R) η := by
+  induction η with
   | nil => simp [pProd]
   | cons a l ih =>
     rw [genProd_cons, ih, pProd_cons, pProd_cons, map_mul]
@@ -230,16 +230,16 @@ lemma genProd_psum_mul (m k : ℕ) (R : Type*) [CommRing R] (lam : List ℕ) :
 
 /-- **The Cauchy identity in terms of the power sums**. -/
 theorem power_sum_cauchy (m k n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] :
-    (∑ lam ∈ partFinset n,
-        C (schurPoly (Fin m) R lam) * schurPoly (Fin k) (MvPolynomial (Fin m) R) lam
+    (∑ η ∈ partFinset n,
+        C (schurPoly (Fin m) R η) * schurPoly (Fin k) (MvPolynomial (Fin m) R) η
       : MvPolynomial (Fin k) (MvPolynomial (Fin m) R))
-      = ∑ lam ∈ partFinset n,
-          ((zcard lam : ℚ))⁻¹ •
-            (C (pProd m R lam) * pProd k (MvPolynomial (Fin m) R) lam) := by
-  rw [show (∑ lam ∈ partFinset n,
-      C (schurPoly (Fin m) R lam) * schurPoly (Fin k) (MvPolynomial (Fin m) R) lam
+      = ∑ η ∈ partFinset n,
+          ((zcard η : ℚ))⁻¹ •
+            (C (pProd m R η) * pProd k (MvPolynomial (Fin m) R) η) := by
+  rw [show (∑ η ∈ partFinset n,
+      C (schurPoly (Fin m) R η) * schurPoly (Fin k) (MvPolynomial (Fin m) R) η
         : MvPolynomial (Fin k) (MvPolynomial (Fin m) R)) = cauchyRHS m k n R from cauchy m k n R,
     cauchyRHS_eq_genCycleIndexSum, genCycleIndexSum]
-  exact Finset.sum_congr rfl fun lam _ => by rw [genProd_psum_mul]
+  exact Finset.sum_congr rfl fun η _ => by rw [genProd_psum_mul]
 
 end MvPolynomial

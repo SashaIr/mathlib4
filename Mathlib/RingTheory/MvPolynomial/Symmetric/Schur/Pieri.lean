@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Branching
 The Pieri rule expresses the product of a Schur polynomial by a complete homogeneous
 symmetric polynomial as a sum of Schur polynomials, over the shapes obtained by adding a
 horizontal strip:
-`s_rho * h_r = ∑_{lam / rho a horizontal strip of size r} s_lam`.
+`s_ρ * h_r = ∑_{η / ρ a horizontal strip of size r} s_η`.
 
 The proof is by induction on the number of variables.  The branching rule
 `MvPolynomial.schurPoly_branching` splits off the last variable on both sides, and the
@@ -81,28 +81,28 @@ lemma horizStrip_rowShape {j r : ℕ} (h : j ≤ r) : HorizStrip (rowShape r) (r
     omega
 
 /-- A partition contained in a one-row shape is a one-row shape. -/
-lemma eq_rowShape_of_included {nu : List ℕ} {r : ℕ} (hnu : IsPart nu)
-    (h : Included nu (rowShape r)) : nu = rowShape nu.sum := by
-  have hlen : nu.length ≤ 1 := le_trans h.length_le (length_rowShape_le r)
-  match nu, hlen with
+lemma eq_rowShape_of_included {ν : List ℕ} {r : ℕ} (hν : IsPart ν)
+    (h : Included ν (rowShape r)) : ν = rowShape ν.sum := by
+  have hlen : ν.length ≤ 1 := le_trans h.length_le (length_rowShape_le r)
+  match ν, hlen with
   | [], _ => simp [rowShape]
   | [a], _ =>
-      have ha : 0 < a := hnu.headD_pos (by simp)
+      have ha : 0 < a := hν.headD_pos (by simp)
       have hs : [a].sum = a := by simp
       rw [hs, rowShape, ite_eq_right (by omega)]
 
 /-! ### The branching rule in the finite-set formulation -/
 
-lemma schurPoly_branching' (m : ℕ) {lam : List ℕ} (hlam : IsPart lam) :
-    schurPoly (Fin (m + 1)) R lam
-      = ∑ nu ∈ partFinsetLe lam.sum, if HorizStrip lam nu then
-          rename Fin.castSucc (schurPoly (Fin m) R nu) * X (Fin.last m) ^ (lam.sum - nu.sum)
+lemma schurPoly_branching' (m : ℕ) {η : List ℕ} (hη : IsPart η) :
+    schurPoly (Fin (m + 1)) R η
+      = ∑ ν ∈ partFinsetLe η.sum, if HorizStrip η ν then
+          rename Fin.castSucc (schurPoly (Fin m) R ν) * X (Fin.last m) ^ (η.sum - ν.sum)
         else 0 := by
-  rw [schurPoly_branching lam hlam, sum_partFinsetLe_eq]
+  rw [schurPoly_branching η hη, sum_partFinsetLe_eq]
   refine Finset.sum_congr rfl fun k _ => ?_
-  rw [sum_subtype_eq_sum_partFinset k (fun nu => if HorizStrip lam nu then
-    rename Fin.castSucc (schurPoly (Fin m) R nu) * X (Fin.last m) ^ (lam.sum - k) else 0)]
-  exact Finset.sum_congr rfl fun nu hnu => by rw [(mem_partFinset.1 hnu).2]
+  rw [sum_subtype_eq_sum_partFinset k (fun ν => if HorizStrip η ν then
+    rename Fin.castSucc (schurPoly (Fin m) R ν) * X (Fin.last m) ^ (η.sum - k) else 0)]
+  exact Finset.sum_congr rfl fun ν hν => by rw [(mem_partFinset.1 hν).2]
 
 /-- The branching rule for the complete homogeneous symmetric polynomials. -/
 lemma hsymm_branching (m r : ℕ) :
@@ -112,19 +112,19 @@ lemma hsymm_branching (m r : ℕ) :
   classical
   rw [← schurPoly_rowShape (Fin (m + 1)) R r, schurPoly_branching' m (isPart_rowShape r),
     sum_rowShape, ← Finset.sum_filter]
-  refine Finset.sum_nbij' (fun nu => nu.sum) (fun j => rowShape j) (fun nu hnu => ?_)
-    (fun j hj => ?_) (fun nu hnu => ?_) (fun j _ => sum_rowShape j) (fun nu hnu => ?_)
-  · rw [Finset.mem_filter, mem_partFinsetLe] at hnu
-    exact Finset.mem_range.2 (Nat.lt_succ_of_le hnu.1.2)
+  refine Finset.sum_nbij' (fun ν => ν.sum) (fun j => rowShape j) (fun ν hν => ?_)
+    (fun j hj => ?_) (fun ν hν => ?_) (fun j _ => sum_rowShape j) (fun ν hν => ?_)
+  · rw [Finset.mem_filter, mem_partFinsetLe] at hν
+    exact Finset.mem_range.2 (Nat.lt_succ_of_le hν.1.2)
   · rw [Finset.mem_range] at hj
     rw [Finset.mem_filter, mem_partFinsetLe, sum_rowShape]
     exact ⟨⟨isPart_rowShape j, by omega⟩, horizStrip_rowShape (by omega)⟩
-  · rw [Finset.mem_filter, mem_partFinsetLe] at hnu
-    exact (eq_rowShape_of_included hnu.1.1 hnu.2.included).symm
-  · rw [Finset.mem_filter, mem_partFinsetLe] at hnu
-    have hnueq : nu = rowShape nu.sum := eq_rowShape_of_included hnu.1.1 hnu.2.included
-    rw [show schurPoly (Fin m) R nu = hsymm (Fin m) R nu.sum by
-      rw [hnueq, sum_rowShape, schurPoly_rowShape]]
+  · rw [Finset.mem_filter, mem_partFinsetLe] at hν
+    exact (eq_rowShape_of_included hν.1.1 hν.2.included).symm
+  · rw [Finset.mem_filter, mem_partFinsetLe] at hν
+    have hνeq : ν = rowShape ν.sum := eq_rowShape_of_included hν.1.1 hν.2.included
+    rw [show schurPoly (Fin m) R ν = hsymm (Fin m) R ν.sum by
+      rw [hνeq, sum_rowShape, schurPoly_rowShape]]
 
 /-! ### The two sides of the Pieri rule in a common form -/
 
@@ -134,90 +134,90 @@ lemma card_set_eq_card_finset {s : Set (List ℕ)} {t : Finset (List ℕ)} (h : 
   rw [h, Nat.card_coe_set_eq, Set.ncard_coe_finset]
 
 lemma pieri_lhs (m : ℕ)
-    (IH : ∀ {sigma : List ℕ}, IsPart sigma → ∀ j : ℕ,
-      schurPoly (Fin m) R sigma * hsymm (Fin m) R j
-        = ∑ tau ∈ partFinset (sigma.sum + j),
-            if HorizStrip tau sigma then schurPoly (Fin m) R tau else 0)
-    {rho : List ℕ} (hrho : IsPart rho) (r : ℕ) :
-    schurPoly (Fin (m + 1)) R rho * hsymm (Fin (m + 1)) R r
-      = ∑ tau ∈ partFinsetLe (rho.sum + r),
-          Nat.card (downDiamondLe rho tau r) •
-            (rename Fin.castSucc (schurPoly (Fin m) R tau)
-              * X (Fin.last m) ^ (rho.sum + r - tau.sum)) := by
+    (IH : ∀ {κ : List ℕ}, IsPart κ → ∀ j : ℕ,
+      schurPoly (Fin m) R κ * hsymm (Fin m) R j
+        = ∑ τ ∈ partFinset (κ.sum + j),
+            if HorizStrip τ κ then schurPoly (Fin m) R τ else 0)
+    {ρ : List ℕ} (hρ : IsPart ρ) (r : ℕ) :
+    schurPoly (Fin (m + 1)) R ρ * hsymm (Fin (m + 1)) R r
+      = ∑ τ ∈ partFinsetLe (ρ.sum + r),
+          Nat.card (downDiamondLe ρ τ r) •
+            (rename Fin.castSucc (schurPoly (Fin m) R τ)
+              * X (Fin.last m) ^ (ρ.sum + r - τ.sum)) := by
   classical
-  have step : ∀ sigma ∈ partFinsetLe rho.sum, ∀ j ∈ Finset.range (r + 1),
-      (if HorizStrip rho sigma then rename Fin.castSucc (schurPoly (Fin m) R sigma)
-          * X (Fin.last m) ^ (rho.sum - sigma.sum) else 0)
+  have step : ∀ κ ∈ partFinsetLe ρ.sum, ∀ j ∈ Finset.range (r + 1),
+      (if HorizStrip ρ κ then rename Fin.castSucc (schurPoly (Fin m) R κ)
+          * X (Fin.last m) ^ (ρ.sum - κ.sum) else 0)
         * (rename Fin.castSucc (hsymm (Fin m) R j) * X (Fin.last m) ^ (r - j))
-      = ∑ tau ∈ partFinsetLe (rho.sum + r),
-          if HorizStrip rho sigma ∧ HorizStrip tau sigma ∧ tau.sum = sigma.sum + j then
-            rename Fin.castSucc (schurPoly (Fin m) R tau)
-              * X (Fin.last m) ^ (rho.sum + r - tau.sum)
+      = ∑ τ ∈ partFinsetLe (ρ.sum + r),
+          if HorizStrip ρ κ ∧ HorizStrip τ κ ∧ τ.sum = κ.sum + j then
+            rename Fin.castSucc (schurPoly (Fin m) R τ)
+              * X (Fin.last m) ^ (ρ.sum + r - τ.sum)
           else 0 := by
-    intro sigma hsigma j hj
-    obtain ⟨hsp, hssum⟩ := mem_partFinsetLe.1 hsigma
+    intro κ hκ j hj
+    obtain ⟨hsp, hssum⟩ := mem_partFinsetLe.1 hκ
     have hjr : j ≤ r := Nat.lt_succ_iff.1 (Finset.mem_range.1 hj)
-    by_cases hstrip : HorizStrip rho sigma
+    by_cases hstrip : HorizStrip ρ κ
     · rw [ite_eq_left hstrip]
-      have hprod : (rename Fin.castSucc (schurPoly (Fin m) R sigma)
-            * X (Fin.last m) ^ (rho.sum - sigma.sum))
+      have hprod : (rename Fin.castSucc (schurPoly (Fin m) R κ)
+            * X (Fin.last m) ^ (ρ.sum - κ.sum))
           * ((rename Fin.castSucc (hsymm (Fin m) R j) : MvPolynomial (Fin (m + 1)) R)
             * X (Fin.last m) ^ (r - j))
-          = rename Fin.castSucc (schurPoly (Fin m) R sigma * hsymm (Fin m) R j)
-            * X (Fin.last m) ^ (rho.sum - sigma.sum + (r - j)) := by
+          = rename Fin.castSucc (schurPoly (Fin m) R κ * hsymm (Fin m) R j)
+            * X (Fin.last m) ^ (ρ.sum - κ.sum + (r - j)) := by
         rw [map_mul, pow_add]
         ring
       rw [hprod, IH hsp j, map_sum, Finset.sum_mul,
-        sum_partFinset_eq_sum_partFinsetLe (show sigma.sum + j ≤ rho.sum + r by omega)]
-      refine Finset.sum_congr rfl fun tau _ => ?_
+        sum_partFinset_eq_sum_partFinsetLe (show κ.sum + j ≤ ρ.sum + r by omega)]
+      refine Finset.sum_congr rfl fun τ _ => ?_
       have hrn : (rename (Fin.castSucc : Fin m → Fin (m + 1))
-            (if HorizStrip tau sigma then schurPoly (Fin m) R tau else 0)
+            (if HorizStrip τ κ then schurPoly (Fin m) R τ else 0)
               : MvPolynomial (Fin (m + 1)) R)
-          = if HorizStrip tau sigma then rename Fin.castSucc (schurPoly (Fin m) R tau) else 0 := by
+          = if HorizStrip τ κ then rename Fin.castSucc (schurPoly (Fin m) R τ) else 0 := by
         split_ifs
         · rfl
         · exact map_zero _
-      by_cases htsum : tau.sum = sigma.sum + j
+      by_cases htsum : τ.sum = κ.sum + j
       · rw [ite_eq_left htsum, hrn]
-        by_cases hts : HorizStrip tau sigma
+        by_cases hts : HorizStrip τ κ
         · rw [ite_eq_left hts, ite_eq_left ⟨hstrip, hts, htsum⟩,
-            show rho.sum + r - tau.sum = rho.sum - sigma.sum + (r - j) by omega]
+            show ρ.sum + r - τ.sum = ρ.sum - κ.sum + (r - j) by omega]
         · rw [ite_eq_right hts, ite_eq_right (fun h => hts h.2.1), zero_mul]
       · rw [ite_eq_right htsum, ite_eq_right (fun h => htsum h.2.2)]
     · rw [ite_eq_right hstrip, zero_mul, Finset.sum_eq_zero]
-      intro tau _
+      intro τ _
       rw [ite_eq_right (fun h => hstrip h.1)]
-  have expand : schurPoly (Fin (m + 1)) R rho * hsymm (Fin (m + 1)) R r
-      = ∑ sigma ∈ partFinsetLe rho.sum, ∑ j ∈ Finset.range (r + 1),
-          ∑ tau ∈ partFinsetLe (rho.sum + r),
-            if HorizStrip rho sigma ∧ HorizStrip tau sigma ∧ tau.sum = sigma.sum + j then
-              rename Fin.castSucc (schurPoly (Fin m) R tau)
-                * X (Fin.last m) ^ (rho.sum + r - tau.sum)
+  have expand : schurPoly (Fin (m + 1)) R ρ * hsymm (Fin (m + 1)) R r
+      = ∑ κ ∈ partFinsetLe ρ.sum, ∑ j ∈ Finset.range (r + 1),
+          ∑ τ ∈ partFinsetLe (ρ.sum + r),
+            if HorizStrip ρ κ ∧ HorizStrip τ κ ∧ τ.sum = κ.sum + j then
+              rename Fin.castSucc (schurPoly (Fin m) R τ)
+                * X (Fin.last m) ^ (ρ.sum + r - τ.sum)
             else 0 := by
-    rw [schurPoly_branching' m hrho, hsymm_branching m r, Finset.sum_mul_sum]
-    exact Finset.sum_congr rfl fun sigma hs => Finset.sum_congr rfl fun j hj => step sigma hs j hj
-  rw [expand, Finset.sum_congr rfl (fun sigma _ => Finset.sum_comm), Finset.sum_comm]
-  refine Finset.sum_congr rfl fun tau htau => ?_
+    rw [schurPoly_branching' m hρ, hsymm_branching m r, Finset.sum_mul_sum]
+    exact Finset.sum_congr rfl fun κ hs => Finset.sum_congr rfl fun j hj => step κ hs j hj
+  rw [expand, Finset.sum_congr rfl (fun κ _ => Finset.sum_comm), Finset.sum_comm]
+  refine Finset.sum_congr rfl fun τ hτ => ?_
   -- the sum over `j` has at most one nonzero term
-  have hjsum : ∀ sigma ∈ partFinsetLe rho.sum,
+  have hjsum : ∀ κ ∈ partFinsetLe ρ.sum,
       (∑ j ∈ Finset.range (r + 1),
-        if HorizStrip rho sigma ∧ HorizStrip tau sigma ∧ tau.sum = sigma.sum + j then
-          rename Fin.castSucc (schurPoly (Fin m) R tau)
-            * X (Fin.last m) ^ (rho.sum + r - tau.sum) else 0)
-      = if HorizStrip rho sigma ∧ HorizStrip tau sigma ∧ tau.sum ≤ sigma.sum + r then
-          rename Fin.castSucc (schurPoly (Fin m) R tau)
-            * X (Fin.last m) ^ (rho.sum + r - tau.sum) else 0 := by
-    intro sigma _
-    by_cases hc : HorizStrip rho sigma ∧ HorizStrip tau sigma ∧ tau.sum ≤ sigma.sum + r
-    · have hsigtau : sigma.sum ≤ tau.sum := hc.2.1.included.sum_le
-      rw [ite_eq_left hc, Finset.sum_eq_single (tau.sum - sigma.sum)]
+        if HorizStrip ρ κ ∧ HorizStrip τ κ ∧ τ.sum = κ.sum + j then
+          rename Fin.castSucc (schurPoly (Fin m) R τ)
+            * X (Fin.last m) ^ (ρ.sum + r - τ.sum) else 0)
+      = if HorizStrip ρ κ ∧ HorizStrip τ κ ∧ τ.sum ≤ κ.sum + r then
+          rename Fin.castSucc (schurPoly (Fin m) R τ)
+            * X (Fin.last m) ^ (ρ.sum + r - τ.sum) else 0 := by
+    intro κ _
+    by_cases hc : HorizStrip ρ κ ∧ HorizStrip τ κ ∧ τ.sum ≤ κ.sum + r
+    · have hκτ : κ.sum ≤ τ.sum := hc.2.1.included.sum_le
+      rw [ite_eq_left hc, Finset.sum_eq_single (τ.sum - κ.sum)]
       · rw [ite_eq_left ⟨hc.1, hc.2.1, by omega⟩]
       · intro b _ hbne
         refine ite_eq_right ?_
         rintro ⟨-, -, hb⟩
         exact hbne (by omega)
       · intro hnot
-        exact absurd (Finset.mem_range.2 (show tau.sum - sigma.sum < r + 1 by omega)) hnot
+        exact absurd (Finset.mem_range.2 (show τ.sum - κ.sum < r + 1 by omega)) hnot
     · rw [ite_eq_right hc, Finset.sum_eq_zero]
       intro j hj
       refine ite_eq_right ?_
@@ -228,7 +228,7 @@ lemma pieri_lhs (m : ℕ)
     Finset.sum_const]
   congr 1
   refine (card_set_eq_card_finset ?_).symm
-  ext sigma
+  ext κ
   simp only [downDiamondLe, Set.mem_ofPred_eq, Finset.coe_filter, mem_partFinsetLe,
     Set.mem_ofPred_eq]
   constructor
@@ -237,38 +237,38 @@ lemma pieri_lhs (m : ℕ)
   · rintro ⟨⟨h1, -⟩, h2, h3, h4⟩
     exact ⟨h1, h2, h3, h4⟩
 
-lemma pieri_rhs (m : ℕ) {rho : List ℕ} (r : ℕ) :
-    (∑ lam ∈ partFinset (rho.sum + r),
-        if HorizStrip lam rho then schurPoly (Fin (m + 1)) R lam else 0)
-      = ∑ tau ∈ partFinsetLe (rho.sum + r),
-          Nat.card (upDiamond rho tau (rho.sum + r)) •
-            (rename Fin.castSucc (schurPoly (Fin m) R tau)
-              * X (Fin.last m) ^ (rho.sum + r - tau.sum)) := by
+lemma pieri_rhs (m : ℕ) {ρ : List ℕ} (r : ℕ) :
+    (∑ η ∈ partFinset (ρ.sum + r),
+        if HorizStrip η ρ then schurPoly (Fin (m + 1)) R η else 0)
+      = ∑ τ ∈ partFinsetLe (ρ.sum + r),
+          Nat.card (upDiamond ρ τ (ρ.sum + r)) •
+            (rename Fin.castSucc (schurPoly (Fin m) R τ)
+              * X (Fin.last m) ^ (ρ.sum + r - τ.sum)) := by
   classical
-  have step : ∀ lam ∈ partFinset (rho.sum + r),
-      (if HorizStrip lam rho then schurPoly (Fin (m + 1)) R lam else 0)
-        = ∑ tau ∈ partFinsetLe (rho.sum + r),
-            if HorizStrip lam rho ∧ HorizStrip lam tau then
-              rename Fin.castSucc (schurPoly (Fin m) R tau)
-                * X (Fin.last m) ^ (rho.sum + r - tau.sum)
+  have step : ∀ η ∈ partFinset (ρ.sum + r),
+      (if HorizStrip η ρ then schurPoly (Fin (m + 1)) R η else 0)
+        = ∑ τ ∈ partFinsetLe (ρ.sum + r),
+            if HorizStrip η ρ ∧ HorizStrip η τ then
+              rename Fin.castSucc (schurPoly (Fin m) R τ)
+                * X (Fin.last m) ^ (ρ.sum + r - τ.sum)
             else 0 := by
-    intro lam hlam
-    obtain ⟨hp, hsum⟩ := mem_partFinset.1 hlam
-    by_cases hstrip : HorizStrip lam rho
+    intro η hη
+    obtain ⟨hp, hsum⟩ := mem_partFinset.1 hη
+    by_cases hstrip : HorizStrip η ρ
     · rw [ite_eq_left hstrip, schurPoly_branching' m hp, hsum]
-      refine Finset.sum_congr rfl fun tau _ => ?_
-      by_cases hts : HorizStrip lam tau
+      refine Finset.sum_congr rfl fun τ _ => ?_
+      by_cases hts : HorizStrip η τ
       · rw [ite_eq_left hts, ite_eq_left ⟨hstrip, hts⟩]
       · rw [ite_eq_right hts, ite_eq_right (fun h => hts h.2)]
     · rw [ite_eq_right hstrip, Finset.sum_eq_zero]
-      intro tau _
+      intro τ _
       rw [ite_eq_right (fun h => hstrip h.1)]
   rw [Finset.sum_congr rfl step, Finset.sum_comm]
-  refine Finset.sum_congr rfl fun tau _ => ?_
+  refine Finset.sum_congr rfl fun τ _ => ?_
   rw [Finset.sum_ite, Finset.sum_const_zero, add_zero, Finset.sum_const]
   congr 1
   refine (card_set_eq_card_finset ?_).symm
-  ext lam
+  ext η
   simp only [upDiamond, Set.mem_ofPred_eq, Finset.coe_filter, mem_partFinset]
   constructor
   · rintro ⟨h1, h2, h3, h4⟩
@@ -278,18 +278,18 @@ lemma pieri_rhs (m : ℕ) {rho : List ℕ} (r : ℕ) :
 
 /-! ### The Pieri rule -/
 
-/-- **The Pieri rule**: the product of the Schur polynomial of shape `rho` by the complete
+/-- **The Pieri rule**: the product of the Schur polynomial of shape `ρ` by the complete
 homogeneous symmetric polynomial of degree `r` is the sum of the Schur polynomials of the
-shapes obtained from `rho` by adding a horizontal strip with `r` boxes. -/
-theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {rho : List ℕ}, IsPart rho → ∀ r : ℕ,
-    schurPoly (Fin m) R rho * hsymm (Fin m) R r
-      = ∑ lam ∈ partFinset (rho.sum + r),
-          if HorizStrip lam rho then schurPoly (Fin m) R lam else 0 := by
+shapes obtained from `ρ` by adding a horizontal strip with `r` boxes. -/
+theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {ρ : List ℕ}, IsPart ρ → ∀ r : ℕ,
+    schurPoly (Fin m) R ρ * hsymm (Fin m) R r
+      = ∑ η ∈ partFinset (ρ.sum + r),
+          if HorizStrip η ρ then schurPoly (Fin m) R η else 0 := by
   intro m
   induction m with
   | zero =>
-      intro rho hrho r
-      rcases eq_or_ne rho [] with rfl | hne
+      intro ρ hρ r
+      rcases eq_or_ne ρ [] with rfl | hne
       · rw [schurPoly_nil, one_mul, List.sum_nil, Nat.zero_add]
         rcases Nat.eq_zero_or_pos r with rfl | hr
         · rw [hsymm_zero, partFinset_zero, Finset.sum_singleton,
@@ -298,18 +298,18 @@ theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {rho : List ℕ}, IsPart rho → ∀
             rw [← schurPoly_row (σ := Fin 0) (R := R) hr]
             exact schurPoly_eq_zero_of_lt_length (by simp)
           rw [h1, Finset.sum_eq_zero]
-          intro lam hlam
-          obtain ⟨hp, hsum⟩ := mem_partFinset.1 hlam
-          have hlen : 0 < lam.length := by
-            rcases lam with _ | ⟨a, l⟩
+          intro η hη
+          obtain ⟨hp, hsum⟩ := mem_partFinset.1 hη
+          have hlen : 0 < η.length := by
+            rcases η with _ | ⟨a, l⟩
             · simp only [List.sum_nil] at hsum; omega
             · simp
           rw [schurPoly_eq_zero_of_lt_length hlen, ite_self]
-      · have h0 : schurPoly (Fin 0) R rho = 0 :=
+      · have h0 : schurPoly (Fin 0) R ρ = 0 :=
           schurPoly_eq_zero_of_lt_length (List.length_pos_iff.2 hne)
         rw [h0, zero_mul, Finset.sum_eq_zero]
-        intro lam hlam
-        by_cases hstrip : HorizStrip lam rho
+        intro η hη
+        by_cases hstrip : HorizStrip η ρ
         · rw [ite_eq_left hstrip]
           refine schurPoly_eq_zero_of_lt_length ?_
           have h1 := hstrip.included.length_le
@@ -317,9 +317,9 @@ theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {rho : List ℕ}, IsPart rho → ∀
           omega
         · rw [ite_eq_right hstrip]
   | succ m IH =>
-      intro rho hrho r
-      rw [pieri_lhs m (fun {sigma} hsigma j => IH hsigma j) hrho r, pieri_rhs m r]
-      refine Finset.sum_congr rfl fun tau htau => ?_
-      rw [card_upDiamond_eq_card_downDiamondLe hrho (mem_partFinsetLe.1 htau).1 r]
+      intro ρ hρ r
+      rw [pieri_lhs m (fun {κ} hκ j => IH hκ j) hρ r, pieri_rhs m r]
+      refine Finset.sum_congr rfl fun τ hτ => ?_
+      rw [card_upDiamond_eq_card_downDiamondLe hρ (mem_partFinsetLe.1 hτ).1 r]
 
 end MvPolynomial

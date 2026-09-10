@@ -169,13 +169,13 @@ def tableauEquivSSYT (μ : YoungDiagram) :
     (by rw [shape_tableauOfSSYT, t.2.2]) fun i j => entry_tableauOfSSYT μ _ i j
   right_inv T := SemistandardYoungTableau.ext fun i j => entry_tableauOfSSYT μ T i j
 
-/-- **The tableaux of shape `sh` are the semistandard Young tableaux of the Young diagram
-of `sh`.** -/
-def shapeTableauEquivSSYT (sh : List ℕ) (hsh : IsPart sh) :
-    {t : List (List ℕ) // IsTableau t ∧ shape t = sh} ≃
-      SemistandardYoungTableau (youngDiagram sh hsh) :=
+/-- **The tableaux of shape `μ` are the semistandard Young tableaux of the Young diagram
+of `μ`.** -/
+def shapeTableauEquivSSYT (μ : List ℕ) (hμ : IsPart μ) :
+    {t : List (List ℕ) // IsTableau t ∧ shape t = μ} ≃
+      SemistandardYoungTableau (youngDiagram μ hμ) :=
   (Equiv.subtypeEquivRight fun _ => by rw [rowLens_youngDiagram]).trans
-    (tableauEquivSSYT (youngDiagram sh hsh))
+    (tableauEquivSSYT (youngDiagram μ hμ))
 
 /-- The number of boxes of a tableau is the number of boxes of the corresponding Young
 diagram. -/

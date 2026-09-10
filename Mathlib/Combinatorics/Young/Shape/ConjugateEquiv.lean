@@ -32,23 +32,23 @@ namespace Young
 open List
 
 /-- The parts of a partition are bounded by its first part. -/
-lemma IsPart.forall_mem_le_iff {sh : List ℕ} (h : IsPart sh) (k : ℕ) :
-    (∀ i ∈ sh, i ≤ k) ↔ sh.headD 0 ≤ k := by
+lemma IsPart.forall_mem_le_iff {μ : List ℕ} (h : IsPart μ) (k : ℕ) :
+    (∀ i ∈ μ, i ≤ k) ↔ μ.headD 0 ≤ k := by
   constructor
   · intro hall
-    cases sh with
+    cases μ with
     | nil => simp
     | cons a s => exact hall a (by simp)
   · intro hhead i hi
     obtain ⟨j, hj, rfl⟩ := List.mem_iff_getElem.1 hi
     have hmono := h.getD_antitone (i := 0) (j := j) (Nat.zero_le _)
     rw [List.getD_eq_getElem _ _ hj] at hmono
-    have h0 : sh.getD 0 0 = sh.headD 0 := by cases sh <;> simp
+    have h0 : μ.getD 0 0 = μ.headD 0 := by cases μ <;> simp
     rw [h0] at hmono
     exact le_trans hmono hhead
 
 /-- The first part of the conjugate of a partition is its number of parts. -/
-lemma headD_conjPart {sh : List ℕ} (h : IsPart sh) : (conjPart sh).headD 0 = sh.length := by
+lemma headD_conjPart {μ : List ℕ} (h : IsPart μ) : (conjPart μ).headD 0 = μ.length := by
   have := length_conjPart (isPart_conjPart h)
   rw [conjPart_conjPart h] at this
   exact this.symm

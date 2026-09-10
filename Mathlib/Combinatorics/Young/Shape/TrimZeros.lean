@@ -116,9 +116,9 @@ lemma isPart_shapeOfFn {k : ℕ} {f : ℕ → ℕ} (hf : ∀ i, f (i + 1) ≤ f 
   · exact le_rfl
 
 /-- A partition is the shape of its own sequence of parts. -/
-lemma shapeOfFn_getD {sh : List ℕ} (hsh : IsPart sh) {k : ℕ} (hk : sh.length ≤ k) :
-    shapeOfFn k (fun i => sh.getD i 0) = sh := by
-  refine ext_getD_of_getLastD_ne_zero (getLastD_trimZeros_ne_zero _) hsh.getLastD_ne_zero
+lemma shapeOfFn_getD {μ : List ℕ} (hμ : IsPart μ) {k : ℕ} (hk : μ.length ≤ k) :
+    shapeOfFn k (fun i => μ.getD i 0) = μ := by
+  refine ext_getD_of_getLastD_ne_zero (getLastD_trimZeros_ne_zero _) hμ.getLastD_ne_zero
     fun i => ?_
   rw [getD_shapeOfFn]
   split_ifs with h

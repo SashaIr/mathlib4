@@ -37,7 +37,7 @@ product of class functions (induction from `S_m × S_n`, embedded in `S_{m+n}` b
 * `Equiv.Perm.frobChar_classIndicator` : the characteristic of the indicator function of the
   class of cycle type `λ` is `p_λ / z_λ`.
 * `Equiv.Perm.frobChar_comp_cycleTypeList` : the characteristic of a function of the cycle type
-  is `∑_{lam ⊢ n} c(lam) · p_lam / z_lam`.
+  is `∑_{η ⊢ n} c(η) · p_η / z_η`.
 * `Equiv.Perm.frobChar_indTrivYoung` : the characteristic of the trivial character induced from
   a Young subgroup is the product `h_{l_1} ⋯ h_{l_r}`.
 * `Equiv.Perm.frobChar_one`, `Equiv.Perm.frobChar_sign` : the characteristics of the trivial and of
@@ -78,35 +78,35 @@ lemma pProd_cycleTypeList_tinj (k : ℕ) (R : Type*) [CommRing R] {m n : ℕ}
   rw [coe_sortDesc, Multiset.coe_add]
 
 /-- The list-based cycle type is invariant under conjugation. -/
-lemma cycleTypeList_conj {n : ℕ} (sigma tau : Perm (Fin n)) :
-    cycleTypeList (tau⁻¹ * sigma * tau) = cycleTypeList sigma :=
-  cycleTypeList_eq_iff_isConj.2 (isConj_iff.2 ⟨tau, by group⟩)
+lemma cycleTypeList_conj {n : ℕ} (σ τ : Perm (Fin n)) :
+    cycleTypeList (τ⁻¹ * σ * τ) = cycleTypeList σ :=
+  cycleTypeList_eq_iff_isConj.2 (isConj_iff.2 ⟨τ, by group⟩)
 
 /-! ### Class functions and the induction product -/
 
 /-- A function on the symmetric group is a class function when it is constant on conjugacy
 classes. -/
 def IsClassFun {n : ℕ} (f : Perm (Fin n) → ℚ) : Prop :=
-  ∀ sigma tau : Perm (Fin n), f (tau⁻¹ * sigma * tau) = f sigma
+  ∀ σ τ : Perm (Fin n), f (τ⁻¹ * σ * τ) = f σ
 
 /-- The induction product of two class functions `f` on `S_m` and `g` on `S_n`: the class
 function on `S_{m+n}` induced from the function `(u, v) ↦ f(u) · g(v)` on the image of
 `Equiv.Perm.tinj`. -/
 noncomputable def indProd {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : Perm (Fin n) → ℚ) :
-    Perm (Fin (m + n)) → ℚ := fun sigma =>
-  ((Nat.factorial m : ℚ) * (Nat.factorial n : ℚ))⁻¹ * ∑ tau : Perm (Fin (m + n)),
+    Perm (Fin (m + n)) → ℚ := fun σ =>
+  ((Nat.factorial m : ℚ) * (Nat.factorial n : ℚ))⁻¹ * ∑ τ : Perm (Fin (m + n)),
     ∑ x : Perm (Fin m) × Perm (Fin n),
-      if tinj m n x = tau⁻¹ * sigma * tau then f x.1 * g x.2 else 0
+      if tinj m n x = τ⁻¹ * σ * τ then f x.1 * g x.2 else 0
 
 /-- The induction product is a class function. -/
 theorem indProd_isClassFun {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : Perm (Fin n) → ℚ) :
     IsClassFun (indProd f g) := by
-  intro sigma pi
+  intro σ pi
   simp only [indProd]
   congr 1
-  refine Fintype.sum_equiv (Equiv.mulLeft pi) _ _ fun tau => ?_
+  refine Fintype.sum_equiv (Equiv.mulLeft pi) _ _ fun τ => ?_
   refine Finset.sum_congr rfl fun x _ => ?_
-  have hc : (pi * tau)⁻¹ * sigma * (pi * tau) = tau⁻¹ * (pi⁻¹ * sigma * pi) * tau := by group
+  have hc : (pi * τ)⁻¹ * σ * (pi * τ) = τ⁻¹ * (pi⁻¹ * σ * pi) * τ := by group
   simp only [Equiv.coe_mulLeft, hc]
 
 /-! ### The Frobenius characteristic -/
@@ -115,7 +115,7 @@ theorem indProd_isClassFun {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : Perm (Fin
 polynomial in `m` variables: `ch(f) = (1 / n !) ∑_{σ} f(σ) · p_{cycleType σ}`. -/
 noncomputable def frobChar (m : ℕ) {n : ℕ} (f : Perm (Fin n) → ℚ) :
     MvPolynomial (Fin m) ℚ :=
-  ((Nat.factorial n : ℚ))⁻¹ • ∑ sigma : Perm (Fin n), f sigma • pProd m ℚ (cycleTypeList sigma)
+  ((Nat.factorial n : ℚ))⁻¹ • ∑ σ : Perm (Fin n), f σ • pProd m ℚ (cycleTypeList σ)
 
 /-- The Frobenius characteristic is additive. -/
 lemma frobChar_add (m : ℕ) {n : ℕ} (f g : Perm (Fin n) → ℚ) :
@@ -131,19 +131,19 @@ lemma frobChar_smul (m : ℕ) {n : ℕ} (c : ℚ) (f : Perm (Fin n) → ℚ) :
 
 /-- The Frobenius characteristic of the indicator function of the conjugacy class of cycle
 type `λ` is `p_λ / z_λ`. -/
-theorem frobChar_classIndicator (m : ℕ) {n : ℕ} {lam : List ℕ} (hlam : IsPart lam)
-    (hsum : lam.sum = n) :
-    frobChar m (fun sigma : Perm (Fin n) => if cycleTypeList sigma = lam then 1 else 0)
-      = ((zcard lam : ℚ))⁻¹ • pProd m ℚ lam := by
+theorem frobChar_classIndicator (m : ℕ) {n : ℕ} {η : List ℕ} (hη : IsPart η)
+    (hsum : η.sum = n) :
+    frobChar m (fun σ : Perm (Fin n) => if cycleTypeList σ = η then 1 else 0)
+      = ((zcard η : ℚ))⁻¹ • pProd m ℚ η := by
   classical
-  have hz : (zcard lam : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hlam).ne'
-  have hcard := card_cycleTypeList_mul_zcard (n := n) hlam hsum
-  have key : ∀ sigma : Perm (Fin n),
-      (if cycleTypeList sigma = lam then (1 : ℚ) else 0) • pProd m ℚ (cycleTypeList sigma)
-        = if cycleTypeList sigma = lam then pProd m ℚ lam else 0 := by
-    intro sigma
-    by_cases h : cycleTypeList sigma = lam <;> simp [h]
-  rw [frobChar, Finset.sum_congr rfl fun sigma _ => key sigma, Finset.sum_ite,
+  have hz : (zcard η : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hη).ne'
+  have hcard := card_cycleTypeList_mul_zcard (n := n) hη hsum
+  have key : ∀ σ : Perm (Fin n),
+      (if cycleTypeList σ = η then (1 : ℚ) else 0) • pProd m ℚ (cycleTypeList σ)
+        = if cycleTypeList σ = η then pProd m ℚ η else 0 := by
+    intro σ
+    by_cases h : cycleTypeList σ = η <;> simp [h]
+  rw [frobChar, Finset.sum_congr rfl fun σ _ => key σ, Finset.sum_ite,
     Finset.sum_const, Finset.sum_const_zero, add_zero, ← Nat.cast_smul_eq_nsmul ℚ, smul_smul]
   congr 1
   have hne : (Nat.factorial n : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (Nat.factorial_ne_zero _)
@@ -171,50 +171,50 @@ theorem frobChar_indProd (k : ℕ) {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : P
   have hn : (Nat.factorial n : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (Nat.factorial_ne_zero _)
   have hmn : (Nat.factorial (m + n) : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (Nat.factorial_ne_zero _)
   -- the induced sum only depends on the pair of permutations
-  have key : ∀ tau : Perm (Fin (m + n)),
-      ∑ sigma : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
-          (if tinj m n x = tau⁻¹ * sigma * tau then f x.1 * g x.2 else 0)
-            • pProd k ℚ (cycleTypeList sigma)
+  have key : ∀ τ : Perm (Fin (m + n)),
+      ∑ σ : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
+          (if tinj m n x = τ⁻¹ * σ * τ then f x.1 * g x.2 else 0)
+            • pProd k ℚ (cycleTypeList σ)
         = ∑ x : Perm (Fin m) × Perm (Fin n),
             (f x.1 * g x.2) • pProd k ℚ (cycleTypeList (tinj m n x)) := by
-    intro tau
-    have h1 : ∑ sigma : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
-          (if tinj m n x = tau⁻¹ * sigma * tau then f x.1 * g x.2 else 0)
-            • pProd k ℚ (cycleTypeList sigma)
-        = ∑ sigma : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
-          (if tinj m n x = sigma then f x.1 * g x.2 else 0)
-            • pProd k ℚ (cycleTypeList sigma) := by
-      refine Fintype.sum_equiv ((Equiv.mulLeft tau⁻¹).trans (Equiv.mulRight tau)) _ _
-        fun sigma => ?_
+    intro τ
+    have h1 : ∑ σ : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
+          (if tinj m n x = τ⁻¹ * σ * τ then f x.1 * g x.2 else 0)
+            • pProd k ℚ (cycleTypeList σ)
+        = ∑ σ : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
+          (if tinj m n x = σ then f x.1 * g x.2 else 0)
+            • pProd k ℚ (cycleTypeList σ) := by
+      refine Fintype.sum_equiv ((Equiv.mulLeft τ⁻¹).trans (Equiv.mulRight τ)) _ _
+        fun σ => ?_
       simp only [Equiv.trans_apply, Equiv.coe_mulLeft, Equiv.coe_mulRight,
-        cycleTypeList_conj sigma tau]
+        cycleTypeList_conj σ τ]
       refine Finset.sum_congr rfl fun x _ => ?_
-      by_cases hx : tinj m n x = tau⁻¹ * sigma * tau <;> simp [hx]
+      by_cases hx : tinj m n x = τ⁻¹ * σ * τ <;> simp [hx]
     rw [h1, Finset.sum_comm]
     refine Finset.sum_congr rfl fun x _ => ?_
     simp only [ite_smul, zero_smul]
     rw [Finset.sum_ite_eq Finset.univ (tinj m n x)
-      (fun sigma => (f x.1 * g x.2) • pProd k ℚ (cycleTypeList sigma)),
+      (fun σ => (f x.1 * g x.2) • pProd k ℚ (cycleTypeList σ)),
       ite_eq_left (Finset.mem_univ _)]
-  have hterm : ∀ sigma : Perm (Fin (m + n)),
-      indProd f g sigma • pProd k ℚ (cycleTypeList sigma)
+  have hterm : ∀ σ : Perm (Fin (m + n)),
+      indProd f g σ • pProd k ℚ (cycleTypeList σ)
         = ((Nat.factorial m : ℚ) * (Nat.factorial n : ℚ))⁻¹ •
-            ∑ tau : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
-              (if tinj m n x = tau⁻¹ * sigma * tau then f x.1 * g x.2 else 0)
-                • pProd k ℚ (cycleTypeList sigma) := by
-    intro sigma
+            ∑ τ : Perm (Fin (m + n)), ∑ x : Perm (Fin m) × Perm (Fin n),
+              (if tinj m n x = τ⁻¹ * σ * τ then f x.1 * g x.2 else 0)
+                • pProd k ℚ (cycleTypeList σ) := by
+    intro σ
     rw [indProd, mul_smul, Finset.sum_smul]
-    exact congrArg _ (Finset.sum_congr rfl fun tau _ => Finset.sum_smul)
+    exact congrArg _ (Finset.sum_congr rfl fun τ _ => Finset.sum_smul)
   have hcardperm : (Finset.univ : Finset (Perm (Fin (m + n)))).card = Nat.factorial (m + n) := by
     rw [Finset.card_univ, Fintype.card_perm, Fintype.card_fin]
-  have hsum : ∑ sigma : Perm (Fin (m + n)),
-        indProd f g sigma • pProd k ℚ (cycleTypeList sigma)
+  have hsum : ∑ σ : Perm (Fin (m + n)),
+        indProd f g σ • pProd k ℚ (cycleTypeList σ)
       = ((Nat.factorial m : ℚ) * (Nat.factorial n : ℚ))⁻¹ •
           ((Nat.factorial (m + n) : ℚ) • ∑ x : Perm (Fin m) × Perm (Fin n),
             (f x.1 * g x.2) • pProd k ℚ (cycleTypeList (tinj m n x))) := by
-    rw [Finset.sum_congr rfl fun sigma _ => hterm sigma, ← Finset.smul_sum, Finset.sum_comm]
+    rw [Finset.sum_congr rfl fun σ _ => hterm σ, ← Finset.smul_sum, Finset.sum_comm]
     congr 1
-    rw [Finset.sum_congr rfl fun tau _ => key tau, Finset.sum_const, hcardperm,
+    rw [Finset.sum_congr rfl fun τ _ => key τ, Finset.sum_const, hcardperm,
       ← Nat.cast_smul_eq_nsmul ℚ]
   have hprod : ∑ x : Perm (Fin m) × Perm (Fin n),
         (f x.1 * g x.2) • pProd k ℚ (cycleTypeList (tinj m n x))
@@ -233,58 +233,58 @@ theorem frobChar_indProd (k : ℕ) {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : P
 /-- The Frobenius characteristic of a class function given by a function of the cycle type:
 each conjugacy class contributes `p_λ / z_λ`. -/
 theorem frobChar_comp_cycleTypeList (m : ℕ) {n : ℕ} (c : List ℕ → ℚ) :
-    frobChar m (fun sigma : Perm (Fin n) => c (cycleTypeList sigma))
-      = ∑ lam ∈ partFinset n, (c lam * ((zcard lam : ℚ))⁻¹) • pProd m ℚ lam := by
+    frobChar m (fun σ : Perm (Fin n) => c (cycleTypeList σ))
+      = ∑ η ∈ partFinset n, (c η * ((zcard η : ℚ))⁻¹) • pProd m ℚ η := by
   classical
   have hne : (Nat.factorial n : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (Nat.factorial_ne_zero _)
   rw [frobChar, ← Finset.sum_fiberwise_of_maps_to
-    (fun sigma _ => cycleTypeList_mem_partFinset sigma)
-    (fun sigma : Perm (Fin n) => c (cycleTypeList sigma) • pProd m ℚ (cycleTypeList sigma)),
+    (fun σ _ => cycleTypeList_mem_partFinset σ)
+    (fun σ : Perm (Fin n) => c (cycleTypeList σ) • pProd m ℚ (cycleTypeList σ)),
     Finset.smul_sum]
-  refine Finset.sum_congr rfl fun lam hlam => ?_
-  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hlam
-  have hz : (zcard lam : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
+  refine Finset.sum_congr rfl fun η hη => ?_
+  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
+  have hz : (zcard η : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
   have hcard := card_cycleTypeList_mul_zcard (n := n) hpart hsum
-  rw [Finset.sum_congr rfl fun sigma hsigma => by rw [(Finset.mem_filter.1 hsigma).2],
+  rw [Finset.sum_congr rfl fun σ hσ => by rw [(Finset.mem_filter.1 hσ).2],
     Finset.sum_const, ← Nat.cast_smul_eq_nsmul ℚ, smul_smul, smul_smul]
   congr 1
-  have hc : ((Finset.univ.filter fun sigma : Perm (Fin n) => cycleTypeList sigma = lam).card : ℚ)
-      * (zcard lam : ℚ) = (Nat.factorial n : ℚ) := by exact_mod_cast hcard
+  have hc : ((Finset.univ.filter fun σ : Perm (Fin n) => cycleTypeList σ = η).card : ℚ)
+      * (zcard η : ℚ) = (Nat.factorial n : ℚ) := by exact_mod_cast hcard
   field_simp
-  linear_combination c lam * hc
+  linear_combination c η * hc
 
 /-- The signature of a permutation in terms of the length of its cycle type. -/
-lemma sign_eq_neg_one_pow_length_cycleTypeList {n : ℕ} (sigma : Perm (Fin n)) :
-    ((Equiv.Perm.sign sigma : ℤ) : ℚ) = (-1) ^ (n + (cycleTypeList sigma).length) := by
-  have hlen : (cycleTypeList sigma).length
-      = Multiset.card sigma.cycleType + (n - sigma.support.card) := by
-    have : ((cycleTypeList sigma : Multiset ℕ)) = sigma.partition.parts := coe_cycleTypeList sigma
+lemma sign_eq_neg_one_pow_length_cycleTypeList {n : ℕ} (σ : Perm (Fin n)) :
+    ((Equiv.Perm.sign σ : ℤ) : ℚ) = (-1) ^ (n + (cycleTypeList σ).length) := by
+  have hlen : (cycleTypeList σ).length
+      = Multiset.card σ.cycleType + (n - σ.support.card) := by
+    have : ((cycleTypeList σ : Multiset ℕ)) = σ.partition.parts := coe_cycleTypeList σ
     rw [← Multiset.coe_card, this]
     simp [Equiv.Perm.partition]
-  have hsupp : sigma.cycleType.sum = sigma.support.card := Equiv.Perm.sum_cycleType sigma
-  have hle : sigma.support.card ≤ n := by simpa using Finset.card_le_univ sigma.support
-  have hsign : ((Equiv.Perm.sign sigma : ℤ) : ℚ)
-      = (-1) ^ (sigma.cycleType.sum + Multiset.card sigma.cycleType) := by
+  have hsupp : σ.cycleType.sum = σ.support.card := Equiv.Perm.sum_cycleType σ
+  have hle : σ.support.card ≤ n := by simpa using Finset.card_le_univ σ.support
+  have hsign : ((Equiv.Perm.sign σ : ℤ) : ℚ)
+      = (-1) ^ (σ.cycleType.sum + Multiset.card σ.cycleType) := by
     rw [Equiv.Perm.sign_of_cycleType]
     push_cast [Units.val_pow_eq_pow_val]
     norm_num
-  have hpow2 : ((-1 : ℚ)) ^ (2 * (n - sigma.support.card)) = 1 := by
+  have hpow2 : ((-1 : ℚ)) ^ (2 * (n - σ.support.card)) = 1 := by
     rw [pow_mul]; norm_num
   rw [hsign, hlen, hsupp,
-    show n + (Multiset.card sigma.cycleType + (n - sigma.support.card))
-      = (sigma.support.card + Multiset.card sigma.cycleType) + 2 * (n - sigma.support.card) by
+    show n + (Multiset.card σ.cycleType + (n - σ.support.card))
+      = (σ.support.card + Multiset.card σ.cycleType) + 2 * (n - σ.support.card) by
         omega]
   conv_rhs => rw [pow_add, hpow2, mul_one]
 
 /-- The Frobenius characteristic of the signature character of `S_n` is the elementary
 symmetric polynomial `e_n`. -/
 theorem frobChar_sign (m n : ℕ) :
-    frobChar m (fun sigma : Perm (Fin n) => ((Equiv.Perm.sign sigma : ℤ) : ℚ))
+    frobChar m (fun σ : Perm (Fin n) => ((Equiv.Perm.sign σ : ℤ) : ℚ))
       = esymm (Fin m) ℚ n := by
-  have hfun : (fun sigma : Perm (Fin n) => ((Equiv.Perm.sign sigma : ℤ) : ℚ))
-      = fun sigma : Perm (Fin n) => (-1 : ℚ) ^ (n + (cycleTypeList sigma).length) :=
-    funext fun sigma => sign_eq_neg_one_pow_length_cycleTypeList sigma
-  rw [hfun, frobChar_comp_cycleTypeList m (fun lam => (-1 : ℚ) ^ (n + lam.length)),
+  have hfun : (fun σ : Perm (Fin n) => ((Equiv.Perm.sign σ : ℤ) : ℚ))
+      = fun σ : Perm (Fin n) => (-1 : ℚ) ^ (n + (cycleTypeList σ).length) :=
+    funext fun σ => sign_eq_neg_one_pow_length_cycleTypeList σ
+  rw [hfun, frobChar_comp_cycleTypeList m (fun η => (-1 : ℚ) ^ (n + η.length)),
     esymm_eq_signedCycleIndexSum, signedCycleIndexSum]
 
 /-- The characteristic of the character of `S_{m+n}` induced from the trivial character of

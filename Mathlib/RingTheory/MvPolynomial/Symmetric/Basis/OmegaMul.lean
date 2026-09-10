@@ -14,13 +14,13 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Omega
 Following `theories/MPoly/sympoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove that the involution `omega`
 is multiplicative and that it acts on the power sums by
-`omega p_lam = (-1)^(|lam| - length lam) p_lam`.
+`omega p_η = (-1)^(|η| - length η) p_η`.
 
 ## Main results
 
 * `MvPolynomial.omegaSym_mul` : `omega` is multiplicative.
 * `MvPolynomial.omegaSym_psum` : `omega p_r = (-1)^(r+1) p_r`.
-* `MvPolynomial.omegaSym_pSub` : `omega p_lam = (-1)^(|lam| - length lam) p_lam`.
+* `MvPolynomial.omegaSym_pSub` : `omega p_η = (-1)^(|η| - length η) p_η`.
 -/
 
 @[expose] public section
@@ -36,31 +36,31 @@ variable {m n a b : ℕ} {R : Type*}
 /-! ### Merging two partitions -/
 
 /-- The partition obtained by merging the parts of two partitions. -/
-noncomputable def mergePart (lam mu : List ℕ) : List ℕ :=
-  sortDesc ((lam : Multiset ℕ) + (mu : Multiset ℕ))
+noncomputable def mergePart (η μ : List ℕ) : List ℕ :=
+  sortDesc ((η : Multiset ℕ) + (μ : Multiset ℕ))
 
-lemma coe_mergePart (lam mu : List ℕ) :
-    ((mergePart lam mu : List ℕ) : Multiset ℕ) = ((lam ++ mu : List ℕ) : Multiset ℕ) := by
+lemma coe_mergePart (η μ : List ℕ) :
+    ((mergePart η μ : List ℕ) : Multiset ℕ) = ((η ++ μ : List ℕ) : Multiset ℕ) := by
   rw [mergePart, coe_sortDesc]
   simp
 
-lemma mergePart_perm (lam mu : List ℕ) : (mergePart lam mu).Perm (lam ++ mu) :=
-  Quotient.exact (coe_mergePart lam mu)
+lemma mergePart_perm (η μ : List ℕ) : (mergePart η μ).Perm (η ++ μ) :=
+  Quotient.exact (coe_mergePart η μ)
 
-lemma isPart_mergePart {lam mu : List ℕ} (hlam : IsPart lam) (hmu : IsPart mu) :
-    IsPart (mergePart lam mu) := by
+lemma isPart_mergePart {η μ : List ℕ} (hη : IsPart η) (hμ : IsPart μ) :
+    IsPart (mergePart η μ) := by
   refine isPart_sortDesc fun i hi => ?_
   rcases Multiset.mem_add.1 hi with h | h
-  · exact hlam.pos_of_mem (by simpa using h)
-  · exact hmu.pos_of_mem (by simpa using h)
+  · exact hη.pos_of_mem (by simpa using h)
+  · exact hμ.pos_of_mem (by simpa using h)
 
-@[simp] lemma sum_mergePart (lam mu : List ℕ) :
-    (mergePart lam mu).sum = lam.sum + mu.sum := by
-  rw [(mergePart_perm lam mu).sum_eq, List.sum_append]
+@[simp] lemma sum_mergePart (η μ : List ℕ) :
+    (mergePart η μ).sum = η.sum + μ.sum := by
+  rw [(mergePart_perm η μ).sum_eq, List.sum_append]
 
-@[simp] lemma length_mergePart (lam mu : List ℕ) :
-    (mergePart lam mu).length = lam.length + mu.length := by
-  rw [(mergePart_perm lam mu).length_eq, List.length_append]
+@[simp] lemma length_mergePart (η μ : List ℕ) :
+    (mergePart η μ).length = η.length + μ.length := by
+  rw [(mergePart_perm η μ).length_eq, List.length_append]
 
 /-! ### Products of complete homogeneous and elementary symmetric polynomials -/
 
@@ -72,9 +72,9 @@ lemma hProd_append (m : ℕ) (R : Type*) [CommRing R] (l l' : List ℕ) :
     hProd m R (l ++ l') = hProd m R l * hProd m R l' := by
   rw [hProd, hProd, hProd, List.map_append, List.prod_append]
 
-lemma hProd_mergePart (m : ℕ) (R : Type*) [CommRing R] (lam mu : List ℕ) :
-    hProd m R (mergePart lam mu) = hProd m R lam * hProd m R mu := by
-  rw [hProd_of_perm m R (mergePart_perm lam mu), hProd_append]
+lemma hProd_mergePart (m : ℕ) (R : Type*) [CommRing R] (η μ : List ℕ) :
+    hProd m R (mergePart η μ) = hProd m R η * hProd m R μ := by
+  rw [hProd_of_perm m R (mergePart_perm η μ), hProd_append]
 
 lemma eProd_of_perm (m : ℕ) (R : Type*) [CommRing R] {l l' : List ℕ} (h : l.Perm l') :
     eProd m R l = eProd m R l' :=
@@ -84,9 +84,9 @@ lemma eProd_append (m : ℕ) (R : Type*) [CommRing R] (l l' : List ℕ) :
     eProd m R (l ++ l') = eProd m R l * eProd m R l' := by
   rw [eProd, eProd, eProd, List.map_append, List.prod_append]
 
-lemma eProd_mergePart (m : ℕ) (R : Type*) [CommRing R] (lam mu : List ℕ) :
-    eProd m R (mergePart lam mu) = eProd m R lam * eProd m R mu := by
-  rw [eProd_of_perm m R (mergePart_perm lam mu), eProd_append]
+lemma eProd_mergePart (m : ℕ) (R : Type*) [CommRing R] (η μ : List ℕ) :
+    eProd m R (mergePart η μ) = eProd m R η * eProd m R μ := by
+  rw [eProd_of_perm m R (mergePart_perm η μ), eProd_append]
 
 /-! ### `omega` is multiplicative -/
 
@@ -113,8 +113,8 @@ noncomputable def mulSub (m : ℕ) (R : Type*) [CommRing R] (hab : a + b = n) :
     (mulSub m R hab f g : MvPolynomial (Fin m) R)
       = (f : MvPolynomial (Fin m) R) * (g : MvPolynomial (Fin m) R) := rfl
 
-@[simp] lemma hBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
-    hBasis m n R lam = hSub m n R lam := by
+@[simp] lemma hBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
+    hBasis m n R η = hSub m n R η := by
   rw [hBasis, Module.Basis.mk_apply]
 
 /-- **`omega` is multiplicative**. -/
@@ -139,25 +139,25 @@ theorem omegaSym_mul [CommRing R] (hab : a + b = n) (hnm : n ≤ m)
       (by intro f g₁ g₂; simp [mul_add])
       (by intro c f g; simp) with hPsi
   have key : Phi = Psi := by
-    refine (hBasis m a R).ext fun lam => (hBasis m b R).ext fun mu => ?_
-    have hnu : IsPart (mergePart lam.1 mu.1) ∧ (mergePart lam.1 mu.1).sum = n ∧
-        (mergePart lam.1 mu.1).length ≤ m := by
-      refine ⟨isPart_mergePart lam.2.1 mu.2.1, by rw [sum_mergePart, lam.2.2.1, mu.2.2.1, hab],
+    refine (hBasis m a R).ext fun η => (hBasis m b R).ext fun μ => ?_
+    have hν : IsPart (mergePart η.1 μ.1) ∧ (mergePart η.1 μ.1).sum = n ∧
+        (mergePart η.1 μ.1).length ≤ m := by
+      refine ⟨isPart_mergePart η.2.1 μ.2.1, by rw [sum_mergePart, η.2.2.1, μ.2.2.1, hab],
         ?_⟩
       rw [length_mergePart]
-      have h1 := lam.2.1.length_le_sum
-      have h2 := mu.2.1.length_le_sum
-      rw [lam.2.2.1] at h1
-      rw [mu.2.2.1] at h2
+      have h1 := η.2.1.length_le_sum
+      have h2 := μ.2.1.length_le_sum
+      rw [η.2.2.1] at h1
+      rw [μ.2.2.1] at h2
       omega
-    set nu : PartIdx n m := ⟨mergePart lam.1 mu.1, hnu⟩ with hnudef
-    have hmul : mulSub m R hab (hSub m a R lam) (hSub m b R mu) = hSub m n R nu := by
+    set ν : PartIdx n m := ⟨mergePart η.1 μ.1, hν⟩ with hνdef
+    have hmul : mulSub m R hab (hSub m a R η) (hSub m b R μ) = hSub m n R ν := by
       apply Subtype.ext
-      rw [coe_mulSub, coe_hSub, coe_hSub, coe_hSub, hnudef, hProd_mergePart]
+      rw [coe_mulSub, coe_hSub, coe_hSub, coe_hSub, hνdef, hProd_mergePart]
     simp only [hBasis_apply, hPhi, hPsi, LinearMap.compr₂_apply, LinearMap.mk₂_apply, hL,
       LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe, Submodule.coe_subtype]
     rw [hmul, omegaSym_hSub, omegaSym_hSub, omegaSym_hSub, coe_eSubOfPart, coe_eSubOfPart,
-      coe_eSubOfPart, hnudef, eProd_mergePart]
+      coe_eSubOfPart, hνdef, eProd_mergePart]
   have := LinearMap.congr_fun (LinearMap.congr_fun key f) g
   simpa [hPhi, hPsi, hL] using this
 
@@ -272,33 +272,33 @@ theorem omegaSym_psum (m : ℕ) (R : Type*) [CommRing R] {r : ℕ} (hr : 0 < r) 
 /-! ### The action of `omega` on the products of power sums -/
 
 /-- **`omega` acts on the products of power sums by the sign
-`(-1)^(|lam| - length lam)`**, in terms of a partition given as a list. -/
-theorem omegaSym_pProd (m : ℕ) (R : Type*) [CommRing R] (lam : List ℕ) :
-    ∀ (hlam : IsPart lam) (hle : lam.sum ≤ m),
-      (omegaSym m lam.sum R hle
-          (pSub m lam.sum R ⟨lam, hlam, rfl, le_trans hlam.length_le_sum hle⟩)
+`(-1)^(|η| - length η)`**, in terms of a partition given as a list. -/
+theorem omegaSym_pProd (m : ℕ) (R : Type*) [CommRing R] (η : List ℕ) :
+    ∀ (hη : IsPart η) (hle : η.sum ≤ m),
+      (omegaSym m η.sum R hle
+          (pSub m η.sum R ⟨η, hη, rfl, le_trans hη.length_le_sum hle⟩)
         : MvPolynomial (Fin m) R)
-        = (-1) ^ (lam.sum - lam.length) * pProd m R lam := by
-  induction lam with
+        = (-1) ^ (η.sum - η.length) * pProd m R η := by
+  induction η with
   | nil =>
-    intro hlam hle
-    have hpe : (pSub m ([] : List ℕ).sum R ⟨[], hlam, rfl, le_trans hlam.length_le_sum hle⟩)
-        = hSub m ([] : List ℕ).sum R ⟨[], hlam, rfl, le_trans hlam.length_le_sum hle⟩ := by
+    intro hη hle
+    have hpe : (pSub m ([] : List ℕ).sum R ⟨[], hη, rfl, le_trans hη.length_le_sum hle⟩)
+        = hSub m ([] : List ℕ).sum R ⟨[], hη, rfl, le_trans hη.length_le_sum hle⟩ := by
       apply Subtype.ext
       rw [coe_pSub, coe_hSub]
       rfl
     rw [hpe, omegaSym_hSub, coe_eSubOfPart]
     simp
   | cons a l ih =>
-    intro hlam hle
-    have hlpart : IsPart l := hlam.2
+    intro hη hle
+    have hlpart : IsPart l := hη.2
     have hsum : (a :: l).sum = a + l.sum := List.sum_cons
     have hle' : l.sum ≤ m := by omega
-    have ha : 0 < a := hlam.pos_of_mem (List.mem_cons_self ..)
+    have ha : 0 < a := hη.pos_of_mem (List.mem_cons_self ..)
     have ham : a ≤ m := by omega
     have hab : a + l.sum = (a :: l).sum := hsum.symm
     have hmul : (pSub m (a :: l).sum R
-          ⟨a :: l, hlam, rfl, le_trans hlam.length_le_sum hle⟩)
+          ⟨a :: l, hη, rfl, le_trans hη.length_le_sum hle⟩)
         = mulSub m R hab (pSub m a R (singIdx m a ham))
             (pSub m l.sum R ⟨l, hlpart, rfl, le_trans hlpart.length_le_sum hle'⟩) := by
       apply Subtype.ext
@@ -314,11 +314,11 @@ theorem omegaSym_pProd (m : ℕ) (R : Type*) [CommRing R] (lam : List ℕ) :
     ring
 
 /-- **`omega` acts on the products of power sums by the sign
-`(-1)^(|lam| - length lam)`**. -/
-theorem omegaSym_pSub (m n : ℕ) (R : Type*) [CommRing R] (hnm : n ≤ m) (lam : PartIdx n m) :
-    (omegaSym m n R hnm (pSub m n R lam) : MvPolynomial (Fin m) R)
-      = (-1) ^ (n - lam.1.length) * pProd m R lam.1 := by
-  obtain ⟨l, hpart, hsum, hlen⟩ := lam
+`(-1)^(|η| - length η)`**. -/
+theorem omegaSym_pSub (m n : ℕ) (R : Type*) [CommRing R] (hnm : n ≤ m) (η : PartIdx n m) :
+    (omegaSym m n R hnm (pSub m n R η) : MvPolynomial (Fin m) R)
+      = (-1) ^ (n - η.1.length) * pProd m R η.1 := by
+  obtain ⟨l, hpart, hsum, hlen⟩ := η
   subst hsum
   exact omegaSym_pProd m R l hpart hnm
 

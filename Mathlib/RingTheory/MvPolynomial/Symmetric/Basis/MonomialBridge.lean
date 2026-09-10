@@ -76,9 +76,9 @@ lemma prod_map_X_multiset (s : Multiset (Fin m)) :
 
 /-- The coefficient of a monomial in `msymm` is `1` if the shape of the monomial is the
 given partition, and `0` otherwise. -/
-theorem coeff_msymm {n : ℕ} (mu : Nat.Partition n) (d : Fin m →₀ ℕ) :
-    coeff d (msymm (Fin m) R mu)
-      = if (degShape d : Multiset ℕ) = mu.parts then 1 else 0 := by
+theorem coeff_msymm {n : ℕ} (μ : Nat.Partition n) (d : Fin m →₀ ℕ) :
+    coeff d (msymm (Fin m) R μ)
+      = if (degShape d : Multiset ℕ) = μ.parts then 1 else 0 := by
   classical
   have hshape : ∀ a : Sym (Fin m) n, Multiset.toFinsupp a.1 = d →
       (Nat.Partition.ofSym a).parts = (degShape d : Multiset ℕ) := by
@@ -95,7 +95,7 @@ theorem coeff_msymm {n : ℕ} (mu : Nat.Partition n) (d : Fin m →₀ ℕ) :
     rw [this, coe_degShape]
   rw [msymm, coeff_sum]
   simp only [prod_map_X_multiset, coeff_monomial]
-  by_cases hd : (degShape d : Multiset ℕ) = mu.parts
+  by_cases hd : (degShape d : Multiset ℕ) = μ.parts
   · rw [ite_eq_left hd]
     have hcard : Multiset.card (Finsupp.toMultiset d) = n := by
       have hsum : (Finsupp.toMultiset d).card = (degShape d).sum := by
@@ -103,8 +103,8 @@ theorem coeff_msymm {n : ℕ} (mu : Nat.Partition n) (d : Fin m →₀ ℕ) :
         simp only [id]
         exact Finset.sum_subset (Finset.subset_univ d.support)
           fun i _ hi => by simpa using hi
-      rw [hsum, ← Multiset.sum_coe, hd, mu.parts_sum]
-    set a0 : {a : Sym (Fin m) n // Nat.Partition.ofSym a = mu} :=
+      rw [hsum, ← Multiset.sum_coe, hd, μ.parts_sum]
+    set a0 : {a : Sym (Fin m) n // Nat.Partition.ofSym a = μ} :=
       ⟨⟨Finsupp.toMultiset d, hcard⟩, by
         refine Nat.Partition.ext ?_
         rw [hshape ⟨Finsupp.toMultiset d, hcard⟩ (by simp), hd]⟩ with ha0
@@ -120,23 +120,23 @@ theorem coeff_msymm {n : ℕ} (mu : Nat.Partition n) (d : Fin m →₀ ℕ) :
     rw [← hshape a.1 hbd, a.2]
 
 /-- **The two definitions of the monomial symmetric polynomials agree**: the monomial
-symmetric polynomial of a partition `lam` with at most `m` parts is Mathlib's `msymm` of
-the corresponding partition of `|lam|`. -/
-theorem monomialSym_eq_msymm {n : ℕ} {lam : List ℕ} (hlam : IsPart lam) (hsum : lam.sum = n)
-    (hlen : lam.length ≤ m) :
-    monomialSym m R lam = msymm (Fin m) R (listPartEquivNatPartition n ⟨lam, hlam, hsum⟩) := by
+symmetric polynomial of a partition `η` with at most `m` parts is Mathlib's `msymm` of
+the corresponding partition of `|η|`. -/
+theorem monomialSym_eq_msymm {n : ℕ} {η : List ℕ} (hη : IsPart η) (hsum : η.sum = n)
+    (hlen : η.length ≤ m) :
+    monomialSym m R η = msymm (Fin m) R (listPartEquivNatPartition n ⟨η, hη, hsum⟩) := by
   classical
   refine MvPolynomial.ext _ _ fun d => ?_
   rw [coeff_monomialSym, coeff_msymm, listPartEquivNatPartition_apply]
-  have hiff : d ∈ degOrbit (shapeContent m lam)
-      ↔ (degShape d : Multiset ℕ) = (lam : Multiset ℕ) := by
-    rw [mem_degOrbit_iff, ← degShape_eq_iff, degShape_shapeContent hlam hlen]
+  have hiff : d ∈ degOrbit (shapeContent m η)
+      ↔ (degShape d : Multiset ℕ) = (η : Multiset ℕ) := by
+    rw [mem_degOrbit_iff, ← degShape_eq_iff, degShape_shapeContent hη hlen]
     constructor
     · intro h; rw [h]
     · intro h
       have := congrArg sortDesc h
-      rwa [sortDesc_coe (isPart_degShape d), sortDesc_coe hlam] at this
-  by_cases hd : d ∈ degOrbit (shapeContent m lam)
+      rwa [sortDesc_coe (isPart_degShape d), sortDesc_coe hη] at this
+  by_cases hd : d ∈ degOrbit (shapeContent m η)
   · rw [ite_eq_left hd, ite_eq_left (hiff.1 hd)]
   · rw [ite_eq_right hd, ite_eq_right fun h => hd (hiff.2 h)]
 

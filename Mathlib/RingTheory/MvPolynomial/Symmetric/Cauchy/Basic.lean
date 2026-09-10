@@ -14,17 +14,17 @@ Following `theories/MPoly/Cauchy.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove the Cauchy identity in its
 polynomial (degree by degree) form:
 
-`∑_{lam ⊢ n} s_lam(x) * s_lam(y) = ∑_{a} h_{a_1}(x) ⋯ h_{a_k}(x) * y_1^{a_1} ⋯ y_k^{a_k}`,
+`∑_{η ⊢ n} s_η(x) * s_η(y) = ∑_{a} h_{a_1}(x) ⋯ h_{a_k}(x) * y_1^{a_1} ⋯ y_k^{a_k}`,
 
 the sum on the right being over the families `a : Fin k → ℕ` of total size `n`.  This is
 the coefficient of degree `n` in `y` of the usual generating-function form
-`∏_{i,j} 1 / (1 - x_i y_j) = ∑_lam s_lam(x) s_lam(y)`, since
+`∏_{i,j} 1 / (1 - x_i y_j) = ∑_lam s_η(x) s_η(y)`, since
 `∏_i 1 / (1 - x_i t) = ∑_r h_r(x) t^r`.
 
 The proof is by induction on the number `k` of variables `y`, exactly as for the dual Cauchy
 identity of `Mathlib/RingTheory/MvPolynomial/Symmetric/Cauchy/Dual.lean`: splitting off the
 last variable `y_k`, the right-hand side gets multiplied by `h_r(x) y_k^r`, and on the left the
-branching rule `MvPolynomial.schurPoly_branching'` removes a horizontal strip from `lam`, which the
+branching rule `MvPolynomial.schurPoly_branching'` removes a horizontal strip from `η`, which the
 Pieri rule `MvPolynomial.schurPoly_mul_hsymm` puts back on the `x` side.
 
 ## Main results
@@ -86,8 +86,8 @@ lemma sum_antidiagonalTuple_succ {M : Type*} [AddCommMonoid M] (k n : ℕ)
 /-- The left-hand side of the Cauchy identity in `k` variables `y`. -/
 noncomputable def cauchyLHS (m k n : ℕ) (R : Type*) [CommRing R] :
     MvPolynomial (Fin k) (MvPolynomial (Fin m) R) :=
-  ∑ lam ∈ partFinset n,
-    C (schurPoly (Fin m) R lam) * schurPoly (Fin k) (MvPolynomial (Fin m) R) lam
+  ∑ η ∈ partFinset n,
+    C (schurPoly (Fin m) R η) * schurPoly (Fin k) (MvPolynomial (Fin m) R) η
 
 /-- The right-hand side of the Cauchy identity in `k` variables `y`. -/
 noncomputable def cauchyRHS (m k n : ℕ) (R : Type*) [CommRing R] :
@@ -134,66 +134,66 @@ lemma cauchyLHS_succ (m k n : ℕ) (R : Type*) [CommRing R] :
             * rename Fin.castSucc (cauchyLHS m k (n - r) R) := by
   classical
   have hbranch : cauchyLHS m (k + 1) n R
-      = ∑ lam ∈ partFinset n, ∑ mu ∈ partFinsetLe n,
-          if HorizStrip lam mu then
-            C (schurPoly (Fin m) R lam)
-              * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) mu)
-                * X (Fin.last k) ^ (n - mu.sum))
+      = ∑ η ∈ partFinset n, ∑ μ ∈ partFinsetLe n,
+          if HorizStrip η μ then
+            C (schurPoly (Fin m) R η)
+              * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) μ)
+                * X (Fin.last k) ^ (n - μ.sum))
           else 0 := by
-    refine Finset.sum_congr rfl fun lam hlam => ?_
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hlam
+    refine Finset.sum_congr rfl fun η hη => ?_
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
     rw [schurPoly_branching' k hpart, hsum, Finset.mul_sum]
-    exact Finset.sum_congr rfl fun mu _ => by split_ifs <;> simp
+    exact Finset.sum_congr rfl fun μ _ => by split_ifs <;> simp
   rw [hbranch, Finset.sum_comm, sum_partFinsetLe_eq]
-  -- the outer sum is now over the size `p` of `mu`; reindex it by `r = n - p`
+  -- the outer sum is now over the size `p` of `μ`; reindex it by `r = n - p`
   rw [← Finset.sum_range_reflect]
   refine Finset.sum_congr rfl fun r hr => ?_
   rw [Finset.mem_range] at hr
   rw [cauchyLHS, map_sum, Finset.mul_sum]
   -- collect the Pieri sum
-  have hpieri : ∀ mu ∈ partFinset (n - r),
-      (∑ lam ∈ partFinset n,
-        if HorizStrip lam mu then
-          C (schurPoly (Fin m) R lam)
-            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) mu)
-              * X (Fin.last k) ^ (n - mu.sum))
+  have hpieri : ∀ μ ∈ partFinset (n - r),
+      (∑ η ∈ partFinset n,
+        if HorizStrip η μ then
+          C (schurPoly (Fin m) R η)
+            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) μ)
+              * X (Fin.last k) ^ (n - μ.sum))
         else 0)
       = C (hsymm (Fin m) R r) * X (Fin.last k) ^ r
           * rename Fin.castSucc
-              (C (schurPoly (Fin m) R mu) * schurPoly (Fin k) (MvPolynomial (Fin m) R) mu) := by
-    intro mu hmu
-    obtain ⟨hmupart, hmusum⟩ := mem_partFinset.1 hmu
-    have hsum : mu.sum + r = n := by omega
-    have hpieri' : (∑ lam ∈ partFinset n,
-        if HorizStrip lam mu then schurPoly (Fin m) R lam else 0)
-        = schurPoly (Fin m) R mu * hsymm (Fin m) R r := by
-      rw [schurPoly_mul_hsymm m hmupart r, hsum]
-    have hsplit : (∑ lam ∈ partFinset n,
-        if HorizStrip lam mu then
-          C (schurPoly (Fin m) R lam)
-            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) mu)
-              * X (Fin.last k) ^ (n - mu.sum))
+              (C (schurPoly (Fin m) R μ) * schurPoly (Fin k) (MvPolynomial (Fin m) R) μ) := by
+    intro μ hμ
+    obtain ⟨hμpart, hμsum⟩ := mem_partFinset.1 hμ
+    have hsum : μ.sum + r = n := by omega
+    have hpieri' : (∑ η ∈ partFinset n,
+        if HorizStrip η μ then schurPoly (Fin m) R η else 0)
+        = schurPoly (Fin m) R μ * hsymm (Fin m) R r := by
+      rw [schurPoly_mul_hsymm m hμpart r, hsum]
+    have hsplit : (∑ η ∈ partFinset n,
+        if HorizStrip η μ then
+          C (schurPoly (Fin m) R η)
+            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) μ)
+              * X (Fin.last k) ^ (n - μ.sum))
         else 0)
-        = (∑ lam ∈ partFinset n, if HorizStrip lam mu then C (schurPoly (Fin m) R lam) else 0)
-            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) mu)
-              * X (Fin.last k) ^ (n - mu.sum)) := by
+        = (∑ η ∈ partFinset n, if HorizStrip η μ then C (schurPoly (Fin m) R η) else 0)
+            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) μ)
+              * X (Fin.last k) ^ (n - μ.sum)) := by
       rw [Finset.sum_mul]
-      exact Finset.sum_congr rfl fun lam _ => by split_ifs <;> simp
-    have hC : (∑ lam ∈ partFinset n, if HorizStrip lam mu then C (schurPoly (Fin m) R lam) else 0
+      exact Finset.sum_congr rfl fun η _ => by split_ifs <;> simp
+    have hC : (∑ η ∈ partFinset n, if HorizStrip η μ then C (schurPoly (Fin m) R η) else 0
           : MvPolynomial (Fin (k + 1)) (MvPolynomial (Fin m) R))
-        = C (schurPoly (Fin m) R mu * hsymm (Fin m) R r) := by
+        = C (schurPoly (Fin m) R μ * hsymm (Fin m) R r) := by
       rw [← hpieri', map_sum]
-      exact Finset.sum_congr rfl fun lam _ => by split_ifs <;> simp
-    rw [hsplit, hC, show n - mu.sum = r by omega, map_mul, map_mul, rename_C]
+      exact Finset.sum_congr rfl fun η _ => by split_ifs <;> simp
+    rw [hsplit, hC, show n - μ.sum = r by omega, map_mul, map_mul, rename_C]
     ring
   exact Finset.sum_congr rfl hpieri
 
 /-- **The Cauchy identity**, degree by degree: the sum over the partitions of `n` of the
-products `s_lam(x) s_lam(y)` is the sum over the families `a` of total size `n` of
+products `s_η(x) s_η(y)` is the sum over the families `a` of total size `n` of
 `h_{a_1}(x) ⋯ h_{a_k}(x) y^a`. -/
 theorem cauchy (m k n : ℕ) (R : Type*) [CommRing R] :
-    (∑ lam ∈ partFinset n,
-        C (schurPoly (Fin m) R lam) * schurPoly (Fin k) (MvPolynomial (Fin m) R) lam
+    (∑ η ∈ partFinset n,
+        C (schurPoly (Fin m) R η) * schurPoly (Fin k) (MvPolynomial (Fin m) R) η
       : MvPolynomial (Fin k) (MvPolynomial (Fin m) R))
       = ∑ a ∈ Finset.Nat.antidiagonalTuple k n,
           C (∏ j : Fin k, hsymm (Fin m) R (a j)) * ∏ j : Fin k, X j ^ a j := by
@@ -205,9 +205,9 @@ theorem cauchy (m k n : ℕ) (R : Type*) [CommRing R] :
         simp [schurPoly_nil]
       · obtain ⟨n', rfl⟩ : ∃ n', n = n' + 1 := ⟨n - 1, by omega⟩
         rw [cauchyLHS, cauchyRHS, Finset.Nat.antidiagonalTuple_zero_succ, Finset.sum_empty]
-        refine Finset.sum_eq_zero fun lam hlam => ?_
-        obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hlam
-        have hne : lam ≠ [] := by
+        refine Finset.sum_eq_zero fun η hη => ?_
+        obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
+        have hne : η ≠ [] := by
           rintro rfl
           simp at hsum
         rw [schurPoly_eq_zero_of_lt_length (List.length_pos_iff.2 hne), mul_zero]
@@ -247,14 +247,14 @@ lemma prod_hsymm_eq_hProd (m k : ℕ) (R : Type*) [CommRing R] (d : Fin k →₀
   rw [h1, ← coe_degSorted d, Multiset.map_coe, Multiset.prod_coe, degShape]
   exact prod_map_hsymm_trimZeros m R (degSorted d)
 
-/-- **The Cauchy identity in the dual bases form**: `∑_lam s_lam(x) s_lam(y)` is
-`∑_mu h_mu(x) m_mu(y)`, the sum being over the partitions `mu` of `n` with at most `k`
+/-- **The Cauchy identity in the dual bases form**: `∑_lam s_η(x) s_η(y)` is
+`∑_mu h_μ(x) m_μ(y)`, the sum being over the partitions `μ` of `n` with at most `k`
 parts. -/
 theorem cauchy_hProd_monomialSym (m k n : ℕ) (R : Type*) [CommRing R] :
-    (∑ lam ∈ partFinset n,
-        C (schurPoly (Fin m) R lam) * schurPoly (Fin k) (MvPolynomial (Fin m) R) lam
+    (∑ η ∈ partFinset n,
+        C (schurPoly (Fin m) R η) * schurPoly (Fin k) (MvPolynomial (Fin m) R) η
       : MvPolynomial (Fin k) (MvPolynomial (Fin m) R))
-      = ∑ mu : PartIdx n k, C (hProd m R mu.1) * monomialSym k (MvPolynomial (Fin m) R) mu.1 := by
+      = ∑ μ : PartIdx n k, C (hProd m R μ.1) * monomialSym k (MvPolynomial (Fin m) R) μ.1 := by
   classical
   rw [cauchy]
   ext d
@@ -283,41 +283,41 @@ theorem cauchy_hProd_monomialSym (m k n : ℕ) (R : Type*) [CommRing R] :
       Finset.sum_ite_eq' (Finset.Nat.antidiagonalTuple k n) (d : Fin k → ℕ)
         (fun _ => hProd m R (degShape d))]
     simp only [Finset.Nat.mem_antidiagonalTuple]
-  have hR : coeff d (∑ mu : PartIdx n k,
-        C (hProd m R mu.1) * monomialSym k (MvPolynomial (Fin m) R) mu.1)
+  have hR : coeff d (∑ μ : PartIdx n k,
+        C (hProd m R μ.1) * monomialSym k (MvPolynomial (Fin m) R) μ.1)
       = if ∑ j, d j = n then hProd m R (degShape d) else 0 := by
     rw [coeff_sum]
-    have hterm : ∀ mu : PartIdx n k,
-        coeff d (C (hProd m R mu.1) * monomialSym k (MvPolynomial (Fin m) R) mu.1)
-          = if mu.1 = degShape d then hProd m R (degShape d) else 0 := by
-      intro mu
+    have hterm : ∀ μ : PartIdx n k,
+        coeff d (C (hProd m R μ.1) * monomialSym k (MvPolynomial (Fin m) R) μ.1)
+          = if μ.1 = degShape d then hProd m R (degShape d) else 0 := by
+      intro μ
       rw [coeff_C_mul, coeff_monomialSym]
-      have hiff : d ∈ degOrbit (shapeContent k mu.1) ↔ mu.1 = degShape d := by
+      have hiff : d ∈ degOrbit (shapeContent k μ.1) ↔ μ.1 = degShape d := by
         rw [mem_degOrbit_iff]
         constructor
         · intro h
           have h2 := degShape_eq_iff.2 h
-          rw [degShape_shapeContent mu.2.1 mu.2.2.2] at h2
+          rw [degShape_shapeContent μ.2.1 μ.2.2.2] at h2
           exact h2.symm
         · intro h
           refine degShape_eq_iff.1 ?_
-          rw [degShape_shapeContent mu.2.1 mu.2.2.2, h]
-      by_cases h : mu.1 = degShape d
+          rw [degShape_shapeContent μ.2.1 μ.2.2.2, h]
+      by_cases h : μ.1 = degShape d
       · rw [ite_eq_left (hiff.2 h), ite_eq_left h, mul_one, h]
       · rw [ite_eq_right (fun hc => h (hiff.1 hc)), ite_eq_right h, mul_zero]
-    rw [Finset.sum_congr rfl (fun mu _ => hterm mu)]
+    rw [Finset.sum_congr rfl (fun μ _ => hterm μ)]
     by_cases hn : ∑ j, d j = n
-    · have hmu0 : IsPart (degShape d) ∧ (degShape d).sum = n ∧ (degShape d).length ≤ k :=
+    · have hμ0 : IsPart (degShape d) ∧ (degShape d).sum = n ∧ (degShape d).length ≤ k :=
         ⟨isPart_degShape d, by rw [sum_degShape]; exact hn, length_degShape_le d⟩
-      rw [ite_eq_left hn, Finset.sum_eq_single (⟨degShape d, hmu0⟩ : PartIdx n k)]
+      rw [ite_eq_left hn, Finset.sum_eq_single (⟨degShape d, hμ0⟩ : PartIdx n k)]
       · rw [ite_eq_left rfl]
-      · intro mu _ hne
+      · intro μ _ hne
         exact ite_eq_right fun hc => hne (Subtype.ext hc)
       · intro h
         exact absurd (Finset.mem_univ _) h
     · rw [ite_eq_right hn]
-      refine Finset.sum_eq_zero fun mu _ => ite_eq_right fun hc => hn ?_
-      rw [← sum_degShape d, ← hc, mu.2.2.1]
+      refine Finset.sum_eq_zero fun μ _ => ite_eq_right fun hc => hn ?_
+      rw [← sum_degShape d, ← hc, μ.2.2.1]
   rw [hL, hR]
 
 end MvPolynomial

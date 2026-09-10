@@ -76,11 +76,11 @@ lemma flatten_mapTab_val (Q : List (List (Fin m))) :
     (mapTab (Fin.val : Fin m → ℕ) Q).flatten = Q.flatten.map Fin.val := by
   rw [mapTab, List.map_flatten]
 
-/-- The tableaux of shape `sh` over the alphabet `Fin m` with content `d` are exactly the
-tableaux over `ℕ` of shape `sh` with letters `< m` and content `finContent m d`. -/
-theorem card_ssyt_eq_kostkaNum (sh : List ℕ) (d : Fin m →₀ ℕ) :
-    Nat.card {T : SSYT (Fin m) sh // (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset d}
-      = kostkaNum m sh (finContent m d) := by
+/-- The tableaux of shape `μ` over the alphabet `Fin m` with content `d` are exactly the
+tableaux over `ℕ` of shape `μ` with letters `< m` and content `finContent m d`. -/
+theorem card_ssyt_eq_kostkaNum (μ : List ℕ) (d : Fin m →₀ ℕ) :
+    Nat.card {T : SSYT (Fin m) μ // (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset d}
+      = kostkaNum m μ (finContent m d) := by
   have hcount_iff : ∀ Q : List (List (Fin m)),
       ((toWord Q : Multiset (Fin m)) = Finsupp.toMultiset d) ↔
         (∀ i < m, (mapTab (Fin.val : Fin m → ℕ) Q).flatten.count i = finContent m d i) := by
@@ -101,8 +101,8 @@ theorem card_ssyt_eq_kostkaNum (sh : List ℕ) (d : Fin m →₀ ℕ) :
       simp only [Fin.eta] at hj
       rw [Finsupp.count_toMultiset]
       simpa [count_toWord] using hj
-  have hmem : ∀ T : {T : SSYT (Fin m) sh // (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset d},
-      mapTab (Fin.val : Fin m → ℕ) T.1.1 ∈ tabSet m sh (finContent m d) := by
+  have hmem : ∀ T : {T : SSYT (Fin m) μ // (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset d},
+      mapTab (Fin.val : Fin m → ℕ) T.1.1 ∈ tabSet m μ (finContent m d) := by
     intro T
     refine ⟨isTableau_mapTab_val T.1.2.1, by rw [shape_mapTab]; exact T.1.2.2, ?_,
       (hcount_iff _).1 T.2⟩
@@ -113,7 +113,7 @@ theorem card_ssyt_eq_kostkaNum (sh : List ℕ) (d : Fin m →₀ ℕ) :
   rw [kostkaNum]
   refine Nat.card_congr (Equiv.ofBijective
     (fun T => (⟨mapTab (Fin.val : Fin m → ℕ) T.1.1, hmem T⟩ :
-      tabSet m sh (finContent m d))) ⟨?_, ?_⟩)
+      tabSet m μ (finContent m d))) ⟨?_, ?_⟩)
   · rintro ⟨⟨P, hP⟩, hPd⟩ ⟨⟨Q, hQ⟩, hQd⟩ h
     have h' : mapTab (Fin.val : Fin m → ℕ) P = mapTab (Fin.val : Fin m → ℕ) Q :=
       congrArg Subtype.val h
@@ -121,13 +121,13 @@ theorem card_ssyt_eq_kostkaNum (sh : List ℕ) (d : Fin m →₀ ℕ) :
   · rintro ⟨P, hPtab, hPsh, hPlt, hPcount⟩
     obtain ⟨Q, rfl⟩ := exists_mapTab_val hPlt
     have hQtab : IsTableau Q := isTableau_of_isTableau_mapTab Fin.val_strictMono hPtab
-    have hQsh : shape Q = sh := by rwa [shape_mapTab] at hPsh
+    have hQsh : shape Q = μ := by rwa [shape_mapTab] at hPsh
     exact ⟨⟨⟨Q, hQtab, hQsh⟩, (hcount_iff Q).2 hPcount⟩, rfl⟩
 
-/-- The coefficient of the monomial `x ^ d` in the Schur polynomial of shape `sh` is the
-Kostka number counting the tableaux of shape `sh` and content `d`. -/
-theorem coeff_schurPoly_eq_kostkaNum (sh : List ℕ) (d : Fin m →₀ ℕ) :
-    coeff d (schurPoly (Fin m) R sh) = (kostkaNum m sh (finContent m d) : R) := by
+/-- The coefficient of the monomial `x ^ d` in the Schur polynomial of shape `μ` is the
+Kostka number counting the tableaux of shape `μ` and content `d`. -/
+theorem coeff_schurPoly_eq_kostkaNum (μ : List ℕ) (d : Fin m →₀ ℕ) :
+    coeff d (schurPoly (Fin m) R μ) = (kostkaNum m μ (finContent m d) : R) := by
   rw [coeff_schurPoly, card_ssyt_eq_kostkaNum]
 
 /-! ### Symmetry -/
@@ -144,27 +144,27 @@ lemma finContent_mapDomain (e : Equiv.Perm (Fin m)) (d : Fin m →₀ ℕ) :
 
 /-- Permuting the variables of a monomial does not change its coefficient in the Schur
 polynomial. -/
-theorem coeff_schurPoly_mapDomain (sh : List ℕ) (d : Fin m →₀ ℕ) (e : Equiv.Perm (Fin m)) :
-    coeff (Finsupp.mapDomain e d) (schurPoly (Fin m) R sh)
-      = coeff d (schurPoly (Fin m) R sh) := by
-  by_cases hsh : IsPart sh
+theorem coeff_schurPoly_mapDomain (μ : List ℕ) (d : Fin m →₀ ℕ) (e : Equiv.Perm (Fin m)) :
+    coeff (Finsupp.mapDomain e d) (schurPoly (Fin m) R μ)
+      = coeff d (schurPoly (Fin m) R μ) := by
+  by_cases hμ : IsPart μ
   · rw [coeff_schurPoly_eq_kostkaNum, coeff_schurPoly_eq_kostkaNum, finContent_mapDomain]
-    by_cases hsum : ∑ i ∈ Finset.range m, finContent m d i = sh.sum
-    · rw [kostkaNum_permContent m e.symm sh (finContent m d) hsh hsum]
+    by_cases hsum : ∑ i ∈ Finset.range m, finContent m d i = μ.sum
+    · rw [kostkaNum_permContent m e.symm μ (finContent m d) hμ hsum]
     · rw [kostkaNum_eq_zero_of_sum_ne _ _ _ hsum,
         kostkaNum_eq_zero_of_sum_ne _ _ _ (by rwa [sum_permContent])]
-  · rw [schurPoly_eq_zero_of_not_isPart hsh, coeff_zero, coeff_zero]
+  · rw [schurPoly_eq_zero_of_not_isPart hμ, coeff_zero, coeff_zero]
 
 /-- **The Schur polynomials are symmetric.** -/
-theorem schurPoly_isSymmetric (sh : List ℕ) :
-    (schurPoly (Fin m) R sh).IsSymmetric := by
+theorem schurPoly_isSymmetric (μ : List ℕ) :
+    (schurPoly (Fin m) R μ).IsSymmetric := by
   intro e
   refine MvPolynomial.ext _ _ fun d => ?_
   have hd : Finsupp.mapDomain (e : Fin m → Fin m) (Finsupp.mapDomain (e.symm : Fin m → Fin m) d)
       = d := by
     rw [← Finsupp.mapDomain_comp]
     simp
-  rw [← hd, coeff_rename_mapDomain _ e.injective, hd, coeff_schurPoly_mapDomain sh d e.symm]
+  rw [← hd, coeff_rename_mapDomain _ e.injective, hd, coeff_schurPoly_mapDomain μ d e.symm]
 
 /-! ### An arbitrary finite alphabet -/
 
@@ -183,7 +183,7 @@ omit [LinearOrder σ] in
 
 /-- An order isomorphism of alphabets induces a bijection of the tableaux of a given
 shape. -/
-def ssytEquivOfOrderIso (f : σ ≃o τ) (sh : List ℕ) : SSYT σ sh ≃ SSYT τ sh where
+def ssytEquivOfOrderIso (f : σ ≃o τ) (μ : List ℕ) : SSYT σ μ ≃ SSYT τ μ where
   toFun T := ⟨mapTab f T.1, isTableau_mapTab f.strictMono T.2.1, by
     rw [shape_mapTab]; exact T.2.2⟩
   invFun T := ⟨mapTab f.symm T.1, isTableau_mapTab f.symm.strictMono T.2.1, by
@@ -199,10 +199,10 @@ def ssytEquivOfOrderIso (f : σ ≃o τ) (sh : List ℕ) : SSYT σ sh ≃ SSYT �
 
 /-- The Schur polynomials over two order-isomorphic alphabets correspond to each other
 under renaming of the variables. -/
-theorem rename_schurPoly [Fintype σ] [Fintype τ] (f : σ ≃o τ) (sh : List ℕ) :
-    rename (f : σ → τ) (schurPoly σ R sh) = schurPoly τ R sh := by
+theorem rename_schurPoly [Fintype σ] [Fintype τ] (f : σ ≃o τ) (μ : List ℕ) :
+    rename (f : σ → τ) (schurPoly σ R μ) = schurPoly τ R μ := by
   rw [schurPoly, map_sum]
-  refine Fintype.sum_equiv (ssytEquivOfOrderIso f sh) _ _ fun T => ?_
+  refine Fintype.sum_equiv (ssytEquivOfOrderIso f μ) _ _ fun T => ?_
   change rename (f : σ → τ) (((toWord T.1).map X).prod)
     = ((toWord (mapTab (f : σ → τ) T.1)).map X).prod
   rw [toWord_mapTab, map_list_prod, List.map_map, List.map_map]
@@ -210,13 +210,13 @@ theorem rename_schurPoly [Fintype σ] [Fintype τ] (f : σ ≃o τ) (sh : List �
 
 /-- **The Schur polynomials are symmetric**, over an arbitrary finite alphabet of
 variables. -/
-theorem schurPoly_isSymmetric_of_fintype [Fintype σ] (sh : List ℕ) :
-    (schurPoly σ R sh).IsSymmetric := by
+theorem schurPoly_isSymmetric_of_fintype [Fintype σ] (μ : List ℕ) :
+    (schurPoly σ R μ).IsSymmetric := by
   have e : Fin (Fintype.card σ) ≃o σ := monoEquivOfFin σ rfl
-  have h : rename (e.toEquiv : Fin (Fintype.card σ) → σ) (schurPoly (Fin (Fintype.card σ)) R sh)
-      = schurPoly σ R sh := rename_schurPoly e sh
+  have h : rename (e.toEquiv : Fin (Fintype.card σ) → σ) (schurPoly (Fin (Fintype.card σ)) R μ)
+      = schurPoly σ R μ := rename_schurPoly e μ
   rw [← h]
-  exact (schurPoly_isSymmetric sh).rename e.toEquiv
+  exact (schurPoly_isSymmetric μ).rename e.toEquiv
 
 end Alphabet
 

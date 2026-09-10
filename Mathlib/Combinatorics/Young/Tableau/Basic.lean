@@ -313,22 +313,22 @@ lemma isTableau_of_getD {t : List (List T)} (hne : ∀ i < t.length, t.getD i []
 
 omit [LinearOrder T] in
 /-- Two lists of lists with the same shape and the same concatenation are equal. -/
-lemma eq_of_shape_eq_of_flatten_eq {P Q : List (List T)} (hsh : shape P = shape Q)
+lemma eq_of_shape_eq_of_flatten_eq {P Q : List (List T)} (hμ : shape P = shape Q)
     (hf : P.flatten = Q.flatten) : P = Q := by
   induction P generalizing Q with
   | nil =>
     cases Q with
     | nil => rfl
-    | cons q Q => simp [shape] at hsh
+    | cons q Q => simp [shape] at hμ
   | cons p P ih =>
     cases Q with
-    | nil => simp [shape] at hsh
+    | nil => simp [shape] at hμ
     | cons q Q =>
-      obtain ⟨hlen, hshP⟩ : p.length = q.length ∧ shape P = shape Q := by
-        simpa [shape_cons] using hsh
+      obtain ⟨hlen, hμP⟩ : p.length = q.length ∧ shape P = shape Q := by
+        simpa [shape_cons] using hμ
       simp only [List.flatten_cons] at hf
       obtain ⟨rfl, hfl⟩ := List.append_inj hf hlen
-      rw [ih hshP hfl]
+      rw [ih hμP hfl]
 
 /-- Entries increase strictly down the columns of a tableau. -/
 lemma IsTableau.col_lt {t : List (List T)} (h : IsTableau t) {i c : ℕ}

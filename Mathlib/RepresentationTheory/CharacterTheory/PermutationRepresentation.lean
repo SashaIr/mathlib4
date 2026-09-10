@@ -89,48 +89,48 @@ the permutation character of the action of `G` on the cosets of `H` amounts to s
 over `H`, up to the index of `H`. -/
 theorem sum_card_fixedPoints_quotient_mul {R : Type*} [CommRing R] [Fintype G] (H : Subgroup G)
     [Fintype H] (F : G → R) (hF : ∀ a b : G, F (b⁻¹ * a * b) = F a) :
-    ∑ sigma : G, (Nat.card {q : G ⧸ H // sigma • q = q} : R) * F sigma
+    ∑ σ : G, (Nat.card {q : G ⧸ H // σ • q = q} : R) * F σ
       = (Nat.card (G ⧸ H) : R) * ∑ h : H, F h := by
   classical
   have : Fintype (G ⧸ H) := Fintype.ofFinite _
-  have hcount : ∀ sigma : G, (Nat.card {q : G ⧸ H // sigma • q = q} : R)
-      = ∑ q : G ⧸ H, if sigma • q = q then (1 : R) else 0 := by
-    intro sigma
+  have hcount : ∀ σ : G, (Nat.card {q : G ⧸ H // σ • q = q} : R)
+      = ∑ q : G ⧸ H, if σ • q = q then (1 : R) else 0 := by
+    intro σ
     rw [Finset.sum_boole, Nat.card_eq_fintype_card, Fintype.card_subtype]
-  have hswap : ∑ sigma : G, (Nat.card {q : G ⧸ H // sigma • q = q} : R) * F sigma
-      = ∑ q : G ⧸ H, ∑ sigma : G, if sigma • q = q then F sigma else 0 := by
-    have h1 : ∀ sigma : G, (Nat.card {q : G ⧸ H // sigma • q = q} : R) * F sigma
-        = ∑ q : G ⧸ H, if sigma • q = q then F sigma else 0 := by
-      intro sigma
-      rw [hcount sigma, Finset.sum_mul]
-      exact Finset.sum_congr rfl fun q _ => by by_cases h : sigma • q = q <;> simp [h]
-    rw [Finset.sum_congr rfl fun sigma _ => h1 sigma]
+  have hswap : ∑ σ : G, (Nat.card {q : G ⧸ H // σ • q = q} : R) * F σ
+      = ∑ q : G ⧸ H, ∑ σ : G, if σ • q = q then F σ else 0 := by
+    have h1 : ∀ σ : G, (Nat.card {q : G ⧸ H // σ • q = q} : R) * F σ
+        = ∑ q : G ⧸ H, if σ • q = q then F σ else 0 := by
+      intro σ
+      rw [hcount σ, Finset.sum_mul]
+      exact Finset.sum_congr rfl fun q _ => by by_cases h : σ • q = q <;> simp [h]
+    rw [Finset.sum_congr rfl fun σ _ => h1 σ]
     exact Finset.sum_comm
-  have hq : ∀ q : G ⧸ H, (∑ sigma : G, if sigma • q = q then F sigma else 0) = ∑ h : H, F h := by
+  have hq : ∀ q : G ⧸ H, (∑ σ : G, if σ • q = q then F σ else 0) = ∑ h : H, F h := by
     intro q
     obtain ⟨g, rfl⟩ := QuotientGroup.mk_surjective q
-    have hconj : ∑ sigma : G, (if sigma • (g : G ⧸ H) = (g : G ⧸ H) then F sigma else 0)
-        = ∑ tau : G, (if (g * tau * g⁻¹) • (g : G ⧸ H) = (g : G ⧸ H)
-            then F (g * tau * g⁻¹) else 0) :=
-      (Fintype.sum_equiv (MulAut.conj g).toEquiv _ _ fun tau => rfl).symm
+    have hconj : ∑ σ : G, (if σ • (g : G ⧸ H) = (g : G ⧸ H) then F σ else 0)
+        = ∑ τ : G, (if (g * τ * g⁻¹) • (g : G ⧸ H) = (g : G ⧸ H)
+            then F (g * τ * g⁻¹) else 0) :=
+      (Fintype.sum_equiv (MulAut.conj g).toEquiv _ _ fun τ => rfl).symm
     rw [hconj]
-    have hterm : ∀ tau : G, (if (g * tau * g⁻¹) • (g : G ⧸ H) = (g : G ⧸ H)
-        then F (g * tau * g⁻¹) else 0) = if tau ∈ H then F tau else 0 := by
-      intro tau
-      have hmem : ((g * tau * g⁻¹) • (g : G ⧸ H) = (g : G ⧸ H)) ↔ tau ∈ H := by
-        rw [show (g * tau * g⁻¹) • (g : G ⧸ H) = ((g * tau * g⁻¹ * g : G) : G ⧸ H) from rfl,
+    have hterm : ∀ τ : G, (if (g * τ * g⁻¹) • (g : G ⧸ H) = (g : G ⧸ H)
+        then F (g * τ * g⁻¹) else 0) = if τ ∈ H then F τ else 0 := by
+      intro τ
+      have hmem : ((g * τ * g⁻¹) • (g : G ⧸ H) = (g : G ⧸ H)) ↔ τ ∈ H := by
+        rw [show (g * τ * g⁻¹) • (g : G ⧸ H) = ((g * τ * g⁻¹ * g : G) : G ⧸ H) from rfl,
           QuotientGroup.eq]
         constructor
         · intro h
           simpa [mul_assoc] using h
         · intro h
           simpa [mul_assoc] using h
-      have hval : F (g * tau * g⁻¹) = F tau := by
-        have := hF tau g⁻¹
+      have hval : F (g * τ * g⁻¹) = F τ := by
+        have := hF τ g⁻¹
         simpa using this
       rw [hval]
       exact if_congr hmem rfl rfl
-    rw [Finset.sum_congr rfl fun tau _ => hterm tau, ← Finset.sum_filter]
+    rw [Finset.sum_congr rfl fun τ _ => hterm τ, ← Finset.sum_filter]
     exact Finset.sum_subtype _ (fun x => by simp) F
   rw [hswap, Finset.sum_congr rfl fun q _ => hq q, Finset.sum_const, Nat.card_eq_fintype_card,
     nsmul_eq_mul, Finset.card_univ]

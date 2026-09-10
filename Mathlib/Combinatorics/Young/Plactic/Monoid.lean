@@ -53,9 +53,9 @@ variable {T : Type*} [LinearOrder T]
 /-- Every tableau is the insertion tableau of some word. -/
 theorem exists_word_RS {P : List (List T)} (hP : IsTableau P) : ∃ w : List T, RS w = P := by
   have hpart : IsPart (shape P) := isPart_shape hP
-  obtain ⟨hQ, hsh, -⟩ := stdTabOfYam_spec (isYam_hyperYam hpart)
+  obtain ⟨hQ, hμ, -⟩ := stdTabOfYam_spec (isYam_hyperYam hpart)
   obtain ⟨w, hw, -⟩ :=
-    exists_word_RS_RSQ hP hQ (by rw [hsh, evalseq_hyperYam hpart])
+    exists_word_RS_RSQ hP hQ (by rw [hμ, evalseq_hyperYam hpart])
   exact ⟨w, hw⟩
 
 /-- The insertion tableau of the reading word of a tableau is the tableau itself

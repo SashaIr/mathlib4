@@ -247,14 +247,14 @@ variable {T : Type*} [LinearOrder T]
 /-- Every pair consisting of a tableau and a standard tableau of the same shape is the
 image of a word under `Young.RSmap` (Coq `RS_bij_2`). -/
 theorem exists_word_RSmap {P : List (List T)} (hP : IsTableau P) {Q : List (List ℕ)}
-    (hQ : IsStdTab Q) (hsh : shape Q = shape P) : ∃ w : List T, RSmap w = (P, rowsOf Q) := by
+    (hQ : IsStdTab Q) (hμ : shape Q = shape P) : ∃ w : List T, RSmap w = (P, rowsOf Q) := by
   generalize hn : sizeTab Q = n
   induction n generalizing P Q with
   | zero =>
     have h0 : Q = [] := hQ.1.eq_nil_of_sizeTab_eq_zero hn
     subst h0
     have hP0 : P = [] := by
-      have hs : shape P = [] := by rw [← hsh]; rfl
+      have hs : shape P = [] := by rw [← hμ]; rfl
       rw [shape] at hs
       exact List.map_eq_nil_iff.1 hs
     subst hP0
@@ -264,19 +264,19 @@ theorem exists_word_RSmap {P : List (List T)} (hP : IsTableau P) {Q : List (List
     obtain ⟨-, hlast, hc⟩ := stdTab_max_spec hQ hn
     set i := rowIdx Q n
     set Q' := remBox Q i
-    have hcP : IsRemCorner (shape P) i := by rw [← hsh]; exact hc
+    have hcP : IsRemCorner (shape P) i := by rw [← hμ]; exact hc
     obtain ⟨P', l, -, htabP', hins, hbump, -⟩ := invInsTab_spec hP hcP
-    have hshP : shape P = incrNth (shape P') i := by rw [← hins, shape_insTab, hbump]
-    have hshQ : shape Q = incrNth (shape Q') i := by rw [← hadd, shape_addBox hile]
-    have hsh' : shape Q' = shape P' := by
-      have h3 : IsPart (incrNth (shape P') i) := by rw [← hshP]; exact isPart_shape hP
-      have h4 : IsPart (incrNth (shape Q') i) := by rw [← hshQ]; exact isPart_shape hQ.1
+    have hμP : shape P = incrNth (shape P') i := by rw [← hins, shape_insTab, hbump]
+    have hμQ : shape Q = incrNth (shape Q') i := by rw [← hadd, shape_addBox hile]
+    have hμ' : shape Q' = shape P' := by
+      have h3 : IsPart (incrNth (shape P') i) := by rw [← hμP]; exact isPart_shape hP
+      have h4 : IsPart (incrNth (shape Q') i) := by rw [← hμQ]; exact isPart_shape hQ.1
       have e1 : decrNth (incrNth (shape P') i) i = shape P' :=
         decrNth_incrNth (isPart_shape htabP') h3
       have e2 : decrNth (incrNth (shape Q') i) i = shape Q' :=
         decrNth_incrNth (isPart_shape hQ'.1) h4
-      rw [← e1, ← e2, ← hshP, ← hshQ, hsh]
-    obtain ⟨w', hw'⟩ := ih htabP' hQ' hsh' hsize
+      rw [← e1, ← e2, ← hμP, ← hμQ, hμ]
+    obtain ⟨w', hw'⟩ := ih htabP' hQ' hμ' hsize
     refine ⟨w' ++ [l], ?_⟩
     rw [RSmap_concat, hw']
     dsimp only
@@ -285,8 +285,8 @@ theorem exists_word_RSmap {P : List (List T)} (hP : IsTableau P) {Q : List (List
 /-- **Surjectivity of the Robinson–Schensted correspondence**: every pair consisting of a
 tableau `P` and a standard tableau `Q` of the same shape comes from a word. -/
 theorem exists_word_RS_RSQ {P : List (List T)} (hP : IsTableau P) {Q : List (List ℕ)}
-    (hQ : IsStdTab Q) (hsh : shape Q = shape P) : ∃ w : List T, RS w = P ∧ RSQ w = Q := by
-  obtain ⟨w, hw⟩ := exists_word_RSmap hP hQ hsh
+    (hQ : IsStdTab Q) (hμ : shape Q = shape P) : ∃ w : List T, RS w = P ∧ RSQ w = Q := by
+  obtain ⟨w, hw⟩ := exists_word_RSmap hP hQ hμ
   refine ⟨w, ?_, ?_⟩
   · rw [← RSmap_fst, hw]
   · rw [RSQ]
@@ -302,8 +302,8 @@ theorem RS_RSQ_bijOn :
   refine ⟨fun w _ => ⟨isTableau_RS w, isStdTab_RSQ w, shape_RSQ w⟩, ?_, ?_⟩
   · intro w _ w' _ h
     exact RS_RSQ_injective (congrArg Prod.fst h) (congrArg Prod.snd h)
-  · rintro ⟨P, Q⟩ ⟨hP, hQ, hsh⟩
-    obtain ⟨w, h1, h2⟩ := exists_word_RS_RSQ hP hQ hsh
+  · rintro ⟨P, Q⟩ ⟨hP, hQ, hμ⟩
+    obtain ⟨w, h1, h2⟩ := exists_word_RS_RSQ hP hQ hμ
     exact ⟨w, Set.mem_univ w, by simp [h1, h2]⟩
 
 /-- Restricted to standard words, the Robinson–Schensted correspondence is a bijection
@@ -315,8 +315,8 @@ theorem RS_RSQ_bijOn_isStd :
   refine ⟨fun w hw => ⟨isStdTab_RS hw, isStdTab_RSQ w, (shape_RSQ w).symm⟩, ?_, ?_⟩
   · intro w _ w' _ h
     exact RS_RSQ_injective (congrArg Prod.fst h) (congrArg Prod.snd h)
-  · rintro ⟨P, Q⟩ ⟨hP, hQ, hsh⟩
-    obtain ⟨w, h1, h2⟩ := exists_word_RS_RSQ hP.1 hQ hsh.symm
+  · rintro ⟨P, Q⟩ ⟨hP, hQ, hμ⟩
+    obtain ⟨w, h1, h2⟩ := exists_word_RS_RSQ hP.1 hQ hμ.symm
     have hperm := perm_toWord_RS w
     rw [h1] at hperm
     exact ⟨w, hP.2.of_perm hperm.symm, by simp [h1, h2]⟩

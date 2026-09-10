@@ -60,8 +60,8 @@ theorem RS_bijOn_language {Q : List (List ℕ)} (hQ : IsStdTab Q) :
     exact ⟨isTableau_RS w, by rw [← shape_RSQ w, mem_language.1 hw]⟩
   · intro u hu v hv h
     exact RS_RSQ_injective h (by rw [mem_language.1 hu, mem_language.1 hv])
-  · rintro P ⟨hP, hsh⟩
-    obtain ⟨w, h1, h2⟩ := exists_word_RS_RSQ hP hQ hsh.symm
+  · rintro P ⟨hP, hμ⟩
+    obtain ⟨w, h1, h2⟩ := exists_word_RS_RSQ hP hQ hμ.symm
     exact ⟨w, h2, h1⟩
 
 /-- The words whose recording tableau is a given tableau have a fixed length, hence form a

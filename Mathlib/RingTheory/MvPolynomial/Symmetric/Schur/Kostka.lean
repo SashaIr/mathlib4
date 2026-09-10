@@ -12,10 +12,10 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
 /-!
 # Schur polynomials and Kostka numbers
 
-The coefficients of the Schur polynomial `s_sh` are Kostka numbers, so the results of
+The coefficients of the Schur polynomial `s_μ` are Kostka numbers, so the results of
 `Mathlib/Combinatorics/Young/Tableau/Kostka.lean` on Kostka numbers translate into statements
-about `s_sh`: the monomial `x ^ d` occurs only if the shape `sh` dominates the content `d`, and the
-monomial of content `sh` itself occurs exactly once.  In other words
+about `s_μ`: the monomial `x ^ d` occurs only if the shape `μ` dominates the content `d`, and the
+monomial of content `μ` itself occurs exactly once.  In other words
 
 `s_λ = m_λ + (terms of content strictly dominated by λ)`.
 
@@ -23,10 +23,10 @@ monomial of content `sh` itself occurs exactly once.  In other words
 
 ## Main results
 
-* `MvPolynomial.coeff_schurPoly_eq_zero_of_not_partdom` : the coefficient of `x ^ d` in `s_sh`
-  vanishes unless `sh` dominates the content `d`.
-* `MvPolynomial.coeff_schurPoly_self` : the coefficient of the monomial of content `sh` in
-  `s_sh` is `1`.
+* `MvPolynomial.coeff_schurPoly_eq_zero_of_not_partdom` : the coefficient of `x ^ d` in `s_μ`
+  vanishes unless `μ` dominates the content `d`.
+* `MvPolynomial.coeff_schurPoly_self` : the coefficient of the monomial of content `μ` in
+  `s_μ` is `1`.
 -/
 
 @[expose] public section
@@ -72,15 +72,15 @@ lemma count_toWord_map_val {P : List (List (Fin m))} {d : Fin m →₀ ℕ}
     simp
   · rw [dite_eq_right h, List.getD_eq_default _ _ (by simpa using h)]
 
-/-- The coefficient of `x ^ d` in the Schur polynomial of shape `sh` vanishes unless `sh`
+/-- The coefficient of `x ^ d` in the Schur polynomial of shape `μ` vanishes unless `μ`
 dominates the content `d`. -/
-theorem coeff_schurPoly_eq_zero_of_not_partdom (sh : List ℕ) (d : Fin m →₀ ℕ)
-    (h : ¬ Partdom (List.ofFn fun i : Fin m => d i) sh) :
-    coeff d (schurPoly (Fin m) R sh) = 0 := by
+theorem coeff_schurPoly_eq_zero_of_not_partdom (μ : List ℕ) (d : Fin m →₀ ℕ)
+    (h : ¬ Partdom (List.ofFn fun i : Fin m => d i) μ) :
+    coeff d (schurPoly (Fin m) R μ) = 0 := by
   classical
   rw [coeff_schurPoly]
   have hempty : IsEmpty
-      {T : SSYT (Fin m) sh // (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset d} := by
+      {T : SSYT (Fin m) μ // (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset d} := by
     constructor
     rintro ⟨T, hT⟩
     refine h ?_
@@ -115,66 +115,66 @@ lemma length_le_of_isTableau {P : List (List (Fin m))} (hP : IsTableau P) : P.le
   exact absurd a.2 (by omega)
 
 /-- The Schur polynomial of a shape with more than `m` rows vanishes in `m` variables. -/
-theorem schurPoly_eq_zero_of_lt_length {sh : List ℕ} (hlen : m < sh.length) :
-    schurPoly (Fin m) R sh = 0 := by
-  have : IsEmpty (SSYT (Fin m) sh) := by
+theorem schurPoly_eq_zero_of_lt_length {μ : List ℕ} (hlen : m < μ.length) :
+    schurPoly (Fin m) R μ = 0 := by
+  have : IsEmpty (SSYT (Fin m) μ) := by
     constructor
-    rintro ⟨P, hP, hsh⟩
+    rintro ⟨P, hP, hμ⟩
     have := length_le_of_isTableau hP
-    have hlength : P.length = sh.length := by
-      simpa [shape] using congrArg List.length hsh
+    have hlength : P.length = μ.length := by
+      simpa [shape] using congrArg List.length hμ
     omega
   rw [schurPoly, Finset.univ_eq_empty, Finset.sum_empty]
 
 /-! ### The coefficient of the monomial of content the shape -/
 
-/-- The exponent vector recording the content `sh` over the alphabet `Fin m`. -/
-noncomputable def shapeContent (m : ℕ) (sh : List ℕ) : Fin m →₀ ℕ :=
-  Finsupp.onFinset Finset.univ (fun i : Fin m => sh.getD i 0) (fun _ _ => Finset.mem_univ _)
+/-- The exponent vector recording the content `μ` over the alphabet `Fin m`. -/
+noncomputable def shapeContent (m : ℕ) (μ : List ℕ) : Fin m →₀ ℕ :=
+  Finsupp.onFinset Finset.univ (fun i : Fin m => μ.getD i 0) (fun _ _ => Finset.mem_univ _)
 
-@[simp] lemma shapeContent_apply (sh : List ℕ) (i : Fin m) :
-    shapeContent m sh i = sh.getD i 0 := rfl
+@[simp] lemma shapeContent_apply (μ : List ℕ) (i : Fin m) :
+    shapeContent m μ i = μ.getD i 0 := rfl
 
-/-- The superstandard tableau of shape `sh` over the alphabet `Fin m`: its `i`-th row
-consists of `sh i` copies of the letter `i`. -/
-def superTabFin (m : ℕ) (sh : List ℕ) (hlen : sh.length ≤ m) : List (List (Fin m)) :=
-  List.ofFn fun j : Fin sh.length =>
-    List.replicate (sh.getD j 0) (⟨j, lt_of_lt_of_le j.2 hlen⟩ : Fin m)
+/-- The superstandard tableau of shape `μ` over the alphabet `Fin m`: its `i`-th row
+consists of `μ i` copies of the letter `i`. -/
+def superTabFin (m : ℕ) (μ : List ℕ) (hlen : μ.length ≤ m) : List (List (Fin m)) :=
+  List.ofFn fun j : Fin μ.length =>
+    List.replicate (μ.getD j 0) (⟨j, lt_of_lt_of_le j.2 hlen⟩ : Fin m)
 
-lemma mapTab_val_superTabFin (sh : List ℕ) (hlen : sh.length ≤ m) :
-    mapTab (Fin.val : Fin m → ℕ) (superTabFin m sh hlen) = superTab sh := by
-  have hlength : (superTab sh).length = sh.length := by
-    simpa [shape] using congrArg List.length (shape_superTab sh)
+lemma mapTab_val_superTabFin (μ : List ℕ) (hlen : μ.length ≤ m) :
+    mapTab (Fin.val : Fin m → ℕ) (superTabFin m μ hlen) = superTab μ := by
+  have hlength : (superTab μ).length = μ.length := by
+    simpa [shape] using congrArg List.length (shape_superTab μ)
   refine List.ext_getElem (by simp [superTabFin, mapTab, hlength]) fun j h1 h2 => ?_
-  have hj : j < sh.length := by omega
-  have hlhs : (mapTab (Fin.val : Fin m → ℕ) (superTabFin m sh hlen))[j]'h1
-      = List.replicate (sh.getD j 0) j := by
+  have hj : j < μ.length := by omega
+  have hlhs : (mapTab (Fin.val : Fin m → ℕ) (superTabFin m μ hlen))[j]'h1
+      = List.replicate (μ.getD j 0) j := by
     simp [mapTab, superTabFin, List.map_replicate, List.getElem?_eq_getElem hj]
   rw [hlhs, ← List.getD_eq_getElem _ _ h2, getD_superTab]
 
-lemma isTableau_superTabFin {sh : List ℕ} (hsh : IsPart sh) (hlen : sh.length ≤ m) :
-    IsTableau (superTabFin m sh hlen) :=
+lemma isTableau_superTabFin {μ : List ℕ} (hμ : IsPart μ) (hlen : μ.length ≤ m) :
+    IsTableau (superTabFin m μ hlen) :=
   isTableau_of_isTableau_mapTab Fin.val_strictMono
-    (by rw [mapTab_val_superTabFin]; exact isTableau_superTab hsh)
+    (by rw [mapTab_val_superTabFin]; exact isTableau_superTab hμ)
 
-lemma shape_superTabFin (sh : List ℕ) (hlen : sh.length ≤ m) :
-    shape (superTabFin m sh hlen) = sh := by
+lemma shape_superTabFin (μ : List ℕ) (hlen : μ.length ≤ m) :
+    shape (superTabFin m μ hlen) = μ := by
   rw [← shape_mapTab (Fin.val : Fin m → ℕ), mapTab_val_superTabFin, shape_superTab]
 
-lemma count_toWord_superTabFin (sh : List ℕ) (hlen : sh.length ≤ m) (j : Fin m) :
-    (toWord (superTabFin m sh hlen)).count j = sh.getD j 0 := by
-  have h := count_toWord_superTab sh (j : ℕ)
-  rw [← mapTab_val_superTabFin sh hlen, toWord_mapTab, count_map_val, dite_eq_left j.2] at h
+lemma count_toWord_superTabFin (μ : List ℕ) (hlen : μ.length ≤ m) (j : Fin m) :
+    (toWord (superTabFin m μ hlen)).count j = μ.getD j 0 := by
+  have h := count_toWord_superTab μ (j : ℕ)
+  rw [← mapTab_val_superTabFin μ hlen, toWord_mapTab, count_map_val, dite_eq_left j.2] at h
   simpa using h
 
-/-- The coefficient of the monomial of content `sh` in the Schur polynomial of shape `sh`
-is `1`: `s_sh = m_sh + (terms of content strictly dominated by sh)`. -/
-theorem coeff_schurPoly_self {sh : List ℕ} (hsh : IsPart sh) (hlen : sh.length ≤ m) :
-    coeff (shapeContent m sh) (schurPoly (Fin m) R sh) = 1 := by
+/-- The coefficient of the monomial of content `μ` in the Schur polynomial of shape `μ`
+is `1`: `s_μ = m_μ + (terms of content strictly dominated by μ)`. -/
+theorem coeff_schurPoly_self {μ : List ℕ} (hμ : IsPart μ) (hlen : μ.length ≤ m) :
+    coeff (shapeContent m μ) (schurPoly (Fin m) R μ) = 1 := by
   classical
   rw [coeff_schurPoly]
-  have hgetD : ∀ i : ℕ, (List.ofFn fun j : Fin m => shapeContent m sh j).getD i 0
-      = sh.getD i 0 := by
+  have hgetD : ∀ i : ℕ, (List.ofFn fun j : Fin m => shapeContent m μ j).getD i 0
+      = μ.getD i 0 := by
     intro i
     by_cases hi : i < m
     · rw [List.getD_eq_getElem _ _ (by simpa using hi)]
@@ -182,8 +182,8 @@ theorem coeff_schurPoly_self {sh : List ℕ} (hsh : IsPart sh) (hlen : sh.length
     · rw [List.getD_eq_default _ _ (by simpa using hi),
         List.getD_eq_default _ _ (by omega)]
   have hcontent : ∀ P : List (List (Fin m)),
-      ((toWord P : Multiset (Fin m)) = Finsupp.toMultiset (shapeContent m sh))
-        ↔ ∀ j : Fin m, (toWord P).count j = sh.getD j 0 := by
+      ((toWord P : Multiset (Fin m)) = Finsupp.toMultiset (shapeContent m μ))
+        ↔ ∀ j : Fin m, (toWord P).count j = μ.getD j 0 := by
     intro P
     rw [Multiset.ext]
     constructor
@@ -191,18 +191,18 @@ theorem coeff_schurPoly_self {sh : List ℕ} (hsh : IsPart sh) (hlen : sh.length
       simpa [Finsupp.count_toMultiset] using h j
     · intro h j
       simpa [Finsupp.count_toMultiset] using h j
-  have hcard : Nat.card {T : SSYT (Fin m) sh //
-      (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset (shapeContent m sh)} = 1 := by
+  have hcard : Nat.card {T : SSYT (Fin m) μ //
+      (toWord T.1 : Multiset (Fin m)) = Finsupp.toMultiset (shapeContent m μ)} = 1 := by
     rw [Nat.card_eq_one_iff_exists]
-    refine ⟨⟨⟨superTabFin m sh hlen, isTableau_superTabFin hsh hlen, shape_superTabFin sh hlen⟩,
-      (hcontent _).2 (count_toWord_superTabFin sh hlen)⟩, ?_⟩
+    refine ⟨⟨⟨superTabFin m μ hlen, isTableau_superTabFin hμ hlen, shape_superTabFin μ hlen⟩,
+      (hcontent _).2 (count_toWord_superTabFin μ hlen)⟩, ?_⟩
     rintro ⟨T, hT⟩
     refine Subtype.ext (Subtype.ext ?_)
     have ht : IsTableau (mapTab (Fin.val : Fin m → ℕ) T.1) := isTableau_mapTab_val T.2.1
-    have hshape : shape (mapTab (Fin.val : Fin m → ℕ) T.1) = sh := by
+    have hshape : shape (mapTab (Fin.val : Fin m → ℕ) T.1) = μ := by
       rw [shape_mapTab, T.2.2]
-    have hev : evalseq (toWord (mapTab (Fin.val : Fin m → ℕ) T.1)) = sh := by
-      refine ext_getD_of_getLastD_ne_zero (getLastD_evalseq_ne_zero _) hsh.getLastD_ne_zero ?_
+    have hev : evalseq (toWord (mapTab (Fin.val : Fin m → ℕ) T.1)) = μ := by
+      refine ext_getD_of_getLastD_ne_zero (getLastD_evalseq_ne_zero _) hμ.getLastD_ne_zero ?_
       intro i
       rw [getD_evalseq, toWord_mapTab, count_toWord_map_val hT i, hgetD i]
     have hsuper := eq_superTab_of_evalseq_eq ht (by rw [hev, hshape])

@@ -41,20 +41,20 @@ variable {T : Type*} [LinearOrder T]
 
 /-- The value of the conjugate partition in the column `c` is the number of rows longer
 than `c`. -/
-lemma getD_conjPart_eq_card {sh : List ℕ} (h : IsPart sh) (c : ℕ) :
-    (conjPart sh).getD c 0 = ((Finset.range sh.length).filter fun r => c < sh.getD r 0).card := by
-  have hiff : ∀ r, c < sh.getD r 0 ↔ r < (conjPart sh).getD c 0 := by
+lemma getD_conjPart_eq_card {μ : List ℕ} (h : IsPart μ) (c : ℕ) :
+    (conjPart μ).getD c 0 = ((Finset.range μ.length).filter fun r => c < μ.getD r 0).card := by
+  have hiff : ∀ r, c < μ.getD r 0 ↔ r < (conjPart μ).getD c 0 := by
     intro r
     have := getD_le_conjPart_iff h r c
     omega
-  have hle : (conjPart sh).getD c 0 ≤ sh.length := by
+  have hle : (conjPart μ).getD c 0 ≤ μ.length := by
     by_contra hcon
-    have : sh.length < (conjPart sh).getD c 0 := by omega
-    have hpos := (hiff sh.length).2 this
+    have : μ.length < (conjPart μ).getD c 0 := by omega
+    have hpos := (hiff μ.length).2 this
     rw [List.getD_eq_getElem?_getD, List.getElem?_eq_none (le_refl _)] at hpos
     simp at hpos
-  have hfilter : ((Finset.range sh.length).filter fun r => c < sh.getD r 0)
-      = Finset.range ((conjPart sh).getD c 0) := by
+  have hfilter : ((Finset.range μ.length).filter fun r => c < μ.getD r 0)
+      = Finset.range ((conjPart μ).getD c 0) := by
     ext r
     simp only [Finset.mem_filter, Finset.mem_range, hiff r]
     exact ⟨fun hr => hr.2, fun hr => ⟨lt_of_lt_of_le hr hle, hr⟩⟩
@@ -62,13 +62,13 @@ lemma getD_conjPart_eq_card {sh : List ℕ} (h : IsPart sh) (c : ℕ) :
 
 /-- The sum of the `k` first parts of the conjugate of a partition counts the boxes lying
 in the `k` first columns. -/
-lemma sum_range_getD_conjPart {sh : List ℕ} (h : IsPart sh) (k : ℕ) :
-    ∑ c ∈ Finset.range k, (conjPart sh).getD c 0
-      = ∑ r ∈ Finset.range sh.length, min (sh.getD r 0) k := by
+lemma sum_range_getD_conjPart {μ : List ℕ} (h : IsPart μ) (k : ℕ) :
+    ∑ c ∈ Finset.range k, (conjPart μ).getD c 0
+      = ∑ r ∈ Finset.range μ.length, min (μ.getD r 0) k := by
   simp only [getD_conjPart_eq_card h, Finset.card_filter]
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl fun r _ => ?_
-  rw [← Finset.card_filter, ← Finset.card_range (min (sh.getD r 0) k)]
+  rw [← Finset.card_filter, ← Finset.card_range (min (μ.getD r 0) k)]
   congr 1
   ext c
   simp only [Finset.mem_filter, Finset.mem_range, lt_min_iff]

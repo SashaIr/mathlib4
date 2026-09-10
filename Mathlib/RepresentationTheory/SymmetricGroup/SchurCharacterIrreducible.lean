@@ -133,10 +133,10 @@ lemma sum_jtList {η : List ℕ} (hlen : η.length ≤ m) {s : Perm (Fin m)}
 /-- **The Jacobi-Trudi formula, expanded**: the Schur polynomial of a partition with at
 most `m` parts is an integral combination of products of complete homogeneous symmetric
 polynomials. -/
-theorem schurPoly_eq_sum_jt {R : Type*} [CommRing R] {η : List ℕ} (hlam : IsPart η)
+theorem schurPoly_eq_sum_jt {R : Type*} [CommRing R] {η : List ℕ} (hη : IsPart η)
     (hlen : η.length ≤ m) :
     schurPoly (Fin m) R η = ∑ s : Perm (Fin m), jtCoeff m η s • hProd m R (jtList m η s) := by
-  rw [schurPoly_eq_det_jtMatrix hlam hlen, Matrix.det_apply']
+  rw [schurPoly_eq_det_jtMatrix hη hlen, Matrix.det_apply']
   refine Finset.sum_congr rfl fun s _ => ?_
   by_cases hs : JtGood m η s
   · rw [prod_jtMatrix_of_jtGood η hs, jtCoeff, ite_eq_left hs, zsmul_eq_mul]
@@ -459,9 +459,9 @@ theorem isSimpleChar_perm_two_iff {χ : Perm (Fin 2) → K} :
   constructor
   · intro h
     obtain ⟨η, rfl⟩ := exists_eq_schurCharCast h
-    rcases eq_of_isPart_sum_two η.2.1 η.2.2.1 with hlam | hlam
-    · exact Or.inl (by rw [show η = rowIdxTwo from Subtype.ext hlam, hrow])
-    · exact Or.inr (by rw [show η = colIdxTwo from Subtype.ext hlam, hcol])
+    rcases eq_of_isPart_sum_two η.2.1 η.2.2.1 with hη | hη
+    · exact Or.inl (by rw [show η = rowIdxTwo from Subtype.ext hη, hrow])
+    · exact Or.inr (by rw [show η = colIdxTwo from Subtype.ext hη, hcol])
   · rintro (rfl | rfl)
     · rw [← hrow]; exact isSimpleChar_schurCharCast rowIdxTwo
     · rw [← hcol]; exact isSimpleChar_schurCharCast colIdxTwo

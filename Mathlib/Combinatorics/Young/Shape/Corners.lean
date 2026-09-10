@@ -15,10 +15,10 @@ A Lean 4 port of the corner part of `theories/Combi/partition.v` from
 
 ## Main definitions
 
-* `Young.incrNth sh i` : add a box at the end of row `i` (mathcomp `incr_nth`).
-* `Young.decrNth sh i` : remove the last box of row `i` (Coq `decr_nth`).
-* `Young.IsRemCorner sh i` : row `i` ends with a removable corner.
-* `Young.IsAddCorner sh i` : a box can be added at the end of row `i`.
+* `Young.incrNth μ i` : add a box at the end of row `i` (mathcomp `incr_nth`).
+* `Young.decrNth μ i` : remove the last box of row `i` (Coq `decr_nth`).
+* `Young.IsRemCorner μ i` : row `i` ends with a removable corner.
+* `Young.IsAddCorner μ i` : a box can be added at the end of row `i`.
 
 ## Main results
 
@@ -52,16 +52,16 @@ def decrNth : List ℕ → ℕ → List ℕ
   | (n + 2) :: v, 0 => (n + 1) :: v
   | n :: v, i + 1 => n :: decrNth v i
 
-/-- Row `i` of `sh` ends with a removable corner. -/
-def IsRemCorner (sh : List ℕ) (i : ℕ) : Prop := sh.getD (i + 1) 0 < sh.getD i 0
+/-- Row `i` of `μ` ends with a removable corner. -/
+def IsRemCorner (μ : List ℕ) (i : ℕ) : Prop := μ.getD (i + 1) 0 < μ.getD i 0
 
-/-- A box may be added at the end of row `i` of `sh`. -/
-def IsAddCorner (sh : List ℕ) (i : ℕ) : Prop := i = 0 ∨ sh.getD i 0 < sh.getD (i - 1) 0
+/-- A box may be added at the end of row `i` of `μ`. -/
+def IsAddCorner (μ : List ℕ) (i : ℕ) : Prop := i = 0 ∨ μ.getD i 0 < μ.getD (i - 1) 0
 
-instance (sh : List ℕ) (i : ℕ) : Decidable (IsRemCorner sh i) :=
+instance (μ : List ℕ) (i : ℕ) : Decidable (IsRemCorner μ i) :=
   inferInstanceAs (Decidable (_ < _))
 
-instance (sh : List ℕ) (i : ℕ) : Decidable (IsAddCorner sh i) :=
+instance (μ : List ℕ) (i : ℕ) : Decidable (IsAddCorner μ i) :=
   inferInstanceAs (Decidable (_ ∨ _))
 
 @[simp] lemma incrNth_nil_zero : incrNth [] 0 = [1] := rfl
@@ -124,30 +124,30 @@ lemma length_incrNth : ∀ (s : List ℕ) (i : ℕ), (incrNth s i).length = max 
       omega
 
 /-- Coq `included_incr_nth`. -/
-lemma included_incrNth (sh : List ℕ) (i : ℕ) : Included sh (incrNth sh i) := by
+lemma included_incrNth (μ : List ℕ) (i : ℕ) : Included μ (incrNth μ i) := by
   refine included_iff.2 ⟨by rw [length_incrNth]; exact Nat.le_max_left _ _, fun j => ?_⟩
   rw [getD_incrNth]
   omega
 
-lemma le_length_of_isAddCorner {sh : List ℕ} {i : ℕ} (hc : IsAddCorner sh i) :
-    i ≤ sh.length := by
+lemma le_length_of_isAddCorner {μ : List ℕ} {i : ℕ} (hc : IsAddCorner μ i) :
+    i ≤ μ.length := by
   rcases hc with rfl | hc
   · exact Nat.zero_le _
   · by_contra hlt
     push Not at hlt
-    have : sh.getD (i - 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
+    have : μ.getD (i - 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
     omega
 
 /-- Coq `is_part_incr_nth`. -/
-lemma isPart_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsAddCorner sh i) :
-    IsPart (incrNth sh i) := by
-  have hlen : i ≤ sh.length := le_length_of_isAddCorner hc
+lemma isPart_incrNth {μ : List ℕ} {i : ℕ} (h : IsPart μ) (hc : IsAddCorner μ i) :
+    IsPart (incrNth μ i) := by
+  have hlen : i ≤ μ.length := le_length_of_isAddCorner hc
   rw [isPart_iff_getD_pos]
   refine ⟨fun j => ?_, fun j hj => ?_⟩
   · rw [getD_incrNth, getD_incrNth]
     have hmono := h.getD_succ_le j
     by_cases h1 : i = j + 1
-    · have hcorner : sh.getD (j + 1) 0 < sh.getD j 0 := by
+    · have hcorner : μ.getD (j + 1) 0 < μ.getD j 0 := by
         rcases hc with h0 | hc
         · omega
         · rw [h1] at hc; simpa using hc
@@ -166,19 +166,19 @@ lemma isPart_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsAddCorner
       omega
 
 /-- Coq `rem_corner_incr_nth`. -/
-lemma isRemCorner_incrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) :
-    IsRemCorner (incrNth sh i) i := by
+lemma isRemCorner_incrNth {μ : List ℕ} {i : ℕ} (h : IsPart μ) :
+    IsRemCorner (incrNth μ i) i := by
   have hmono := h.getD_succ_le i
-  have e1 : (incrNth sh i).getD (i + 1) 0 = sh.getD (i + 1) 0 := by
+  have e1 : (incrNth μ i).getD (i + 1) 0 = μ.getD (i + 1) 0 := by
     rw [getD_incrNth, ite_eq_right (by omega : ¬ (i = i + 1)), Nat.add_zero]
-  have e2 : (incrNth sh i).getD i 0 = sh.getD i 0 + 1 := by
+  have e2 : (incrNth μ i).getD i 0 = μ.getD i 0 + 1 := by
     rw [getD_incrNth, ite_eq_left rfl]
   simp only [IsRemCorner, e1, e2]
   omega
 
 /-- Coq `incr_nthK`. -/
-lemma decrNth_incrNth : ∀ {sh : List ℕ} {i : ℕ}, IsPart sh → IsPart (incrNth sh i) →
-    decrNth (incrNth sh i) i = sh
+lemma decrNth_incrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsPart (incrNth μ i) →
+    decrNth (incrNth μ i) i = μ
   | [], 0, _, _ => by simp
   | [], (i + 1), _, hi => by
       exfalso
@@ -196,7 +196,7 @@ lemma decrNth_incrNth : ∀ {sh : List ℕ} {i : ℕ}, IsPart sh → IsPart (inc
 /-! ### Removing a box -/
 
 /-- Coq `included_decr_nth`. -/
-lemma included_decrNth : ∀ (sh : List ℕ) (i : ℕ), Included (decrNth sh i) sh
+lemma included_decrNth : ∀ (μ : List ℕ) (i : ℕ), Included (decrNth μ i) μ
   | [], i => by simp
   | (0 :: s), 0 => by simp
   | (1 :: s), 0 => by simp
@@ -207,11 +207,11 @@ lemma included_decrNth : ∀ (sh : List ℕ) (i : ℕ), Included (decrNth sh i) 
       simp only [decrNth_cons_succ, included_cons_cons]
       exact ⟨le_refl _, included_decrNth s i⟩
 
-lemma getD_decrNth_le (sh : List ℕ) (i j : ℕ) : (decrNth sh i).getD j 0 ≤ sh.getD j 0 :=
-  (included_decrNth sh i).getD_le j
+lemma getD_decrNth_le (μ : List ℕ) (i j : ℕ) : (decrNth μ i).getD j 0 ≤ μ.getD j 0 :=
+  (included_decrNth μ i).getD_le j
 
 /-- Coq `nth_decr_nth`. -/
-lemma getD_decrNth_self : ∀ (sh : List ℕ) (i : ℕ), (decrNth sh i).getD i 0 = sh.getD i 0 - 1
+lemma getD_decrNth_self : ∀ (μ : List ℕ) (i : ℕ), (decrNth μ i).getD i 0 = μ.getD i 0 - 1
   | [], i => by simp
   | (0 :: s), 0 => by simp
   | (1 :: s), 0 => by simp
@@ -221,8 +221,8 @@ lemma getD_decrNth_self : ∀ (sh : List ℕ) (i : ℕ), (decrNth sh i).getD i 0
       exact getD_decrNth_self s i
 
 /-- Coq `is_part_decr_nth`. -/
-lemma isPart_decrNth : ∀ {sh : List ℕ} {i : ℕ}, IsPart sh → IsRemCorner sh i →
-    IsPart (decrNth sh i)
+lemma isPart_decrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsRemCorner μ i →
+    IsPart (decrNth μ i)
   | [], i, _, hc => by simp
   | (0 :: s), 0, h, hc => by
       exfalso
@@ -246,7 +246,7 @@ lemma isPart_decrNth : ∀ {sh : List ℕ} {i : ℕ}, IsPart sh → IsRemCorner 
       simp only [decrNth_cons_succ, isPart_cons]
       refine ⟨?_, hrec⟩
       have ha : 1 ≤ a := by
-        have := (IsPart.headD_ne_zero (sh := a :: s) h)
+        have := (IsPart.headD_ne_zero (μ := a :: s) h)
         simp only [List.headD_cons] at this
         omega
       cases hd : decrNth s i with
@@ -265,8 +265,8 @@ lemma isPart_decrNth : ∀ {sh : List ℕ} {i : ℕ}, IsPart sh → IsRemCorner 
         simpa using le_trans hb hs
 
 /-- Coq `decr_nthK`. -/
-lemma incrNth_decrNth : ∀ {sh : List ℕ} {i : ℕ}, IsPart sh → IsRemCorner sh i →
-    incrNth (decrNth sh i) i = sh
+lemma incrNth_decrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsRemCorner μ i →
+    incrNth (decrNth μ i) i = μ
   | [], i, _, hc => by simp [IsRemCorner] at hc
   | (0 :: s), 0, h, hc => by simp [IsRemCorner] at hc
   | (1 :: s), 0, h, hc => by
@@ -287,28 +287,28 @@ lemma incrNth_decrNth : ∀ {sh : List ℕ} {i : ℕ}, IsPart sh → IsRemCorner
       rw [incrNth_decrNth h.2 hcs]
 
 /-- Coq `sumn_decr_nth`. -/
-lemma sum_decrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsRemCorner sh i) :
-    (decrNth sh i).sum = sh.sum - 1 := by
-  have := sum_incrNth (decrNth sh i) i
+lemma sum_decrNth {μ : List ℕ} {i : ℕ} (h : IsPart μ) (hc : IsRemCorner μ i) :
+    (decrNth μ i).sum = μ.sum - 1 := by
+  have := sum_incrNth (decrNth μ i) i
   rw [incrNth_decrNth h hc] at this
   omega
 
 /-- Coq `nth_decr_nth_neq`. -/
-lemma getD_decrNth_of_ne {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsRemCorner sh i)
-    {j : ℕ} (hij : i ≠ j) : (decrNth sh i).getD j 0 = sh.getD j 0 := by
+lemma getD_decrNth_of_ne {μ : List ℕ} {i : ℕ} (h : IsPart μ) (hc : IsRemCorner μ i)
+    {j : ℕ} (hij : i ≠ j) : (decrNth μ i).getD j 0 = μ.getD j 0 := by
   conv_rhs => rw [← incrNth_decrNth h hc]
   rw [getD_incrNth, ite_eq_right hij, Nat.add_zero]
 
 /-- Coq `add_corner_decr_nth`. -/
-lemma isAddCorner_decrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsRemCorner sh i) :
-    IsAddCorner (decrNth sh i) i := by
+lemma isAddCorner_decrNth {μ : List ℕ} {i : ℕ} (h : IsPart μ) (hc : IsRemCorner μ i) :
+    IsAddCorner (decrNth μ i) i := by
   rcases Nat.eq_zero_or_pos i with rfl | hi
   · exact Or.inl rfl
   refine Or.inr ?_
   have hne : i ≠ i - 1 := by omega
   rw [getD_decrNth_self, getD_decrNth_of_ne h hc hne]
-  have hmono : sh.getD i 0 ≤ sh.getD (i - 1) 0 := h.getD_antitone (by omega)
-  have hpos : 0 < sh.getD i 0 := by
+  have hmono : μ.getD i 0 ≤ μ.getD (i - 1) 0 := h.getD_antitone (by omega)
+  have hpos : 0 < μ.getD i 0 := by
     simp only [IsRemCorner] at hc
     omega
   omega

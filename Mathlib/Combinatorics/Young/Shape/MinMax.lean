@@ -14,9 +14,9 @@ Two partitions `s` and `t`, seen as weakly decreasing sequences of natural numbe
 are eventually zero, have a componentwise minimum `partMin s t` and a componentwise
 maximum `partMax s t`, both of which are again partitions.
 
-These are used to describe the shapes lying between two partitions: a shape `nu` with
-`HorizStrip s nu` and `HorizStrip t nu` is exactly a shape whose parts lie in the box
-`max (s_{i+1}) (t_{i+1}) ≤ nu_i ≤ min (s_i) (t_i)`.
+These are used to describe the shapes lying between two partitions: a shape `ν` with
+`HorizStrip s ν` and `HorizStrip t ν` is exactly a shape whose parts lie in the box
+`max (s_{i+1}) (t_{i+1}) ≤ ν_i ≤ min (s_i) (t_i)`.
 
 ## Main definitions
 

@@ -16,25 +16,25 @@ Following `theories/MPoly/sympoly.v` of
 formula (`MvPolynomial.schurPoly_eq_det_jtMatrix`) and from the involution `omega`
 (`MvPolynomial.omegaSym`) the dual Jacobi-Trudi formula
 
-`s_lam = det (e_{lam'_i - i + j})`,
+`s_η = det (e_{η'_i - i + j})`,
 
-where `lam'` is the conjugate partition and `e` denotes the elementary symmetric
+where `η'` is the conjugate partition and `e` denotes the elementary symmetric
 polynomials.
 
 The proof expands the Jacobi-Trudi determinant by the Leibniz formula: each term is, up to
-a sign, a product `h_mu` of complete homogeneous symmetric polynomials indexed by a
-partition `mu` of `n = |lam|`, and `omega h_mu = e_mu`.  Applying `omega`, which sends
-`s_lam` to `s_{lam'}`, therefore turns the Jacobi-Trudi determinant of `lam` into the
+a sign, a product `h_μ` of complete homogeneous symmetric polynomials indexed by a
+partition `μ` of `n = |η|`, and `omega h_μ = e_μ`.  Applying `omega`, which sends
+`s_η` to `s_{η'}`, therefore turns the Jacobi-Trudi determinant of `η` into the
 determinant of the matrix of the elementary symmetric polynomials.  As `omega` is only
 available in degree `n` for `n ≤ m` variables, the statement carries the hypothesis
-`|lam| ≤ m`.
+`|η| ≤ m`.
 
 ## Main definitions and results
 
 * `MvPolynomial.esymmInt m R n` : the elementary symmetric polynomial indexed by an integer,
   zero for a negative index.
 * `MvPolynomial.partOfList c` : the partition obtained by sorting the nonzero entries of a list.
-* `MvPolynomial.dualJtMatrix m R lam` : the matrix `(e_{lam'_i - i + j})`.
+* `MvPolynomial.dualJtMatrix m R η` : the matrix `(e_{η'_i - i + j})`.
 * `MvPolynomial.schurPoly_eq_det_dualJtMatrix` : **the dual Jacobi-Trudi formula**.
 -/
 
@@ -137,168 +137,168 @@ lemma eProd_partOfList (m : ℕ) (R : Type*) [CommRing R] (c : List ℕ) :
 
 /-! ### The terms of the Leibniz expansion -/
 
-/-- The exponent `lam_{sigma i} + i - sigma i` appearing in the `sigma`-term of the
+/-- The exponent `η_{σ i} + i - σ i` appearing in the `σ`-term of the
 Leibniz expansion of the Jacobi-Trudi determinant. -/
-def jtArg (lam : List ℕ) (sigma : Equiv.Perm (Fin m)) (i : Fin m) : ℤ :=
-  (lam.getD (sigma i) 0 : ℤ) + (i : ℕ) - ((sigma i : Fin m) : ℕ)
+def jtArg (η : List ℕ) (σ : Equiv.Perm (Fin m)) (i : Fin m) : ℤ :=
+  (η.getD (σ i) 0 : ℤ) + (i : ℕ) - ((σ i : Fin m) : ℕ)
 
-/-- The list of the exponents of the `sigma`-term, when they are all nonnegative. -/
-def jtArgList (lam : List ℕ) (sigma : Equiv.Perm (Fin m)) : List ℕ :=
-  List.ofFn fun i => (jtArg lam sigma i).toNat
+/-- The list of the exponents of the `σ`-term, when they are all nonnegative. -/
+def jtArgList (η : List ℕ) (σ : Equiv.Perm (Fin m)) : List ℕ :=
+  List.ofFn fun i => (jtArg η σ i).toNat
 
-lemma sum_jtArg {lam : List ℕ} (hlen : lam.length ≤ m) (sigma : Equiv.Perm (Fin m)) :
-    ∑ i, jtArg lam sigma i = (lam.sum : ℤ) := by
-  have hsplit : ∑ i, jtArg lam sigma i
-      = ((∑ i : Fin m, (lam.getD (sigma i) 0 : ℤ)) + ∑ i : Fin m, ((i : ℕ) : ℤ))
-        - ∑ i : Fin m, (((sigma i : Fin m) : ℕ) : ℤ) := by
+lemma sum_jtArg {η : List ℕ} (hlen : η.length ≤ m) (σ : Equiv.Perm (Fin m)) :
+    ∑ i, jtArg η σ i = (η.sum : ℤ) := by
+  have hsplit : ∑ i, jtArg η σ i
+      = ((∑ i : Fin m, (η.getD (σ i) 0 : ℤ)) + ∑ i : Fin m, ((i : ℕ) : ℤ))
+        - ∑ i : Fin m, (((σ i : Fin m) : ℕ) : ℤ) := by
     rw [← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
     rfl
-  have hperm : ∑ i : Fin m, (((sigma i : Fin m) : ℕ) : ℤ) = ∑ i : Fin m, ((i : ℕ) : ℤ) :=
-    Equiv.sum_comp sigma fun j : Fin m => ((j : ℕ) : ℤ)
-  have hlam : ∑ i : Fin m, (lam.getD (sigma i) 0 : ℤ) = (lam.sum : ℤ) := by
-    rw [Equiv.sum_comp sigma fun j : Fin m => (lam.getD (j : ℕ) 0 : ℤ), ← Nat.cast_sum]
+  have hperm : ∑ i : Fin m, (((σ i : Fin m) : ℕ) : ℤ) = ∑ i : Fin m, ((i : ℕ) : ℤ) :=
+    Equiv.sum_comp σ fun j : Fin m => ((j : ℕ) : ℤ)
+  have hη : ∑ i : Fin m, (η.getD (σ i) 0 : ℤ) = (η.sum : ℤ) := by
+    rw [Equiv.sum_comp σ fun j : Fin m => (η.getD (j : ℕ) 0 : ℤ), ← Nat.cast_sum]
     congr 1
-    rw [Fin.sum_univ_eq_sum_range (fun i => lam.getD i 0) m,
-      ← sum_eq_sum_range_getD lam hlen]
-  rw [hsplit, hperm, hlam]
+    rw [Fin.sum_univ_eq_sum_range (fun i => η.getD i 0) m,
+      ← sum_eq_sum_range_getD η hlen]
+  rw [hsplit, hperm, hη]
   ring
 
-lemma sum_jtArgList {lam : List ℕ} (hlen : lam.length ≤ m) {sigma : Equiv.Perm (Fin m)}
-    (hnn : ∀ i, 0 ≤ jtArg lam sigma i) : (jtArgList lam sigma).sum = lam.sum := by
-  have hcast : (((jtArgList lam sigma).sum : ℕ) : ℤ) = (lam.sum : ℤ) := by
-    rw [jtArgList, List.sum_ofFn, Nat.cast_sum, ← sum_jtArg hlen sigma]
+lemma sum_jtArgList {η : List ℕ} (hlen : η.length ≤ m) {σ : Equiv.Perm (Fin m)}
+    (hnn : ∀ i, 0 ≤ jtArg η σ i) : (jtArgList η σ).sum = η.sum := by
+  have hcast : (((jtArgList η σ).sum : ℕ) : ℤ) = (η.sum : ℤ) := by
+    rw [jtArgList, List.sum_ofFn, Nat.cast_sum, ← sum_jtArg hlen σ]
     exact Finset.sum_congr rfl fun i _ => Int.toNat_of_nonneg (hnn i)
   exact_mod_cast hcast
 
 @[simp]
-lemma length_jtArgList (lam : List ℕ) (sigma : Equiv.Perm (Fin m)) :
-    (jtArgList lam sigma).length = m := by
+lemma length_jtArgList (η : List ℕ) (σ : Equiv.Perm (Fin m)) :
+    (jtArgList η σ).length = m := by
   simp [jtArgList]
 
-lemma prod_hsymmInt_eq_hProd {lam : List ℕ} {sigma : Equiv.Perm (Fin m)}
-    (hnn : ∀ i, 0 ≤ jtArg lam sigma i) :
-    ∏ i, hsymmInt m R (jtArg lam sigma i) = hProd m R (jtArgList lam sigma) := by
+lemma prod_hsymmInt_eq_hProd {η : List ℕ} {σ : Equiv.Perm (Fin m)}
+    (hnn : ∀ i, 0 ≤ jtArg η σ i) :
+    ∏ i, hsymmInt m R (jtArg η σ i) = hProd m R (jtArgList η σ) := by
   rw [hProd, jtArgList, List.map_ofFn, List.prod_ofFn]
   refine Finset.prod_congr rfl fun i _ => ?_
   simp [hsymmInt, hnn i]
 
-lemma prod_esymmInt_eq_eProd {lam : List ℕ} {sigma : Equiv.Perm (Fin m)}
-    (hnn : ∀ i, 0 ≤ jtArg lam sigma i) :
-    ∏ i, esymmInt m R (jtArg lam sigma i) = eProd m R (jtArgList lam sigma) := by
+lemma prod_esymmInt_eq_eProd {η : List ℕ} {σ : Equiv.Perm (Fin m)}
+    (hnn : ∀ i, 0 ≤ jtArg η σ i) :
+    ∏ i, esymmInt m R (jtArg η σ i) = eProd m R (jtArgList η σ) := by
   rw [eProd, jtArgList, List.map_ofFn, List.prod_ofFn]
   refine Finset.prod_congr rfl fun i _ => ?_
   simp [esymmInt, hnn i]
 
-lemma prod_hsymmInt_eq_zero {lam : List ℕ} {sigma : Equiv.Perm (Fin m)}
-    (hnn : ¬ ∀ i, 0 ≤ jtArg lam sigma i) :
-    ∏ i, hsymmInt m R (jtArg lam sigma i) = 0 := by
+lemma prod_hsymmInt_eq_zero {η : List ℕ} {σ : Equiv.Perm (Fin m)}
+    (hnn : ¬ ∀ i, 0 ≤ jtArg η σ i) :
+    ∏ i, hsymmInt m R (jtArg η σ i) = 0 := by
   obtain ⟨i, hi⟩ := not_forall.1 hnn
   exact Finset.prod_eq_zero (Finset.mem_univ i) (hsymmInt_of_neg (not_le.1 hi))
 
-lemma prod_esymmInt_eq_zero {lam : List ℕ} {sigma : Equiv.Perm (Fin m)}
-    (hnn : ¬ ∀ i, 0 ≤ jtArg lam sigma i) :
-    ∏ i, esymmInt m R (jtArg lam sigma i) = 0 := by
+lemma prod_esymmInt_eq_zero {η : List ℕ} {σ : Equiv.Perm (Fin m)}
+    (hnn : ¬ ∀ i, 0 ≤ jtArg η σ i) :
+    ∏ i, esymmInt m R (jtArg η σ i) = 0 := by
   obtain ⟨i, hi⟩ := not_forall.1 hnn
   exact Finset.prod_eq_zero (Finset.mem_univ i) (esymmInt_of_neg (not_le.1 hi))
 
-/-- The `sigma`-term of the Leibniz expansion is a symmetric homogeneous polynomial of
-degree `|lam|`. -/
-lemma prod_hsymmInt_mem {lam : List ℕ} (hlen : lam.length ≤ m) (sigma : Equiv.Perm (Fin m)) :
-    (∏ i, hsymmInt m R (jtArg lam sigma i)) ∈ symHomogeneousSubmodule m lam.sum R := by
-  by_cases hnn : ∀ i, 0 ≤ jtArg lam sigma i
+/-- The `σ`-term of the Leibniz expansion is a symmetric homogeneous polynomial of
+degree `|η|`. -/
+lemma prod_hsymmInt_mem {η : List ℕ} (hlen : η.length ≤ m) (σ : Equiv.Perm (Fin m)) :
+    (∏ i, hsymmInt m R (jtArg η σ i)) ∈ symHomogeneousSubmodule m η.sum R := by
+  by_cases hnn : ∀ i, 0 ≤ jtArg η σ i
   · rw [prod_hsymmInt_eq_hProd hnn]
-    have h := hProd_mem_symHomogeneousSubmodule' (m := m) (R := R) (jtArgList lam sigma)
+    have h := hProd_mem_symHomogeneousSubmodule' (m := m) (R := R) (jtArgList η σ)
     rwa [sum_jtArgList hlen hnn] at h
   · rw [prod_hsymmInt_eq_zero hnn]
     exact Submodule.zero_mem _
 
-/-- The `sigma`-term of the Leibniz expansion of the Jacobi-Trudi determinant, as an
-element of the module of symmetric homogeneous polynomials of degree `|lam|`. -/
-noncomputable def jtTermSub (m : ℕ) (R : Type*) [CommRing R] {lam : List ℕ}
-    (hlen : lam.length ≤ m) (sigma : Equiv.Perm (Fin m)) :
-    symHomogeneousSubmodule m lam.sum R :=
-  ⟨∏ i, hsymmInt m R (jtArg lam sigma i), prod_hsymmInt_mem hlen sigma⟩
+/-- The `σ`-term of the Leibniz expansion of the Jacobi-Trudi determinant, as an
+element of the module of symmetric homogeneous polynomials of degree `|η|`. -/
+noncomputable def jtTermSub (m : ℕ) (R : Type*) [CommRing R] {η : List ℕ}
+    (hlen : η.length ≤ m) (σ : Equiv.Perm (Fin m)) :
+    symHomogeneousSubmodule m η.sum R :=
+  ⟨∏ i, hsymmInt m R (jtArg η σ i), prod_hsymmInt_mem hlen σ⟩
 
-/-- The involution `omega` sends the `sigma`-term of the Leibniz expansion of the
+/-- The involution `omega` sends the `σ`-term of the Leibniz expansion of the
 Jacobi-Trudi determinant to the corresponding term with the elementary symmetric
 polynomials. -/
-lemma omegaSym_jtTermSub {lam : List ℕ} (hnm : lam.sum ≤ m) (hlen : lam.length ≤ m)
-    (sigma : Equiv.Perm (Fin m)) :
-    (omegaSym m lam.sum R hnm (jtTermSub m R hlen sigma) : MvPolynomial (Fin m) R)
-      = ∏ i, esymmInt m R (jtArg lam sigma i) := by
-  by_cases hnn : ∀ i, 0 ≤ jtArg lam sigma i
-  · have hlenmu : (partOfList (jtArgList lam sigma)).length ≤ m := by
+lemma omegaSym_jtTermSub {η : List ℕ} (hnm : η.sum ≤ m) (hlen : η.length ≤ m)
+    (σ : Equiv.Perm (Fin m)) :
+    (omegaSym m η.sum R hnm (jtTermSub m R hlen σ) : MvPolynomial (Fin m) R)
+      = ∏ i, esymmInt m R (jtArg η σ i) := by
+  by_cases hnn : ∀ i, 0 ≤ jtArg η σ i
+  · have hlenmu : (partOfList (jtArgList η σ)).length ≤ m := by
       refine le_trans (length_partOfList_le _) ?_
       simp
-    let mu : PartIdx lam.sum m :=
-      ⟨partOfList (jtArgList lam sigma), isPart_partOfList _, by
+    let μ : PartIdx η.sum m :=
+      ⟨partOfList (jtArgList η σ), isPart_partOfList _, by
         rw [sum_partOfList, sum_jtArgList hlen hnn], hlenmu⟩
-    have hA : jtTermSub m R hlen sigma = hSub m lam.sum R mu := by
+    have hA : jtTermSub m R hlen σ = hSub m η.sum R μ := by
       apply Subtype.ext
-      change (∏ i, hsymmInt m R (jtArg lam sigma i)) = hProd m R (partOfList (jtArgList lam sigma))
+      change (∏ i, hsymmInt m R (jtArg η σ i)) = hProd m R (partOfList (jtArgList η σ))
       rw [prod_hsymmInt_eq_hProd hnn, hProd_partOfList]
-    rw [hA, omegaSym_hSub hnm mu, coe_eSubOfPart, prod_esymmInt_eq_eProd hnn]
+    rw [hA, omegaSym_hSub hnm μ, coe_eSubOfPart, prod_esymmInt_eq_eProd hnn]
     exact eProd_partOfList m R _
-  · have hzero : jtTermSub m R hlen sigma = 0 := Subtype.ext (prod_hsymmInt_eq_zero hnn)
+  · have hzero : jtTermSub m R hlen σ = 0 := Subtype.ext (prod_hsymmInt_eq_zero hnn)
     rw [hzero, map_zero, prod_esymmInt_eq_zero hnn]
     rfl
 
 /-! ### The dual Jacobi-Trudi formula -/
 
-/-- The matrix `(e_{lam'_i - i + j})` of the dual Jacobi-Trudi formula. -/
-noncomputable def dualJtMatrix (m : ℕ) (R : Type*) [CommRing R] (lam : List ℕ) :
+/-- The matrix `(e_{η'_i - i + j})` of the dual Jacobi-Trudi formula. -/
+noncomputable def dualJtMatrix (m : ℕ) (R : Type*) [CommRing R] (η : List ℕ) :
     Matrix (Fin m) (Fin m) (MvPolynomial (Fin m) R) :=
-  Matrix.of fun i k => esymmInt m R (((conjPart lam).getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
+  Matrix.of fun i k => esymmInt m R (((conjPart η).getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
 
 /-- The determinant of the matrix of the elementary symmetric polynomials attached to
-`lam` is the Schur polynomial of the conjugate partition. -/
-theorem schurPoly_conjPart_eq_det {lam : List ℕ} (hlam : IsPart lam) (hnm : lam.sum ≤ m) :
-    schurPoly (Fin m) R (conjPart lam)
+`η` is the Schur polynomial of the conjugate partition. -/
+theorem schurPoly_conjPart_eq_det {η : List ℕ} (hη : IsPart η) (hnm : η.sum ≤ m) :
+    schurPoly (Fin m) R (conjPart η)
       = (Matrix.of fun i k : Fin m =>
-          esymmInt m R ((lam.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))).det := by
-  have hlen : lam.length ≤ m := le_trans hlam.length_le_sum hnm
-  let lamIdx : PartIdx lam.sum m := ⟨lam, hlam, rfl, hlen⟩
-  have hX : schurSub m lam.sum R lamIdx
-      = ∑ sigma : Equiv.Perm (Fin m),
-          (Equiv.Perm.sign sigma : ℤ) • jtTermSub m R hlen sigma := by
+          esymmInt m R ((η.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))).det := by
+  have hlen : η.length ≤ m := le_trans hη.length_le_sum hnm
+  let ηIdx : PartIdx η.sum m := ⟨η, hη, rfl, hlen⟩
+  have hX : schurSub m η.sum R ηIdx
+      = ∑ σ : Equiv.Perm (Fin m),
+          (Equiv.Perm.sign σ : ℤ) • jtTermSub m R hlen σ := by
     apply Subtype.ext
-    have hcoe : ((∑ sigma : Equiv.Perm (Fin m),
-          (Equiv.Perm.sign sigma : ℤ) • jtTermSub m R hlen sigma :
-            symHomogeneousSubmodule m lam.sum R) : MvPolynomial (Fin m) R)
-        = ∑ sigma : Equiv.Perm (Fin m),
-            (Equiv.Perm.sign sigma : ℤ) • ∏ i, hsymmInt m R (jtArg lam sigma i) := by
+    have hcoe : ((∑ σ : Equiv.Perm (Fin m),
+          (Equiv.Perm.sign σ : ℤ) • jtTermSub m R hlen σ :
+            symHomogeneousSubmodule m η.sum R) : MvPolynomial (Fin m) R)
+        = ∑ σ : Equiv.Perm (Fin m),
+            (Equiv.Perm.sign σ : ℤ) • ∏ i, hsymmInt m R (jtArg η σ i) := by
       simp [jtTermSub]
     rw [hcoe, coe_schurSub]
-    change schurPoly (Fin m) R lam = _
-    rw [schurPoly_eq_det_jtMatrix hlam hlen, Matrix.det_apply]
-    refine Finset.sum_congr rfl fun sigma _ => ?_
+    change schurPoly (Fin m) R η = _
+    rw [schurPoly_eq_det_jtMatrix hη hlen, Matrix.det_apply]
+    refine Finset.sum_congr rfl fun σ _ => ?_
     rw [Units.smul_def]
     rfl
-  have hL : (omegaSym m lam.sum R hnm (schurSub m lam.sum R lamIdx) : MvPolynomial (Fin m) R)
-      = schurPoly (Fin m) R (conjPart lam) := by
+  have hL : (omegaSym m η.sum R hnm (schurSub m η.sum R ηIdx) : MvPolynomial (Fin m) R)
+      = schurPoly (Fin m) R (conjPart η) := by
     rw [omegaSym_schurSub, coe_schurSub, conjIdx_val]
-  have hR : (omegaSym m lam.sum R hnm (∑ sigma : Equiv.Perm (Fin m),
-        (Equiv.Perm.sign sigma : ℤ) • jtTermSub m R hlen sigma) : MvPolynomial (Fin m) R)
-      = ∑ sigma : Equiv.Perm (Fin m),
-          (Equiv.Perm.sign sigma : ℤ) • ∏ i, esymmInt m R (jtArg lam sigma i) := by
+  have hR : (omegaSym m η.sum R hnm (∑ σ : Equiv.Perm (Fin m),
+        (Equiv.Perm.sign σ : ℤ) • jtTermSub m R hlen σ) : MvPolynomial (Fin m) R)
+      = ∑ σ : Equiv.Perm (Fin m),
+          (Equiv.Perm.sign σ : ℤ) • ∏ i, esymmInt m R (jtArg η σ i) := by
     rw [map_sum]
     rw [AddSubmonoidClass.coe_finsetSum]
-    refine Finset.sum_congr rfl fun sigma _ => ?_
-    rw [map_zsmul, AddSubgroupClass.coe_zsmul, omegaSym_jtTermSub hnm hlen sigma]
+    refine Finset.sum_congr rfl fun σ _ => ?_
+    rw [map_zsmul, AddSubgroupClass.coe_zsmul, omegaSym_jtTermSub hnm hlen σ]
   rw [← hL, hX, hR, Matrix.det_apply]
-  refine Finset.sum_congr rfl fun sigma _ => ?_
+  refine Finset.sum_congr rfl fun σ _ => ?_
   rw [Units.smul_def]
   rfl
 
 /-- **The dual Jacobi-Trudi formula** (Nägelsbach-Kostka): the Schur polynomial of a
-partition `lam` of `n ≤ m` is the determinant of the matrix `(e_{lam'_i - i + j})` of
-elementary symmetric polynomials in `m` variables, where `lam'` is the conjugate of
-`lam`. -/
-theorem schurPoly_eq_det_dualJtMatrix {lam : List ℕ} (hlam : IsPart lam) (hnm : lam.sum ≤ m) :
-    schurPoly (Fin m) R lam = (dualJtMatrix m R lam).det := by
-  have h := schurPoly_conjPart_eq_det (R := R) (m := m) (isPart_conjPart hlam)
+partition `η` of `n ≤ m` is the determinant of the matrix `(e_{η'_i - i + j})` of
+elementary symmetric polynomials in `m` variables, where `η'` is the conjugate of
+`η`. -/
+theorem schurPoly_eq_det_dualJtMatrix {η : List ℕ} (hη : IsPart η) (hnm : η.sum ≤ m) :
+    schurPoly (Fin m) R η = (dualJtMatrix m R η).det := by
+  have h := schurPoly_conjPart_eq_det (R := R) (m := m) (isPart_conjPart hη)
     (by rw [sum_conjPart]; exact hnm)
-  rw [conjPart_conjPart hlam] at h
+  rw [conjPart_conjPart hη] at h
   rw [h, dualJtMatrix]
 
 end MvPolynomial

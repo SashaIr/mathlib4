@@ -43,9 +43,9 @@ variable {k G : Type u} [Field k] [Group G]
 
 /-- A *virtual character* of `G` is a difference of two sums of simple characters, that
 is, an integral combination of the characters of the simple representations. -/
-def IsVirtualChar (chi : G → k) : Prop :=
+def IsVirtualChar (χ : G → k) : Prop :=
   ∃ la lb : Multiset (G → k), (∀ c ∈ la, IsSimpleChar c) ∧ (∀ c ∈ lb, IsSimpleChar c) ∧
-    chi = la.sum - lb.sum
+    χ = la.sum - lb.sum
 
 /-- A sum of virtual characters is a virtual character. -/
 theorem IsVirtualChar.add {f h : G → k} (hf : IsVirtualChar f) (hh : IsVirtualChar h) :
@@ -187,7 +187,7 @@ theorem IsVirtualChar.of_character (V : FDRep k G) : IsVirtualChar V.character :
 
 omit [Fintype G] in
 /-- A simple character does not vanish at the identity. -/
-theorem isSimpleChar_one_ne_zero {chi : G → k} (h : IsSimpleChar chi) : chi 1 ≠ 0 := by
+theorem isSimpleChar_one_ne_zero {χ : G → k} (h : IsSimpleChar χ) : χ 1 ≠ 0 := by
   have : Fintype G := Fintype.ofFinite G
   obtain ⟨V, hV, rfl⟩ := h
   intro h1
@@ -210,11 +210,11 @@ theorem isSimpleChar_one_ne_zero {chi : G → k} (h : IsSimpleChar chi) : chi 1 
 
 omit [Finite G] [NeZero (Nat.card G : k)] in
 /-- **A virtual character of norm one is a simple character up to sign.** -/
-theorem exists_isSimpleChar_of_norm_one (chi : G → k) (hchiv : IsVirtualChar chi)
-    (hnorm : charBilin chi chi = (Fintype.card G : k)) :
-    ∃ c : G → k, IsSimpleChar c ∧ (chi = c ∨ chi = -c) := by
+theorem exists_isSimpleChar_of_norm_one (χ : G → k) (hχv : IsVirtualChar χ)
+    (hnorm : charBilin χ χ = (Fintype.card G : k)) :
+    ∃ c : G → k, IsSimpleChar c ∧ (χ = c ∨ χ = -c) := by
   classical
-  obtain ⟨la, lb, hla, hlb, hchieq⟩ := hchiv
+  obtain ⟨la, lb, hla, hlb, hχeq⟩ := hχv
   set S : Finset (G → k) := (la + lb).toFinset with hSdef
   have hS : ∀ c ∈ S, IsSimpleChar c := by
     intro c hc
@@ -232,14 +232,14 @@ theorem exists_isSimpleChar_of_norm_one (chi : G → k) (hchiv : IsVirtualChar c
     exact Finset.sum_subset hsub fun c _ hc => by
       rw [Multiset.count_eq_zero.2 fun h => hc (Multiset.mem_toFinset.2 h)]
       simp
-  have hchi : chi = fun g => ∑ c ∈ S, (n c : k) * c g := by
+  have hχ : χ = fun g => ∑ c ∈ S, (n c : k) * c g := by
     funext g
     have ha := hsum la (Multiset.le_add_right _ _) g
     have hb := hsum lb (Multiset.le_add_left _ _) g
-    simp only [hchieq, Pi.sub_apply, ha, hb, hn]
+    simp only [hχeq, Pi.sub_apply, ha, hb, hn]
     rw [← Finset.sum_sub_distrib]
     exact Finset.sum_congr rfl fun c _ => by push_cast; ring
-  rw [hchi, charBilin_intCombination S hS n] at hnorm
+  rw [hχ, charBilin_intCombination S hS n] at hnorm
   have hcard : (Fintype.card G : k) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_ne_zero
   have hone : ((∑ c ∈ S, n c ^ 2 : ℤ) : k) = 1 :=
     mul_left_cancel₀ hcard (by rw [hnorm, mul_one])
@@ -259,8 +259,8 @@ theorem exists_isSimpleChar_of_norm_one (chi : G → k) (hchiv : IsVirtualChar c
   have hrest : ∀ c ∈ S.erase c₀, n c = 0 := fun c hc =>
     sq_eq_zero_iff.1 ((Finset.sum_eq_zero_iff_of_nonneg (fun c _ => sq_nonneg (n c))).1 hzero c hc)
   have hc₀one : n c₀ ^ 2 = 1 := by omega
-  have hchi₀ : chi = fun g => (n c₀ : k) * c₀ g := by
-    rw [hchi]
+  have hχ₀ : χ = fun g => (n c₀ : k) * c₀ g := by
+    rw [hχ]
     funext g
     have hz : ∀ c ∈ S.erase c₀, ((n c : k) * c g) = 0 := fun c hc => by rw [hrest c hc]; simp
     rw [← Finset.add_sum_erase S (fun c => (n c : k) * c g) hc₀S, Finset.sum_eq_zero hz, add_zero]
@@ -271,7 +271,7 @@ theorem exists_isSimpleChar_of_norm_one (chi : G → k) (hchiv : IsVirtualChar c
     · exact Or.inl (by omega)
     · exact Or.inr (by omega)
   rcases hpm with h | h
-  · exact Or.inl (by rw [hchi₀, h]; funext g; simp)
-  · exact Or.inr (by rw [hchi₀, h]; funext g; simp)
+  · exact Or.inl (by rw [hχ₀, h]; funext g; simp)
+  · exact Or.inr (by rw [hχ₀, h]; funext g; simp)
 
 end FDRep

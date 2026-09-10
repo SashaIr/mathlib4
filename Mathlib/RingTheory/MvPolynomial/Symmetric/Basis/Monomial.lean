@@ -20,8 +20,8 @@ polynomials `m_λ` in `m` variables and prove that they span (indeed form a basi
 symmetric polynomials.
 
 The shape `degShape d` of an exponent vector `d : Fin m →₀ ℕ` is the partition obtained by
-sorting its entries decreasingly, and `monomialSym m R lam` is the sum of the monomials
-whose exponent vector has shape `lam`, i.e. the orbit sum of the monomial `x ^ lam` under
+sorting its entries decreasingly, and `monomialSym m R η` is the sum of the monomials
+whose exponent vector has shape `η`, i.e. the orbit sum of the monomial `x ^ η` under
 the permutations of the variables.
 
 ## Main definitions
@@ -29,7 +29,7 @@ the permutations of the variables.
 * `MvPolynomial.degShape d` : the partition of the exponents of a monomial.
 * `MvPolynomial.degOrbit d` : the orbit of an exponent vector under the permutations of the
   variables.
-* `MvPolynomial.monomialSym m R lam` : the monomial symmetric polynomial of shape `lam`.
+* `MvPolynomial.monomialSym m R η` : the monomial symmetric polynomial of shape `η`.
 
 ## Main results
 
@@ -135,8 +135,8 @@ lemma sum_degShape (d : Fin m →₀ ℕ) : (degShape d).sum = ∑ i, d i := by
 
 /-! ### Recovering the exponents from the shape -/
 
-lemma degMultiset_shapeContent (lam : List ℕ) :
-    degMultiset (shapeContent m lam) = Multiset.map (fun i : Fin m => lam.getD i 0)
+lemma degMultiset_shapeContent (η : List ℕ) :
+    degMultiset (shapeContent m η) = Multiset.map (fun i : Fin m => η.getD i 0)
       Finset.univ.val := rfl
 
 lemma degMultiset_shapeContent_degShape (d : Fin m →₀ ℕ) :
@@ -153,22 +153,22 @@ lemma degMultiset_shapeContent_degShape (d : Fin m →₀ ℕ) :
     rfl
   rw [hmap, hofFn, coe_degSorted]
 
-lemma degShape_shapeContent {lam : List ℕ} (hlam : IsPart lam) (hlen : lam.length ≤ m) :
-    degShape (shapeContent m lam) = lam := by
-  have hpair : List.Pairwise (· ≥ ·) (List.ofFn (fun i : Fin m => lam.getD (i : ℕ) 0)) := by
+lemma degShape_shapeContent {η : List ℕ} (hη : IsPart η) (hlen : η.length ≤ m) :
+    degShape (shapeContent m η) = η := by
+  have hpair : List.Pairwise (· ≥ ·) (List.ofFn (fun i : Fin m => η.getD (i : ℕ) 0)) := by
     refine List.pairwise_iff_getElem.2 fun i j hi hj hij => ?_
     simp only [List.getElem_ofFn]
-    exact hlam.getD_antitone (le_of_lt hij)
-  have hperm : (degSorted (shapeContent m lam)).Perm
-      (List.ofFn (fun i : Fin m => lam.getD (i : ℕ) 0)) := by
+    exact hη.getD_antitone (le_of_lt hij)
+  have hperm : (degSorted (shapeContent m η)).Perm
+      (List.ofFn (fun i : Fin m => η.getD (i : ℕ) 0)) := by
     rw [← Multiset.coe_eq_coe, coe_degSorted, degMultiset_shapeContent, List.ofFn_eq_map]
     rfl
-  have hsorted : degSorted (shapeContent m lam)
-      = List.ofFn (fun i : Fin m => lam.getD (i : ℕ) 0) :=
+  have hsorted : degSorted (shapeContent m η)
+      = List.ofFn (fun i : Fin m => η.getD (i : ℕ) 0) :=
     List.Perm.eq_of_pairwise (fun a b _ _ hab hba => le_antisymm hba hab)
       (pairwise_sortDesc _) hpair hperm
   rw [degShape, hsorted]
-  exact shapeOfFn_getD hlam hlen
+  exact shapeOfFn_getD hη hlen
 
 /-! ### The orbit of a monomial -/
 
@@ -228,30 +228,30 @@ lemma coeff_eq_of_degMultiset_eq [CommSemiring R] {p : MvPolynomial (Fin m) R}
 
 /-! ### The monomial symmetric polynomials -/
 
-/-- The monomial symmetric polynomial `m_lam` in `m` variables: the sum of all the
-monomials whose exponents are, up to a permutation of the variables, the parts of `lam`. -/
-noncomputable def monomialSym (m : ℕ) (R : Type*) [CommSemiring R] (lam : List ℕ) :
+/-- The monomial symmetric polynomial `m_η` in `m` variables: the sum of all the
+monomials whose exponents are, up to a permutation of the variables, the parts of `η`. -/
+noncomputable def monomialSym (m : ℕ) (R : Type*) [CommSemiring R] (η : List ℕ) :
     MvPolynomial (Fin m) R :=
-  ∑ d ∈ degOrbit (shapeContent m lam), monomial d 1
+  ∑ d ∈ degOrbit (shapeContent m η), monomial d 1
 
-lemma coeff_monomialSym [CommSemiring R] (lam : List ℕ) (d : Fin m →₀ ℕ) :
-    coeff d (monomialSym m R lam) = if d ∈ degOrbit (shapeContent m lam) then 1 else 0 := by
+lemma coeff_monomialSym [CommSemiring R] (η : List ℕ) (d : Fin m →₀ ℕ) :
+    coeff d (monomialSym m R η) = if d ∈ degOrbit (shapeContent m η) then 1 else 0 := by
   classical
   rw [monomialSym, coeff_sum]
   rw [Finset.sum_congr rfl (fun d' _ => coeff_monomial d d' (1 : R))]
-  by_cases hd : d ∈ degOrbit (shapeContent m lam)
-  · rw [ite_eq_left hd, Finset.sum_ite_eq' (degOrbit (shapeContent m lam)) d (fun _ => (1 : R)),
+  by_cases hd : d ∈ degOrbit (shapeContent m η)
+  · rw [ite_eq_left hd, Finset.sum_ite_eq' (degOrbit (shapeContent m η)) d (fun _ => (1 : R)),
       ite_eq_left hd]
   · rw [ite_eq_right hd,
       Finset.sum_eq_zero fun d' hd' => ite_eq_right (by rintro rfl; exact hd hd')]
 
-lemma coeff_monomialSym_shapeContent [CommSemiring R] (lam : List ℕ) :
-    coeff (shapeContent m lam) (monomialSym m R lam) = 1 := by
+lemma coeff_monomialSym_shapeContent [CommSemiring R] (η : List ℕ) :
+    coeff (shapeContent m η) (monomialSym m R η) = 1 := by
   rw [coeff_monomialSym, ite_eq_left (self_mem_degOrbit _)]
 
 /-- The monomial symmetric polynomials are symmetric. -/
-theorem monomialSym_isSymmetric [CommSemiring R] (lam : List ℕ) :
-    (monomialSym m R lam).IsSymmetric := by
+theorem monomialSym_isSymmetric [CommSemiring R] (η : List ℕ) :
+    (monomialSym m R η).IsSymmetric := by
   classical
   intro e
   rw [monomialSym, map_sum]
@@ -272,13 +272,13 @@ theorem monomialSym_isSymmetric [CommSemiring R] (lam : List ℕ) :
   · intro d _
     rw [rename_monomial, ← Finsupp.equivMapDomain_eq_mapDomain]
 
-/-- All the monomials of `m_lam` have degree the size of `lam`. -/
-lemma sum_eq_of_mem_degOrbit_shapeContent {lam : List ℕ} (hlam : IsPart lam)
-    (hlen : lam.length ≤ m) {d : Fin m →₀ ℕ} (hd : d ∈ degOrbit (shapeContent m lam)) :
-    ∑ i, d i = lam.sum := by
-  have hsh : degShape d = lam := by
-    rw [degShape_eq_iff.2 (mem_degOrbit_iff.1 hd), degShape_shapeContent hlam hlen]
-  rw [← sum_degShape d, hsh]
+/-- All the monomials of `m_η` have degree the size of `η`. -/
+lemma sum_eq_of_mem_degOrbit_shapeContent {η : List ℕ} (hη : IsPart η)
+    (hlen : η.length ≤ m) {d : Fin m →₀ ℕ} (hd : d ∈ degOrbit (shapeContent m η)) :
+    ∑ i, d i = η.sum := by
+  have hμ : degShape d = η := by
+    rw [degShape_eq_iff.2 (mem_degOrbit_iff.1 hd), degShape_shapeContent hη hlen]
+  rw [← sum_degShape d, hμ]
 
 /-! ### Expansion of a symmetric polynomial in the monomial symmetric polynomials -/
 
@@ -287,32 +287,32 @@ the sum, over the shapes of the monomials occurring in it, of the corresponding 
 times the monomial symmetric polynomial of that shape. -/
 theorem eq_sum_monomialSym [CommSemiring R] {p : MvPolynomial (Fin m) R}
     (hp : p.IsSymmetric) :
-    p = ∑ lam ∈ p.support.image degShape,
-      coeff (shapeContent m lam) p • monomialSym m R lam := by
+    p = ∑ η ∈ p.support.image degShape,
+      coeff (shapeContent m η) p • monomialSym m R η := by
   classical
   conv_lhs => rw [← support_sum_monomial_coeff p]
   rw [← Finset.sum_fiberwise_of_maps_to (g := degShape) (t := p.support.image degShape)
     (fun d hd => Finset.mem_image_of_mem _ hd)
     (fun d => (monomial d) (coeff d p))]
-  refine Finset.sum_congr rfl fun lam hlam => ?_
-  obtain ⟨d0, hd0, hd0shape⟩ := Finset.mem_image.1 hlam
-  have hlamContent : degShape (shapeContent m lam) = lam := by
+  refine Finset.sum_congr rfl fun η hη => ?_
+  obtain ⟨d0, hd0, hd0shape⟩ := Finset.mem_image.1 hη
+  have hηContent : degShape (shapeContent m η) = η := by
     rw [← hd0shape]
     exact degShape_shapeContent (isPart_degShape d0) (length_degShape_le d0)
-  have hcoeff : ∀ d : Fin m →₀ ℕ, d ∈ degOrbit (shapeContent m lam) →
-      coeff d p = coeff (shapeContent m lam) p := fun d hd =>
+  have hcoeff : ∀ d : Fin m →₀ ℕ, d ∈ degOrbit (shapeContent m η) →
+      coeff d p = coeff (shapeContent m η) p := fun d hd =>
     coeff_eq_of_degMultiset_eq hp (mem_degOrbit_iff.1 hd)
-  have hfilter : p.support.filter (fun d => degShape d = lam)
-      = degOrbit (shapeContent m lam) := by
+  have hfilter : p.support.filter (fun d => degShape d = η)
+      = degOrbit (shapeContent m η) := by
     ext d
     rw [Finset.mem_filter, mem_degOrbit_iff]
     constructor
     · rintro ⟨-, hdlam⟩
-      exact degShape_eq_iff.1 (by rw [hdlam, hlamContent])
+      exact degShape_eq_iff.1 (by rw [hdlam, hηContent])
     · intro hd
-      have hdshape : degShape d = lam := by rw [degShape_eq_iff.2 hd, hlamContent]
+      have hdshape : degShape d = η := by rw [degShape_eq_iff.2 hd, hηContent]
       refine ⟨?_, hdshape⟩
-      have h0 : coeff (shapeContent m lam) p = coeff d0 p :=
+      have h0 : coeff (shapeContent m η) p = coeff d0 p :=
         coeff_eq_of_degMultiset_eq hp (by
           rw [← hd0shape, degMultiset_shapeContent_degShape])
       have hd0ne : coeff d0 p ≠ 0 := mem_support_iff.1 hd0
@@ -326,39 +326,39 @@ theorem eq_sum_monomialSym [CommSemiring R] {p : MvPolynomial (Fin m) R}
 /-- **The monomial symmetric polynomials span the symmetric polynomials**: they generate,
 as a module over the base ring, the symmetric polynomials in `m` variables. -/
 theorem span_monomialSym (m : ℕ) (R : Type*) [CommRing R] :
-    Submodule.span R (Set.range fun lam : {l : List ℕ // IsPart l ∧ l.length ≤ m} =>
-        monomialSym m R lam.1)
+    Submodule.span R (Set.range fun η : {l : List ℕ // IsPart l ∧ l.length ≤ m} =>
+        monomialSym m R η.1)
       = (symmetricSubalgebra (Fin m) R).toSubmodule := by
   classical
   refine le_antisymm (Submodule.span_le.2 ?_) fun p hp => ?_
-  · rintro q ⟨lam, rfl⟩
-    exact monomialSym_isSymmetric lam.1
+  · rintro q ⟨η, rfl⟩
+    exact monomialSym_isSymmetric η.1
   · rw [eq_sum_monomialSym ((mem_symmetricSubalgebra p).1 hp)]
-    refine Submodule.sum_mem _ fun lam hlam => ?_
-    obtain ⟨d, -, rfl⟩ := Finset.mem_image.1 hlam
+    refine Submodule.sum_mem _ fun η hη => ?_
+    obtain ⟨d, -, rfl⟩ := Finset.mem_image.1 hη
     exact Submodule.smul_mem _ _
       (Submodule.subset_span ⟨⟨degShape d, isPart_degShape d, length_degShape_le d⟩, rfl⟩)
 
 /-- The monomial symmetric polynomials of distinct partitions with at most `m` parts are
 linearly independent. -/
 theorem linearIndependent_monomialSym (m : ℕ) (R : Type*) [CommRing R] :
-    LinearIndependent R fun lam : {l : List ℕ // IsPart l ∧ l.length ≤ m} =>
-      monomialSym m R lam.1 := by
+    LinearIndependent R fun η : {l : List ℕ // IsPart l ∧ l.length ≤ m} =>
+      monomialSym m R η.1 := by
   classical
   rw [linearIndependent_iff']
-  intro s g hg lam hlam
-  have hcoeff := congrArg (coeff (shapeContent m lam.1)) hg
+  intro s g hg η hη
+  have hcoeff := congrArg (coeff (shapeContent m η.1)) hg
   rw [coeff_zero, coeff_sum] at hcoeff
-  have hsingle : ∀ nu ∈ s, nu ≠ lam →
-      coeff (shapeContent m lam.1) (g nu • monomialSym m R nu.1) = 0 := by
-    intro nu _ hne
+  have hsingle : ∀ ν ∈ s, ν ≠ η →
+      coeff (shapeContent m η.1) (g ν • monomialSym m R ν.1) = 0 := by
+    intro ν _ hne
     rw [coeff_smul, smul_eq_mul, coeff_monomialSym, ite_eq_right, mul_zero]
     intro hmem
     refine hne (Subtype.ext ?_)
     have := degShape_eq_iff.2 (mem_degOrbit_iff.1 hmem)
-    rw [degShape_shapeContent lam.2.1 lam.2.2, degShape_shapeContent nu.2.1 nu.2.2] at this
+    rw [degShape_shapeContent η.2.1 η.2.2, degShape_shapeContent ν.2.1 ν.2.2] at this
     exact this.symm
-  rw [Finset.sum_eq_single lam hsingle (fun h => absurd hlam h), coeff_smul, smul_eq_mul,
+  rw [Finset.sum_eq_single η hsingle (fun h => absurd hη h), coeff_smul, smul_eq_mul,
     coeff_monomialSym_shapeContent, mul_one] at hcoeff
   exact hcoeff
 
@@ -367,13 +367,13 @@ theorem linearIndependent_monomialSym (m : ℕ) (R : Type*) [CommRing R] :
 /-- The monomial symmetric polynomial of a partition with at most `m` parts, as an element
 of the module of symmetric polynomials. -/
 noncomputable def monomialSymSub (m : ℕ) (R : Type*) [CommRing R]
-    (lam : {l : List ℕ // IsPart l ∧ l.length ≤ m}) :
+    (η : {l : List ℕ // IsPart l ∧ l.length ≤ m}) :
     (symmetricSubalgebra (Fin m) R).toSubmodule :=
-  ⟨monomialSym m R lam.1, monomialSym_isSymmetric lam.1⟩
+  ⟨monomialSym m R η.1, monomialSym_isSymmetric η.1⟩
 
 @[simp] lemma coe_monomialSymSub (m : ℕ) (R : Type*) [CommRing R]
-    (lam : {l : List ℕ // IsPart l ∧ l.length ≤ m}) :
-    (monomialSymSub m R lam : MvPolynomial (Fin m) R) = monomialSym m R lam.1 := rfl
+    (η : {l : List ℕ // IsPart l ∧ l.length ≤ m}) :
+    (monomialSymSub m R η : MvPolynomial (Fin m) R) = monomialSym m R η.1 := rfl
 
 lemma linearIndependent_monomialSymSub (m : ℕ) (R : Type*) [CommRing R] :
     LinearIndependent R (monomialSymSub m R) :=
@@ -405,8 +405,8 @@ noncomputable def monomialSymBasis (m : ℕ) (R : Type*) [CommRing R] :
   Module.Basis.mk (linearIndependent_monomialSymSub m R) (span_monomialSymSub m R)
 
 @[simp] lemma coe_monomialSymBasis (m : ℕ) (R : Type*) [CommRing R]
-    (lam : {l : List ℕ // IsPart l ∧ l.length ≤ m}) :
-    (monomialSymBasis m R lam : MvPolynomial (Fin m) R) = monomialSym m R lam.1 := by
+    (η : {l : List ℕ // IsPart l ∧ l.length ≤ m}) :
+    (monomialSymBasis m R η : MvPolynomial (Fin m) R) = monomialSym m R η.1 := by
   rw [monomialSymBasis, Module.Basis.mk_apply, coe_monomialSymSub]
 
 end MvPolynomial

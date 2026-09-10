@@ -19,13 +19,13 @@ distributed under the GPL).
 Following the Coq development, *shapes* are plain lists of natural numbers
 (`List ℕ`), and being a partition is a predicate `Young.IsPart` on such lists:
 a list is a partition when it is weakly decreasing and has no zero part.
-Everywhere, the `i`-th part of a shape `sh` is `sh.getD i 0`, which is `0` when
-`i` is out of range; this matches the `nth 0 sh i` idiom of the Coq sources.
+Everywhere, the `i`-th part of a shape `μ` is `μ.getD i 0`, which is `0` when
+`i` is out of range; this matches the `nth 0 μ i` idiom of the Coq sources.
 
 ## Main definitions
 
-* `Young.InShape sh (r, c)` : the box `(r, c)` belongs to the diagram of `sh`.
-* `Young.IsPart sh` : `sh` is a partition.
+* `Young.InShape μ (r, c)` : the box `(r, c)` belongs to the diagram of `μ`.
+* `Young.IsPart μ` : `μ` is a partition.
 
 ## Main results
 
@@ -65,29 +65,29 @@ open List
 
 /-! ### Boxes of a shape -/
 
-/-- The box with coordinates `(r, c)` belongs to the shape `sh`, i.e. `c < sh_r`. -/
-def InShape (sh : List ℕ) (rc : ℕ × ℕ) : Prop := rc.2 < sh.getD rc.1 0
+/-- The box with coordinates `(r, c)` belongs to the shape `μ`, i.e. `c < μ_r`. -/
+def InShape (μ : List ℕ) (rc : ℕ × ℕ) : Prop := rc.2 < μ.getD rc.1 0
 
-instance (sh : List ℕ) (rc : ℕ × ℕ) : Decidable (InShape sh rc) :=
+instance (μ : List ℕ) (rc : ℕ × ℕ) : Decidable (InShape μ rc) :=
   inferInstanceAs (Decidable (_ < _))
 
 @[simp] lemma inShape_nil (rc : ℕ × ℕ) : ¬ InShape [] rc := by
   simp [InShape]
 
-lemma InShape.lt_length {sh : List ℕ} {r c : ℕ} (h : InShape sh (r, c)) : r < sh.length := by
+lemma InShape.lt_length {μ : List ℕ} {r c : ℕ} (h : InShape μ (r, c)) : r < μ.length := by
   by_contra hr
   rw [InShape, List.getD_eq_default _ _ (not_lt.1 hr)] at h
   exact absurd h (by simp)
 
 /-! ### Partitions -/
 
-/-- `IsPart sh` states that the list `sh` is an integer partition: it is weakly
+/-- `IsPart μ` states that the list `μ` is an integer partition: it is weakly
 decreasing and contains no zero.  This is the Coq `is_part` predicate. -/
 def IsPart : List ℕ → Prop
   | [] => True
   | s0 :: s => s.headD 1 ≤ s0 ∧ IsPart s
 
-instance : ∀ sh : List ℕ, Decidable (IsPart sh)
+instance : ∀ μ : List ℕ, Decidable (IsPart μ)
   | [] => inferInstanceAs (Decidable True)
   | _ :: s => @instDecidableAnd _ _ inferInstance (Young.instDecidableIsPart s)
 
@@ -98,14 +98,14 @@ instance : ∀ sh : List ℕ, Decidable (IsPart sh)
 
 lemma IsPart.of_cons {s0 : ℕ} {s : List ℕ} (h : IsPart (s0 :: s)) : IsPart s := h.2
 
-lemma IsPart.tail {sh : List ℕ} (h : IsPart sh) : IsPart sh.tail := by
-  cases sh with
+lemma IsPart.tail {μ : List ℕ} (h : IsPart μ) : IsPart μ.tail := by
+  cases μ with
   | nil => exact isPart_nil
   | cons a s => exact h.2
 
 /-- A partition has no zero at its head. -/
-lemma IsPart.headD_ne_zero {sh : List ℕ} (h : IsPart sh) : sh.headD 1 ≠ 0 := by
-  induction sh with
+lemma IsPart.headD_ne_zero {μ : List ℕ} (h : IsPart μ) : μ.headD 1 ≠ 0 := by
+  induction μ with
   | nil => simp
   | cons a s ih =>
     obtain ⟨h1, h2⟩ := h
@@ -116,42 +116,42 @@ lemma IsPart.headD_ne_zero {sh : List ℕ} (h : IsPart sh) : sh.headD 1 ≠ 0 :=
     | cons b t => simp only [List.headD_cons] at h1 this ⊢; omega
 
 /-- A partition has no zero part. -/
-lemma IsPart.zero_notMem {sh : List ℕ} (h : IsPart sh) : (0 : ℕ) ∉ sh := by
-  induction sh with
+lemma IsPart.zero_notMem {μ : List ℕ} (h : IsPart μ) : (0 : ℕ) ∉ μ := by
+  induction μ with
   | nil => simp
   | cons a s ih =>
     have ha : a ≠ 0 := by
-      have := (IsPart.headD_ne_zero (sh := a :: s) h)
+      have := (IsPart.headD_ne_zero (μ := a :: s) h)
       simp only [List.headD_cons] at this
       exact this
     simp only [List.mem_cons, not_or]
     exact ⟨fun hc => ha hc.symm, ih h.2⟩
 
-lemma IsPart.headD_pos {sh : List ℕ} (h : IsPart sh) (hne : sh ≠ []) : 0 < sh.headD 0 := by
-  cases sh with
+lemma IsPart.headD_pos {μ : List ℕ} (h : IsPart μ) (hne : μ ≠ []) : 0 < μ.headD 0 := by
+  cases μ with
   | nil => exact absurd rfl hne
   | cons a s =>
     have := h.headD_ne_zero
     simp only [List.headD_cons] at this ⊢
     omega
 
-lemma IsPart.eq_nil_of_headD_eq_zero {sh : List ℕ} (h : IsPart sh) (h0 : sh.headD 0 = 0) :
-    sh = [] := by
+lemma IsPart.eq_nil_of_headD_eq_zero {μ : List ℕ} (h : IsPart μ) (h0 : μ.headD 0 = 0) :
+    μ = [] := by
   by_contra hne
   exact absurd h0 (h.headD_pos hne).ne'
 
-lemma IsPart.pos_of_mem {sh : List ℕ} (h : IsPart sh) {i : ℕ} (hi : i ∈ sh) : 0 < i :=
+lemma IsPart.pos_of_mem {μ : List ℕ} (h : IsPart μ) {i : ℕ} (hi : i ∈ μ) : 0 < i :=
   Nat.pos_of_ne_zero fun hc => h.zero_notMem (hc ▸ hi)
 
-lemma IsPart.getD_pos {sh : List ℕ} (h : IsPart sh) {i : ℕ} (hi : i < sh.length) :
-    0 < sh.getD i 0 := by
+lemma IsPart.getD_pos {μ : List ℕ} (h : IsPart μ) {i : ℕ} (hi : i < μ.length) :
+    0 < μ.getD i 0 := by
   rw [List.getD_eq_getElem _ _ hi]
   exact h.pos_of_mem (List.getElem_mem hi)
 
 /-- The parts of a partition decrease by one step. -/
-lemma IsPart.getD_succ_le {sh : List ℕ} (h : IsPart sh) (i : ℕ) :
-    sh.getD (i + 1) 0 ≤ sh.getD i 0 := by
-  induction sh generalizing i with
+lemma IsPart.getD_succ_le {μ : List ℕ} (h : IsPart μ) (i : ℕ) :
+    μ.getD (i + 1) 0 ≤ μ.getD i 0 := by
+  induction μ generalizing i with
   | nil => simp
   | cons a s ih =>
     obtain ⟨h1, h2⟩ := h
@@ -164,8 +164,8 @@ lemma IsPart.getD_succ_le {sh : List ℕ} (h : IsPart sh) (i : ℕ) :
     | succ j => simpa using ih h2 j
 
 /-- The parts of a partition are weakly decreasing. -/
-lemma IsPart.getD_antitone {sh : List ℕ} (h : IsPart sh) {i j : ℕ} (hij : i ≤ j) :
-    sh.getD j 0 ≤ sh.getD i 0 := by
+lemma IsPart.getD_antitone {μ : List ℕ} (h : IsPart μ) {i j : ℕ} (hij : i ≤ j) :
+    μ.getD j 0 ≤ μ.getD i 0 := by
   induction j with
   | zero => simp_all
   | succ k ih =>
@@ -174,9 +174,9 @@ lemma IsPart.getD_antitone {sh : List ℕ} (h : IsPart sh) {i j : ℕ} (hij : i 
     · simp [show i = k + 1 by omega]
 
 /-- A list which decreases pointwise and whose last entry is nonzero is a partition. -/
-lemma isPart_of_getD {sh : List ℕ} (hlast : sh.getLastD 1 ≠ 0)
-    (h : ∀ i, sh.getD (i + 1) 0 ≤ sh.getD i 0) : IsPart sh := by
-  induction sh with
+lemma isPart_of_getD {μ : List ℕ} (hlast : μ.getLastD 1 ≠ 0)
+    (h : ∀ i, μ.getD (i + 1) 0 ≤ μ.getD i 0) : IsPart μ := by
+  induction μ with
   | nil => exact isPart_nil
   | cons a s ih =>
     refine ⟨?_, ih ?_ fun i ↦ by simpa using h (i + 1)⟩
@@ -187,8 +187,8 @@ lemma isPart_of_getD {sh : List ℕ} (hlast : sh.getLastD 1 ≠ 0)
       | nil => simp
       | cons b t => simpa using hlast
 
-lemma IsPart.getLastD_ne_zero {sh : List ℕ} (h : IsPart sh) : sh.getLastD 1 ≠ 0 := by
-  induction sh with
+lemma IsPart.getLastD_ne_zero {μ : List ℕ} (h : IsPart μ) : μ.getLastD 1 ≠ 0 := by
+  induction μ with
   | nil => simp
   | cons a s ih =>
     cases s with
@@ -198,21 +198,21 @@ lemma IsPart.getLastD_ne_zero {sh : List ℕ} (h : IsPart sh) : sh.getLastD 1 �
     | cons b t => simpa using ih h.2
 
 /-- The two standard descriptions of a partition agree (Coq `is_partP`). -/
-lemma isPart_iff_getD {sh : List ℕ} :
-    IsPart sh ↔ sh.getLastD 1 ≠ 0 ∧ ∀ i, sh.getD (i + 1) 0 ≤ sh.getD i 0 :=
+lemma isPart_iff_getD {μ : List ℕ} :
+    IsPart μ ↔ μ.getLastD 1 ≠ 0 ∧ ∀ i, μ.getD (i + 1) 0 ≤ μ.getD i 0 :=
   ⟨fun h => ⟨h.getLastD_ne_zero, h.getD_succ_le⟩, fun h => isPart_of_getD h.1 h.2⟩
 
 /-- Coq `is_part_ijP`. -/
-lemma isPart_iff_getD_le {sh : List ℕ} :
-    IsPart sh ↔ sh.getLastD 1 ≠ 0 ∧ ∀ i j, i ≤ j → sh.getD j 0 ≤ sh.getD i 0 :=
+lemma isPart_iff_getD_le {μ : List ℕ} :
+    IsPart μ ↔ μ.getLastD 1 ≠ 0 ∧ ∀ i j, i ≤ j → μ.getD j 0 ≤ μ.getD i 0 :=
   ⟨fun h => ⟨h.getLastD_ne_zero, fun _ _ hij => h.getD_antitone hij⟩,
    fun h => isPart_of_getD h.1 fun i => h.2 i (i + 1) (Nat.le_succ i)⟩
 
 /-- Coq `is_part_sortedE`: a partition is a weakly decreasing list of nonzero parts. -/
-lemma isPart_iff_chain {sh : List ℕ} :
-    IsPart sh ↔ List.IsChain (· ≥ ·) sh ∧ (0 : ℕ) ∉ sh := by
+lemma isPart_iff_chain {μ : List ℕ} :
+    IsPart μ ↔ List.IsChain (· ≥ ·) μ ∧ (0 : ℕ) ∉ μ := by
   refine ⟨fun h ↦ ⟨?_, h.zero_notMem⟩, ?_⟩
-  · induction sh with
+  · induction μ with
     | nil => exact List.IsChain.nil
     | cons a s ih =>
       obtain ⟨h1, h2⟩ := h
@@ -220,7 +220,7 @@ lemma isPart_iff_chain {sh : List ℕ} :
       | nil => exact List.IsChain.singleton _
       | cons b t => exact List.IsChain.cons_cons (by simpa using h1) (ih h2)
   · rintro ⟨hchain, h0⟩
-    induction sh with
+    induction μ with
     | nil => exact isPart_nil
     | cons a s ih =>
       cases s with
@@ -237,31 +237,31 @@ lemma isPart_iff_chain {sh : List ℕ} :
 
 /-- A convenient pointwise characterisation of partitions: the parts decrease and
 the parts inside the list are positive. -/
-lemma isPart_iff_getD_pos {sh : List ℕ} :
-    IsPart sh ↔ (∀ i, sh.getD (i + 1) 0 ≤ sh.getD i 0) ∧ ∀ i, i < sh.length → 0 < sh.getD i 0 := by
+lemma isPart_iff_getD_pos {μ : List ℕ} :
+    IsPart μ ↔ (∀ i, μ.getD (i + 1) 0 ≤ μ.getD i 0) ∧ ∀ i, i < μ.length → 0 < μ.getD i 0 := by
   refine ⟨fun h => ⟨h.getD_succ_le, fun _ hi => h.getD_pos hi⟩,
     fun ⟨hmono, hpos⟩ => isPart_of_getD ?_ hmono⟩
-  cases sh with
+  cases μ with
   | nil => simp
   | cons a s =>
     rw [getLastD_eq_getD (by simp)]
     exact (hpos _ (by simp)).ne'
 
-lemma IsPart.sublist {sh1 sh2 : List ℕ} (hsub : sh1.Sublist sh2) (h : IsPart sh2) :
-    IsPart sh1 := by
+lemma IsPart.sublist {μ1 μ2 : List ℕ} (hsub : μ1.Sublist μ2) (h : IsPart μ2) :
+    IsPart μ1 := by
   rw [isPart_iff_chain] at h ⊢
   exact ⟨List.IsChain.sublist h.1 hsub, fun hc => h.2 (hsub.mem hc)⟩
 
-lemma IsPart.of_append_left {sh1 sh2 : List ℕ} (h : IsPart (sh1 ++ sh2)) : IsPart sh1 :=
+lemma IsPart.of_append_left {μ1 μ2 : List ℕ} (h : IsPart (μ1 ++ μ2)) : IsPart μ1 :=
   IsPart.sublist (List.sublist_append_left _ _) h
 
-lemma IsPart.of_append_right {sh1 sh2 : List ℕ} (h : IsPart (sh1 ++ sh2)) : IsPart sh2 :=
+lemma IsPart.of_append_right {μ1 μ2 : List ℕ} (h : IsPart (μ1 ++ μ2)) : IsPart μ2 :=
   IsPart.sublist (List.sublist_append_right _ _) h
 
 /-- Every part is at most the first one. -/
-lemma IsPart.le_headD {sh : List ℕ} (h : IsPart sh) {i : ℕ} (hi : i ∈ sh) :
-    i ≤ sh.headD 0 := by
-  cases sh with
+lemma IsPart.le_headD {μ : List ℕ} (h : IsPart μ) {i : ℕ} (hi : i ∈ μ) :
+    i ≤ μ.headD 0 := by
+  cases μ with
   | nil => simp at hi
   | cons a s =>
     simp only [List.headD_cons]
@@ -276,17 +276,17 @@ lemma IsPart.le_headD {sh : List ℕ} (h : IsPart sh) {i : ℕ} (hi : i ∈ sh) 
 /-! ### Partitions and sums -/
 
 /-- Coq `part0`: the only partition of `0` is the empty one. -/
-lemma IsPart.eq_nil_of_sum_eq_zero {sh : List ℕ} (h : IsPart sh) (hs : sh.sum = 0) : sh = [] := by
-  cases sh with
+lemma IsPart.eq_nil_of_sum_eq_zero {μ : List ℕ} (h : IsPart μ) (hs : μ.sum = 0) : μ = [] := by
+  cases μ with
   | nil => rfl
   | cons a s =>
     have ha : a ≠ 0 := by simpa using h.headD_ne_zero
     simp only [List.sum_cons] at hs
     omega
 
-/-- Coq `size_part`: a partition has at most `sumn sh` parts. -/
-lemma IsPart.length_le_sum {sh : List ℕ} (h : IsPart sh) : sh.length ≤ sh.sum := by
-  induction sh with
+/-- Coq `size_part`: a partition has at most `sumn μ` parts. -/
+lemma IsPart.length_le_sum {μ : List ℕ} (h : IsPart μ) : μ.length ≤ μ.sum := by
+  induction μ with
   | nil => simp
   | cons a s ih =>
     have ha : 0 < a := Nat.pos_of_ne_zero (by simpa using h.headD_ne_zero)
@@ -296,9 +296,9 @@ lemma IsPart.length_le_sum {sh : List ℕ} (h : IsPart sh) : sh.length ≤ sh.su
 
 /-- Coq `part_sumn_rectangle`: a partition fits into the rectangle
 `(number of parts) × (largest part)`. -/
-lemma IsPart.sum_le_headD_mul_length {sh : List ℕ} (h : IsPart sh) :
-    sh.sum ≤ sh.headD 0 * sh.length := by
-  induction sh with
+lemma IsPart.sum_le_headD_mul_length {μ : List ℕ} (h : IsPart μ) :
+    μ.sum ≤ μ.headD 0 * μ.length := by
+  induction μ with
   | nil => simp
   | cons a s ih =>
     have hrec := ih h.2
@@ -338,8 +338,8 @@ lemma IsPart.ext_getD {p q : List ℕ} (hp : IsPart p) (hq : IsPart q)
 /-! ### Boxes of a partition -/
 
 /-- Coq `in_part_le`: the diagram of a partition is a lower set. -/
-lemma IsPart.inShape_of_le {sh : List ℕ} (h : IsPart sh) {r c j k : ℕ}
-    (hrc : InShape sh (r, c)) (hj : j ≤ r) (hk : k ≤ c) : InShape sh (j, k) :=
+lemma IsPart.inShape_of_le {μ : List ℕ} (h : IsPart μ) {r c j k : ℕ}
+    (hrc : InShape μ (r, c)) (hj : j ≤ r) (hk : k ≤ c) : InShape μ (j, k) :=
   lt_of_le_of_lt hk (lt_of_lt_of_le hrc (h.getD_antitone hj))
 
 end Young

@@ -50,14 +50,14 @@ theorem truncSub_omegaSym (hn : n ≤ m) (h : m ≤ M) (f : symHomogeneousSubmod
   refine LinearMap.congr_fun (f := (truncSub h n R).comp
     (omegaSym M n R (hn.trans h)).toLinearMap)
     (g := (omegaSym m n R hn).toLinearMap.comp (truncSub h n R)) ?_ f
-  refine (schurBasis M n R).ext fun nu => ?_
+  refine (schurBasis M n R).ext fun ν => ?_
   simp only [LinearMap.comp_apply, schurBasis_apply, LinearEquiv.coe_coe]
-  set mu := (partIdxEquiv hn (hn.trans h)).symm nu with hmudef
-  have hnu : nu = partIdxEquiv hn (hn.trans h) mu :=
-    ((partIdxEquiv hn (hn.trans h)).apply_symm_apply nu).symm
-  have hconj : conjIdx (hn.trans h) (partIdxEquiv hn (hn.trans h) mu)
-      = partIdxEquiv hn (hn.trans h) (conjIdx hn mu) := Subtype.ext rfl
-  rw [hnu, omegaSym_schurSub, hconj, truncSub_schurSub, truncSub_schurSub, omegaSym_schurSub]
+  set μ := (partIdxEquiv hn (hn.trans h)).symm ν with hμdef
+  have hν : ν = partIdxEquiv hn (hn.trans h) μ :=
+    ((partIdxEquiv hn (hn.trans h)).apply_symm_apply ν).symm
+  have hconj : conjIdx (hn.trans h) (partIdxEquiv hn (hn.trans h) μ)
+      = partIdxEquiv hn (hn.trans h) (conjIdx hn μ) := Subtype.ext rfl
+  rw [hν, omegaSym_schurSub, hconj, truncSub_schurSub, truncSub_schurSub, omegaSym_schurSub]
 
 /-- The component in `m ≥ n` variables of `omega f` is the image under `omega` of the
 component of `f` in `m` variables. -/
@@ -94,9 +94,9 @@ theorem omegaFunc_mul {a b : ℕ} (hab : a + b = n) (f : symFuncHomogeneous a R)
 /-- On symmetric functions of degree `0`, `omega` is the identity. -/
 theorem omegaFunc_zero_eq (f : symFuncHomogeneous 0 R) : omegaFunc 0 R f = f := by
   have hid : omegaSym 0 0 R (le_refl 0) = LinearEquiv.refl R (symHomogeneousSubmodule 0 0 R) := by
-    refine LinearEquiv.toLinearMap_injective ((schurBasis 0 0 R).ext fun nu => ?_)
-    have hnil : nu.1 = [] := List.eq_nil_of_length_eq_zero (Nat.le_zero.1 nu.2.2.2)
-    have hconj : conjIdx (le_refl 0) nu = nu := Subtype.ext (by rw [conjIdx_val, hnil]; rfl)
+    refine LinearEquiv.toLinearMap_injective ((schurBasis 0 0 R).ext fun ν => ?_)
+    have hnil : ν.1 = [] := List.eq_nil_of_length_eq_zero (Nat.le_zero.1 ν.2.2.2)
+    have hconj : conjIdx (le_refl 0) ν = ν := Subtype.ext (by rw [conjIdx_val, hnil]; rfl)
     simp only [LinearEquiv.coe_coe, schurBasis_apply, omegaSym_schurSub, hconj,
       LinearEquiv.refl_apply]
   refine (symFuncHomogeneousEquiv (le_refl 0) R).injective ?_
@@ -186,22 +186,22 @@ noncomputable def omegaSymFuncAlgEquiv (R : Type*) [CommRing R] : SymFunc R ≃�
 /-! ### `omega` on the classical symmetric functions -/
 
 /-- `omega` exchanges the Schur functions of two conjugate shapes. -/
-@[simp] theorem omegaSymFunc_schurFunc (lam : PartIdx n n) :
-    omegaSymFunc R (schurFunc n R lam).1 = (schurFunc n R (conjIdx (le_refl n) lam)).1 := by
-  rw [omegaSymFunc_of_mem (schurFunc n R lam).2]
-  exact congrArg Subtype.val (omegaFunc_schurFunc lam)
+@[simp] theorem omegaSymFunc_schurFunc (η : PartIdx n n) :
+    omegaSymFunc R (schurFunc n R η).1 = (schurFunc n R (conjIdx (le_refl n) η)).1 := by
+  rw [omegaSymFunc_of_mem (schurFunc n R η).2]
+  exact congrArg Subtype.val (omegaFunc_schurFunc η)
 
 /-- `omega` exchanges the complete homogeneous and the elementary symmetric functions. -/
-@[simp] theorem omegaSymFunc_hsymFunc (lam : PartIdx n n) :
-    omegaSymFunc R (hsymFunc n R lam).1 = (esymFunc n R (conjIdx (le_refl n) lam)).1 := by
-  rw [omegaSymFunc_of_mem (hsymFunc n R lam).2]
-  exact congrArg Subtype.val (omegaFunc_hsymFunc lam)
+@[simp] theorem omegaSymFunc_hsymFunc (η : PartIdx n n) :
+    omegaSymFunc R (hsymFunc n R η).1 = (esymFunc n R (conjIdx (le_refl n) η)).1 := by
+  rw [omegaSymFunc_of_mem (hsymFunc n R η).2]
+  exact congrArg Subtype.val (omegaFunc_hsymFunc η)
 
-/-- `omega` acts on the power sum symmetric functions by the sign `(-1)^(n - length lam)`. -/
-@[simp] theorem omegaSymFunc_psymFunc (lam : PartIdx n n) :
-    omegaSymFunc R (psymFunc n R lam).1
-      = ((-1) ^ (n - lam.1.length) : R) • (psymFunc n R lam).1 := by
-  rw [omegaSymFunc_of_mem (psymFunc n R lam).2]
-  exact congrArg Subtype.val (omegaFunc_psymFunc lam)
+/-- `omega` acts on the power sum symmetric functions by the sign `(-1)^(n - length η)`. -/
+@[simp] theorem omegaSymFunc_psymFunc (η : PartIdx n n) :
+    omegaSymFunc R (psymFunc n R η).1
+      = ((-1) ^ (n - η.1.length) : R) • (psymFunc n R η).1 := by
+  rw [omegaSymFunc_of_mem (psymFunc n R η).2]
+  exact congrArg Subtype.val (omegaFunc_psymFunc η)
 
 end SymFunc

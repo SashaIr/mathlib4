@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
 
 Following `theories/MPoly/Schur_mpoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove the branching rule: a Schur
-polynomial in `m + 1` variables is the sum, over the shapes `nu` obtained from `lam` by
-removing a horizontal strip, of the Schur polynomial of shape `nu` in the first `m`
+polynomial in `m + 1` variables is the sum, over the shapes `ν` obtained from `η` by
+removing a horizontal strip, of the Schur polynomial of shape `ν` in the first `m`
 variables times the appropriate power of the last variable.
 
 This is the polynomial form of the recursion `Young.kostkaNum_succ` on the largest letter
@@ -107,57 +107,57 @@ lemma finContent_last (d : Fin (m + 1) →₀ ℕ) :
 
 open Classical in
 /-- **The branching rule**: a Schur polynomial in `m + 1` variables is the sum, over the
-shapes `nu` such that `lam / nu` is a horizontal strip, of the Schur polynomial of shape
-`nu` in the first `m` variables times the power of the last variable filling up the
+shapes `ν` such that `η / ν` is a horizontal strip, of the Schur polynomial of shape
+`ν` in the first `m` variables times the power of the last variable filling up the
 strip. -/
-theorem schurPoly_branching (lam : List ℕ) (hlam : IsPart lam) :
-    schurPoly (Fin (m + 1)) R lam
-      = ∑ k ∈ Finset.range (lam.sum + 1),
-          ∑ nu : {p : List ℕ // IsPart p ∧ p.sum = k},
-            if HorizStrip lam nu.1 then
-              rename Fin.castSucc (schurPoly (Fin m) R nu.1) * X (Fin.last m) ^ (lam.sum - k)
+theorem schurPoly_branching (η : List ℕ) (hη : IsPart η) :
+    schurPoly (Fin (m + 1)) R η
+      = ∑ k ∈ Finset.range (η.sum + 1),
+          ∑ ν : {p : List ℕ // IsPart p ∧ p.sum = k},
+            if HorizStrip η ν.1 then
+              rename Fin.castSucc (schurPoly (Fin m) R ν.1) * X (Fin.last m) ^ (η.sum - k)
             else 0 := by
   classical
   refine MvPolynomial.ext _ _ fun d => ?_
   rw [coeff_schurPoly_eq_kostkaNum, coeff_sum]
-  have hterm : ∀ k ∈ Finset.range (lam.sum + 1),
-      coeff d (∑ nu : {p : List ℕ // IsPart p ∧ p.sum = k},
-        if HorizStrip lam nu.1 then
-          rename Fin.castSucc (schurPoly (Fin m) R nu.1) * X (Fin.last m) ^ (lam.sum - k)
+  have hterm : ∀ k ∈ Finset.range (η.sum + 1),
+      coeff d (∑ ν : {p : List ℕ // IsPart p ∧ p.sum = k},
+        if HorizStrip η ν.1 then
+          rename Fin.castSucc (schurPoly (Fin m) R ν.1) * X (Fin.last m) ^ (η.sum - k)
         else 0)
-      = if d (Fin.last m) = lam.sum - k then
-          ((∑ nu : {p : List ℕ // IsPart p ∧ p.sum = k},
-            if HorizStrip lam nu.1 then
-              kostkaNum m nu.1 (finContent (m + 1) d) else 0 : ℕ) : R)
+      = if d (Fin.last m) = η.sum - k then
+          ((∑ ν : {p : List ℕ // IsPart p ∧ p.sum = k},
+            if HorizStrip η ν.1 then
+              kostkaNum m ν.1 (finContent (m + 1) d) else 0 : ℕ) : R)
         else 0 := by
     intro k _
     rw [coeff_sum]
-    by_cases hlast : d (Fin.last m) = lam.sum - k
+    by_cases hlast : d (Fin.last m) = η.sum - k
     · rw [ite_eq_left hlast, Nat.cast_sum]
-      refine Finset.sum_congr rfl fun nu _ => ?_
-      by_cases hstrip : HorizStrip lam nu.1
+      refine Finset.sum_congr rfl fun ν _ => ?_
+      by_cases hstrip : HorizStrip η ν.1
       · rw [ite_eq_left hstrip, ite_eq_left hstrip, coeff_rename_castSucc_mul_pow,
           ite_eq_left hlast, coeff_schurPoly_eq_kostkaNum]
-        exact congrArg _ (kostkaNum_congr m nu.1
+        exact congrArg _ (kostkaNum_congr m ν.1
           fun i hi => (finContent_castSucc d i hi).symm)
       · rw [ite_eq_right hstrip, ite_eq_right hstrip, coeff_zero, Nat.cast_zero]
-    · rw [ite_eq_right hlast, Finset.sum_eq_zero fun nu _ => ?_]
-      by_cases hstrip : HorizStrip lam nu.1
+    · rw [ite_eq_right hlast, Finset.sum_eq_zero fun ν _ => ?_]
+      by_cases hstrip : HorizStrip η ν.1
       · rw [ite_eq_left hstrip, coeff_rename_castSucc_mul_pow, ite_eq_right hlast]
       · rw [ite_eq_right hstrip, coeff_zero]
   rw [Finset.sum_congr rfl hterm]
-  by_cases hle : d (Fin.last m) ≤ lam.sum
-  · have hk : lam.sum - d (Fin.last m) ∈ Finset.range (lam.sum + 1) :=
+  by_cases hle : d (Fin.last m) ≤ η.sum
+  · have hk : η.sum - d (Fin.last m) ∈ Finset.range (η.sum + 1) :=
       Finset.mem_range.2 (by omega)
-    rw [Finset.sum_eq_single (lam.sum - d (Fin.last m)) ?_ (fun h => absurd hk h)]
+    rw [Finset.sum_eq_single (η.sum - d (Fin.last m)) ?_ (fun h => absurd hk h)]
     · rw [ite_eq_left (by omega)]
-      refine congrArg _ (kostkaNum_succ hlam ?_)
+      refine congrArg _ (kostkaNum_succ hη ?_)
       rw [finContent_last]
       omega
     · intro k hk hne
       have hkk := Finset.mem_range.1 hk
       exact ite_eq_right (by omega)
-  · have hzero : kostkaNum (m + 1) lam (finContent (m + 1) d) = 0 := by
+  · have hzero : kostkaNum (m + 1) η (finContent (m + 1) d) = 0 := by
       refine kostkaNum_eq_zero_of_sum_ne _ _ _ fun hsum => hle ?_
       have hle' : finContent (m + 1) d m ≤ ∑ i ∈ Finset.range (m + 1), finContent (m + 1) d i :=
         Finset.single_le_sum (f := finContent (m + 1) d) (fun i _ => Nat.zero_le _)

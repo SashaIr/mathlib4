@@ -98,9 +98,9 @@ theorem card_stdTabPair (n : ℕ) : Nat.card (stdTabPair n) = Nat.factorial n :=
 
 /-! ### The identity `∑_λ (f^λ)² = n!` -/
 
-/-- The number `f^sh` of standard tableaux of shape `sh`. -/
-noncomputable def numStdTab (sh : List ℕ) : ℕ :=
-  Nat.card {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = sh}
+/-- The number `f^μ` of standard tableaux of shape `μ`. -/
+noncomputable def numStdTab (μ : List ℕ) : ℕ :=
+  Nat.card {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ}
 
 instance finite_stdTabPair (n : ℕ) : Finite (stdTabPair n) := by
   have h : Finite {w : List ℕ | IsStd w ∧ w.length = n} := by
@@ -116,13 +116,13 @@ lemma partsList_shapePartition (n : ℕ) (p : stdTabPair n) :
   sortDesc_coe (isPart_shape p.2.1.1)
 
 /-- The pairs of standard tableaux of the same shape with `n` boxes and prescribed shape
-`lam` are the pairs of standard tableaux of shape `lam`. -/
-def stdTabPairFiberEquiv (n : ℕ) (lam : Nat.Partition n) :
-    {p : stdTabPair n // shapePartition n p = lam} ≃
-      {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = lam.partsList} ×
-        {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = lam.partsList} where
+`η` are the pairs of standard tableaux of shape `η`. -/
+def stdTabPairFiberEquiv (n : ℕ) (η : Nat.Partition n) :
+    {p : stdTabPair n // shapePartition n p = η} ≃
+      {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList} ×
+        {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList} where
   toFun p :=
-    have h1 : shape p.1.1.1 = lam.partsList := by
+    have h1 : shape p.1.1.1 = η.partsList := by
       rw [← partsList_shapePartition n p.1, p.2]
     (⟨p.1.1.1, p.1.2.1, h1⟩, ⟨p.1.1.2, p.1.2.2.1, by rw [← p.1.2.2.2.1, h1]⟩)
   invFun q :=
@@ -130,21 +130,21 @@ def stdTabPairFiberEquiv (n : ℕ) (lam : Nat.Partition n) :
         change (shape q.1.1).sum = n
         rw [q.1.2.2, Nat.Partition.sum_partsList]⟩,
       Nat.Partition.ext (by
-        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = lam.parts
+        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = η.parts
         rw [q.1.2.2, Nat.Partition.coe_partsList])⟩
   left_inv p := rfl
   right_inv q := rfl
 
-/-- The number of standard tableaux of shape `sh` squared, summed over all partitions of
+/-- The number of standard tableaux of shape `μ` squared, summed over all partitions of
 `n`, is `n!`. -/
 theorem sum_sq_numStdTab (n : ℕ) :
-    ∑ lam : Nat.Partition n, (numStdTab lam.partsList) ^ 2 = Nat.factorial n := by
-  have h1 : Nat.card (stdTabPair n) = ∑ lam : Nat.Partition n,
-      Nat.card {p : stdTabPair n // shapePartition n p = lam} := by
+    ∑ η : Nat.Partition n, (numStdTab η.partsList) ^ 2 = Nat.factorial n := by
+  have h1 : Nat.card (stdTabPair n) = ∑ η : Nat.Partition n,
+      Nat.card {p : stdTabPair n // shapePartition n p = η} := by
     rw [← Nat.card_sigma]
     exact (Nat.card_congr (Equiv.sigmaFiberEquiv (shapePartition n))).symm
   rw [← card_stdTabPair n, h1]
-  refine Finset.sum_congr rfl fun lam _ => ?_
-  rw [Nat.card_congr (stdTabPairFiberEquiv n lam), Nat.card_prod, numStdTab, sq]
+  refine Finset.sum_congr rfl fun η _ => ?_
+  rw [Nat.card_congr (stdTabPairFiberEquiv n η), Nat.card_prod, numStdTab, sq]
 
 end Young

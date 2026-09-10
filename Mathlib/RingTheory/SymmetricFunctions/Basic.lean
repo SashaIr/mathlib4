@@ -26,8 +26,8 @@ variables, of bounded total degree and compatible with setting the last variable
 * `SymFunc.IsHomogeneous f n` and `SymFunc.symFuncHomogeneous n R` : the homogeneous
   symmetric functions of degree `n`.
 * `SymFunc.homogeneousComponent d f` : the homogeneous component of degree `d`.
-* `SymFunc.msymFunc n R lam`, `SymFunc.schurFunc n R lam`, `SymFunc.hsymFunc n R lam`,
-  `SymFunc.esymFunc n R lam`, `SymFunc.psymFunc n R lam` : the monomial, Schur, complete
+* `SymFunc.msymFunc n R η`, `SymFunc.schurFunc n R η`, `SymFunc.hsymFunc n R η`,
+  `SymFunc.esymFunc n R η`, `SymFunc.psymFunc n R η` : the monomial, Schur, complete
   homogeneous, elementary and power sum symmetric functions of a partition of `n`.
 * `SymFunc.hallInnerFunc n R` : the Hall scalar product on the homogeneous symmetric
   functions of degree `n`.
@@ -47,7 +47,7 @@ variables, of bounded total degree and compatible with setting the last variable
 * `SymFunc.sum_homogeneousComponent` : a symmetric function is the sum of its
   homogeneous components, and `SymFunc.IsHomogeneous.mul` : the product of two
   homogeneous symmetric functions is homogeneous, so that `SymFunc R` is a graded ring.
-* `SymFunc.poly_msymFunc`, `SymFunc.poly_schurFunc` : the components of `m_lam` and `s_lam`
+* `SymFunc.poly_msymFunc`, `SymFunc.poly_schurFunc` : the components of `m_η` and `s_η`
   are the monomial symmetric polynomials and the Schur polynomials.
 * `SymFunc.msymFuncBasis`, `SymFunc.schurFuncBasis`, `SymFunc.hsymFuncBasis`,
   `SymFunc.esymFuncBasis`, `SymFunc.psymFuncBasis` : **the monomial, Schur, complete
@@ -60,9 +60,9 @@ variables, of bounded total degree and compatible with setting the last variable
 * `SymFunc.omegaFunc_schurFunc`, `SymFunc.omegaFunc_omegaFunc`, `SymFunc.hallInnerFunc_omegaFunc`,
   `SymFunc.omegaFunc_hsymFunc`, `SymFunc.omegaFunc_psymFunc` : `omega` exchanges the Schur
   functions of two conjugate shapes, is an involution and an isometry, exchanges `h` and
-  `e`, and acts on `p_lam` by the sign `(-1)^(n - length lam)`.
+  `e`, and acts on `p_η` by the sign `(-1)^(n - length η)`.
 * `SymFunc.schurFunc_mul_schurFunc` : **the Littlewood–Richardson rule** for symmetric
-  functions, `s_lam · s_mu = ∑_nu c^nu_{lam mu} · s_nu`.
+  functions, `s_η · s_μ = ∑_nu c^ν_{η μ} · s_ν`.
 
 ## References
 
@@ -368,73 +368,73 @@ lemma poly_symFuncOfPoly (hn : n ≤ m) (g : symHomogeneousSubmodule n n R)
 
 /-! ### The classical symmetric functions and the bases of the homogeneous part -/
 
-/-- The monomial symmetric function `m_lam`, as a homogeneous symmetric function of degree
-`n = |lam|`. -/
-noncomputable def msymFunc (n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (mSub n n R lam)
+/-- The monomial symmetric function `m_η`, as a homogeneous symmetric function of degree
+`n = |η|`. -/
+noncomputable def msymFunc (n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n n) :
+    symFuncHomogeneous n R := symFuncOfPoly n R (mSub n n R η)
 
-/-- The Schur symmetric function `s_lam`, as a homogeneous symmetric function of degree
-`n = |lam|`. -/
-noncomputable def schurFunc (n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (schurSub n n R lam)
+/-- The Schur symmetric function `s_η`, as a homogeneous symmetric function of degree
+`n = |η|`. -/
+noncomputable def schurFunc (n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n n) :
+    symFuncHomogeneous n R := symFuncOfPoly n R (schurSub n n R η)
 
-/-- The complete homogeneous symmetric function `h_lam`, as a homogeneous symmetric
-function of degree `n = |lam|`. -/
-noncomputable def hsymFunc (n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (hSub n n R lam)
+/-- The complete homogeneous symmetric function `h_η`, as a homogeneous symmetric
+function of degree `n = |η|`. -/
+noncomputable def hsymFunc (n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n n) :
+    symFuncHomogeneous n R := symFuncOfPoly n R (hSub n n R η)
 
-/-- The elementary symmetric function `e_{lam'}`, as a homogeneous symmetric function of
-degree `n = |lam|`. -/
-noncomputable def esymFunc (n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (eSub n n R lam)
+/-- The elementary symmetric function `e_{η'}`, as a homogeneous symmetric function of
+degree `n = |η|`. -/
+noncomputable def esymFunc (n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n n) :
+    symFuncHomogeneous n R := symFuncOfPoly n R (eSub n n R η)
 
-/-- The power sum symmetric function `p_lam`, as a homogeneous symmetric function of
-degree `n = |lam|`. -/
-noncomputable def psymFunc (n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (pSub n n R lam)
+/-- The power sum symmetric function `p_η`, as a homogeneous symmetric function of
+degree `n = |η|`. -/
+noncomputable def psymFunc (n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n n) :
+    symFuncHomogeneous n R := symFuncOfPoly n R (pSub n n R η)
 
 /-- The components of the monomial symmetric function are the monomial symmetric
 polynomials. -/
-@[simp] theorem poly_msymFunc (hn : n ≤ m) (lam : PartIdx n n) :
-    (msymFunc n R lam).1.poly m = monomialSym m R lam.1 := by
+@[simp] theorem poly_msymFunc (hn : n ≤ m) (η : PartIdx n n) :
+    (msymFunc n R η).1.poly m = monomialSym m R η.1 := by
   refine poly_symFuncOfPoly hn _ (monomialSym_mem_symHomogeneousSubmodule
-    ⟨lam.1, lam.2.1, lam.2.2.1, lam.2.1.length_le_sum.trans (lam.2.2.1.symm ▸ hn)⟩) ?_
-  rw [truncVars_monomialSym hn lam.2.1 (le_of_eq lam.2.2.1), coe_mSub]
+    ⟨η.1, η.2.1, η.2.2.1, η.2.1.length_le_sum.trans (η.2.2.1.symm ▸ hn)⟩) ?_
+  rw [truncVars_monomialSym hn η.2.1 (le_of_eq η.2.2.1), coe_mSub]
 
 /-- The components of the Schur symmetric function are the Schur polynomials. -/
-@[simp] theorem poly_schurFunc (hn : n ≤ m) (lam : PartIdx n n) :
-    (schurFunc n R lam).1.poly m = schurPoly (Fin m) R lam.1 := by
+@[simp] theorem poly_schurFunc (hn : n ≤ m) (η : PartIdx n n) :
+    (schurFunc n R η).1.poly m = schurPoly (Fin m) R η.1 := by
   refine poly_symFuncOfPoly hn _ (schurPoly_mem_symHomogeneousSubmodule
-    ⟨lam.1, lam.2.1, lam.2.2.1, lam.2.1.length_le_sum.trans (lam.2.2.1.symm ▸ hn)⟩) ?_
-  rw [truncVars_schurPoly hn lam.2.1 (le_of_eq lam.2.2.1), coe_schurSub]
+    ⟨η.1, η.2.1, η.2.2.1, η.2.1.length_le_sum.trans (η.2.2.1.symm ▸ hn)⟩) ?_
+  rw [truncVars_schurPoly hn η.2.1 (le_of_eq η.2.2.1), coe_schurSub]
 
-/-- The components of `h_lam` are the products of complete homogeneous symmetric
+/-- The components of `h_η` are the products of complete homogeneous symmetric
 polynomials. -/
-@[simp] theorem poly_hsymFunc (hn : n ≤ m) (lam : PartIdx n n) :
-    (hsymFunc n R lam).1.poly m = hProd m R lam.1 := by
+@[simp] theorem poly_hsymFunc (hn : n ≤ m) (η : PartIdx n n) :
+    (hsymFunc n R η).1.poly m = hProd m R η.1 := by
   refine poly_symFuncOfPoly hn _ (hProd_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn lam)) ?_
-  have hh := congrArg Subtype.val (truncSub_hSub (R := R) (le_refl n) hn lam)
+    (partIdxEquiv (le_refl n) hn η)) ?_
+  have hh := congrArg Subtype.val (truncSub_hSub (R := R) (le_refl n) hn η)
   rw [coe_truncSub, coe_hSub, coe_hSub] at hh
   rw [coe_hSub]
   exact hh
 
-/-- The components of `e_{lam'}` are the products of elementary symmetric polynomials. -/
-@[simp] theorem poly_esymFunc (hn : n ≤ m) (lam : PartIdx n n) :
-    (esymFunc n R lam).1.poly m = eProd m R (conjPart lam.1) := by
+/-- The components of `e_{η'}` are the products of elementary symmetric polynomials. -/
+@[simp] theorem poly_esymFunc (hn : n ≤ m) (η : PartIdx n n) :
+    (esymFunc n R η).1.poly m = eProd m R (conjPart η.1) := by
   refine poly_symFuncOfPoly hn _ (eProd_conj_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn lam)) ?_
-  have he := congrArg Subtype.val (truncSub_eSub (R := R) (le_refl n) hn lam)
+    (partIdxEquiv (le_refl n) hn η)) ?_
+  have he := congrArg Subtype.val (truncSub_eSub (R := R) (le_refl n) hn η)
   rw [coe_truncSub, coe_eSub, coe_eSub] at he
   rw [coe_eSub]
   exact he
 
-/-- The components of `p_lam` are the products of power sums. -/
-@[simp] theorem poly_psymFunc (hn : n ≤ m) (lam : PartIdx n n) :
-    (psymFunc n R lam).1.poly m = pProd m R lam.1 := by
+/-- The components of `p_η` are the products of power sums. -/
+@[simp] theorem poly_psymFunc (hn : n ≤ m) (η : PartIdx n n) :
+    (psymFunc n R η).1.poly m = pProd m R η.1 := by
   refine poly_symFuncOfPoly hn _ (pProd_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn lam)) ?_
-  rw [truncVars_pProd hn lam.2.1, coe_pSub]
+    (partIdxEquiv (le_refl n) hn η)) ?_
+  rw [truncVars_pProd hn η.2.1, coe_pSub]
 
 /-- **The monomial symmetric functions of the partitions of `n` form a basis** of the
 homogeneous symmetric functions of degree `n`. -/
@@ -442,8 +442,8 @@ noncomputable def msymFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (PartIdx n n) R (symFuncHomogeneous n R) :=
   (mBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm
 
-@[simp] lemma msymFuncBasis_apply (lam : PartIdx n n) :
-    msymFuncBasis n R lam = msymFunc n R lam := by
+@[simp] lemma msymFuncBasis_apply (η : PartIdx n n) :
+    msymFuncBasis n R η = msymFunc n R η := by
   rw [msymFuncBasis, Module.Basis.map_apply, mBasis_apply, msymFunc, symFuncOfPoly]
 
 /-- **The Schur symmetric functions of the partitions of `n` form a basis** of the
@@ -452,40 +452,40 @@ noncomputable def schurFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (PartIdx n n) R (symFuncHomogeneous n R) :=
   (schurBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm
 
-@[simp] lemma schurFuncBasis_apply (lam : PartIdx n n) :
-    schurFuncBasis n R lam = schurFunc n R lam := by
+@[simp] lemma schurFuncBasis_apply (η : PartIdx n n) :
+    schurFuncBasis n R η = schurFunc n R η := by
   rw [schurFuncBasis, Module.Basis.map_apply, schurBasis_apply, schurFunc, symFuncOfPoly]
 
-/-- **The complete homogeneous symmetric functions `h_lam` form a basis** of the
+/-- **The complete homogeneous symmetric functions `h_η` form a basis** of the
 homogeneous symmetric functions of degree `n`. -/
 noncomputable def hsymFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (PartIdx n n) R (symFuncHomogeneous n R) :=
   (hBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm
 
-@[simp] lemma hsymFuncBasis_apply (lam : PartIdx n n) :
-    hsymFuncBasis n R lam = hsymFunc n R lam := by
+@[simp] lemma hsymFuncBasis_apply (η : PartIdx n n) :
+    hsymFuncBasis n R η = hsymFunc n R η := by
   rw [hsymFuncBasis, Module.Basis.map_apply, hBasis, Module.Basis.mk_apply, hsymFunc,
     symFuncOfPoly]
 
-/-- **The elementary symmetric functions `e_{lam'}` form a basis** of the homogeneous
+/-- **The elementary symmetric functions `e_{η'}` form a basis** of the homogeneous
 symmetric functions of degree `n`. -/
 noncomputable def esymFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (PartIdx n n) R (symFuncHomogeneous n R) :=
   (eBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm
 
-@[simp] lemma esymFuncBasis_apply (lam : PartIdx n n) :
-    esymFuncBasis n R lam = esymFunc n R lam := by
+@[simp] lemma esymFuncBasis_apply (η : PartIdx n n) :
+    esymFuncBasis n R η = esymFunc n R η := by
   rw [esymFuncBasis, Module.Basis.map_apply, eBasis, Module.Basis.mk_apply, esymFunc,
     symFuncOfPoly]
 
-/-- **The power sums `p_lam` form a basis** of the homogeneous symmetric functions of
+/-- **The power sums `p_η` form a basis** of the homogeneous symmetric functions of
 degree `n` over a ring containing the rationals. -/
 noncomputable def psymFuncBasis (n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] :
     Module.Basis (PartIdx n n) R (symFuncHomogeneous n R) :=
   (pBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm
 
-@[simp] lemma psymFuncBasis_apply [Algebra ℚ R] (lam : PartIdx n n) :
-    psymFuncBasis n R lam = psymFunc n R lam := by
+@[simp] lemma psymFuncBasis_apply [Algebra ℚ R] (η : PartIdx n n) :
+    psymFuncBasis n R η = psymFunc n R η := by
   rw [psymFuncBasis, Module.Basis.map_apply, pBasis, Module.Basis.mk_apply, psymFunc,
     symFuncOfPoly]
 
@@ -527,18 +527,18 @@ theorem hallInnerFunc_comm (f g : symFuncHomogeneous n R) :
   rw [hallInnerFunc_apply, hallInnerFunc_apply, hallInner_comm]
 
 /-- **The Schur functions are orthonormal** for the Hall scalar product. -/
-theorem hallInnerFunc_schurFunc (lam mu : PartIdx n n) :
-    hallInnerFunc n R (schurFunc n R lam) (schurFunc n R mu) = if lam = mu then 1 else 0 := by
+theorem hallInnerFunc_schurFunc (η μ : PartIdx n n) :
+    hallInnerFunc n R (schurFunc n R η) (schurFunc n R μ) = if η = μ then 1 else 0 := by
   simp only [hallInnerFunc_apply, schurFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply]
-  exact hallInner_schurSub lam mu
+  exact hallInner_schurSub η μ
 
 /-- **The bases `h` and `m` of symmetric functions are dual** for the Hall scalar
 product. -/
-theorem hallInnerFunc_hsymFunc_msymFunc (lam mu : PartIdx n n) :
-    hallInnerFunc n R (hsymFunc n R lam) (msymFunc n R mu) = if lam = mu then 1 else 0 := by
+theorem hallInnerFunc_hsymFunc_msymFunc (η μ : PartIdx n n) :
+    hallInnerFunc n R (hsymFunc n R η) (msymFunc n R μ) = if η = μ then 1 else 0 := by
   simp only [hallInnerFunc_apply, hsymFunc, msymFunc, symFuncOfPoly,
     LinearEquiv.apply_symm_apply]
-  exact hallInner_hSub_mSub lam mu
+  exact hallInner_hSub_mSub η μ
 
 /-! ### The involution `omega` on symmetric functions -/
 
@@ -555,8 +555,8 @@ lemma omegaFunc_apply (f : symFuncHomogeneous n R) :
           (omegaSym n n R (le_refl n) (symFuncHomogeneousEquiv (le_refl n) R f)) := rfl
 
 /-- `omega` exchanges the Schur functions of two conjugate shapes. -/
-@[simp] theorem omegaFunc_schurFunc (lam : PartIdx n n) :
-    omegaFunc n R (schurFunc n R lam) = schurFunc n R (conjIdx (le_refl n) lam) := by
+@[simp] theorem omegaFunc_schurFunc (η : PartIdx n n) :
+    omegaFunc n R (schurFunc n R η) = schurFunc n R (conjIdx (le_refl n) η) := by
   simp only [omegaFunc_apply, schurFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply,
     omegaSym_schurSub]
 
@@ -573,28 +573,28 @@ theorem hallInnerFunc_omegaFunc (f g : symFuncHomogeneous n R) :
   exact hallInner_omegaSym (le_refl n) _ _
 
 /-- **`omega` exchanges the complete homogeneous and the elementary symmetric
-functions**: `omega h_lam = e_{lam'}`. -/
-theorem omegaFunc_hsymFunc (lam : PartIdx n n) :
-    omegaFunc n R (hsymFunc n R lam) = esymFunc n R (conjIdx (le_refl n) lam) := by
-  have hcoe : eSubOfPart n n R (le_refl n) lam = eSub n n R (conjIdx (le_refl n) lam) := by
+functions**: `omega h_η = e_{η'}`. -/
+theorem omegaFunc_hsymFunc (η : PartIdx n n) :
+    omegaFunc n R (hsymFunc n R η) = esymFunc n R (conjIdx (le_refl n) η) := by
+  have hcoe : eSubOfPart n n R (le_refl n) η = eSub n n R (conjIdx (le_refl n) η) := by
     refine Subtype.ext ?_
-    rw [coe_eSubOfPart, coe_eSub, conjIdx_val, conjPart_conjPart lam.2.1]
+    rw [coe_eSubOfPart, coe_eSub, conjIdx_val, conjPart_conjPart η.2.1]
   simp only [omegaFunc_apply, hsymFunc, esymFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply,
     omegaSym_hSub, hcoe]
 
 /-- `omega` exchanges the elementary and the complete homogeneous symmetric functions. -/
-theorem omegaFunc_esymFunc (lam : PartIdx n n) :
-    omegaFunc n R (esymFunc n R lam) = hsymFunc n R (conjIdx (le_refl n) lam) := by
-  have h := omegaFunc_hsymFunc (R := R) (conjIdx (le_refl n) lam)
+theorem omegaFunc_esymFunc (η : PartIdx n n) :
+    omegaFunc n R (esymFunc n R η) = hsymFunc n R (conjIdx (le_refl n) η) := by
+  have h := omegaFunc_hsymFunc (R := R) (conjIdx (le_refl n) η)
   rw [conjIdx_conjIdx] at h
   rw [← h, omegaFunc_omegaFunc]
 
 /-- **`omega` acts on the power sum symmetric functions by the sign
-`(-1)^(n - length lam)`**. -/
-theorem omegaFunc_psymFunc (lam : PartIdx n n) :
-    omegaFunc n R (psymFunc n R lam) = ((-1) ^ (n - lam.1.length) : R) • psymFunc n R lam := by
-  have key : symFuncHomogeneousEquiv (le_refl n) R (omegaFunc n R (psymFunc n R lam))
-      = ((-1) ^ (n - lam.1.length) : R) • pSub n n R lam := by
+`(-1)^(n - length η)`**. -/
+theorem omegaFunc_psymFunc (η : PartIdx n n) :
+    omegaFunc n R (psymFunc n R η) = ((-1) ^ (n - η.1.length) : R) • psymFunc n R η := by
+  have key : symFuncHomogeneousEquiv (le_refl n) R (omegaFunc n R (psymFunc n R η))
+      = ((-1) ^ (n - η.1.length) : R) • pSub n n R η := by
     simp only [omegaFunc_apply, psymFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply]
     refine Subtype.ext ?_
     rw [SetLike.val_smul, coe_pSub, omegaSym_pSub, MvPolynomial.smul_eq_C_mul, map_pow,
@@ -607,26 +607,26 @@ theorem omegaFunc_psymFunc (lam : PartIdx n n) :
 /-! ### The Littlewood–Richardson rule for symmetric functions -/
 
 /-- **The Littlewood–Richardson rule for symmetric functions**: the product of two Schur
-functions is the sum, over the partitions `nu` of `|lam| + |mu|`, of `c^nu_{lam mu}` copies
-of the Schur function of shape `nu`. -/
-theorem schurFunc_mul_schurFunc {a b : ℕ} (hab : a + b = n) (lam : PartIdx a a)
-    (mu : PartIdx b b) :
-    (schurFunc a R lam).1 * (schurFunc b R mu).1
-      = ∑ nu : PartIdx n n, lrCoeff lam.1 mu.1 nu.1 • (schurFunc n R nu).1 := by
+functions is the sum, over the partitions `ν` of `|η| + |μ|`, of `c^ν_{η μ}` copies
+of the Schur function of shape `ν`. -/
+theorem schurFunc_mul_schurFunc {a b : ℕ} (hab : a + b = n) (η : PartIdx a a)
+    (μ : PartIdx b b) :
+    (schurFunc a R η).1 * (schurFunc b R μ).1
+      = ∑ ν : PartIdx n n, lrCoeff η.1 μ.1 ν.1 • (schurFunc n R ν).1 := by
   have ha : a ≤ n := by omega
   have hb : b ≤ n := by omega
-  have hL : ((schurFunc a R lam).1 * (schurFunc b R mu).1).IsHomogeneous n := by
+  have hL : ((schurFunc a R η).1 * (schurFunc b R μ).1).IsHomogeneous n := by
     rw [← hab]
-    exact (schurFunc a R lam).2.mul (schurFunc b R mu).2
-  have hR : (∑ nu : PartIdx n n, lrCoeff lam.1 mu.1 nu.1 • (schurFunc n R nu).1).IsHomogeneous n :=
-    Submodule.sum_mem _ fun nu _ => nsmul_mem (schurFunc n R nu).2 _
+    exact (schurFunc a R η).2.mul (schurFunc b R μ).2
+  have hR : (∑ ν : PartIdx n n, lrCoeff η.1 μ.1 ν.1 • (schurFunc n R ν).1).IsHomogeneous n :=
+    Submodule.sum_mem _ fun ν _ => nsmul_mem (schurFunc n R ν).2 _
   refine SymFunc.ext_of_poly_eq (le_refl n) hL hR ?_
-  have hsum : (∑ nu : PartIdx n n, lrCoeff lam.1 mu.1 nu.1 • (schurFunc n R nu).1).poly n
-      = ∑ nu : PartIdx n n, lrCoeff lam.1 mu.1 nu.1 • schurPoly (Fin n) R nu.1 := by
+  have hsum : (∑ ν : PartIdx n n, lrCoeff η.1 μ.1 ν.1 • (schurFunc n R ν).1).poly n
+      = ∑ ν : PartIdx n n, lrCoeff η.1 μ.1 ν.1 • schurPoly (Fin n) R ν.1 := by
     rw [← SymFunc.polyAlgHom_apply, map_sum]
-    exact Finset.sum_congr rfl fun nu _ => by
+    exact Finset.sum_congr rfl fun ν _ => by
       rw [map_nsmul, SymFunc.polyAlgHom_apply, poly_schurFunc (le_refl n)]
   rw [SymFunc.poly_mul, hsum, poly_schurFunc ha, poly_schurFunc hb,
-    schurPoly_mul_eq_sum_partIdx (by rw [lam.2.2.1, mu.2.2.1, hab]) (le_refl n)]
+    schurPoly_mul_eq_sum_partIdx (by rw [η.2.2.1, μ.2.2.1, hab]) (le_refl n)]
 
 end SymFunc

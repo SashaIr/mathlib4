@@ -60,7 +60,7 @@ lemma getD_conjTab (t : List (List ℕ)) {j : ℕ} (hj : j < (shape t).headD 0) 
   rw [conjTab, List.getD_eq_getElem _ _ (by simpa using hj)]
   simp
 
-/-- A tableau has at most `sh 0` columns, where `sh` is its shape. -/
+/-- A tableau has at most `μ 0` columns, where `μ` is its shape. -/
 lemma lt_headD_shape_of_inShape {t : List (List ℕ)} (h : IsPart (shape t)) {i j : ℕ}
     (hij : InShape (shape t) (i, j)) : j < (shape t).headD 0 := by
   have hmono := h.getD_antitone (Nat.zero_le i)
@@ -113,19 +113,19 @@ lemma getElem_getD_conjTab {t : List (List ℕ)} (h : IsPart (shape t)) {i j : �
 /-- Coq `conj_tabK`: conjugation is an involution. -/
 theorem conjTab_conjTab {t : List (List ℕ)} (h : IsPart (shape t)) : conjTab (conjTab t) = t := by
   have hc := isPart_shape_conjTab h
-  have hsh : shape (conjTab (conjTab t)) = shape t := by
+  have hμ : shape (conjTab (conjTab t)) = shape t := by
     rw [shape_conjTab hc, shape_conjTab h, conjPart_conjPart h]
   have hrow : ∀ i, (conjTab (conjTab t)).getD i [] = t.getD i [] := by
     intro i
     have hlenrow : ((conjTab (conjTab t)).getD i []).length = (t.getD i []).length := by
-      rw [← getD_shape, hsh, getD_shape]
+      rw [← getD_shape, hμ, getD_shape]
     refine List.ext_getElem hlenrow fun j hj hj' => ?_
     have hij : InShape (shape t) (i, j) := by rwa [InShape, getD_shape]
     rw [← List.getD_eq_getElem _ 0 hj, ← List.getD_eq_getElem _ 0 hj',
       getD_getD_conjTab hc (by rw [shape_conjTab h]; exact (inShape_conjPart h i j).1 hij),
       getD_getD_conjTab h hij]
   have hlen : (conjTab (conjTab t)).length = t.length := by
-    rw [← length_shape, hsh, length_shape]
+    rw [← length_shape, hμ, length_shape]
   refine List.ext_getElem hlen fun i hi hi' => ?_
   rw [← List.getD_eq_getElem _ [] hi, ← List.getD_eq_getElem _ [] hi', hrow]
 
@@ -210,7 +210,7 @@ theorem perm_toWord_conjTab {t : List (List ℕ)} (h : IsPart (shape t)) :
   have hc := isPart_shape_conjTab h
   have hheadC : (shape (conjTab t)).headD 0 = t.length := by
     rw [shape_conjTab h, ← length_conjPart (isPart_conjPart h), conjPart_conjPart h, length_shape]
-  have hshiff : ∀ i j, InShape (shape (conjTab t)) (j, i) ↔ InShape (shape t) (i, j) := by
+  have hμiff : ∀ i j, InShape (shape (conjTab t)) (j, i) ↔ InShape (shape t) (i, j) := by
     intro i j
     rw [shape_conjTab h]
     exact (inShape_conjPart h i j).symm
@@ -219,8 +219,8 @@ theorem perm_toWord_conjTab {t : List (List ℕ)} (h : IsPart (shape t)) :
     coe_flatten_eq_sum_boxes h (le_refl _) (le_refl _), Finset.sum_comm]
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => ?_
   by_cases hij : InShape (shape t) (i, j)
-  · rw [ite_eq_left hij, ite_eq_left ((hshiff i j).2 hij), getD_getD_conjTab h hij]
-  · rw [ite_eq_right hij, ite_eq_right (fun hx => hij ((hshiff i j).1 hx))]
+  · rw [ite_eq_left hij, ite_eq_left ((hμiff i j).2 hij), getD_getD_conjTab h hij]
+  · rw [ite_eq_right hij, ite_eq_right (fun hx => hij ((hμiff i j).1 hx))]
 
 /-! ### Conjugating a standard tableau -/
 

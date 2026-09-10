@@ -20,8 +20,8 @@ list into a given number of consecutive slices.
 
 * `List.vectNK n k` : the list of the lists of natural numbers of sum `n` and length `k`
   (Coq `vect_n_k`).
-* `List.reshape sh s` : the list `s` cut into consecutive slices of lengths the entries of
-  `sh` (Coq `reshape`).
+* `List.reshape μ s` : the list `s` cut into consecutive slices of lengths the entries of
+  `μ` (Coq `reshape`).
 * `List.cutK k s` : the list of the cuttings of `s` into `k` consecutive slices (Coq
   `cut_k`).
 * `List.cut3 s` : the list of the cuttings of `s` into three consecutive slices (Coq
@@ -134,36 +134,36 @@ theorem nodup_vectNK : ∀ (n k : ℕ), (vectNK n k).Nodup
 
 variable {α : Type*}
 
-/-- The list `s` cut into consecutive slices of lengths the entries of `sh` (Coq
+/-- The list `s` cut into consecutive slices of lengths the entries of `μ` (Coq
 `reshape`). -/
 def reshape : List ℕ → List α → List (List α)
   | [], _ => []
-  | n :: sh, s => s.take n :: reshape sh (s.drop n)
+  | n :: μ, s => s.take n :: reshape μ (s.drop n)
 
 @[simp] lemma reshape_nil (s : List α) : reshape [] s = [] := rfl
 
-@[simp] lemma reshape_cons (n : ℕ) (sh : List ℕ) (s : List α) :
-    reshape (n :: sh) s = s.take n :: reshape sh (s.drop n) := rfl
+@[simp] lemma reshape_cons (n : ℕ) (μ : List ℕ) (s : List α) :
+    reshape (n :: μ) s = s.take n :: reshape μ (s.drop n) := rfl
 
 /-- Concatenating the slices of a cutting gives back the list (Coq `reshapeKr`). -/
-lemma flatten_reshape : ∀ (sh : List ℕ) (s : List α), s.length ≤ sh.sum →
-    (reshape sh s).flatten = s
+lemma flatten_reshape : ∀ (μ : List ℕ) (s : List α), s.length ≤ μ.sum →
+    (reshape μ s).flatten = s
   | [], s, h => by
     rw [reshape_nil, List.flatten_nil, eq_comm, ← List.length_eq_zero_iff]
     simpa using h
-  | n :: sh, s, h => by
+  | n :: μ, s, h => by
     rw [reshape_cons, List.flatten_cons,
-      flatten_reshape sh (s.drop n) (by rw [List.length_drop]; simp at h; omega),
+      flatten_reshape μ (s.drop n) (by rw [List.length_drop]; simp at h; omega),
       List.take_append_drop]
 
 /-- The shape of a cutting is the given list of lengths (Coq `reshapeKl`). -/
-lemma shape_reshape : ∀ (sh : List ℕ) (s : List α), sh.sum ≤ s.length →
-    shape (reshape sh s) = sh
+lemma shape_reshape : ∀ (μ : List ℕ) (s : List α), μ.sum ≤ s.length →
+    shape (reshape μ s) = μ
   | [], s, _ => rfl
-  | n :: sh, s, h => by
+  | n :: μ, s, h => by
     rw [List.sum_cons] at h
     rw [reshape_cons, shape, List.map_cons, ← shape,
-      shape_reshape sh (s.drop n) (by rw [List.length_drop]; omega),
+      shape_reshape μ (s.drop n) (by rw [List.length_drop]; omega),
       List.length_take, min_eq_left (by omega)]
 
 /-- Cutting a concatenation along its shape gives back the slices (Coq `flattenK`). -/
@@ -175,7 +175,7 @@ lemma reshape_shape : ∀ ss : List (List α), reshape (shape ss) ss.flatten = s
 
 /-- The list of the cuttings of `s` into `k` consecutive slices (Coq `cut_k`). -/
 def cutK (k : ℕ) (s : List α) : List (List (List α)) :=
-  (vectNK s.length k).map fun sh => reshape sh s
+  (vectNK s.length k).map fun μ => reshape μ s
 
 /-- A list of slices is a cutting of its concatenation (Coq `cut_k_flatten`). -/
 lemma mem_cutK_flatten (ss : List (List α)) : ss ∈ cutK ss.length ss.flatten :=
@@ -185,10 +185,10 @@ lemma mem_cutK_flatten (ss : List (List α)) : ss ∈ cutK ss.length ss.flatten 
 /-- The length of a cutting is the number of slices (Coq `size_cut_k`). -/
 lemma length_of_mem_cutK {k : ℕ} {s : List α} {ss : List (List α)} (h : ss ∈ cutK k s) :
     ss.length = k := by
-  obtain ⟨sh, hsh, rfl⟩ := List.mem_map.1 h
-  obtain ⟨hsum, hlen⟩ := mem_vectNK.1 hsh
-  have hs : shape (reshape sh s) = sh := shape_reshape sh s (by omega)
-  have hlm : (reshape sh s).length = (shape (reshape sh s)).length := by
+  obtain ⟨μ, hμ, rfl⟩ := List.mem_map.1 h
+  obtain ⟨hsum, hlen⟩ := mem_vectNK.1 hμ
+  have hs : shape (reshape μ s) = μ := shape_reshape μ s (by omega)
+  have hlm : (reshape μ s).length = (shape (reshape μ s)).length := by
     rw [shape, List.length_map]
   rw [hlm, hs, hlen]
 
@@ -200,9 +200,9 @@ theorem mem_cutK_iff {s : List α} {ss : List (List α)} :
   · rintro rfl
     exact mem_cutK_flatten ss
   · intro h
-    obtain ⟨sh, hsh, hss⟩ := List.mem_map.1 h
-    obtain ⟨hsum, -⟩ := mem_vectNK.1 hsh
-    rw [← hss, flatten_reshape sh s (by omega)]
+    obtain ⟨μ, hμ, hss⟩ := List.mem_map.1 h
+    obtain ⟨hsum, -⟩ := mem_vectNK.1 hμ
+    rw [← hss, flatten_reshape μ s (by omega)]
 
 /-! ### Cutting a list into three slices -/
 

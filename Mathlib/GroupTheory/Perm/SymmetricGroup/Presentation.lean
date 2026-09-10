@@ -98,11 +98,11 @@ noncomputable def permOfCox (n : ℕ) : (CoxeterMatrix.A n).Group →* Equiv.Per
 /-- The adjacent transpositions generate the symmetric group, so `permOfCox` is
 surjective. -/
 theorem permOfCox_surjective (n : ℕ) : Function.Surjective (permOfCox n) := by
-  intro sigma
-  have hmem : sigma ∈ Submonoid.closure
+  intro σ
+  have hmem : σ ∈ Submonoid.closure
       (Set.range fun i : Fin n => Equiv.swap i.castSucc i.succ) := by
     rw [Equiv.Perm.mclosure_swap_castSucc_succ]
-    exact Submonoid.mem_top sigma
+    exact Submonoid.mem_top σ
   induction hmem using Submonoid.closure_induction with
   | mem x hx => obtain ⟨i, rfl⟩ := hx; exact ⟨(CoxeterMatrix.A n).simple i, permOfCox_simple n i⟩
   | one => exact ⟨1, map_one _⟩
@@ -435,7 +435,7 @@ theorem permOfCox_injective (n : ℕ) : Function.Injective (permOfCox n) := by
         by_contra h0
         have hpos : 0 < i := Nat.pos_of_ne_zero h0
         rw [map_mul] at hw
-        have happ := congrArg (fun sigma : Equiv.Perm (Fin (n + 2)) => sigma (Fin.last (n + 1))) hw
+        have happ := congrArg (fun σ : Equiv.Perm (Fin (n + 2)) => σ (Fin.last (n + 1))) hw
         simp only [Equiv.Perm.mul_apply, Equiv.Perm.one_apply] at happ
         have hfix := permOfCox_coxEmbed_last n v
         have hx := (permOfCox (n + 1) (coxEmbed n v)).injective (happ.trans hfix.symm)

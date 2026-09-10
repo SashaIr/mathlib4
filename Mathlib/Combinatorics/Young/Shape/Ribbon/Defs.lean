@@ -218,21 +218,21 @@ end RibbonOn
 
 /-- The height of a partition seen as a skew shape over the empty shape is its number of
 rows. -/
-lemma ribbonHeight_nil {mu : List ℕ} (hmu : IsPart mu) : ribbonHeight [] mu = mu.length := by
+lemma ribbonHeight_nil {μ : List ℕ} (hμ : IsPart μ) : ribbonHeight [] μ = μ.length := by
   rw [ribbonHeight, diffShape_nil]
-  exact List.countP_eq_length.2 fun a ha => by simpa using hmu.pos_of_mem ha
+  exact List.countP_eq_length.2 fun a ha => by simpa using hμ.pos_of_mem ha
 
 /-- A partition is a ribbon over the empty shape exactly when it is a *hook*, that is when
 its second row has at most one box. -/
-lemma exists_ribbonOn_nil_iff {mu : List ℕ} (hmu : IsPart mu) (hne : mu ≠ []) :
-    (∃ s k, RibbonOn s k [] mu) ↔ mu.getD 1 0 ≤ 1 := by
-  have hlen : 0 < mu.length := List.length_pos_iff.2 hne
+lemma exists_ribbonOn_nil_iff {μ : List ℕ} (hμ : IsPart μ) (hne : μ ≠ []) :
+    (∃ s k, RibbonOn s k [] μ) ↔ μ.getD 1 0 ≤ 1 := by
+  have hlen : 0 < μ.length := List.length_pos_iff.2 hne
   constructor
   · rintro ⟨s, k, h⟩
     have hs : s = 0 := by
       by_contra hcon
-      have h0 : mu.getD 0 0 = 0 := by simpa using h.getD_eq_of_lt (i := 0) (by omega)
-      have := hmu.getD_antitone (i := 0) (j := s) (Nat.zero_le _)
+      have h0 : μ.getD 0 0 = 0 := by simpa using h.getD_eq_of_lt (i := 0) (by omega)
+      have := hμ.getD_antitone (i := 0) (j := s) (Nat.zero_le _)
       have := h.getD_start_lt
       simp only [List.getD_nil] at this
       omega
@@ -245,13 +245,13 @@ lemma exists_ribbonOn_nil_iff {mu : List ℕ} (hmu : IsPart mu) (hne : mu ≠ []
       simp only [zero_add, List.getD_nil] at h2
       omega
   · intro h1
-    refine ⟨0, mu.length - 1, fun i hi => ?_, fun i _ hi => ?_, ?_, fun i hi => ?_⟩
+    refine ⟨0, μ.length - 1, fun i hi => ?_, fun i _ hi => ?_, ?_, fun i hi => ?_⟩
     · rw [List.getD_eq_default _ _ (by omega), List.getD_nil]
-    · have hpos := hmu.getD_pos (i := i + 1) (by omega)
-      have hanti := hmu.getD_antitone (i := 1) (j := i + 1) (by omega)
+    · have hpos := hμ.getD_pos (i := i + 1) (by omega)
+      have hanti := hμ.getD_antitone (i := 1) (j := i + 1) (by omega)
       simp only [List.getD_nil]
       omega
-    · simpa using hmu.getD_pos hlen
+    · simpa using hμ.getD_pos hlen
     · omega
 
 end Young

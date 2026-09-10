@@ -37,15 +37,15 @@ open List MvPolynomial
 
 /-! ### Standard tableaux of a given shape form a finite type -/
 
-instance finite_stdTabOfShape (sh : List ℕ) :
-    Finite {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = sh} := by
+instance finite_stdTabOfShape (μ : List ℕ) :
+    Finite {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ} := by
   classical
   refine Finite.of_injective
-    (fun Q : {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = sh} =>
-      (⟨Q.1.flatten, ?_⟩ : {w : List ℕ // w ∈ (List.range sh.sum).permutations})) ?_
+    (fun Q : {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ} =>
+      (⟨Q.1.flatten, ?_⟩ : {w : List ℕ // w ∈ (List.range μ.sum).permutations})) ?_
   · refine List.mem_permutations.2 ?_
     have hstd : (toWord Q.1).Perm (List.range (toWord Q.1).length) := Q.2.1.2
-    have hlen : (toWord Q.1).length = sh.sum := by
+    have hlen : (toWord Q.1).length = μ.sum := by
       rw [length_toWord, sizeTab, Q.2.2]
     have hperm : (Q.1.flatten).Perm (toWord Q.1) :=
       ((List.reverse_perm Q.1).flatten).symm
@@ -55,12 +55,12 @@ instance finite_stdTabOfShape (sh : List ℕ) :
     have hf : P.flatten = Q.flatten := congrArg Subtype.val h
     exact Subtype.ext (eq_of_shape_eq_of_flatten_eq (by rw [hP.2, hQ.2]) hf)
 
-noncomputable instance fintypeStdTabOfShape (sh : List ℕ) :
-    Fintype {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = sh} :=
+noncomputable instance fintypeStdTabOfShape (μ : List ℕ) :
+    Fintype {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ} :=
   Fintype.ofFinite _
 
-lemma numStdTab_eq_card (sh : List ℕ) :
-    numStdTab sh = Fintype.card {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = sh} :=
+lemma numStdTab_eq_card (μ : List ℕ) :
+    numStdTab μ = Fintype.card {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ} :=
   Nat.card_eq_fintype_card
 
 /-! ### The monomials of the words of a given length -/
@@ -131,13 +131,13 @@ lemma partsList_tabPairShapeS (n : ℕ) (p : tabPairS σ n) :
     (tabPairShapeS n p).partsList = shape p.1.1 :=
   sortDesc_coe (isPart_shape p.2.1)
 
-/-- The pairs with prescribed shape `lam` are the pairs of a tableau over `σ` of shape
-`lam` and a standard tableau of shape `lam`. -/
-def tabPairSFiberEquiv (n : ℕ) (lam : Nat.Partition n) :
-    {p : tabPairS σ n // tabPairShapeS n p = lam} ≃
-      SSYT σ lam.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = lam.partsList} where
+/-- The pairs with prescribed shape `η` are the pairs of a tableau over `σ` of shape
+`η` and a standard tableau of shape `η`. -/
+def tabPairSFiberEquiv (n : ℕ) (η : Nat.Partition n) :
+    {p : tabPairS σ n // tabPairShapeS n p = η} ≃
+      SSYT σ η.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList} where
   toFun p :=
-    have h1 : shape p.1.1.1 = lam.partsList := by
+    have h1 : shape p.1.1.1 = η.partsList := by
       rw [← partsList_tabPairShapeS n p.1, p.2]
     (⟨p.1.1.1, p.1.2.1, h1⟩, ⟨p.1.1.2, p.1.2.2.1, by rw [p.1.2.2.2.1, h1]⟩)
   invFun q :=
@@ -145,7 +145,7 @@ def tabPairSFiberEquiv (n : ℕ) (lam : Nat.Partition n) :
         change (shape q.1.1).sum = n
         rw [q.1.2.2, Nat.Partition.sum_partsList]⟩,
       Nat.Partition.ext (by
-        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = lam.parts
+        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = η.parts
         rw [q.1.2.2, Nat.Partition.coe_partsList])⟩
   left_inv p := rfl
   right_inv q := rfl
@@ -156,7 +156,7 @@ def tabPairSFiberEquiv (n : ℕ) (lam : Nat.Partition n) :
 the sum, over the partitions `λ` of `n`, of `f^λ` copies of the Schur polynomial `s_λ`,
 where `f^λ` is the number of standard tableaux of shape `λ`. -/
 theorem sum_numStdTab_smul_schurPoly (n : ℕ) :
-    ∑ lam : Nat.Partition n, numStdTab lam.partsList • schurPoly σ R lam.partsList
+    ∑ η : Nat.Partition n, numStdTab η.partsList • schurPoly σ R η.partsList
       = (∑ i : σ, X i) ^ n := by
   classical
   rw [← sum_monomial_word (σ := σ) (R := R) n]
@@ -170,12 +170,12 @@ theorem sum_numStdTab_smul_schurPoly (n : ℕ) :
     exact (List.Perm.prod_eq (hp.map (X : σ → MvPolynomial σ R))).symm
   rw [h1, ← Fintype.sum_fiberwise (tabPairShapeS (σ := σ) n)
     (fun p => ((toWord p.1.1).map (X : σ → MvPolynomial σ R)).prod)]
-  refine Finset.sum_congr rfl fun lam _ => ?_
-  have h2 : ∑ p : {p : tabPairS σ n // tabPairShapeS n p = lam},
+  refine Finset.sum_congr rfl fun η _ => ?_
+  have h2 : ∑ p : {p : tabPairS σ n // tabPairShapeS n p = η},
         ((toWord p.1.1.1).map (X : σ → MvPolynomial σ R)).prod
-      = ∑ q : SSYT σ lam.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = lam.partsList},
+      = ∑ q : SSYT σ η.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList},
         ((toWord q.1.1).map (X : σ → MvPolynomial σ R)).prod :=
-    Fintype.sum_equiv (tabPairSFiberEquiv (σ := σ) n lam) _ _ (fun _ => rfl)
+    Fintype.sum_equiv (tabPairSFiberEquiv (σ := σ) n η) _ _ (fun _ => rfl)
   rw [h2, Fintype.sum_prod_type]
   simp only [Finset.sum_const, Finset.card_univ]
   rw [schurPoly, Finset.smul_sum, numStdTab_eq_card]

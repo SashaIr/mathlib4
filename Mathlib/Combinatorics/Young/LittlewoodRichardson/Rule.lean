@@ -12,11 +12,11 @@ public import Mathlib.Data.Set.Card
 # The Littlewood–Richardson rule: the combinatorial statement
 
 Following the crystal (Lascoux–Schützenberger) proof of the Littlewood–Richardson rule, we
-show here that for two fixed shapes `lam` and `mu`, the number of pairs `(S, T)` of
-tableaux of shapes `lam` and `mu` whose plactic product `RS (toWord S ++ toWord T)` is a
+show here that for two fixed shapes `η` and `μ`, the number of pairs `(S, T)` of
+tableaux of shapes `η` and `μ` whose plactic product `RS (toWord S ++ toWord T)` is a
 given tableau `V` only depends on the shape of `V`.  This common value is the
-Littlewood–Richardson coefficient `Young.lrCoeff lam mu nu`, defined as the number of such
-pairs whose product is the superstandard tableau of shape `nu`.
+Littlewood–Richardson coefficient `Young.lrCoeff η μ ν`, defined as the number of such
+pairs whose product is the superstandard tableau of shape `ν`.
 
 The proof is the crystal one: the crystal operators act on pairs of tableaux
 (`Young.pairE` and `Young.pairF`) compatibly with the plactic product, they preserve the
@@ -26,18 +26,18 @@ with the superstandard tableau as its highest weight element
 
 ## Main definitions
 
-* `Young.lrPairs lam mu V` : the pairs of tableaux of shapes `lam` and `mu` with plactic
+* `Young.lrPairs η μ V` : the pairs of tableaux of shapes `η` and `μ` with plactic
   product `V`.
 * `Young.pairE`, `Young.pairF` : the crystal operators acting on pairs of tableaux.
-* `Young.lrCoeff lam mu nu` : the Littlewood–Richardson coefficient.
+* `Young.lrCoeff η μ ν` : the Littlewood–Richardson coefficient.
 
 ## Main results
 
 * `Young.ncard_lrPairs_eq_lrCoeff` : for any tableau `V`, the number of pairs of tableaux
-  of shapes `lam` and `mu` with plactic product `V` is `lrCoeff lam mu (shape V)`.
-* `Young.lrCoeff_eq_ncard_lrTableaux` : the coefficient counts the tableaux of shape `lam`
-  whose product with the superstandard tableau of shape `mu` is superstandard.
-* `Young.lrCoeff_nil_right` : `c^lam_{lam, ∅} = 1`.
+  of shapes `η` and `μ` with plactic product `V` is `lrCoeff η μ (shape V)`.
+* `Young.lrCoeff_eq_ncard_lrTableaux` : the coefficient counts the tableaux of shape `η`
+  whose product with the superstandard tableau of shape `μ` is superstandard.
+* `Young.lrCoeff_nil_right` : `c^η_{η, ∅} = 1`.
 
 ## References
 
@@ -67,18 +67,18 @@ lemma length_crystalF {i : ℕ} {w w' : List ℕ} (h : crystalF i w = some w') :
 /-- Two pairs of tableaux with the same concatenated reading word and the same first shape
 are equal. -/
 lemma eq_of_toWord_append_eq {A B C D : List (List ℕ)} (hA : IsTableau A) (hB : IsTableau B)
-    (hC : IsTableau C) (hD : IsTableau D) (hsh : shape A = shape C)
+    (hC : IsTableau C) (hD : IsTableau D) (hμ : shape A = shape C)
     (h : toWord A ++ toWord B = toWord C ++ toWord D) : A = C ∧ B = D := by
   have hlen : (toWord A).length = (toWord C).length := by
-    rw [length_toWord, length_toWord, sizeTab, sizeTab, hsh]
+    rw [length_toWord, length_toWord, sizeTab, sizeTab, hμ]
   obtain ⟨h1, h2⟩ := List.append_inj h hlen
   exact ⟨by rw [← RS_toWord hA, h1, RS_toWord hC], by rw [← RS_toWord hB, h2, RS_toWord hD]⟩
 
 /-! ### Pairs of tableaux with a given plactic product -/
 
-/-- The set of pairs of tableaux of shapes `lam` and `mu` whose plactic product is `V`. -/
-def lrPairs (lam mu : List ℕ) (V : List (List ℕ)) : Set (List (List ℕ) × List (List ℕ)) :=
-  {p | IsTableau p.1 ∧ shape p.1 = lam ∧ IsTableau p.2 ∧ shape p.2 = mu ∧
+/-- The set of pairs of tableaux of shapes `η` and `μ` whose plactic product is `V`. -/
+def lrPairs (η μ : List ℕ) (V : List (List ℕ)) : Set (List (List ℕ) × List (List ℕ)) :=
+  {p | IsTableau p.1 ∧ shape p.1 = η ∧ IsTableau p.2 ∧ shape p.2 = μ ∧
     RS (toWord p.1 ++ toWord p.2) = V}
 
 /-- The raising operator acting on a pair of tableaux: it raises the concatenated reading
@@ -148,47 +148,47 @@ lemma pairF_eq {i : ℕ} {S T : List (List ℕ)} (hS : IsTableau S) (hT : IsTabl
 
 /-! ### The crystal operators on pairs of tableaux with a given plactic product -/
 
-lemma pairE_mem_lrPairs {i : ℕ} {lam mu : List ℕ} {V V' : List (List ℕ)} (hV' : IsTableau V')
+lemma pairE_mem_lrPairs {i : ℕ} {η μ : List ℕ} {V V' : List (List ℕ)} (hV' : IsTableau V')
     (hstep : crystalE i (toWord V) = some (toWord V')) {p : List (List ℕ) × List (List ℕ)}
-    (hp : p ∈ lrPairs lam mu V) :
-    pairE i p ∈ lrPairs lam mu V' ∧
+    (hp : p ∈ lrPairs η μ V) :
+    pairE i p ∈ lrPairs η μ V' ∧
       crystalE i (toWord p.1 ++ toWord p.2) =
         some (toWord (pairE i p).1 ++ toWord (pairE i p).2) := by
   obtain ⟨S, T⟩ := p
-  obtain ⟨hS, hshS, hT, hshT, hRS⟩ := hp
+  obtain ⟨hS, hνS, hT, hνT, hRS⟩ := hp
   have hV : IsTableau V := hRS ▸ isTableau_RS _
   have hpl : PlacticEquiv (toWord V) (toWord S ++ toWord T) :=
     placticEquiv_iff_RS_eq.2 (by rw [RS_toWord hV, hRS])
   obtain ⟨w, hw, hplw⟩ := crystalE_of_placticEquiv i hpl hstep
   have hRSw : RS w = V' := by rw [← RS_eq_of_placticEquiv hplw, RS_toWord hV']
-  obtain ⟨S', T', hpair, hS', hT', hshS', hshT', hword⟩ := pairE_eq hS hT hw
+  obtain ⟨S', T', hpair, hS', hT', hνS', hνT', hword⟩ := pairE_eq hS hT hw
   rw [hpair]
-  refine ⟨⟨hS', by rw [hshS', hshS], hT', by rw [hshT', hshT], by rw [hword, hRSw]⟩, ?_⟩
+  refine ⟨⟨hS', by rw [hνS', hνS], hT', by rw [hνT', hνT], by rw [hword, hRSw]⟩, ?_⟩
   rw [hw, hword]
 
-lemma pairF_mem_lrPairs {i : ℕ} {lam mu : List ℕ} {V V' : List (List ℕ)} (hV : IsTableau V)
+lemma pairF_mem_lrPairs {i : ℕ} {η μ : List ℕ} {V V' : List (List ℕ)} (hV : IsTableau V)
     (hstep : crystalF i (toWord V') = some (toWord V)) {q : List (List ℕ) × List (List ℕ)}
-    (hq : q ∈ lrPairs lam mu V') :
-    pairF i q ∈ lrPairs lam mu V ∧
+    (hq : q ∈ lrPairs η μ V') :
+    pairF i q ∈ lrPairs η μ V ∧
       crystalF i (toWord q.1 ++ toWord q.2) =
         some (toWord (pairF i q).1 ++ toWord (pairF i q).2) := by
   obtain ⟨S, T⟩ := q
-  obtain ⟨hS, hshS, hT, hshT, hRS⟩ := hq
+  obtain ⟨hS, hνS, hT, hνT, hRS⟩ := hq
   have hV' : IsTableau V' := hRS ▸ isTableau_RS _
   have hpl : PlacticEquiv (toWord V') (toWord S ++ toWord T) :=
     placticEquiv_iff_RS_eq.2 (by rw [RS_toWord hV', hRS])
   obtain ⟨w, hw, hplw⟩ := crystalF_of_placticEquiv i hpl hstep
   have hRSw : RS w = V := by rw [← RS_eq_of_placticEquiv hplw, RS_toWord hV]
-  obtain ⟨S', T', hpair, hS', hT', hshS', hshT', hword⟩ := pairF_eq hS hT hw
+  obtain ⟨S', T', hpair, hS', hT', hνS', hνT', hword⟩ := pairF_eq hS hT hw
   rw [hpair]
-  refine ⟨⟨hS', by rw [hshS', hshS], hT', by rw [hshT', hshT], by rw [hword, hRSw]⟩, ?_⟩
+  refine ⟨⟨hS', by rw [hνS', hνS], hT', by rw [hνT', hνT], by rw [hword, hRSw]⟩, ?_⟩
   rw [hw, hword]
 
 /-- One step of the crystal action gives a bijection between the pairs of tableaux with
 plactic product `V` and those with plactic product `V'`. -/
-theorem bijOn_pairE {i : ℕ} {lam mu : List ℕ} {V V' : List (List ℕ)} (hV : IsTableau V)
+theorem bijOn_pairE {i : ℕ} {η μ : List ℕ} {V V' : List (List ℕ)} (hV : IsTableau V)
     (hV' : IsTableau V') (hstep : crystalE i (toWord V) = some (toWord V')) :
-    Set.BijOn (pairE i) (lrPairs lam mu V) (lrPairs lam mu V') := by
+    Set.BijOn (pairE i) (lrPairs η μ V) (lrPairs η μ V') := by
   have hstepF : crystalF i (toWord V') = some (toWord V) := crystalF_crystalE hstep
   refine ⟨fun p hp => (pairE_mem_lrPairs hV' hstep hp).1, ?_, ?_⟩
   · intro p hp q hq hpq
@@ -210,93 +210,93 @@ theorem bijOn_pairE {i : ℕ} {lam mu : List ℕ} {V V' : List (List ℕ)} (hV :
       (by rw [hmem'.2.1, hq.2.1]) (Option.some_inj.1 hEq)
     exact Prod.ext h1 h2
 
-theorem ncard_lrPairs_eq_of_tabRaise {lam mu : List ℕ} {V V' : List (List ℕ)}
-    (h : TabRaise V V') : (lrPairs lam mu V).ncard = (lrPairs lam mu V').ncard := by
+theorem ncard_lrPairs_eq_of_tabRaise {η μ : List ℕ} {V V' : List (List ℕ)}
+    (h : TabRaise V V') : (lrPairs η μ V).ncard = (lrPairs η μ V').ncard := by
   obtain ⟨hV, hV', i, hstep⟩ := h
-  have hbij : Set.BijOn (pairE i) (lrPairs lam mu V) (lrPairs lam mu V') :=
+  have hbij : Set.BijOn (pairE i) (lrPairs η μ V) (lrPairs η μ V') :=
     bijOn_pairE hV hV' hstep
   rw [← hbij.image_eq, Set.InjOn.ncard_image hbij.injOn]
 
 /-! ### The Littlewood–Richardson coefficients -/
 
-/-- The Littlewood–Richardson coefficient `c^nu_{lam mu}` : the number of pairs of tableaux
-of shapes `lam` and `mu` whose plactic product is the superstandard tableau of shape
-`nu`. -/
-noncomputable def lrCoeff (lam mu nu : List ℕ) : ℕ := (lrPairs lam mu (superTab nu)).ncard
+/-- The Littlewood–Richardson coefficient `c^ν_{η μ}` : the number of pairs of tableaux
+of shapes `η` and `μ` whose plactic product is the superstandard tableau of shape
+`ν`. -/
+noncomputable def lrCoeff (η μ ν : List ℕ) : ℕ := (lrPairs η μ (superTab ν)).ncard
 
 /-- The number of pairs with a given plactic product is invariant along the crystal
 graph. -/
-theorem ncard_lrPairs_eq_of_reflTransGen {lam mu : List ℕ} {V W : List (List ℕ)}
+theorem ncard_lrPairs_eq_of_reflTransGen {η μ : List ℕ} {V W : List (List ℕ)}
     (h : Relation.ReflTransGen TabRaise V W) :
-    (lrPairs lam mu V).ncard = (lrPairs lam mu W).ncard := by
+    (lrPairs η μ V).ncard = (lrPairs η μ W).ncard := by
   induction h with
   | refl => rfl
   | tail _ hstep ih => rw [ih, ncard_lrPairs_eq_of_tabRaise hstep]
 
 /-- **The Littlewood–Richardson rule**, combinatorial form: the number of pairs of tableaux
-of shapes `lam` and `mu` whose plactic product is a given tableau `V` only depends on the
+of shapes `η` and `μ` whose plactic product is a given tableau `V` only depends on the
 shape of `V`, and is the Littlewood–Richardson coefficient. -/
-theorem ncard_lrPairs_eq_lrCoeff {lam mu : List ℕ} {V : List (List ℕ)} (hV : IsTableau V) :
-    (lrPairs lam mu V).ncard = lrCoeff lam mu (shape V) :=
+theorem ncard_lrPairs_eq_lrCoeff {η μ : List ℕ} {V : List (List ℕ)} (hV : IsTableau V) :
+    (lrPairs η μ V).ncard = lrCoeff η μ (shape V) :=
   ncard_lrPairs_eq_of_reflTransGen (reflTransGen_tabRaise_superTab (toWord V).sum V hV rfl)
 
 /-! ### The Littlewood–Richardson coefficients count dominant tableaux -/
 
-/-- The tableaux of shape `lam` whose plactic product with the superstandard tableau of
-shape `mu` is the superstandard tableau of shape `nu`. -/
-def lrTableaux (lam mu nu : List ℕ) : Set (List (List ℕ)) :=
-  {S | IsTableau S ∧ shape S = lam ∧ RS (toWord S ++ toWord (superTab mu)) = superTab nu}
+/-- The tableaux of shape `η` whose plactic product with the superstandard tableau of
+shape `μ` is the superstandard tableau of shape `ν`. -/
+def lrTableaux (η μ ν : List ℕ) : Set (List (List ℕ)) :=
+  {S | IsTableau S ∧ shape S = η ∧ RS (toWord S ++ toWord (superTab μ)) = superTab ν}
 
 /-- In a pair of tableaux whose plactic product is superstandard, the second tableau is
 itself superstandard, so that the Littlewood–Richardson coefficient counts the tableaux of
-shape `lam` whose product with the superstandard tableau of shape `mu` is the superstandard
-tableau of shape `nu`. -/
-theorem lrCoeff_eq_ncard_lrTableaux {lam mu nu : List ℕ} (hmu : IsPart mu) (hnu : IsPart nu) :
-    lrCoeff lam mu nu = (lrTableaux lam mu nu).ncard := by
-  have hsuperNu : IsTableau (superTab nu) := isTableau_superTab hnu
-  have hkey : ∀ p ∈ lrPairs lam mu (superTab nu), p.2 = superTab mu := by
-    rintro ⟨S, T⟩ ⟨hS, hshS, hT, hshT, hRS⟩
-    have hpl : PlacticEquiv (toWord S ++ toWord T) (toWord (superTab nu)) :=
+shape `η` whose product with the superstandard tableau of shape `μ` is the superstandard
+tableau of shape `ν`. -/
+theorem lrCoeff_eq_ncard_lrTableaux {η μ ν : List ℕ} (hμ : IsPart μ) (hν : IsPart ν) :
+    lrCoeff η μ ν = (lrTableaux η μ ν).ncard := by
+  have hsuperNu : IsTableau (superTab ν) := isTableau_superTab hν
+  have hkey : ∀ p ∈ lrPairs η μ (superTab ν), p.2 = superTab μ := by
+    rintro ⟨S, T⟩ ⟨hS, hρS, hT, hρT, hRS⟩
+    have hpl : PlacticEquiv (toWord S ++ toWord T) (toWord (superTab ν)) :=
       placticEquiv_iff_RS_eq.2 (by rw [hRS, RS_toWord hsuperNu])
     have hzero : ∀ i, crystalPhi i (toWord T) = 0 := by
       intro i
       have h1 := crystalPhi_of_placticEquiv i hpl
-      rw [crystalPhi_toWord_superTab hnu i, crystalPhi_append] at h1
+      rw [crystalPhi_toWord_superTab hν i, crystalPhi_append] at h1
       omega
     have hsuper := eq_superTab_of_crystalPhi_eq_zero hT hzero
-    rw [hsuper, hshT]
-  have hbij : Set.BijOn Prod.fst (lrPairs lam mu (superTab nu)) (lrTableaux lam mu nu) := by
+    rw [hsuper, hρT]
+  have hbij : Set.BijOn Prod.fst (lrPairs η μ (superTab ν)) (lrTableaux η μ ν) := by
     refine ⟨?_, ?_, ?_⟩
     · rintro ⟨S, T⟩ hp
-      obtain ⟨hS, hshS, hT, hshT, hRS⟩ := hp
-      exact ⟨hS, hshS, by rw [← hkey ⟨S, T⟩ ⟨hS, hshS, hT, hshT, hRS⟩]; exact hRS⟩
+      obtain ⟨hS, hρS, hT, hρT, hRS⟩ := hp
+      exact ⟨hS, hρS, by rw [← hkey ⟨S, T⟩ ⟨hS, hρS, hT, hρT, hRS⟩]; exact hRS⟩
     · rintro ⟨S, T⟩ hp ⟨S', T'⟩ hq hST
       have h1 := hkey _ hp
       have h2 := hkey _ hq
       simp only at hST h1 h2
       exact Prod.ext hST (by rw [h1, h2])
-    · rintro S ⟨hS, hshS, hRS⟩
-      exact ⟨(S, superTab mu), ⟨hS, hshS, isTableau_superTab hmu, shape_superTab mu, hRS⟩, rfl⟩
+    · rintro S ⟨hS, hρS, hRS⟩
+      exact ⟨(S, superTab μ), ⟨hS, hρS, isTableau_superTab hμ, shape_superTab μ, hRS⟩, rfl⟩
   rw [lrCoeff, ← hbij.image_eq, Set.InjOn.ncard_image hbij.injOn]
 
 /-! ### A degenerate case -/
 
-/-- Multiplying by the empty shape does nothing: `c^lam_{lam, ∅} = 1`.  In particular the
+/-- Multiplying by the empty shape does nothing: `c^η_{η, ∅} = 1`.  In particular the
 Littlewood–Richardson coefficients are not all zero. -/
-theorem lrCoeff_nil_right {lam : List ℕ} (hlam : IsPart lam) : lrCoeff lam [] lam = 1 := by
-  have hset : lrPairs lam [] (superTab lam) = {(superTab lam, ([] : List (List ℕ)))} := by
+theorem lrCoeff_nil_right {η : List ℕ} (hη : IsPart η) : lrCoeff η [] η = 1 := by
+  have hset : lrPairs η [] (superTab η) = {(superTab η, ([] : List (List ℕ)))} := by
     ext ⟨S, T⟩
     constructor
-    · rintro ⟨hS, hshS, -, hshT, hRS⟩
-      have hT : T = [] := List.map_eq_nil_iff.1 hshT
+    · rintro ⟨hS, hμS, -, hμT, hRS⟩
+      have hT : T = [] := List.map_eq_nil_iff.1 hμT
       subst hT
       rw [toWord_nil, List.append_nil, RS_toWord hS] at hRS
       exact Prod.ext hRS rfl
     · intro hmem
       simp only [Set.mem_singleton_iff, Prod.mk.injEq] at hmem
       obtain ⟨rfl, rfl⟩ := hmem
-      exact ⟨isTableau_superTab hlam, shape_superTab lam, isTableau_nil, rfl, by
-        rw [toWord_nil, List.append_nil, RS_toWord (isTableau_superTab hlam)]⟩
+      exact ⟨isTableau_superTab hη, shape_superTab η, isTableau_nil, rfl, by
+        rw [toWord_nil, List.append_nil, RS_toWord (isTableau_superTab hη)]⟩
   rw [lrCoeff, hset, Set.ncard_singleton]
 
 end Young

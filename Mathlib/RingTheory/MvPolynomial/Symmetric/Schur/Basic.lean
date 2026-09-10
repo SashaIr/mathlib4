@@ -15,18 +15,18 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 Following `theories/MPoly/Schur_mpoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), the *Schur polynomial* of a shape
-`sh` in the (finitely many) variables `σ` is the sum, over all Young tableaux of shape
-`sh` with entries in `σ`, of the monomial recording the content of the tableau.
+`μ` in the (finitely many) variables `σ` is the sum, over all Young tableaux of shape
+`μ` with entries in `σ`, of the monomial recording the content of the tableau.
 
 ## Main definitions
 
-* `MvPolynomial.SSYT σ sh` : the type of Young tableaux of shape `sh` with entries in `σ`.
-* `MvPolynomial.schurPoly σ R sh` : the Schur polynomial of shape `sh`.
+* `MvPolynomial.SSYT σ μ` : the type of Young tableaux of shape `μ` with entries in `σ`.
+* `MvPolynomial.schurPoly σ R μ` : the Schur polynomial of shape `μ`.
 
 ## Main results
 
 * `MvPolynomial.coeff_schurPoly` : the coefficient of a monomial in the Schur polynomial is the
-  number of tableaux of shape `sh` with that content (a Kostka number).
+  number of tableaux of shape `μ` with that content (a Kostka number).
 * `MvPolynomial.schurPoly_row` : the Schur polynomial of a one-row shape is the complete
   homogeneous symmetric polynomial.
 * `MvPolynomial.schurPoly_column` : the Schur polynomial of a one-column shape is the elementary
@@ -51,34 +51,34 @@ variable {σ : Type*} [LinearOrder σ]
 
 /-! ### Tableaux of a given shape form a finite type -/
 
-/-- The type of Young tableaux of shape `sh` with entries in `σ`. -/
-def SSYT (σ : Type*) [LinearOrder σ] (sh : List ℕ) : Type _ :=
-  {P : List (List σ) // IsTableau P ∧ shape P = sh}
+/-- The type of Young tableaux of shape `μ` with entries in `σ`. -/
+def SSYT (σ : Type*) [LinearOrder σ] (μ : List ℕ) : Type _ :=
+  {P : List (List σ) // IsTableau P ∧ shape P = μ}
 
-instance (sh : List ℕ) : DecidableEq (SSYT σ sh) := fun _ _ =>
+instance (μ : List ℕ) : DecidableEq (SSYT σ μ) := fun _ _ =>
   decidable_of_iff _ Subtype.ext_iff.symm
 
-instance finite_SSYT [Finite σ] (sh : List ℕ) : Finite (SSYT σ sh) := by
-  have hfin : Finite {w : List σ // w.length = sh.sum} :=
-    inferInstanceAs (Finite (List.Vector σ sh.sum))
+instance finite_SSYT [Finite σ] (μ : List ℕ) : Finite (SSYT σ μ) := by
+  have hfin : Finite {w : List σ // w.length = μ.sum} :=
+    inferInstanceAs (Finite (List.Vector σ μ.sum))
   refine Finite.of_injective
-    (fun T : SSYT σ sh => (⟨T.1.flatten, ?_⟩ : {w : List σ // w.length = sh.sum})) ?_
+    (fun T : SSYT σ μ => (⟨T.1.flatten, ?_⟩ : {w : List σ // w.length = μ.sum})) ?_
   · rw [List.length_flatten]
     exact congrArg List.sum T.2.2
   · rintro ⟨P, hP, hPs⟩ ⟨Q, hQ, hQs⟩ h
     have hf : P.flatten = Q.flatten := congrArg Subtype.val h
     exact Subtype.ext (eq_of_shape_eq_of_flatten_eq (by rw [hPs, hQs]) hf)
 
-noncomputable instance fintypeSSYT [Finite σ] (sh : List ℕ) : Fintype (SSYT σ sh) :=
+noncomputable instance fintypeSSYT [Finite σ] (μ : List ℕ) : Fintype (SSYT σ μ) :=
   Fintype.ofFinite _
 
 /-! ### The Schur polynomial -/
 
-/-- The Schur polynomial of shape `sh`: the sum over all tableaux of shape `sh` with
+/-- The Schur polynomial of shape `μ`: the sum over all tableaux of shape `μ` with
 entries in `σ` of the monomial recording the content of the tableau. -/
 noncomputable def schurPoly (σ : Type*) [Fintype σ] [LinearOrder σ] (R : Type*)
-    [CommSemiring R] (sh : List ℕ) : MvPolynomial σ R :=
-  ∑ T : SSYT σ sh, ((toWord T.1).map X).prod
+    [CommSemiring R] (μ : List ℕ) : MvPolynomial σ R :=
+  ∑ T : SSYT σ μ, ((toWord T.1).map X).prod
 
 variable {R : Type*} [CommSemiring R]
 
@@ -95,11 +95,11 @@ lemma prod_map_X (l : List σ) :
       one_mul, ← Multiset.cons_coe, ← Multiset.singleton_add, Multiset.toFinsupp_add,
       Multiset.toFinsupp_singleton]
 
-/-- The coefficient of the monomial `x ^ d` in the Schur polynomial of shape `sh` is the
-number of tableaux of shape `sh` and content `d`, i.e. a Kostka number. -/
-theorem coeff_schurPoly [Fintype σ] (sh : List ℕ) (d : σ →₀ ℕ) :
-    coeff d (schurPoly σ R sh) =
-      (Nat.card {T : SSYT σ sh // (toWord T.1 : Multiset σ) = Finsupp.toMultiset d} : R) := by
+/-- The coefficient of the monomial `x ^ d` in the Schur polynomial of shape `μ` is the
+number of tableaux of shape `μ` and content `d`, i.e. a Kostka number. -/
+theorem coeff_schurPoly [Fintype σ] (μ : List ℕ) (d : σ →₀ ℕ) :
+    coeff d (schurPoly σ R μ) =
+      (Nat.card {T : SSYT σ μ // (toWord T.1 : Multiset σ) = Finsupp.toMultiset d} : R) := by
   rw [schurPoly, coeff_sum]
   simp only [prod_map_X, coeff_monomial]
   rw [Finset.sum_boole, Nat.card_eq_fintype_card, Fintype.card_subtype]
@@ -123,18 +123,18 @@ instance uniqueSSYTNil : Unique (SSYT σ ([] : List ℕ)) where
 
 /-- There is no tableau whose shape is not a partition, so the Schur polynomial of such a
 shape vanishes. -/
-theorem schurPoly_eq_zero_of_not_isPart [Fintype σ] {sh : List ℕ} (hsh : ¬ IsPart sh) :
-    schurPoly σ R sh = 0 := by
-  have : IsEmpty (SSYT σ sh) := by
+theorem schurPoly_eq_zero_of_not_isPart [Fintype σ] {μ : List ℕ} (hμ : ¬ IsPart μ) :
+    schurPoly σ R μ = 0 := by
+  have : IsEmpty (SSYT σ μ) := by
     constructor
     rintro ⟨P, hP, rfl⟩
-    exact hsh (isPart_shape hP)
+    exact hμ (isPart_shape hP)
   rw [schurPoly, Finset.univ_eq_empty, Finset.sum_empty]
 
-/-- The Schur polynomial of shape `sh` is homogeneous of degree the number of boxes of
-`sh`. -/
-theorem isHomogeneous_schurPoly [Fintype σ] (sh : List ℕ) :
-    (schurPoly σ R sh).IsHomogeneous sh.sum := by
+/-- The Schur polynomial of shape `μ` is homogeneous of degree the number of boxes of
+`μ`. -/
+theorem isHomogeneous_schurPoly [Fintype σ] (μ : List ℕ) :
+    (schurPoly σ R μ).IsHomogeneous μ.sum := by
   rw [schurPoly]
   refine IsHomogeneous.sum _ _ _ fun T _ => ?_
   rw [prod_map_X]
@@ -150,11 +150,11 @@ theorem isHomogeneous_schurPoly [Fintype σ] (sh : List ℕ) :
   rw [hdeg]
   simpa using hlen
 
-/-- Evaluating all the variables at `1` in the Schur polynomial of shape `sh` counts the
-tableaux of shape `sh`. -/
-theorem eval_one_schurPoly [Fintype σ] (sh : List ℕ) :
-    eval (fun _ => (1 : R)) (schurPoly σ R sh) = (Fintype.card (SSYT σ sh) : R) := by
-  have h1 : ∀ T : SSYT σ sh, eval (fun _ => (1 : R)) (((toWord T.1).map X).prod) = 1 := by
+/-- Evaluating all the variables at `1` in the Schur polynomial of shape `μ` counts the
+tableaux of shape `μ`. -/
+theorem eval_one_schurPoly [Fintype σ] (μ : List ℕ) :
+    eval (fun _ => (1 : R)) (schurPoly σ R μ) = (Fintype.card (SSYT σ μ) : R) := by
+  have h1 : ∀ T : SSYT σ μ, eval (fun _ => (1 : R)) (((toWord T.1).map X).prod) = 1 := by
     intro T
     rw [prod_map_X, eval_monomial]
     simp

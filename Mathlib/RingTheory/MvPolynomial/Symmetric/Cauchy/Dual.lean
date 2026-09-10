@@ -13,9 +13,9 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 Following `theories/MPoly/Cauchy.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove the dual Cauchy identity
 
-`∏_{j < k} ∏_{i < m} (1 + x_i y_j) = ∑_lam s_lam(x) * s_{lam'}(y)`,
+`∏_{j < k} ∏_{i < m} (1 + x_i y_j) = ∑_lam s_η(x) * s_{η'}(y)`,
 
-where the sum is over all partitions `lam` of size at most `m * k` (the terms attached to
+where the sum is over all partitions `η` of size at most `m * k` (the terms attached to
 the partitions that are not contained in the `m × k` rectangle vanish).
 
 The proof is by induction on the number `k` of `y` variables.  Splitting off the last
@@ -78,100 +78,100 @@ lemma prod_one_add_C_X_mul (m k : ℕ) (R : Type*) [CommRing R]
 
 /-- Reindexing a sum over the partitions of size at most `N` by conjugation. -/
 lemma sum_partFinsetLe_conjPart {M : Type*} [AddCommMonoid M] (N : ℕ) (f : List ℕ → M) :
-    ∑ mu ∈ partFinsetLe N, f mu = ∑ nu ∈ partFinsetLe N, f (conjPart nu) := by
-  refine Finset.sum_nbij' (fun mu => conjPart mu) (fun nu => conjPart nu) ?_ ?_ ?_ ?_ ?_
-  · intro mu hmu
-    obtain ⟨hpart, hsum⟩ := mem_partFinsetLe.1 hmu
+    ∑ μ ∈ partFinsetLe N, f μ = ∑ ν ∈ partFinsetLe N, f (conjPart ν) := by
+  refine Finset.sum_nbij' (fun μ => conjPart μ) (fun ν => conjPart ν) ?_ ?_ ?_ ?_ ?_
+  · intro μ hμ
+    obtain ⟨hpart, hsum⟩ := mem_partFinsetLe.1 hμ
     exact mem_partFinsetLe.2 ⟨isPart_conjPart hpart, by rw [sum_conjPart]; exact hsum⟩
-  · intro nu hnu
-    obtain ⟨hpart, hsum⟩ := mem_partFinsetLe.1 hnu
+  · intro ν hν
+    obtain ⟨hpart, hsum⟩ := mem_partFinsetLe.1 hν
     exact mem_partFinsetLe.2 ⟨isPart_conjPart hpart, by rw [sum_conjPart]; exact hsum⟩
-  · intro mu hmu
-    exact conjPart_conjPart (mem_partFinsetLe.1 hmu).1
-  · intro nu hnu
-    exact conjPart_conjPart (mem_partFinsetLe.1 hnu).1
-  · intro mu hmu
-    rw [conjPart_conjPart (mem_partFinsetLe.1 hmu).1]
+  · intro μ hμ
+    exact conjPart_conjPart (mem_partFinsetLe.1 hμ).1
+  · intro ν hν
+    exact conjPart_conjPart (mem_partFinsetLe.1 hν).1
+  · intro μ hμ
+    rw [conjPart_conjPart (mem_partFinsetLe.1 hμ).1]
 
 /-! ### The terms of the induction -/
 
 open Classical in
-/-- The term indexed by the pair of partitions `(lam, mu)` in the inductive step of the
-dual Cauchy identity: `mu` is the shape on the first `k` variables `y`, and `lam` is
-obtained from `mu` by adding a vertical strip, filled by the last variable. -/
-noncomputable def dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (lam mu : List ℕ) :
+/-- The term indexed by the pair of partitions `(η, μ)` in the inductive step of the
+dual Cauchy identity: `μ` is the shape on the first `k` variables `y`, and `η` is
+obtained from `μ` by adding a vertical strip, filled by the last variable. -/
+noncomputable def dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (η μ : List ℕ) :
     MvPolynomial (Fin (k + 1)) (MvPolynomial (Fin m) R) :=
-  if VertStrip lam mu then
-    C (schurPoly (Fin m) R lam)
-      * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart mu))
-          * X (Fin.last k) ^ (lam.sum - mu.sum))
+  if VertStrip η μ then
+    C (schurPoly (Fin m) R η)
+      * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart μ))
+          * X (Fin.last k) ^ (η.sum - μ.sum))
   else 0
 
 variable {m k : ℕ} {R : Type*} [CommRing R]
 
-lemma dualCauchyTerm_eq_zero_of_sum_lt {lam mu : List ℕ} (h : lam.sum < mu.sum) :
-    dualCauchyTerm m k R lam mu = 0 := by
+lemma dualCauchyTerm_eq_zero_of_sum_lt {η μ : List ℕ} (h : η.sum < μ.sum) :
+    dualCauchyTerm m k R η μ = 0 := by
   rw [dualCauchyTerm, ite_eq_right]
   exact fun hstrip => absurd hstrip.1.sum_le (by omega)
 
 /-- Outside the `m × k` rectangle the terms of the dual Cauchy identity vanish. -/
-lemma dualCauchyTerm_eq_zero_of_lt_sum {lam mu : List ℕ} (hmu : IsPart mu)
-    (h : m * k < mu.sum) : dualCauchyTerm m k R lam mu = 0 := by
+lemma dualCauchyTerm_eq_zero_of_lt_sum {η μ : List ℕ} (hμ : IsPart μ)
+    (h : m * k < μ.sum) : dualCauchyTerm m k R η μ = 0 := by
   rw [dualCauchyTerm]
   split_ifs with hstrip
-  · by_cases hlen : m < lam.length
+  · by_cases hlen : m < η.length
     · rw [schurPoly_eq_zero_of_lt_length hlen, map_zero, zero_mul]
-    · by_cases hlenc : k < (conjPart mu).length
+    · by_cases hlenc : k < (conjPart μ).length
       · rw [schurPoly_eq_zero_of_lt_length hlenc, map_zero, zero_mul, mul_zero]
       · exfalso
-        have hmulen : mu.length ≤ m := le_trans hstrip.1.length_le (by omega)
-        have hhead : mu.headD 0 ≤ k := by
-          rw [length_conjPart hmu] at hlenc; omega
-        have hle : mu.sum ≤ m * k := by
-          refine le_trans hmu.sum_le_headD_mul_length ?_
+        have hμlen : μ.length ≤ m := le_trans hstrip.1.length_le (by omega)
+        have hhead : μ.headD 0 ≤ k := by
+          rw [length_conjPart hμ] at hlenc; omega
+        have hle : μ.sum ≤ m * k := by
+          refine le_trans hμ.sum_le_headD_mul_length ?_
           rw [Nat.mul_comm m k]
-          exact Nat.mul_le_mul hhead hmulen
+          exact Nat.mul_le_mul hhead hμlen
         omega
   · rfl
 
 /-- Only the partitions inside the `m × k` rectangle contribute to the inner sum. -/
-lemma sum_dualCauchyTerm_eq (m k : ℕ) (R : Type*) [CommRing R] {lam : List ℕ}
-    (hlam : lam.sum ≤ m * (k + 1)) :
-    ∑ mu ∈ partFinsetLe lam.sum, dualCauchyTerm m k R lam mu
-      = ∑ mu ∈ partFinsetLe (m * k), dualCauchyTerm m k R lam mu := by
-  have h1 : ∑ mu ∈ partFinsetLe lam.sum, dualCauchyTerm m k R lam mu
-      = ∑ mu ∈ partFinsetLe (m * (k + 1)), dualCauchyTerm m k R lam mu := by
-    refine Finset.sum_subset (fun mu hmu => ?_) (fun mu hmu hnot => ?_)
-    · rw [mem_partFinsetLe] at hmu ⊢
-      exact ⟨hmu.1, le_trans hmu.2 hlam⟩
-    · rw [mem_partFinsetLe] at hmu hnot
+lemma sum_dualCauchyTerm_eq (m k : ℕ) (R : Type*) [CommRing R] {η : List ℕ}
+    (hη : η.sum ≤ m * (k + 1)) :
+    ∑ μ ∈ partFinsetLe η.sum, dualCauchyTerm m k R η μ
+      = ∑ μ ∈ partFinsetLe (m * k), dualCauchyTerm m k R η μ := by
+  have h1 : ∑ μ ∈ partFinsetLe η.sum, dualCauchyTerm m k R η μ
+      = ∑ μ ∈ partFinsetLe (m * (k + 1)), dualCauchyTerm m k R η μ := by
+    refine Finset.sum_subset (fun μ hμ => ?_) (fun μ hμ hnot => ?_)
+    · rw [mem_partFinsetLe] at hμ ⊢
+      exact ⟨hμ.1, le_trans hμ.2 hη⟩
+    · rw [mem_partFinsetLe] at hμ hnot
       exact dualCauchyTerm_eq_zero_of_sum_lt
-        (by by_contra hc; exact hnot ⟨hmu.1, by omega⟩)
-  have h2 : ∑ mu ∈ partFinsetLe (m * k), dualCauchyTerm m k R lam mu
-      = ∑ mu ∈ partFinsetLe (m * (k + 1)), dualCauchyTerm m k R lam mu := by
-    refine Finset.sum_subset (fun mu hmu => ?_) (fun mu hmu hnot => ?_)
-    · rw [mem_partFinsetLe] at hmu ⊢
-      exact ⟨hmu.1, le_trans hmu.2 (Nat.mul_le_mul_left m (by omega))⟩
-    · rw [mem_partFinsetLe] at hmu hnot
-      exact dualCauchyTerm_eq_zero_of_lt_sum hmu.1
-        (by by_contra hc; exact hnot ⟨hmu.1, by omega⟩)
+        (by by_contra hc; exact hnot ⟨hμ.1, by omega⟩)
+  have h2 : ∑ μ ∈ partFinsetLe (m * k), dualCauchyTerm m k R η μ
+      = ∑ μ ∈ partFinsetLe (m * (k + 1)), dualCauchyTerm m k R η μ := by
+    refine Finset.sum_subset (fun μ hμ => ?_) (fun μ hμ hnot => ?_)
+    · rw [mem_partFinsetLe] at hμ ⊢
+      exact ⟨hμ.1, le_trans hμ.2 (Nat.mul_le_mul_left m (by omega))⟩
+    · rw [mem_partFinsetLe] at hμ hnot
+      exact dualCauchyTerm_eq_zero_of_lt_sum hμ.1
+        (by by_contra hc; exact hnot ⟨hμ.1, by omega⟩)
   rw [h1, h2]
 
 /-- The sum over the possible sizes of the vertical strip collapses to a single term. -/
-lemma sum_range_eq_dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (lam mu : List ℕ) :
+lemma sum_range_eq_dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (η μ : List ℕ) :
     ∑ r ∈ Finset.range (m + 1),
-        (if lam.sum = mu.sum + r then
-          (if VertStrip lam mu then C (schurPoly (Fin m) R lam) else 0)
-            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart mu))
+        (if η.sum = μ.sum + r then
+          (if VertStrip η μ then C (schurPoly (Fin m) R η) else 0)
+            * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart μ))
                 * X (Fin.last k) ^ r)
         else 0)
-      = dualCauchyTerm m k R lam mu := by
+      = dualCauchyTerm m k R η μ := by
   classical
   rw [dualCauchyTerm]
-  by_cases hstrip : VertStrip lam mu
+  by_cases hstrip : VertStrip η μ
   · simp only [ite_eq_left hstrip]
-    by_cases hd : lam.sum - mu.sum ≤ m
-    · rw [Finset.sum_eq_single (lam.sum - mu.sum)]
+    by_cases hd : η.sum - μ.sum ≤ m
+    · rw [Finset.sum_eq_single (η.sum - μ.sum)]
       · rw [ite_eq_left (by have := hstrip.1.sum_le; omega)]
       · intro r _ hr
         refine ite_eq_right ?_
@@ -179,7 +179,7 @@ lemma sum_range_eq_dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (lam mu :
         omega
       · intro h
         exact absurd (Finset.mem_range.2 (by omega)) h
-    · have hlen : m < lam.length := by
+    · have hlen : m < η.length := by
         have := hstrip.sum_le_sum_add_length
         omega
       rw [schurPoly_eq_zero_of_lt_length hlen, map_zero, zero_mul]
@@ -192,29 +192,29 @@ lemma sum_range_eq_dualCauchyTerm (m k : ℕ) (R : Type*) [CommRing R] (lam mu :
 
 /-- One term of the dual Pieri expansion, written as a sum over the partitions of size at
 most `m * (k + 1)`. -/
-lemma mul_esymm_eq_sum_partFinsetLe (m k : ℕ) (R : Type*) [CommRing R] {mu : List ℕ}
-    (hmu : IsPart mu) (hmusum : mu.sum ≤ m * k) {r : ℕ} (hr : r ≤ m) :
-    C (schurPoly (Fin m) R mu)
-        * rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart mu))
+lemma mul_esymm_eq_sum_partFinsetLe (m k : ℕ) (R : Type*) [CommRing R] {μ : List ℕ}
+    (hμ : IsPart μ) (hμsum : μ.sum ≤ m * k) {r : ℕ} (hr : r ≤ m) :
+    C (schurPoly (Fin m) R μ)
+        * rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart μ))
         * (C (esymm (Fin m) R r) * X (Fin.last k) ^ r)
-      = ∑ lam ∈ partFinsetLe (m * (k + 1)),
-          (if lam.sum = mu.sum + r then
-            (if VertStrip lam mu then C (schurPoly (Fin m) R lam) else 0)
-              * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart mu))
+      = ∑ η ∈ partFinsetLe (m * (k + 1)),
+          (if η.sum = μ.sum + r then
+            (if VertStrip η μ then C (schurPoly (Fin m) R η) else 0)
+              * (rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart μ))
                   * X (Fin.last k) ^ r)
           else 0) := by
   classical
-  have hle : mu.sum + r ≤ m * (k + 1) := by
+  have hle : μ.sum + r ≤ m * (k + 1) := by
     have : m * (k + 1) = m * k + m := by ring
     omega
   rw [← sum_partFinset_eq_sum_partFinsetLe hle, ← Finset.sum_mul,
-    show (∑ lam ∈ partFinset (mu.sum + r),
-        if VertStrip lam mu then C (schurPoly (Fin m) R lam) else 0)
-      = C (∑ lam ∈ partFinset (mu.sum + r),
-          if VertStrip lam mu then schurPoly (Fin m) R lam else 0) by
+    show (∑ η ∈ partFinset (μ.sum + r),
+        if VertStrip η μ then C (schurPoly (Fin m) R η) else 0)
+      = C (∑ η ∈ partFinset (μ.sum + r),
+          if VertStrip η μ then schurPoly (Fin m) R η else 0) by
       rw [map_sum]
-      exact Finset.sum_congr rfl fun lam _ => by split_ifs <;> simp,
-    ← schurPoly_mul_esymm hmu r, map_mul]
+      exact Finset.sum_congr rfl fun η _ => by split_ifs <;> simp,
+    ← schurPoly_mul_esymm hμ r, map_mul]
   ring
 
 /-! ### The two sides of the inductive step -/
@@ -225,13 +225,13 @@ polynomials and the dual Pieri rule. -/
 lemma dualCauchy_lhs (m k : ℕ) (R : Type*) [CommRing R]
     (IH : (∏ j : Fin k, ∏ i : Fin m,
         (1 + C (X i) * X j) : MvPolynomial (Fin k) (MvPolynomial (Fin m) R))
-      = ∑ lam ∈ partFinsetLe (m * k),
-          C (schurPoly (Fin m) R lam)
-            * schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart lam)) :
+      = ∑ η ∈ partFinsetLe (m * k),
+          C (schurPoly (Fin m) R η)
+            * schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart η)) :
     (∏ j : Fin (k + 1), ∏ i : Fin m,
         (1 + C (X i) * X j) : MvPolynomial (Fin (k + 1)) (MvPolynomial (Fin m) R))
-      = ∑ lam ∈ partFinsetLe (m * (k + 1)), ∑ mu ∈ partFinsetLe (m * k),
-          dualCauchyTerm m k R lam mu := by
+      = ∑ η ∈ partFinsetLe (m * (k + 1)), ∑ μ ∈ partFinsetLe (m * k),
+          dualCauchyTerm m k R η μ := by
   classical
   have hfirst : (∏ j : Fin k, ∏ i : Fin m,
         (1 + C (X i) * X (Fin.castSucc j)) : MvPolynomial (Fin (k + 1)) (MvPolynomial (Fin m) R))
@@ -240,55 +240,55 @@ lemma dualCauchy_lhs (m k : ℕ) (R : Type*) [CommRing R]
     refine Finset.prod_congr rfl fun j _ => ?_
     rw [map_prod]
     exact Finset.prod_congr rfl fun i _ => by simp
-  have key : ∀ mu ∈ partFinsetLe (m * k),
-      rename Fin.castSucc (C (schurPoly (Fin m) R mu)
-          * schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart mu))
+  have key : ∀ μ ∈ partFinsetLe (m * k),
+      rename Fin.castSucc (C (schurPoly (Fin m) R μ)
+          * schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart μ))
         * ∑ r ∈ Finset.range (m + 1), C (esymm (Fin m) R r) * X (Fin.last k) ^ r
-      = ∑ lam ∈ partFinsetLe (m * (k + 1)), dualCauchyTerm m k R lam mu := by
-    intro mu hmu
-    obtain ⟨hmupart, hmusum⟩ := mem_partFinsetLe.1 hmu
+      = ∑ η ∈ partFinsetLe (m * (k + 1)), dualCauchyTerm m k R η μ := by
+    intro μ hμ
+    obtain ⟨hμpart, hμsum⟩ := mem_partFinsetLe.1 hμ
     rw [map_mul, rename_C, Finset.mul_sum,
-      Finset.sum_congr rfl (fun r hr => mul_esymm_eq_sum_partFinsetLe m k R hmupart hmusum
+      Finset.sum_congr rfl (fun r hr => mul_esymm_eq_sum_partFinsetLe m k R hμpart hμsum
         (Nat.lt_succ_iff.1 (Finset.mem_range.1 hr))), Finset.sum_comm]
-    exact Finset.sum_congr rfl fun lam _ => sum_range_eq_dualCauchyTerm m k R lam mu
+    exact Finset.sum_congr rfl fun η _ => sum_range_eq_dualCauchyTerm m k R η μ
   rw [Fin.prod_univ_castSucc, hfirst, IH, map_sum, prod_one_add_C_X_mul, Finset.sum_mul,
     Finset.sum_congr rfl key, Finset.sum_comm]
 
 /-- The right-hand side of the dual Cauchy identity for `k + 1` variables `y`, expanded by
 the branching rule. -/
 lemma dualCauchy_rhs (m k : ℕ) (R : Type*) [CommRing R] :
-    (∑ lam ∈ partFinsetLe (m * (k + 1)),
-        C (schurPoly (Fin m) R lam)
-          * schurPoly (Fin (k + 1)) (MvPolynomial (Fin m) R) (conjPart lam))
-      = ∑ lam ∈ partFinsetLe (m * (k + 1)), ∑ mu ∈ partFinsetLe (m * k),
-          dualCauchyTerm m k R lam mu := by
+    (∑ η ∈ partFinsetLe (m * (k + 1)),
+        C (schurPoly (Fin m) R η)
+          * schurPoly (Fin (k + 1)) (MvPolynomial (Fin m) R) (conjPart η))
+      = ∑ η ∈ partFinsetLe (m * (k + 1)), ∑ μ ∈ partFinsetLe (m * k),
+          dualCauchyTerm m k R η μ := by
   classical
-  refine Finset.sum_congr rfl fun lam hlam => ?_
-  obtain ⟨hlampart, hlamsum⟩ := mem_partFinsetLe.1 hlam
-  rw [← sum_dualCauchyTerm_eq m k R hlamsum, schurPoly_branching' k (isPart_conjPart hlampart),
+  refine Finset.sum_congr rfl fun η hη => ?_
+  obtain ⟨hηpart, hηsum⟩ := mem_partFinsetLe.1 hη
+  rw [← sum_dualCauchyTerm_eq m k R hηsum, schurPoly_branching' k (isPart_conjPart hηpart),
     sum_conjPart,
-    sum_partFinsetLe_conjPart lam.sum (fun nu => if HorizStrip (conjPart lam) nu then
-      rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) nu)
-        * X (Fin.last k) ^ (lam.sum - nu.sum) else 0), Finset.mul_sum]
-  refine Finset.sum_congr rfl fun mu hmu => ?_
-  have hmupart : IsPart mu := (mem_partFinsetLe.1 hmu).1
-  have hiff : HorizStrip (conjPart lam) (conjPart mu) ↔ VertStrip lam mu := by
-    have h := vertStrip_conjPart_iff (isPart_conjPart hlampart) (isPart_conjPart hmupart)
-    rw [conjPart_conjPart hlampart, conjPart_conjPart hmupart] at h
+    sum_partFinsetLe_conjPart η.sum (fun ν => if HorizStrip (conjPart η) ν then
+      rename Fin.castSucc (schurPoly (Fin k) (MvPolynomial (Fin m) R) ν)
+        * X (Fin.last k) ^ (η.sum - ν.sum) else 0), Finset.mul_sum]
+  refine Finset.sum_congr rfl fun μ hμ => ?_
+  have hμpart : IsPart μ := (mem_partFinsetLe.1 hμ).1
+  have hiff : HorizStrip (conjPart η) (conjPart μ) ↔ VertStrip η μ := by
+    have h := vertStrip_conjPart_iff (isPart_conjPart hηpart) (isPart_conjPart hμpart)
+    rw [conjPart_conjPart hηpart, conjPart_conjPart hμpart] at h
     exact h.symm
   rw [dualCauchyTerm, sum_conjPart]
-  by_cases hstrip : VertStrip lam mu
+  by_cases hstrip : VertStrip η μ
   · rw [ite_eq_left (hiff.2 hstrip), ite_eq_left hstrip]
   · rw [ite_eq_right (fun h => hstrip (hiff.1 h)), ite_eq_right hstrip, mul_zero]
 
 /-- **The dual Cauchy identity**: the product of the `1 + x_i y_j` is the sum over the
-partitions `lam` of the products `s_lam(x) * s_{lam'}(y)`. -/
+partitions `η` of the products `s_η(x) * s_{η'}(y)`. -/
 theorem dual_cauchy (m k : ℕ) (R : Type*) [CommRing R] :
     (∏ j : Fin k, ∏ i : Fin m,
         (1 + C (X i) * X j) : MvPolynomial (Fin k) (MvPolynomial (Fin m) R))
-      = ∑ lam ∈ partFinsetLe (m * k),
-          C (schurPoly (Fin m) R lam)
-            * schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart lam) := by
+      = ∑ η ∈ partFinsetLe (m * k),
+          C (schurPoly (Fin m) R η)
+            * schurPoly (Fin k) (MvPolynomial (Fin m) R) (conjPart η) := by
   induction k with
   | zero =>
       rw [Nat.mul_zero, partFinsetLe, show Finset.range (0 + 1) = {0} from rfl]

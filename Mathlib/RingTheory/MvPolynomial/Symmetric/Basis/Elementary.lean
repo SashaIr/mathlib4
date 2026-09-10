@@ -13,25 +13,25 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 Following `theories/MPoly/sympoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we study the products
 
-`e_lam = e_{lam_1} * ... * e_{lam_k}`
+`e_η = e_{η_1} * ... * e_{η_k}`
 
 of elementary symmetric polynomials.  Conjugation of partitions exchanges horizontal and vertical
 strips, so the dual Pieri rule of
 `Mathlib/RingTheory/MvPolynomial/Symmetric/Schur/DualPieriSchur.lean` becomes, for the family
-`mu ↦ s_{mu'}`, an ordinary Pieri recursion; the general Kostka expansion of
+`μ ↦ s_{μ'}`, an ordinary Pieri recursion; the general Kostka expansion of
 `Mathlib/RingTheory/MvPolynomial/Symmetric/Basis/CompleteHomogeneous.lean` then gives
 
-`e_lam = ∑_nu K_{nu' lam} s_nu`.
+`e_η = ∑_nu K_{ν' η} s_ν`.
 
-Since `K_{lam' lam'} = 1` and `K_{nu' lam'} ≠ 0` forces `nu ⊴ lam`, this expansion is
-unitriangular for the dominance order, and the `e_{lam'}` for `lam` a partition of `n`
+Since `K_{η' η'} = 1` and `K_{ν' η'} ≠ 0` forces `ν ⊴ η`, this expansion is
+unitriangular for the dominance order, and the `e_{η'}` for `η` a partition of `n`
 with at most `m` parts form a basis of the symmetric homogeneous polynomials of degree
 `n` in `m` variables.
 
 ## Main definitions and results
 
-* `MvPolynomial.eProd` : the product `e_lam`.
-* `MvPolynomial.eProd_eq_sum_kostka` : the expansion `e_lam = ∑_nu K_{nu' lam} s_nu`.
+* `MvPolynomial.eProd` : the product `e_η`.
+* `MvPolynomial.eProd_eq_sum_kostka` : the expansion `e_η = ∑_nu K_{ν' η} s_ν`.
 * `MvPolynomial.eBasis` : the basis of products of elementary symmetric polynomials.
 -/
 
@@ -49,70 +49,70 @@ variable {m : ℕ} {R : Type*} [CommRing R]
 
 /-- Reindexing a sum over the partitions of `n` by conjugation. -/
 lemma sum_partFinset_conjPart {M : Type*} [AddCommMonoid M] (n : ℕ) (f : List ℕ → M) :
-    ∑ mu ∈ partFinset n, f mu = ∑ nu ∈ partFinset n, f (conjPart nu) := by
-  refine Finset.sum_nbij' (fun mu => conjPart mu) (fun nu => conjPart nu) ?_ ?_ ?_ ?_ ?_
-  · intro mu hmu
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hmu
+    ∑ μ ∈ partFinset n, f μ = ∑ ν ∈ partFinset n, f (conjPart ν) := by
+  refine Finset.sum_nbij' (fun μ => conjPart μ) (fun ν => conjPart ν) ?_ ?_ ?_ ?_ ?_
+  · intro μ hμ
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
     exact mem_partFinset.2 ⟨isPart_conjPart hpart, by rw [sum_conjPart, hsum]⟩
-  · intro nu hnu
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hnu
+  · intro ν hν
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hν
     exact mem_partFinset.2 ⟨isPart_conjPart hpart, by rw [sum_conjPart, hsum]⟩
-  · intro mu hmu
-    exact conjPart_conjPart (mem_partFinset.1 hmu).1
-  · intro nu hnu
-    exact conjPart_conjPart (mem_partFinset.1 hnu).1
-  · intro mu hmu
-    rw [conjPart_conjPart (mem_partFinset.1 hmu).1]
+  · intro μ hμ
+    exact conjPart_conjPart (mem_partFinset.1 hμ).1
+  · intro ν hν
+    exact conjPart_conjPart (mem_partFinset.1 hν).1
+  · intro μ hμ
+    rw [conjPart_conjPart (mem_partFinset.1 hμ).1]
 
 /-! ### The Pieri recursion satisfied by the conjugate Schur polynomials -/
 
-/-- The dual Pieri rule, transported by conjugation: the family `mu ↦ s_{mu'}` satisfies
+/-- The dual Pieri rule, transported by conjugation: the family `μ ↦ s_{μ'}` satisfies
 the Pieri recursion with the elementary symmetric polynomials as multipliers. -/
-theorem schurPoly_conjPart_mul_esymm {mu : List ℕ} (hmu : IsPart mu) (r : ℕ) :
-    schurPoly (Fin m) R (conjPart mu) * esymm (Fin m) R r
-      = ∑ nu ∈ partFinset (mu.sum + r),
-          if HorizStrip nu mu then schurPoly (Fin m) R (conjPart nu) else 0 := by
+theorem schurPoly_conjPart_mul_esymm {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) :
+    schurPoly (Fin m) R (conjPart μ) * esymm (Fin m) R r
+      = ∑ ν ∈ partFinset (μ.sum + r),
+          if HorizStrip ν μ then schurPoly (Fin m) R (conjPart ν) else 0 := by
   classical
-  rw [schurPoly_mul_esymm (isPart_conjPart hmu) r, sum_conjPart,
-    sum_partFinset_conjPart (mu.sum + r)
-      (fun lam => if VertStrip lam (conjPart mu) then schurPoly (Fin m) R lam else 0)]
-  refine Finset.sum_congr rfl fun nu hnu => ?_
-  have hnupart : IsPart nu := (mem_partFinset.1 hnu).1
-  by_cases hstrip : HorizStrip nu mu
-  · rw [ite_eq_left hstrip, ite_eq_left ((vertStrip_conjPart_iff hnupart hmu).2 hstrip)]
+  rw [schurPoly_mul_esymm (isPart_conjPart hμ) r, sum_conjPart,
+    sum_partFinset_conjPart (μ.sum + r)
+      (fun η => if VertStrip η (conjPart μ) then schurPoly (Fin m) R η else 0)]
+  refine Finset.sum_congr rfl fun ν hν => ?_
+  have hνpart : IsPart ν := (mem_partFinset.1 hν).1
+  by_cases hstrip : HorizStrip ν μ
+  · rw [ite_eq_left hstrip, ite_eq_left ((vertStrip_conjPart_iff hνpart hμ).2 hstrip)]
   · rw [ite_eq_right hstrip,
-      ite_eq_right fun h => hstrip ((vertStrip_conjPart_iff hnupart hmu).1 h)]
+      ite_eq_right fun h => hstrip ((vertStrip_conjPart_iff hνpart hμ).1 h)]
 
 /-! ### The products of elementary symmetric polynomials -/
 
-/-- The product `e_lam = e_{lam_1} * ... * e_{lam_k}` of elementary symmetric polynomials
-attached to a list `lam`. -/
-noncomputable def eProd (m : ℕ) (R : Type*) [CommRing R] (lam : List ℕ) :
-    MvPolynomial (Fin m) R := (lam.map (esymm (Fin m) R)).prod
+/-- The product `e_η = e_{η_1} * ... * e_{η_k}` of elementary symmetric polynomials
+attached to a list `η`. -/
+noncomputable def eProd (m : ℕ) (R : Type*) [CommRing R] (η : List ℕ) :
+    MvPolynomial (Fin m) R := (η.map (esymm (Fin m) R)).prod
 
 @[simp] lemma eProd_nil (m : ℕ) (R : Type*) [CommRing R] : eProd m R [] = 1 := rfl
 
-/-- **The expansion of `e_lam` in the Schur polynomials**, with the Kostka numbers of
+/-- **The expansion of `e_η` in the Schur polynomials**, with the Kostka numbers of
 `Combinatorics/Young/Tableau/Restrict.lean` as coefficients. -/
-theorem eProd_eq_sum_kostkaNum (m : ℕ) (lam : List ℕ) :
-    eProd m R lam
-      = ∑ mu ∈ partFinset lam.sum,
-          (kostkaNum lam.length mu (contentOf lam) : R) • schurPoly (Fin m) R (conjPart mu) := by
+theorem eProd_eq_sum_kostkaNum (m : ℕ) (η : List ℕ) :
+    eProd m R η
+      = ∑ μ ∈ partFinset η.sum,
+          (kostkaNum η.length μ (contentOf η) : R) • schurPoly (Fin m) R (conjPart μ) := by
   have h := pieriProd_mul_eq_sum_kostkaNum (R := R) m (esymm (Fin m) R)
-    (fun nu => schurPoly (Fin m) R (conjPart nu))
-    (fun mu hmu r => schurPoly_conjPart_mul_esymm hmu r) lam
+    (fun ν => schurPoly (Fin m) R (conjPart ν))
+    (fun μ hμ r => schurPoly_conjPart_mul_esymm hμ r) η
   rwa [conjPart_nil, schurPoly_nil, mul_one] at h
 
-/-- **The expansion of `e_lam` in the Schur polynomials**: `e_lam = ∑_nu K_{nu' lam} s_nu`,
-where `K_{nu' lam}` is the number of tableaux of shape the conjugate of `nu` and content
-`lam`. -/
-theorem eProd_eq_sum_kostka (m : ℕ) {lam : List ℕ} (hlam : IsPart lam) :
-    eProd m R lam
-      = ∑ nu ∈ partFinset lam.sum, (kostka (conjPart nu) lam : R) • schurPoly (Fin m) R nu := by
-  rw [eProd_eq_sum_kostkaNum m lam, sum_partFinset_conjPart lam.sum
-    (fun mu => (kostkaNum lam.length mu (contentOf lam) : R) • schurPoly (Fin m) R (conjPart mu))]
-  refine Finset.sum_congr rfl fun nu hnu => ?_
-  rw [kostkaNum_eq_kostka hlam (conjPart nu), conjPart_conjPart (mem_partFinset.1 hnu).1]
+/-- **The expansion of `e_η` in the Schur polynomials**: `e_η = ∑_nu K_{ν' η} s_ν`,
+where `K_{ν' η}` is the number of tableaux of shape the conjugate of `ν` and content
+`η`. -/
+theorem eProd_eq_sum_kostka (m : ℕ) {η : List ℕ} (hη : IsPart η) :
+    eProd m R η
+      = ∑ ν ∈ partFinset η.sum, (kostka (conjPart ν) η : R) • schurPoly (Fin m) R ν := by
+  rw [eProd_eq_sum_kostkaNum m η, sum_partFinset_conjPart η.sum
+    (fun μ => (kostkaNum η.length μ (contentOf η) : R) • schurPoly (Fin m) R (conjPart μ))]
+  refine Finset.sum_congr rfl fun ν hν => ?_
+  rw [kostkaNum_eq_kostka hη (conjPart ν), conjPart_conjPart (mem_partFinset.1 hν).1]
 
 /-! ### The expansion restricted to the partitions with at most `m` parts -/
 
@@ -121,162 +121,162 @@ lemma partsFinset_subset_partFinset (n m : ℕ) : partsFinset n m ⊆ partFinset
   obtain ⟨hp, hs, -⟩ := mem_partsFinset.1 hl
   exact mem_partFinset.2 ⟨hp, hs⟩
 
-/-- The expansion of `e_lam` in the Schur polynomials, restricted to the partitions with
+/-- The expansion of `e_η` in the Schur polynomials, restricted to the partitions with
 at most `m` parts (the other Schur polynomials vanish). -/
-theorem eProd_eq_sum_partsFinset (m : ℕ) {lam : List ℕ} (hlam : IsPart lam) :
-    eProd m R lam
-      = ∑ nu ∈ partsFinset lam.sum m,
-          (kostka (conjPart nu) lam : R) • schurPoly (Fin m) R nu := by
-  rw [eProd_eq_sum_kostka m hlam]
-  refine (Finset.sum_subset (partsFinset_subset_partFinset _ _) fun nu hnu hnot => ?_).symm
-  obtain ⟨hp, hs⟩ := mem_partFinset.1 hnu
-  have hlen : m < nu.length := by
+theorem eProd_eq_sum_partsFinset (m : ℕ) {η : List ℕ} (hη : IsPart η) :
+    eProd m R η
+      = ∑ ν ∈ partsFinset η.sum m,
+          (kostka (conjPart ν) η : R) • schurPoly (Fin m) R ν := by
+  rw [eProd_eq_sum_kostka m hη]
+  refine (Finset.sum_subset (partsFinset_subset_partFinset _ _) fun ν hν hnot => ?_).symm
+  obtain ⟨hp, hs⟩ := mem_partFinset.1 hν
+  have hlen : m < ν.length := by
     by_contra h
     exact hnot (mem_partsFinset.2 ⟨hp, hs, by omega⟩)
   rw [schurPoly_eq_zero_of_lt_length hlen, smul_zero]
 
-/-- The expansion of `e_{lam'}` in the Schur polynomials, indexed by `PartIdx n m`. -/
-lemma eProd_conj_eq_sum_partIdx {n : ℕ} (lam : PartIdx n m) :
-    eProd m R (conjPart lam.1)
-      = ∑ nu : PartIdx n m,
-          (kostka (conjPart nu.1) (conjPart lam.1) : R) • schurPoly (Fin m) R nu.1 := by
+/-- The expansion of `e_{η'}` in the Schur polynomials, indexed by `PartIdx n m`. -/
+lemma eProd_conj_eq_sum_partIdx {n : ℕ} (η : PartIdx n m) :
+    eProd m R (conjPart η.1)
+      = ∑ ν : PartIdx n m,
+          (kostka (conjPart ν.1) (conjPart η.1) : R) • schurPoly (Fin m) R ν.1 := by
   classical
-  have hconj : IsPart (conjPart lam.1) := isPart_conjPart lam.2.1
-  have hsum : (conjPart lam.1).sum = n := by rw [sum_conjPart, lam.2.2.1]
+  have hconj : IsPart (conjPart η.1) := isPart_conjPart η.2.1
+  have hsum : (conjPart η.1).sum = n := by rw [sum_conjPart, η.2.2.1]
   rw [eProd_eq_sum_partsFinset m hconj, hsum, partsFinset,
     Finset.sum_image fun x _ y _ h => Subtype.ext h]
 
-/-- Unitriangularity of the expansion of `e_{mu'}`: a nonzero coefficient forces the
-dominance `nu ⊴ mu`. -/
-lemma partdom_of_kostka_conjPart_ne_zero {n : ℕ} {nu mu : List ℕ} (hnu : IsPart nu)
-    (hmu : IsPart mu) (hnusum : nu.sum = n) (hmusum : mu.sum = n)
-    (h : kostka (conjPart nu) (conjPart mu) ≠ 0) : Partdom nu mu :=
-  (partdom_conjPart_iff hnu hmu (by rw [hnusum, hmusum])).1 (partdom_of_kostka_ne_zero h)
+/-- Unitriangularity of the expansion of `e_{μ'}`: a nonzero coefficient forces the
+dominance `ν ⊴ μ`. -/
+lemma partdom_of_kostka_conjPart_ne_zero {n : ℕ} {ν μ : List ℕ} (hν : IsPart ν)
+    (hμ : IsPart μ) (hνsum : ν.sum = n) (hμsum : μ.sum = n)
+    (h : kostka (conjPart ν) (conjPart μ) ≠ 0) : Partdom ν μ :=
+  (partdom_conjPart_iff hν hμ (by rw [hνsum, hμsum])).1 (partdom_of_kostka_ne_zero h)
 
 /-! ### Linear independence -/
 
-/-- **The products `e_{lam'}` are linearly independent**: over any commutative ring, the
-polynomials `e_{lam'}` for `lam` a partition of `n` with at most `m` parts (equivalently,
-the `e_mu` for `mu` a partition of `n` with all parts at most `m`) are linearly
+/-- **The products `e_{η'}` are linearly independent**: over any commutative ring, the
+polynomials `e_{η'}` for `η` a partition of `n` with at most `m` parts (equivalently,
+the `e_μ` for `μ` a partition of `n` with all parts at most `m`) are linearly
 independent. -/
 theorem linearIndependent_eProd (m n : ℕ) (R : Type*) [CommRing R] :
-    LinearIndependent R fun lam : PartIdx n m => eProd m R (conjPart lam.1) := by
+    LinearIndependent R fun η : PartIdx n m => eProd m R (conjPart η.1) := by
   classical
   rw [Fintype.linearIndependent_iff]
-  intro g hg lam
-  have hexp : ∑ mu : PartIdx n m, g mu • eProd m R (conjPart mu.1)
-      = ∑ nu : PartIdx n m,
-          (∑ mu : PartIdx n m, g mu * (kostka (conjPart nu.1) (conjPart mu.1) : R))
-            • schurPoly (Fin m) R nu.1 := by
+  intro g hg η
+  have hexp : ∑ μ : PartIdx n m, g μ • eProd m R (conjPart μ.1)
+      = ∑ ν : PartIdx n m,
+          (∑ μ : PartIdx n m, g μ * (kostka (conjPart ν.1) (conjPart μ.1) : R))
+            • schurPoly (Fin m) R ν.1 := by
     simp only [eProd_conj_eq_sum_partIdx, Finset.smul_sum, Finset.sum_smul, smul_smul]
     exact Finset.sum_comm
-  have hcoef : ∀ nu : PartIdx n m,
-      ∑ mu : PartIdx n m, g mu * (kostka (conjPart nu.1) (conjPart mu.1) : R) = 0 :=
+  have hcoef : ∀ ν : PartIdx n m,
+      ∑ μ : PartIdx n m, g μ * (kostka (conjPart ν.1) (conjPart μ.1) : R) = 0 :=
     Fintype.linearIndependent_iff.1 (linearIndependent_schurPoly m n R) _ (by rw [← hexp, hg])
   by_contra hne
-  obtain ⟨nu, hnut, hmax⟩ := Finset.exists_max_image
-    (Finset.univ.filter fun mu : PartIdx n m => g mu ≠ 0) (fun mu => domWeight n mu.1)
-    ⟨lam, Finset.mem_filter.2 ⟨Finset.mem_univ _, hne⟩⟩
-  obtain ⟨-, hnu0⟩ := Finset.mem_filter.1 hnut
-  have hsingle : ∀ mu ∈ (Finset.univ : Finset (PartIdx n m)), mu ≠ nu →
-      g mu * (kostka (conjPart nu.1) (conjPart mu.1) : R) = 0 := by
-    intro mu _ hmune
-    by_cases hgmu : g mu = 0
+  obtain ⟨ν, hνt, hmax⟩ := Finset.exists_max_image
+    (Finset.univ.filter fun μ : PartIdx n m => g μ ≠ 0) (fun μ => domWeight n μ.1)
+    ⟨η, Finset.mem_filter.2 ⟨Finset.mem_univ _, hne⟩⟩
+  obtain ⟨-, hν0⟩ := Finset.mem_filter.1 hνt
+  have hsingle : ∀ μ ∈ (Finset.univ : Finset (PartIdx n m)), μ ≠ ν →
+      g μ * (kostka (conjPart ν.1) (conjPart μ.1) : R) = 0 := by
+    intro μ _ hμne
+    by_cases hgmu : g μ = 0
     · rw [hgmu, zero_mul]
-    · have hmut : mu ∈ Finset.univ.filter fun mu : PartIdx n m => g mu ≠ 0 :=
+    · have hμt : μ ∈ Finset.univ.filter fun μ : PartIdx n m => g μ ≠ 0 :=
         Finset.mem_filter.2 ⟨Finset.mem_univ _, hgmu⟩
-      have hzero : kostka (conjPart nu.1) (conjPart mu.1) = 0 := by
+      have hzero : kostka (conjPart ν.1) (conjPart μ.1) = 0 := by
         by_contra hk
-        have hdom : Partdom nu.1 mu.1 :=
-          partdom_of_kostka_conjPart_ne_zero nu.2.1 mu.2.1 nu.2.2.1 mu.2.2.1 hk
-        exact hmune (Subtype.ext (eq_of_partdom_of_domWeight_eq nu.2.1 mu.2.1 nu.2.2.1
-          mu.2.2.1 hdom (hmax mu hmut)).symm)
+        have hdom : Partdom ν.1 μ.1 :=
+          partdom_of_kostka_conjPart_ne_zero ν.2.1 μ.2.1 ν.2.2.1 μ.2.2.1 hk
+        exact hμne (Subtype.ext (eq_of_partdom_of_domWeight_eq ν.2.1 μ.2.1 ν.2.2.1
+          μ.2.2.1 hdom (hmax μ hμt)).symm)
       rw [hzero, Nat.cast_zero, mul_zero]
-  have hzero := hcoef nu
-  rw [Finset.sum_eq_single nu hsingle (fun h => absurd (Finset.mem_univ nu) h),
-    kostka_self (isPart_conjPart nu.2.1), Nat.cast_one, mul_one] at hzero
-  exact hnu0 hzero
+  have hzero := hcoef ν
+  rw [Finset.sum_eq_single ν hsingle (fun h => absurd (Finset.mem_univ ν) h),
+    kostka_self (isPart_conjPart ν.2.1), Nat.cast_one, mul_one] at hzero
+  exact hν0 hzero
 
 /-! ### Spanning -/
 
-lemma eProd_conj_mem_symHomogeneousSubmodule {n : ℕ} (lam : PartIdx n m) :
-    eProd m R (conjPart lam.1) ∈ symHomogeneousSubmodule m n R := by
-  rw [eProd_conj_eq_sum_partIdx lam]
-  exact Submodule.sum_mem _ fun nu _ =>
-    Submodule.smul_mem _ _ (schurPoly_mem_symHomogeneousSubmodule nu)
+lemma eProd_conj_mem_symHomogeneousSubmodule {n : ℕ} (η : PartIdx n m) :
+    eProd m R (conjPart η.1) ∈ symHomogeneousSubmodule m n R := by
+  rw [eProd_conj_eq_sum_partIdx η]
+  exact Submodule.sum_mem _ fun ν _ =>
+    Submodule.smul_mem _ _ (schurPoly_mem_symHomogeneousSubmodule ν)
 
 /-- Every Schur polynomial of a partition of `n` with at most `m` parts is a linear
-combination of the products `e_{mu'}`. -/
-theorem schurPoly_mem_span_eProd (n : ℕ) {lam : List ℕ} (hlam : IsPart lam)
-    (hsum : lam.sum = n) (hlen : lam.length ≤ m) :
-    schurPoly (Fin m) R lam
-      ∈ Submodule.span R (Set.range fun mu : PartIdx n m => eProd m R (conjPart mu.1)) := by
+combination of the products `e_{μ'}`. -/
+theorem schurPoly_mem_span_eProd (n : ℕ) {η : List ℕ} (hη : IsPart η)
+    (hsum : η.sum = n) (hlen : η.length ≤ m) :
+    schurPoly (Fin m) R η
+      ∈ Submodule.span R (Set.range fun μ : PartIdx n m => eProd m R (conjPart μ.1)) := by
   classical
-  set W := Submodule.span R (Set.range fun mu : PartIdx n m => eProd m R (conjPart mu.1))
+  set W := Submodule.span R (Set.range fun μ : PartIdx n m => eProd m R (conjPart μ.1))
     with hW
-  suffices H : ∀ k : ℕ, ∀ nu : List ℕ, IsPart nu → nu.sum = n → nu.length ≤ m →
-      domWeight n nu ≤ k → schurPoly (Fin m) R nu ∈ W by
-    exact H _ lam hlam hsum hlen le_rfl
+  suffices H : ∀ k : ℕ, ∀ ν : List ℕ, IsPart ν → ν.sum = n → ν.length ≤ m →
+      domWeight n ν ≤ k → schurPoly (Fin m) R ν ∈ W by
+    exact H _ η hη hsum hlen le_rfl
   intro k
   induction k using Nat.strong_induction_on with
   | _ k ih =>
-    intro nu hnu hnusum hnulen hk
-    have hconj : IsPart (conjPart nu) := isPart_conjPart hnu
-    have hcsum : (conjPart nu).sum = n := by rw [sum_conjPart, hnusum]
+    intro ν hν hνsum hνlen hk
+    have hconj : IsPart (conjPart ν) := isPart_conjPart hν
+    have hcsum : (conjPart ν).sum = n := by rw [sum_conjPart, hνsum]
     have hexp := eProd_eq_sum_partsFinset (R := R) m hconj
     rw [hcsum] at hexp
-    have hmem : nu ∈ partsFinset n m := mem_partsFinset.2 ⟨hnu, hnusum, hnulen⟩
+    have hmem : ν ∈ partsFinset n m := mem_partsFinset.2 ⟨hν, hνsum, hνlen⟩
     have hsplit := Finset.add_sum_erase (partsFinset n m)
-      (fun mu => (kostka (conjPart mu) (conjPart nu) : R) • schurPoly (Fin m) R mu) hmem
+      (fun μ => (kostka (conjPart μ) (conjPart ν) : R) • schurPoly (Fin m) R μ) hmem
     simp only [kostka_self hconj, Nat.cast_one, one_smul] at hsplit
-    have hrest : ∀ mu ∈ (partsFinset n m).erase nu,
-        (kostka (conjPart mu) (conjPart nu) : R) • schurPoly (Fin m) R mu ∈ W := by
-      intro mu hmu
-      have hmune : mu ≠ nu := Finset.ne_of_mem_erase hmu
-      obtain ⟨hmupart, hmusum, hmulen⟩ := mem_partsFinset.1 (Finset.mem_of_mem_erase hmu)
-      by_cases hk0 : kostka (conjPart mu) (conjPart nu) = 0
+    have hrest : ∀ μ ∈ (partsFinset n m).erase ν,
+        (kostka (conjPart μ) (conjPart ν) : R) • schurPoly (Fin m) R μ ∈ W := by
+      intro μ hμ
+      have hμne : μ ≠ ν := Finset.ne_of_mem_erase hμ
+      obtain ⟨hμpart, hμsum, hμlen⟩ := mem_partsFinset.1 (Finset.mem_of_mem_erase hμ)
+      by_cases hk0 : kostka (conjPart μ) (conjPart ν) = 0
       · rw [hk0, Nat.cast_zero, zero_smul]
         exact Submodule.zero_mem _
-      · have hdom : Partdom mu nu :=
-          partdom_of_kostka_conjPart_ne_zero hmupart hnu hmusum hnusum hk0
-        have hlt : domWeight n mu < domWeight n nu := by
+      · have hdom : Partdom μ ν :=
+          partdom_of_kostka_conjPart_ne_zero hμpart hν hμsum hνsum hk0
+        have hlt : domWeight n μ < domWeight n ν := by
           rcases lt_or_eq_of_le (domWeight_le_domWeight (n := n) hdom) with h | h
           · exact h
-          · exact absurd (eq_of_partdom_of_domWeight_eq hmupart hnu hmusum hnusum hdom
-              (le_of_eq h.symm)) hmune
+          · exact absurd (eq_of_partdom_of_domWeight_eq hμpart hν hμsum hνsum hdom
+              (le_of_eq h.symm)) hμne
         exact Submodule.smul_mem _ _
-          (ih (domWeight n mu) (by omega) mu hmupart hmusum hmulen le_rfl)
-    have hkey : schurPoly (Fin m) R nu
-        = eProd m R (conjPart nu) - ∑ mu ∈ (partsFinset n m).erase nu,
-            (kostka (conjPart mu) (conjPart nu) : R) • schurPoly (Fin m) R mu :=
+          (ih (domWeight n μ) (by omega) μ hμpart hμsum hμlen le_rfl)
+    have hkey : schurPoly (Fin m) R ν
+        = eProd m R (conjPart ν) - ∑ μ ∈ (partsFinset n m).erase ν,
+            (kostka (conjPart μ) (conjPart ν) : R) • schurPoly (Fin m) R μ :=
       eq_sub_of_add_eq (hsplit.trans hexp.symm)
     rw [hkey]
-    exact Submodule.sub_mem _ (Submodule.subset_span ⟨⟨nu, hnu, hnusum, hnulen⟩, rfl⟩)
+    exact Submodule.sub_mem _ (Submodule.subset_span ⟨⟨ν, hν, hνsum, hνlen⟩, rfl⟩)
       (Submodule.sum_mem _ hrest)
 
-/-- **The products `e_{lam'}` span** the module of symmetric homogeneous polynomials of
+/-- **The products `e_{η'}` span** the module of symmetric homogeneous polynomials of
 degree `n` in `m` variables. -/
 theorem span_eProd (m n : ℕ) :
-    Submodule.span R (Set.range fun lam : PartIdx n m => eProd m R (conjPart lam.1))
+    Submodule.span R (Set.range fun η : PartIdx n m => eProd m R (conjPart η.1))
       = symHomogeneousSubmodule m n R := by
   refine le_antisymm (Submodule.span_le.2 ?_) ?_
-  · rintro q ⟨lam, rfl⟩
-    exact eProd_conj_mem_symHomogeneousSubmodule lam
+  · rintro q ⟨η, rfl⟩
+    exact eProd_conj_mem_symHomogeneousSubmodule η
   · rw [← span_schurPoly m n]
     refine Submodule.span_le.2 ?_
-    rintro q ⟨nu, rfl⟩
-    exact schurPoly_mem_span_eProd n nu.2.1 nu.2.2.1 nu.2.2.2
+    rintro q ⟨ν, rfl⟩
+    exact schurPoly_mem_span_eProd n ν.2.1 ν.2.2.1 ν.2.2.2
 
 /-! ### The basis -/
 
-/-- The product `e_{lam'}`, as an element of the module of symmetric homogeneous
+/-- The product `e_{η'}`, as an element of the module of symmetric homogeneous
 polynomials of degree `n`. -/
-noncomputable def eSub (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
+noncomputable def eSub (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
     symHomogeneousSubmodule m n R :=
-  ⟨eProd m R (conjPart lam.1), eProd_conj_mem_symHomogeneousSubmodule lam⟩
+  ⟨eProd m R (conjPart η.1), eProd_conj_mem_symHomogeneousSubmodule η⟩
 
-@[simp] lemma coe_eSub (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
-    (eSub m n R lam : MvPolynomial (Fin m) R) = eProd m R (conjPart lam.1) := rfl
+@[simp] lemma coe_eSub (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
+    (eSub m n R η : MvPolynomial (Fin m) R) = eProd m R (conjPart η.1) := rfl
 
 lemma linearIndependent_eSub (m n : ℕ) (R : Type*) [CommRing R] :
     LinearIndependent R (eSub m n R) :=
@@ -307,8 +307,8 @@ noncomputable def eBasis (m n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (PartIdx n m) R (symHomogeneousSubmodule m n R) :=
   Module.Basis.mk (linearIndependent_eSub m n R) (span_eSub m n R)
 
-@[simp] lemma coe_eBasis (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
-    (eBasis m n R lam : MvPolynomial (Fin m) R) = eProd m R (conjPart lam.1) := by
+@[simp] lemma coe_eBasis (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
+    (eBasis m n R η : MvPolynomial (Fin m) R) = eProd m R (conjPart η.1) := by
   rw [eBasis, Module.Basis.mk_apply, coe_eSub]
 
 end MvPolynomial

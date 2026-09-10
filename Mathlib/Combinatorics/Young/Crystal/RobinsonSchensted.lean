@@ -232,15 +232,15 @@ lemma crystalPhi_le_count (i : ℕ) (w : List ℕ) : crystalPhi i w ≤ w.count 
     · rw [crystalPhi_cons_of_ne hne, List.count_cons_of_ne hne]
       exact ih
 
-lemma crystalPhi_toWord_superTabFrom {lam : List ℕ} (h : IsPart lam) (k : ℕ) :
-    ∀ i, k ≤ i → crystalPhi i (toWord (superTabFrom k lam)) = 0 := by
-  induction lam generalizing k with
+lemma crystalPhi_toWord_superTabFrom {η : List ℕ} (h : IsPart η) (k : ℕ) :
+    ∀ i, k ≤ i → crystalPhi i (toWord (superTabFrom k η)) = 0 := by
+  induction η generalizing k with
   | nil => simp
-  | cons n lam ih =>
+  | cons n η ih =>
     intro i hi
-    have hpart : IsPart lam := h.2
-    have hle : lam.getD 0 0 ≤ n := by
-      cases lam with
+    have hpart : IsPart η := h.2
+    have hle : η.getD 0 0 ≤ n := by
+      cases η with
       | nil => simp
       | cons a l => simpa using h.1
     rw [superTabFrom_cons, toWord_cons, crystalPhi_append]
@@ -254,7 +254,7 @@ lemma crystalPhi_toWord_superTabFrom {lam : List ℕ} (h : IsPart lam) (k : ℕ)
     · have heps : crystalEps k (List.replicate n k) = n := by
         rw [hrow.crystalEps_eq_count, List.count_replicate]
         simp
-      have hcount := crystalPhi_le_count k (toWord (superTabFrom (k + 1) lam))
+      have hcount := crystalPhi_le_count k (toWord (superTabFrom (k + 1) η))
       rw [count_toWord_superTabFrom, ite_eq_left (show k + 1 ≤ k + 1 by omega),
         Nat.sub_self] at hcount
       rw [heps]
@@ -264,8 +264,8 @@ lemma crystalPhi_toWord_superTabFrom {lam : List ℕ} (h : IsPart lam) (k : ℕ)
 
 /-- The reading word of a superstandard tableau has no unmatched letter: it is the highest
 weight element of its crystal. -/
-lemma crystalPhi_toWord_superTab {lam : List ℕ} (h : IsPart lam) (i : ℕ) :
-    crystalPhi i (toWord (superTab lam)) = 0 :=
+lemma crystalPhi_toWord_superTab {η : List ℕ} (h : IsPart η) (i : ℕ) :
+    crystalPhi i (toWord (superTab η)) = 0 :=
   crystalPhi_toWord_superTabFrom h 0 i (Nat.zero_le _)
 
 end Young

@@ -18,23 +18,23 @@ shapes that can be obtained by adding to a tableau all the boxes filled with a g
 letter.
 
 The main result of this file is a purely combinatorial counting statement, which is the
-commutation of two steps of the Pieri rule: given two partitions `rho ⊆ lam`, the number
-of partitions `nu` with `rho ⊆ nu ⊆ lam` such that both `lam / nu` and `nu / rho` are
-horizontal strips and `|nu| = s` only depends on `s` through the symmetry
-`s ↦ |lam| + |rho| - s`.  In other words, if `|lam| - |rho| = a + b`, there are as many
-ways to go from `rho` to `lam` by a horizontal strip of size `a` followed by one of size
+commutation of two steps of the Pieri rule: given two partitions `ρ ⊆ η`, the number
+of partitions `ν` with `ρ ⊆ ν ⊆ η` such that both `η / ν` and `ν / ρ` are
+horizontal strips and `|ν| = s` only depends on `s` through the symmetry
+`s ↦ |η| + |ρ| - s`.  In other words, if `|η| - |ρ| = a + b`, there are as many
+ways to go from `ρ` to `η` by a horizontal strip of size `a` followed by one of size
 `b` as the other way around.
 
-The proof is the observation that such a `nu` is exactly a sequence of parts lying in a
-product of intervals `loBd i ≤ nu_i ≤ hiBd i`, and that the reflection
-`nu_i ↦ loBd i + hiBd i - nu_i` of this box is an involution which sends the size `s` to
-`|lam| + |rho| - s`, because `∑_i (loBd i + hiBd i) = |lam| + |rho|`.
+The proof is the observation that such a `ν` is exactly a sequence of parts lying in a
+product of intervals `loBd i ≤ ν_i ≤ hiBd i`, and that the reflection
+`ν_i ↦ loBd i + hiBd i - ν_i` of this box is an involution which sends the size `s` to
+`|η| + |ρ| - s`, because `∑_i (loBd i + hiBd i) = |η| + |ρ|`.
 
 ## Main definitions
 
 * `Young.HorizStrip outer inner` : the skew shape `outer / inner` is a horizontal strip.
-* `Young.midSet lam rho s` : the partitions `nu` of `s` interpolating between `rho` and
-  `lam` by horizontal strips.
+* `Young.midSet η ρ s` : the partitions `ν` of `s` interpolating between `ρ` and
+  `η` by horizontal strips.
 
 ## Main results
 
@@ -82,53 +82,53 @@ lemma horizStrip_iff_range {outer inner : List ℕ} :
 instance decidableHorizStrip (outer inner : List ℕ) : Decidable (HorizStrip outer inner) :=
   decidable_of_iff _ horizStrip_iff_range.symm
 
-lemma horizStrip_self {sh : List ℕ} (h : IsPart sh) : HorizStrip sh sh :=
-  ⟨Included.refl sh, fun i => h.getD_succ_le i⟩
+lemma horizStrip_self {μ : List ℕ} (h : IsPart μ) : HorizStrip μ μ :=
+  ⟨Included.refl μ, fun i => h.getD_succ_le i⟩
 
 /-! ### The interval bounds -/
 
-/-- The lower bound on the `i`-th part of a shape interpolating between `rho` and `lam`
+/-- The lower bound on the `i`-th part of a shape interpolating between `ρ` and `η`
 by horizontal strips. -/
-def loBd (lam rho : List ℕ) (i : ℕ) : ℕ := max (rho.getD i 0) (lam.getD (i + 1) 0)
+def loBd (η ρ : List ℕ) (i : ℕ) : ℕ := max (ρ.getD i 0) (η.getD (i + 1) 0)
 
-/-- The upper bound on the `i`-th part of a shape interpolating between `rho` and `lam`
+/-- The upper bound on the `i`-th part of a shape interpolating between `ρ` and `η`
 by horizontal strips. -/
-def hiBd (lam rho : List ℕ) : ℕ → ℕ
-  | 0 => lam.getD 0 0
-  | (i + 1) => min (lam.getD (i + 1) 0) (rho.getD i 0)
+def hiBd (η ρ : List ℕ) : ℕ → ℕ
+  | 0 => η.getD 0 0
+  | (i + 1) => min (η.getD (i + 1) 0) (ρ.getD i 0)
 
-@[simp] lemma hiBd_zero (lam rho : List ℕ) : hiBd lam rho 0 = lam.getD 0 0 := rfl
+@[simp] lemma hiBd_zero (η ρ : List ℕ) : hiBd η ρ 0 = η.getD 0 0 := rfl
 
-@[simp] lemma hiBd_succ (lam rho : List ℕ) (i : ℕ) :
-    hiBd lam rho (i + 1) = min (lam.getD (i + 1) 0) (rho.getD i 0) := rfl
+@[simp] lemma hiBd_succ (η ρ : List ℕ) (i : ℕ) :
+    hiBd η ρ (i + 1) = min (η.getD (i + 1) 0) (ρ.getD i 0) := rfl
 
-lemma hiBd_le_lam (lam rho : List ℕ) (i : ℕ) : hiBd lam rho i ≤ lam.getD i 0 := by
+lemma hiBd_le_η (η ρ : List ℕ) (i : ℕ) : hiBd η ρ i ≤ η.getD i 0 := by
   cases i with
   | zero => exact le_rfl
   | succ j => exact min_le_left _ _
 
-lemma loBd_le_of_lt_length {lam rho : List ℕ} (i : ℕ) : rho.getD i 0 ≤ loBd lam rho i :=
+lemma loBd_le_of_lt_length {η ρ : List ℕ} (i : ℕ) : ρ.getD i 0 ≤ loBd η ρ i :=
   le_max_left _ _
 
-/-- Outside the length of `lam`, both bounds vanish. -/
-lemma loBd_eq_zero {lam rho : List ℕ} (hsub : Included rho lam) {i : ℕ}
-    (hi : lam.length ≤ i) : loBd lam rho i = 0 := by
-  have h1 : lam.getD i 0 = 0 := List.getD_eq_default _ _ hi
-  have h2 : lam.getD (i + 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
-  have h3 : rho.getD i 0 ≤ lam.getD i 0 := hsub.getD_le i
+/-- Outside the length of `η`, both bounds vanish. -/
+lemma loBd_eq_zero {η ρ : List ℕ} (hsub : Included ρ η) {i : ℕ}
+    (hi : η.length ≤ i) : loBd η ρ i = 0 := by
+  have h1 : η.getD i 0 = 0 := List.getD_eq_default _ _ hi
+  have h2 : η.getD (i + 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
+  have h3 : ρ.getD i 0 ≤ η.getD i 0 := hsub.getD_le i
   simp only [loBd, h2]
   omega
 
-lemma hiBd_eq_zero {lam rho : List ℕ} {i : ℕ} (hi : lam.length ≤ i) :
-    hiBd lam rho i = 0 := by
-  have h1 : lam.getD i 0 = 0 := List.getD_eq_default _ _ hi
-  have := hiBd_le_lam lam rho i
+lemma hiBd_eq_zero {η ρ : List ℕ} {i : ℕ} (hi : η.length ≤ i) :
+    hiBd η ρ i = 0 := by
+  have h1 : η.getD i 0 = 0 := List.getD_eq_default _ _ hi
+  have := hiBd_le_η η ρ i
   omega
 
 /-- The parts of an interpolating shape lie in the box given by `loBd` and `hiBd`. -/
-lemma horizStrip_iff_bounds {lam rho nu : List ℕ} (hnu : IsPart nu) (hrho : IsPart rho) :
-    (HorizStrip lam nu ∧ HorizStrip nu rho) ↔
-      ∀ i, loBd lam rho i ≤ nu.getD i 0 ∧ nu.getD i 0 ≤ hiBd lam rho i := by
+lemma horizStrip_iff_bounds {η ρ ν : List ℕ} (hν : IsPart ν) (hρ : IsPart ρ) :
+    (HorizStrip η ν ∧ HorizStrip ν ρ) ↔
+      ∀ i, loBd η ρ i ≤ ν.getD i 0 ∧ ν.getD i 0 ≤ hiBd η ρ i := by
   constructor
   · rintro ⟨⟨h1, h2⟩, ⟨h3, h4⟩⟩ i
     refine ⟨max_le (h3.getD_le i) (h2 i), ?_⟩
@@ -136,129 +136,129 @@ lemma horizStrip_iff_bounds {lam rho nu : List ℕ} (hnu : IsPart nu) (hrho : Is
     | zero => exact h1.getD_le 0
     | succ j => exact le_min (h1.getD_le (j + 1)) (h4 j)
   · intro h
-    refine ⟨⟨hnu.included_iff_getD.2 fun i => le_trans (h i).2 (hiBd_le_lam lam rho i),
+    refine ⟨⟨hν.included_iff_getD.2 fun i => le_trans (h i).2 (hiBd_le_η η ρ i),
       fun i => le_trans (le_max_right _ _) (h i).1⟩,
-      ⟨hrho.included_iff_getD.2 fun i => le_trans (le_max_left _ _) (h i).1, fun i => ?_⟩⟩
+      ⟨hρ.included_iff_getD.2 fun i => le_trans (le_max_left _ _) (h i).1, fun i => ?_⟩⟩
     exact le_trans (h (i + 1)).2 (min_le_right _ _)
 
 /-! ### The set of interpolating shapes -/
 
-/-- The set of partitions of `s` interpolating between `rho` and `lam` by horizontal
+/-- The set of partitions of `s` interpolating between `ρ` and `η` by horizontal
 strips. -/
-def midSet (lam rho : List ℕ) (s : ℕ) : Set (List ℕ) :=
-  {nu | IsPart nu ∧ HorizStrip lam nu ∧ HorizStrip nu rho ∧ nu.sum = s}
+def midSet (η ρ : List ℕ) (s : ℕ) : Set (List ℕ) :=
+  {ν | IsPart ν ∧ HorizStrip η ν ∧ HorizStrip ν ρ ∧ ν.sum = s}
 
-lemma mem_midSet_iff {lam rho nu : List ℕ} {s : ℕ} (hrho : IsPart rho) :
-    nu ∈ midSet lam rho s ↔
-      IsPart nu ∧ (∀ i, loBd lam rho i ≤ nu.getD i 0 ∧ nu.getD i 0 ≤ hiBd lam rho i)
-        ∧ nu.sum = s := by
+lemma mem_midSet_iff {η ρ ν : List ℕ} {s : ℕ} (hρ : IsPart ρ) :
+    ν ∈ midSet η ρ s ↔
+      IsPart ν ∧ (∀ i, loBd η ρ i ≤ ν.getD i 0 ∧ ν.getD i 0 ≤ hiBd η ρ i)
+        ∧ ν.sum = s := by
   constructor
   · rintro ⟨h1, h2, h3, h4⟩
-    exact ⟨h1, (horizStrip_iff_bounds h1 hrho).1 ⟨h2, h3⟩, h4⟩
+    exact ⟨h1, (horizStrip_iff_bounds h1 hρ).1 ⟨h2, h3⟩, h4⟩
   · rintro ⟨h1, h2, h3⟩
-    obtain ⟨h4, h5⟩ := (horizStrip_iff_bounds h1 hrho).2 h2
+    obtain ⟨h4, h5⟩ := (horizStrip_iff_bounds h1 hρ).2 h2
     exact ⟨h1, h4, h5, h3⟩
 
-lemma midSet_eq_empty_of_lt {lam rho : List ℕ} {s : ℕ} (h : s < rho.sum) :
-    midSet lam rho s = ∅ := by
-  ext nu
+lemma midSet_eq_empty_of_lt {η ρ : List ℕ} {s : ℕ} (h : s < ρ.sum) :
+    midSet η ρ s = ∅ := by
+  ext ν
   simp only [Set.mem_empty_iff_false, iff_false]
   rintro ⟨-, -, h3, rfl⟩
   exact absurd h3.sum_le (by omega)
 
-lemma midSet_eq_empty_of_gt {lam rho : List ℕ} {s : ℕ} (h : lam.sum < s) :
-    midSet lam rho s = ∅ := by
-  ext nu
+lemma midSet_eq_empty_of_gt {η ρ : List ℕ} {s : ℕ} (h : η.sum < s) :
+    midSet η ρ s = ∅ := by
+  ext ν
   simp only [Set.mem_empty_iff_false, iff_false]
   rintro ⟨-, h2, -, rfl⟩
   exact absurd h2.sum_le (by omega)
 
 /-! ### The sum of the bounds -/
 
-lemma sum_loBd_add_hiBd {lam rho : List ℕ} (hsub : Included rho lam) :
-    ∑ i ∈ Finset.range lam.length, (loBd lam rho i + hiBd lam rho i) = lam.sum + rho.sum := by
-  have hrlen : rho.length ≤ lam.length := hsub.length_le
-  obtain hk | ⟨n, hk⟩ : lam.length = 0 ∨ ∃ n, lam.length = n + 1 := by
-    rcases Nat.eq_zero_or_pos lam.length with h | h
+lemma sum_loBd_add_hiBd {η ρ : List ℕ} (hsub : Included ρ η) :
+    ∑ i ∈ Finset.range η.length, (loBd η ρ i + hiBd η ρ i) = η.sum + ρ.sum := by
+  have hrlen : ρ.length ≤ η.length := hsub.length_le
+  obtain hk | ⟨n, hk⟩ : η.length = 0 ∨ ∃ n, η.length = n + 1 := by
+    rcases Nat.eq_zero_or_pos η.length with h | h
     · exact Or.inl h
-    · exact Or.inr ⟨lam.length - 1, by omega⟩
-  · have hlam : lam = [] := List.length_eq_zero_iff.1 hk
-    have hrho : rho = [] := List.length_eq_zero_iff.1 (by omega)
-    simp [hlam, hrho]
-  · rw [hk, Finset.sum_add_distrib, Finset.sum_range_succ (f := loBd lam rho),
-      Finset.sum_range_succ' (f := hiBd lam rho)]
-    have hlast : loBd lam rho n = rho.getD n 0 := by
-      have h0 : lam.getD (n + 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
+    · exact Or.inr ⟨η.length - 1, by omega⟩
+  · have hη : η = [] := List.length_eq_zero_iff.1 hk
+    have hρ : ρ = [] := List.length_eq_zero_iff.1 (by omega)
+    simp [hη, hρ]
+  · rw [hk, Finset.sum_add_distrib, Finset.sum_range_succ (f := loBd η ρ),
+      Finset.sum_range_succ' (f := hiBd η ρ)]
+    have hlast : loBd η ρ n = ρ.getD n 0 := by
+      have h0 : η.getD (n + 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
       simp only [loBd, h0]
       omega
-    have hzero : hiBd lam rho 0 = lam.getD 0 0 := rfl
-    have hmid : (∑ i ∈ Finset.range n, loBd lam rho i)
-        + ∑ i ∈ Finset.range n, hiBd lam rho (i + 1)
-        = (∑ i ∈ Finset.range n, rho.getD i 0) + ∑ i ∈ Finset.range n, lam.getD (i + 1) 0 := by
+    have hzero : hiBd η ρ 0 = η.getD 0 0 := rfl
+    have hmid : (∑ i ∈ Finset.range n, loBd η ρ i)
+        + ∑ i ∈ Finset.range n, hiBd η ρ (i + 1)
+        = (∑ i ∈ Finset.range n, ρ.getD i 0) + ∑ i ∈ Finset.range n, η.getD (i + 1) 0 := by
       rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
       refine Finset.sum_congr rfl fun i _ => ?_
       simp only [loBd, hiBd_succ]
       omega
-    have hlamsum : lam.sum = (∑ i ∈ Finset.range n, lam.getD (i + 1) 0) + lam.getD 0 0 := by
-      rw [← Finset.sum_range_succ' (f := fun i => lam.getD i 0) n]
-      exact sum_eq_sum_range_getD lam (by omega)
-    have hrhosum : rho.sum = (∑ i ∈ Finset.range n, rho.getD i 0) + rho.getD n 0 := by
-      rw [← Finset.sum_range_succ (f := fun i => rho.getD i 0) n]
-      exact sum_eq_sum_range_getD rho (by omega)
+    have hηsum : η.sum = (∑ i ∈ Finset.range n, η.getD (i + 1) 0) + η.getD 0 0 := by
+      rw [← Finset.sum_range_succ' (f := fun i => η.getD i 0) n]
+      exact sum_eq_sum_range_getD η (by omega)
+    have hρsum : ρ.sum = (∑ i ∈ Finset.range n, ρ.getD i 0) + ρ.getD n 0 := by
+      rw [← Finset.sum_range_succ (f := fun i => ρ.getD i 0) n]
+      exact sum_eq_sum_range_getD ρ (by omega)
     rw [hlast, hzero]
     omega
 
 /-! ### The reflection of the box -/
 
 /-- The reflection of an interpolating shape inside the box of the bounds. -/
-def pieriFlip (lam rho nu : List ℕ) : List ℕ :=
-  shapeOfFn lam.length (fun i => loBd lam rho i + hiBd lam rho i - nu.getD i 0)
+def pieriFlip (η ρ ν : List ℕ) : List ℕ :=
+  shapeOfFn η.length (fun i => loBd η ρ i + hiBd η ρ i - ν.getD i 0)
 
-lemma getD_pieriFlip {lam rho nu : List ℕ} (hsub : Included rho lam) (i : ℕ) :
-    (pieriFlip lam rho nu).getD i 0 = loBd lam rho i + hiBd lam rho i - nu.getD i 0 := by
+lemma getD_pieriFlip {η ρ ν : List ℕ} (hsub : Included ρ η) (i : ℕ) :
+    (pieriFlip η ρ ν).getD i 0 = loBd η ρ i + hiBd η ρ i - ν.getD i 0 := by
   rw [pieriFlip, getD_shapeOfFn]
   split_ifs with h
   · rfl
   · rw [loBd_eq_zero hsub (by omega), hiBd_eq_zero (by omega)]
     simp
 
-lemma getLastD_pieriFlip_ne_zero (lam rho nu : List ℕ) :
-    (pieriFlip lam rho nu).getLastD 1 ≠ 0 := by
+lemma getLastD_pieriFlip_ne_zero (η ρ ν : List ℕ) :
+    (pieriFlip η ρ ν).getLastD 1 ≠ 0 := by
   rw [pieriFlip, shapeOfFn]
   exact getLastD_trimZeros_ne_zero _
 
-lemma pieriFlip_mem {lam rho nu : List ℕ} {s : ℕ} (hrho : IsPart rho)
-    (hsub : Included rho lam) (hnu : nu ∈ midSet lam rho s) :
-    pieriFlip lam rho nu ∈ midSet lam rho (lam.sum + rho.sum - s) := by
-  obtain ⟨hpart, hstr1, hstr2, hsum⟩ := hnu
-  have hbox : ∀ i, loBd lam rho i ≤ nu.getD i 0 ∧ nu.getD i 0 ≤ hiBd lam rho i :=
-    (horizStrip_iff_bounds hpart hrho).1 ⟨hstr1, hstr2⟩
-  set g : ℕ → ℕ := fun i => loBd lam rho i + hiBd lam rho i - nu.getD i 0 with hg
-  have hgetD : ∀ i, (pieriFlip lam rho nu).getD i 0 = g i := getD_pieriFlip hsub
-  have hgbox : ∀ i, loBd lam rho i ≤ g i ∧ g i ≤ hiBd lam rho i := by
+lemma pieriFlip_mem {η ρ ν : List ℕ} {s : ℕ} (hρ : IsPart ρ)
+    (hsub : Included ρ η) (hν : ν ∈ midSet η ρ s) :
+    pieriFlip η ρ ν ∈ midSet η ρ (η.sum + ρ.sum - s) := by
+  obtain ⟨hpart, hstr1, hstr2, hsum⟩ := hν
+  have hbox : ∀ i, loBd η ρ i ≤ ν.getD i 0 ∧ ν.getD i 0 ≤ hiBd η ρ i :=
+    (horizStrip_iff_bounds hpart hρ).1 ⟨hstr1, hstr2⟩
+  set g : ℕ → ℕ := fun i => loBd η ρ i + hiBd η ρ i - ν.getD i 0 with hg
+  have hgetD : ∀ i, (pieriFlip η ρ ν).getD i 0 = g i := getD_pieriFlip hsub
+  have hgbox : ∀ i, loBd η ρ i ≤ g i ∧ g i ≤ hiBd η ρ i := by
     intro i
     have := hbox i
     simp only [hg]
     omega
   have hgdec : ∀ i, g (i + 1) ≤ g i := by
     intro i
-    have h1 : g (i + 1) ≤ hiBd lam rho (i + 1) := (hgbox (i + 1)).2
-    have h2 : loBd lam rho i ≤ g i := (hgbox i).1
-    have h3 : hiBd lam rho (i + 1) ≤ rho.getD i 0 := min_le_right _ _
-    have h4 : rho.getD i 0 ≤ loBd lam rho i := le_max_left _ _
+    have h1 : g (i + 1) ≤ hiBd η ρ (i + 1) := (hgbox (i + 1)).2
+    have h2 : loBd η ρ i ≤ g i := (hgbox i).1
+    have h3 : hiBd η ρ (i + 1) ≤ ρ.getD i 0 := min_le_right _ _
+    have h4 : ρ.getD i 0 ≤ loBd η ρ i := le_max_left _ _
     omega
-  have hpartflip : IsPart (pieriFlip lam rho nu) := isPart_shapeOfFn hgdec
-  refine (mem_midSet_iff hrho).2 ⟨hpartflip, fun i => by rw [hgetD i]; exact hgbox i, ?_⟩
+  have hpartflip : IsPart (pieriFlip η ρ ν) := isPart_shapeOfFn hgdec
+  refine (mem_midSet_iff hρ).2 ⟨hpartflip, fun i => by rw [hgetD i]; exact hgbox i, ?_⟩
   -- the sum
-  have hnulen : nu.length ≤ lam.length := hstr1.included.length_le
-  have hfliplen : (pieriFlip lam rho nu).length ≤ lam.length := length_shapeOfFn_le _ _
-  have hsum1 : (pieriFlip lam rho nu).sum = ∑ i ∈ Finset.range lam.length, g i := by
+  have hνlen : ν.length ≤ η.length := hstr1.included.length_le
+  have hfliplen : (pieriFlip η ρ ν).length ≤ η.length := length_shapeOfFn_le _ _
+  have hsum1 : (pieriFlip η ρ ν).sum = ∑ i ∈ Finset.range η.length, g i := by
     rw [sum_eq_sum_range_getD _ hfliplen]
     exact Finset.sum_congr rfl fun i _ => hgetD i
-  have hsum2 : nu.sum = ∑ i ∈ Finset.range lam.length, nu.getD i 0 :=
-    sum_eq_sum_range_getD nu hnulen
-  have hsum3 : (∑ i ∈ Finset.range lam.length, g i)
-      + ∑ i ∈ Finset.range lam.length, nu.getD i 0 = lam.sum + rho.sum := by
+  have hsum2 : ν.sum = ∑ i ∈ Finset.range η.length, ν.getD i 0 :=
+    sum_eq_sum_range_getD ν hνlen
+  have hsum3 : (∑ i ∈ Finset.range η.length, g i)
+      + ∑ i ∈ Finset.range η.length, ν.getD i 0 = η.sum + ρ.sum := by
     rw [← Finset.sum_add_distrib, ← sum_loBd_add_hiBd hsub]
     refine Finset.sum_congr rfl fun i _ => ?_
     have := (hbox i).2
@@ -267,47 +267,47 @@ lemma pieriFlip_mem {lam rho nu : List ℕ} {s : ℕ} (hrho : IsPart rho)
   rw [hsum1]
   omega
 
-lemma pieriFlip_pieriFlip {lam rho nu : List ℕ} {s : ℕ} (hrho : IsPart rho)
-    (hsub : Included rho lam) (hnu : nu ∈ midSet lam rho s) :
-    pieriFlip lam rho (pieriFlip lam rho nu) = nu := by
-  obtain ⟨hpart, hbox, -⟩ := (mem_midSet_iff hrho).1 hnu
+lemma pieriFlip_pieriFlip {η ρ ν : List ℕ} {s : ℕ} (hρ : IsPart ρ)
+    (hsub : Included ρ η) (hν : ν ∈ midSet η ρ s) :
+    pieriFlip η ρ (pieriFlip η ρ ν) = ν := by
+  obtain ⟨hpart, hbox, -⟩ := (mem_midSet_iff hρ).1 hν
   refine ext_getD_of_getLastD_ne_zero (getLastD_pieriFlip_ne_zero _ _ _)
     hpart.getLastD_ne_zero fun i => ?_
   rw [getD_pieriFlip hsub i, getD_pieriFlip hsub i]
   have := hbox i
   omega
 
-/-- **Commutation of the Pieri rule**: going from `rho` to `lam` through a shape of size
+/-- **Commutation of the Pieri rule**: going from `ρ` to `η` through a shape of size
 `s` by two horizontal strips can be done in as many ways as going through a shape of size
-`|lam| + |rho| - s`; equivalently, if `|lam| - |rho| = a + b`, there are as many ways to
+`|η| + |ρ| - s`; equivalently, if `|η| - |ρ| = a + b`, there are as many ways to
 add a horizontal strip of size `a` and then one of size `b` as the other way around. -/
-theorem card_midSet_symm (lam rho : List ℕ) (hrho : IsPart rho)
-    (hsub : Included rho lam) {s : ℕ} (hs : rho.sum ≤ s) (hs' : s ≤ lam.sum) :
-    Nat.card (midSet lam rho s) = Nat.card (midSet lam rho (lam.sum + rho.sum - s)) := by
-  have hle : rho.sum ≤ lam.sum := hsub.sum_le
-  set t := lam.sum + rho.sum - s with ht
-  have hts : lam.sum + rho.sum - t = s := by omega
+theorem card_midSet_symm (η ρ : List ℕ) (hρ : IsPart ρ)
+    (hsub : Included ρ η) {s : ℕ} (hs : ρ.sum ≤ s) (hs' : s ≤ η.sum) :
+    Nat.card (midSet η ρ s) = Nat.card (midSet η ρ (η.sum + ρ.sum - s)) := by
+  have hle : ρ.sum ≤ η.sum := hsub.sum_le
+  set t := η.sum + ρ.sum - s with ht
+  have hts : η.sum + ρ.sum - t = s := by omega
   refine Nat.card_congr (Equiv.ofBijective
-    (fun nu : midSet lam rho s => (⟨pieriFlip lam rho nu.1,
-      pieriFlip_mem hrho hsub nu.2⟩ : midSet lam rho t)) ⟨?_, ?_⟩)
-  · rintro ⟨nu, hnu⟩ ⟨mu, hmu⟩ h
-    have h' : pieriFlip lam rho nu = pieriFlip lam rho mu := congrArg Subtype.val h
-    have := pieriFlip_pieriFlip hrho hsub hnu
-    rw [h', pieriFlip_pieriFlip hrho hsub hmu] at this
+    (fun ν : midSet η ρ s => (⟨pieriFlip η ρ ν.1,
+      pieriFlip_mem hρ hsub ν.2⟩ : midSet η ρ t)) ⟨?_, ?_⟩)
+  · rintro ⟨ν, hν⟩ ⟨μ, hμ⟩ h
+    have h' : pieriFlip η ρ ν = pieriFlip η ρ μ := congrArg Subtype.val h
+    have := pieriFlip_pieriFlip hρ hsub hν
+    rw [h', pieriFlip_pieriFlip hρ hsub hμ] at this
     exact Subtype.ext this.symm
-  · rintro ⟨mu, hmu⟩
-    have hmu' : pieriFlip lam rho mu ∈ midSet lam rho s := by
-      have := pieriFlip_mem (s := t) hrho hsub hmu
+  · rintro ⟨μ, hμ⟩
+    have hμ' : pieriFlip η ρ μ ∈ midSet η ρ s := by
+      have := pieriFlip_mem (s := t) hρ hsub hμ
       rwa [hts] at this
-    exact ⟨⟨pieriFlip lam rho mu, hmu'⟩, Subtype.ext (pieriFlip_pieriFlip hrho hsub hmu)⟩
+    exact ⟨⟨pieriFlip η ρ μ, hμ'⟩, Subtype.ext (pieriFlip_pieriFlip hρ hsub hμ)⟩
 
 /-- The form of `Young.card_midSet_symm` used in the Pieri rule: adding a horizontal strip
 of size `a` and then one of size `b` can be done in as many ways as the other way
 around. -/
-theorem card_midSet_add_comm (lam rho : List ℕ) (hrho : IsPart rho) (hsub : Included rho lam)
-    {a b : ℕ} (hab : rho.sum + a + b = lam.sum) :
-    Nat.card (midSet lam rho (rho.sum + a)) = Nat.card (midSet lam rho (rho.sum + b)) := by
-  have := card_midSet_symm lam rho hrho hsub (s := rho.sum + a) (by omega) (by omega)
-  rwa [show lam.sum + rho.sum - (rho.sum + a) = rho.sum + b by omega] at this
+theorem card_midSet_add_comm (η ρ : List ℕ) (hρ : IsPart ρ) (hsub : Included ρ η)
+    {a b : ℕ} (hab : ρ.sum + a + b = η.sum) :
+    Nat.card (midSet η ρ (ρ.sum + a)) = Nat.card (midSet η ρ (ρ.sum + b)) := by
+  have := card_midSet_symm η ρ hρ hsub (s := ρ.sum + a) (by omega) (by omega)
+  rwa [show η.sum + ρ.sum - (ρ.sum + a) = ρ.sum + b by omega] at this
 
 end Young

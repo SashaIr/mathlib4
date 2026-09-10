@@ -18,14 +18,14 @@ A Lean 4 port of `theories/LRrule/Yam_plact.v` from
 The Yamanouchi words of a given evaluation form a plactic class: being Yamanouchi is
 invariant under the Knuth relations, and two Yamanouchi words are Knuth equivalent as
 soon as they have the same evaluation.  The proof goes through the *Yamanouchi tableau*
-`yamTab sh`, whose `i`-th row only contains the letter `i`; it is the unique tableau
+`yamTab μ`, whose `i`-th row only contains the letter `i`; it is the unique tableau
 whose reading word is Yamanouchi, and the insertion tableau of a Yamanouchi word `y` is
 `yamTab (evalseq y)`.
 
 ## Main definitions
 
 * `Young.Dominant l` : every letter of `l` occurs at least as often as its successor.
-* `Young.yamTab sh` : the Yamanouchi tableau of shape `sh` (Coq `yamtab`).
+* `Young.yamTab μ` : the Yamanouchi tableau of shape `μ` (Coq `yamtab`).
 
 ## Main results
 
@@ -200,39 +200,39 @@ theorem evalseq_eq_of_placticEquiv {u v : List ℕ} (h : PlacticEquiv u v) :
 /-! ### The Yamanouchi tableau -/
 
 /-- Auxiliary definition for `yamTab`: the list of rows whose `j`-th row consists of
-`sh.getD j 0` copies of the letter `d + j` (Coq `yamtab_rec`). -/
+`μ.getD j 0` copies of the letter `d + j` (Coq `yamtab_rec`). -/
 def yamTabAux : ℕ → List ℕ → List (List ℕ)
   | _, [] => []
-  | d, m :: sh => List.replicate m d :: yamTabAux (d + 1) sh
+  | d, m :: μ => List.replicate m d :: yamTabAux (d + 1) μ
 
-/-- The Yamanouchi tableau of shape `sh`: its `i`-th row only contains the letter `i`
+/-- The Yamanouchi tableau of shape `μ`: its `i`-th row only contains the letter `i`
 (Coq `yamtab`). -/
-def yamTab (sh : List ℕ) : List (List ℕ) := yamTabAux 0 sh
+def yamTab (μ : List ℕ) : List (List ℕ) := yamTabAux 0 μ
 
 @[simp] lemma yamTabAux_nil (d : ℕ) : yamTabAux d [] = [] := rfl
 
-@[simp] lemma yamTabAux_cons (d m : ℕ) (sh : List ℕ) :
-    yamTabAux d (m :: sh) = List.replicate m d :: yamTabAux (d + 1) sh := rfl
+@[simp] lemma yamTabAux_cons (d m : ℕ) (μ : List ℕ) :
+    yamTabAux d (m :: μ) = List.replicate m d :: yamTabAux (d + 1) μ := rfl
 
 @[simp] lemma yamTab_nil : yamTab [] = [] := rfl
 
-lemma shape_yamTabAux (d : ℕ) (sh : List ℕ) : shape (yamTabAux d sh) = sh := by
-  induction sh generalizing d with
+lemma shape_yamTabAux (d : ℕ) (μ : List ℕ) : shape (yamTabAux d μ) = μ := by
+  induction μ generalizing d with
   | nil => rfl
-  | cons m sh ih => simp [ih]
+  | cons m μ ih => simp [ih]
 
 /-- Coq `shape_yamtab`. -/
-@[simp] lemma shape_yamTab (sh : List ℕ) : shape (yamTab sh) = sh := shape_yamTabAux 0 sh
+@[simp] lemma shape_yamTab (μ : List ℕ) : shape (yamTab μ) = μ := shape_yamTabAux 0 μ
 
-@[simp] lemma length_yamTab (sh : List ℕ) : (yamTab sh).length = sh.length := by
-  have h : (shape (yamTab sh)).length = sh.length := by rw [shape_yamTab]
+@[simp] lemma length_yamTab (μ : List ℕ) : (yamTab μ).length = μ.length := by
+  have h : (shape (yamTab μ)).length = μ.length := by rw [shape_yamTab]
   simpa [shape] using h
 
-lemma getD_yamTabAux (d : ℕ) (sh : List ℕ) (i : ℕ) :
-    (yamTabAux d sh).getD i [] = List.replicate (sh.getD i 0) (d + i) := by
-  induction sh generalizing d i with
+lemma getD_yamTabAux (d : ℕ) (μ : List ℕ) (i : ℕ) :
+    (yamTabAux d μ).getD i [] = List.replicate (μ.getD i 0) (d + i) := by
+  induction μ generalizing d i with
   | nil => simp
-  | cons m sh ih =>
+  | cons m μ ih =>
     cases i with
     | zero => simp
     | succ j =>
@@ -240,11 +240,11 @@ lemma getD_yamTabAux (d : ℕ) (sh : List ℕ) (i : ℕ) :
       congr 1
       omega
 
-/-- The `i`-th row of the Yamanouchi tableau of shape `sh` consists of `sh.getD i 0`
+/-- The `i`-th row of the Yamanouchi tableau of shape `μ` consists of `μ.getD i 0`
 copies of the letter `i`. -/
-lemma getD_yamTab (sh : List ℕ) (i : ℕ) :
-    (yamTab sh).getD i [] = List.replicate (sh.getD i 0) i := by
-  simpa [yamTab] using getD_yamTabAux 0 sh i
+lemma getD_yamTab (μ : List ℕ) (i : ℕ) :
+    (yamTab μ).getD i [] = List.replicate (μ.getD i 0) i := by
+  simpa [yamTab] using getD_yamTabAux 0 μ i
 
 lemma hyperYamRev_concat (l : List ℕ) (m : ℕ) :
     hyperYamRev (l ++ [m]) = (hyperYamRev l).map (· + 1) ++ List.replicate m 0 := by
@@ -252,27 +252,27 @@ lemma hyperYamRev_concat (l : List ℕ) (m : ℕ) :
   | nil => simp
   | cons s0 s ih => simp [ih, map_replicate, append_assoc]
 
-lemma hyperYam_cons (m : ℕ) (sh : List ℕ) :
-    hyperYam (m :: sh) = (hyperYam sh).map (· + 1) ++ List.replicate m 0 := by
+lemma hyperYam_cons (m : ℕ) (μ : List ℕ) :
+    hyperYam (m :: μ) = (hyperYam μ).map (· + 1) ++ List.replicate m 0 := by
   rw [hyperYam, reverse_cons, hyperYamRev_concat, hyperYam]
 
-lemma toWord_yamTabAux (d : ℕ) (sh : List ℕ) :
-    toWord (yamTabAux d sh) = (hyperYam sh).map (· + d) := by
-  induction sh generalizing d with
+lemma toWord_yamTabAux (d : ℕ) (μ : List ℕ) :
+    toWord (yamTabAux d μ) = (hyperYam μ).map (· + d) := by
+  induction μ generalizing d with
   | nil => simp
-  | cons m sh ih =>
+  | cons m μ ih =>
     rw [yamTabAux_cons, toWord_cons, ih, hyperYam_cons, map_append, map_map, map_replicate]
     congr 1
     · exact map_congr_left fun x _ ↦ by simp only [Function.comp_apply]; omega
     · simp
 
-/-- The reading word of the Yamanouchi tableau of shape `sh` is the hyperstandard
-Yamanouchi word of evaluation `sh` (Coq `to_word_yamtab`). -/
-lemma toWord_yamTab (sh : List ℕ) : toWord (yamTab sh) = hyperYam sh := by
-  simpa [yamTab] using toWord_yamTabAux 0 sh
+/-- The reading word of the Yamanouchi tableau of shape `μ` is the hyperstandard
+Yamanouchi word of evaluation `μ` (Coq `to_word_yamtab`). -/
+lemma toWord_yamTab (μ : List ℕ) : toWord (yamTab μ) = hyperYam μ := by
+  simpa [yamTab] using toWord_yamTabAux 0 μ
 
 /-- Coq `yamtabP`: the Yamanouchi tableau of a partition shape is a tableau. -/
-lemma isTableau_yamTab {sh : List ℕ} (h : IsPart sh) : IsTableau (yamTab sh) := by
+lemma isTableau_yamTab {μ : List ℕ} (h : IsPart μ) : IsTableau (yamTab μ) := by
   refine isTableau_of_getD (fun i hi ↦ ?_) (fun i ↦ ?_) fun i ↦ ?_
   · rw [getD_yamTab]
     simp only [ne_eq, replicate_eq_nil_iff]

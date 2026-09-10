@@ -56,8 +56,8 @@ theorem trace_eq_add_trace_restrict {V : Type u} [AddCommGroup V] [Module k V]
   rfl
 
 /-- A function on `G` which is the character of a simple object of `FDRep k G`. -/
-def IsSimpleChar (chi : G → k) : Prop :=
-  ∃ V : FDRep k G, Simple V ∧ V.character = chi
+def IsSimpleChar (χ : G → k) : Prop :=
+  ∃ V : FDRep k G, Simple V ∧ V.character = χ
 
 variable [IsAlgClosed k] [Finite G] [NeZero (Nat.card G : k)]
 

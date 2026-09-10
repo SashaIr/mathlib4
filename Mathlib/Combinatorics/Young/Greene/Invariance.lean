@@ -45,7 +45,7 @@ lemma greeneSize_split (w : List T) (c : ℕ → Option ℕ) (n l m : ℕ)
 
 /-! ### Transferring a colouring along a change of the three middle letters -/
 
-/-- The colouring of `p ++ mv ++ s` built from a colouring `c` of `p ++ mu ++ s`: it is
+/-- The colouring of `p ++ mv ++ s` built from a colouring `c` of `p ++ μ ++ s`: it is
 unchanged on `p`, given by `wc` on the three middle positions, and composed with the
 permutation `τ` of the colours on `s`. -/
 def mixCol (n : ℕ) (c wc : ℕ → Option ℕ) (τ : ℕ → ℕ) : ℕ → Option ℕ := fun i =>
@@ -65,11 +65,11 @@ lemma mixCol_gt {n : ℕ} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ} {i : �
   simp only [mixCol]
   rw [ite_eq_right (by omega), ite_eq_right (by omega)]
 
-/-- The key transfer lemma: a colouring of `p ++ mu ++ s` yields a colouring of
+/-- The key transfer lemma: a colouring of `p ++ μ ++ s` yields a colouring of
 `p ++ mv ++ s`, provided the four families of comparisons hold. -/
-lemma isGreeneCol_mixCol {k : ℕ} {p s mu mv : List T} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ}
-    (hmu : mu.length = 3) (hmv : mv.length = 3)
-    (hc : IsGreeneCol (p ++ mu ++ s) k c)
+lemma isGreeneCol_mixCol {k : ℕ} {p s μ mv : List T} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ}
+    (hμ : μ.length = 3) (hmv : mv.length = 3)
+    (hc : IsGreeneCol (p ++ μ ++ s) k c)
     (hτinj : Function.Injective τ) (hτk : ∀ x, x < k → τ x < k)
     (hwck : ∀ j x, j < 3 → wc j = some x → x < k)
     (h11 : ∀ i j x (hij : i < j) (hj : j < 3), wc i = some x → wc j = some x →
@@ -95,8 +95,8 @@ lemma isGreeneCol_mixCol {k : ℕ} {p s mu mv : List T} {c wc : ℕ → Option �
   · intro i j x hij hj hci hcj
     have hlenv : (p ++ mv ++ s).length = p.length + 3 + s.length := by
       rw [length_append_mid, hmv]
-    have hlenu : (p ++ mu ++ s).length = p.length + 3 + s.length := by
-      rw [length_append_mid, hmu]
+    have hlenu : (p ++ μ ++ s).length = p.length + 3 + s.length := by
+      rw [length_append_mid, hμ]
     have hj' : j < p.length + 3 + s.length := hlenv ▸ hj
     rcases lt_or_ge i p.length with hi | hi
     · rw [mixCol_lt hi] at hci
@@ -105,9 +105,9 @@ lemma isGreeneCol_mixCol {k : ℕ} {p s mu mv : List T} {c wc : ℕ → Option �
       rcases lt_or_ge j p.length with hjp | hjp
       · rw [mixCol_lt hjp] at hcj
         have hvj : (p ++ mv ++ s)[j]'hj = p[j] := getElem_mid_left' p mv s hjp _
-        have hui : (p ++ mu ++ s)[i]'(by omega) = p[i] := getElem_mid_left' p mu s hi _
-        have huj : (p ++ mu ++ s)[j]'(by omega) = p[j] := getElem_mid_left' p mu s hjp _
-        have := hc.le_of_colour hij (show j < (p ++ mu ++ s).length by omega) hci hcj
+        have hui : (p ++ μ ++ s)[i]'(by omega) = p[i] := getElem_mid_left' p μ s hi _
+        have huj : (p ++ μ ++ s)[j]'(by omega) = p[j] := getElem_mid_left' p μ s hjp _
+        have := hc.le_of_colour hij (show j < (p ++ μ ++ s).length by omega) hci hcj
         exact hvi.le.trans ((hui.ge.trans (this.trans huj.le)).trans hvj.ge)
       · by_cases hj3 : j < p.length + 3
         · have hjeq : j = p.length + (j - p.length) := by omega
@@ -158,22 +158,22 @@ lemma isGreeneCol_mixCol {k : ℕ} {p s mu mv : List T} {c wc : ℕ → Option �
           getElem_mid_right' p mv s (by omega) (by omega) _
         have hvj : (p ++ mv ++ s)[j]'hj = s[j - p.length - 3]'(by omega) :=
           getElem_mid_right' p mv s (by omega) (by omega) _
-        have hui : (p ++ mu ++ s)[i]'(by omega) = s[i - p.length - 3]'(by omega) :=
-          getElem_mid_right' p mu s (by omega) (by omega) _
-        have huj : (p ++ mu ++ s)[j]'(by omega) = s[j - p.length - 3]'(by omega) :=
-          getElem_mid_right' p mu s (by omega) (by omega) _
-        have := hc.le_of_colour hij (show j < (p ++ mu ++ s).length by omega) hy hy'
+        have hui : (p ++ μ ++ s)[i]'(by omega) = s[i - p.length - 3]'(by omega) :=
+          getElem_mid_right' p μ s (by omega) (by omega) _
+        have huj : (p ++ μ ++ s)[j]'(by omega) = s[j - p.length - 3]'(by omega) :=
+          getElem_mid_right' p μ s (by omega) (by omega) _
+        have := hc.le_of_colour hij (show j < (p ++ μ ++ s).length by omega) hy hy'
         exact hvi.le.trans ((hui.ge.trans (this.trans huj.le)).trans hvj.ge)
 
 omit [LinearOrder T] in
 /-- The size of a transferred colouring. -/
-lemma greeneSize_mixCol {p s mu mv : List T} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ}
-    (hmu : mu.length = 3) (hmv : mv.length = 3)
+lemma greeneSize_mixCol {p s μ mv : List T} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ}
+    (hμ : μ.length = 3) (hmv : mv.length = 3)
     (hcount : ((Finset.range 3).filter fun j => (wc j).isSome).card =
       ((Finset.range 3).filter fun j => (c (p.length + j)).isSome).card) :
-    greeneSize (p ++ mv ++ s) (mixCol p.length c wc τ) = greeneSize (p ++ mu ++ s) c := by
+    greeneSize (p ++ mv ++ s) (mixCol p.length c wc τ) = greeneSize (p ++ μ ++ s) c := by
   rw [greeneSize_split _ _ p.length 3 s.length (by rw [length_append_mid, hmv]),
-    greeneSize_split _ _ p.length 3 s.length (by rw [length_append_mid, hmu])]
+    greeneSize_split _ _ p.length 3 s.length (by rw [length_append_mid, hμ])]
   congr 1
   · congr 1
     · congr 1
@@ -243,9 +243,9 @@ lemma col_pre_suf (hm : m.length = 3) (hc : IsGreeneCol (p ++ m ++ s) k c)
 end Facts
 
 /-- Combination of `isGreeneCol_mixCol` and `greeneSize_mixCol`. -/
-lemma greeneSize_le_greeneRow_mix {k : ℕ} {p s mu mv : List T} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ}
-    (hmu : mu.length = 3) (hmv : mv.length = 3)
-    (hc : IsGreeneCol (p ++ mu ++ s) k c)
+lemma greeneSize_le_greeneRow_mix {k : ℕ} {p s μ mv : List T} {c wc : ℕ → Option ℕ} {τ : ℕ → ℕ}
+    (hμ : μ.length = 3) (hmv : mv.length = 3)
+    (hc : IsGreeneCol (p ++ μ ++ s) k c)
     (hτinj : Function.Injective τ) (hτk : ∀ x, x < k → τ x < k)
     (hwck : ∀ j x, j < 3 → wc j = some x → x < k)
     (h11 : ∀ i j x (hij : i < j) (hj : j < 3), wc i = some x → wc j = some x →
@@ -258,9 +258,9 @@ lemma greeneSize_le_greeneRow_mix {k : ℕ} {p s mu mv : List T} {c wc : ℕ →
       (c (p.length + 3 + j)).map τ = some x → p[i] ≤ s[j])
     (hcount : ((Finset.range 3).filter fun j => (wc j).isSome).card =
       ((Finset.range 3).filter fun j => (c (p.length + j)).isSome).card) :
-    greeneSize (p ++ mu ++ s) c ≤ greeneRow (p ++ mv ++ s) k := by
-  rw [← greeneSize_mixCol (mu := mu) (mv := mv) (τ := τ) hmu hmv hcount]
-  exact le_greeneRow (isGreeneCol_mixCol hmu hmv hc hτinj hτk hwck h11 h12 h23 h13)
+    greeneSize (p ++ μ ++ s) c ≤ greeneRow (p ++ mv ++ s) k := by
+  rw [← greeneSize_mixCol (μ := μ) (mv := mv) (τ := τ) hμ hmv hcount]
+  exact le_greeneRow (isGreeneCol_mixCol hμ hmv hc hτinj hτk hwck h11 h12 h23 h13)
 
 lemma card_filter_range3 (f : ℕ → Option ℕ) :
     ((Finset.range 3).filter fun j => (f j).isSome).card =

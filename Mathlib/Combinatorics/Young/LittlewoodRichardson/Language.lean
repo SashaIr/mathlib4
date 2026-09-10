@@ -107,24 +107,24 @@ private lemma isStd_of_isStdTab_RS {p : List ℕ} {t : List (List ℕ)} (ht : Is
 as the first two together (Coq `is_stdtab_of_n_LRtriple`). -/
 theorem isStdTab_of_LRtriple {t₁ t₂ t : List (List ℕ)} (ht₁ : IsStdTab t₁) (ht₂ : IsStdTab t₂)
     (h : LRtriple t₁ t₂ t) : IsStdTab t ∧ sizeTab t = sizeTab t₁ + sizeTab t₂ := by
-  obtain ⟨p₁, p₂, p, hp₁, hp₂, hp, hsh⟩ := h
+  obtain ⟨p₁, p₂, p, hp₁, hp₂, hp, hμ⟩ := h
   have hs₁ : IsStd p₁ := isStd_of_isStdTab_RS ht₁ hp₁
   have hs₂ : IsStd p₂ := isStd_of_isStdTab_RS ht₂ hp₂
-  have hsp : IsStd p := hs₁.of_mem_shsh hs₂ hsh
+  have hsp : IsStd p := hs₁.of_mem_shsh hs₂ hμ
   refine ⟨hp ▸ isStdTab_RS hsp, ?_⟩
-  rw [← hp, sizeTab_RS, length_of_mem_shsh hsh, ← hp₁, ← hp₂, sizeTab_RS, sizeTab_RS]
+  rw [← hp, sizeTab_RS, length_of_mem_shsh hμ, ← hp₁, ← hp₂, sizeTab_RS, sizeTab_RS]
 
 /-- **Transposing the three tableaux of a Littlewood–Richardson triple gives a
 Littlewood–Richardson triple** (Coq `LRtriple_conj`). -/
 theorem LRtriple_conjTab {t₁ t₂ t : List (List ℕ)} (ht₁ : IsStdTab t₁) (ht₂ : IsStdTab t₂)
     (h : LRtriple t₁ t₂ t) : LRtriple (conjTab t₁) (conjTab t₂) (conjTab t) := by
-  obtain ⟨p₁, p₂, p, hp₁, hp₂, hp, hsh⟩ := h
+  obtain ⟨p₁, p₂, p, hp₁, hp₂, hp, hμ⟩ := h
   have hs₁ : IsStd p₁ := isStd_of_isStdTab_RS ht₁ hp₁
   have hs₂ : IsStd p₂ := isStd_of_isStdTab_RS ht₂ hp₂
-  have hsp : IsStd p := hs₁.of_mem_shsh hs₂ hsh
+  have hsp : IsStd p := hs₁.of_mem_shsh hs₂ hμ
   exact ⟨p₁.reverse, p₂.reverse, p.reverse, by rw [RS_reverse hs₁, hp₁],
     by rw [RS_reverse hs₂, hp₂], by rw [RS_reverse hsp, hp],
-    reverse_mem_shsh (fun _ hx => mem_range.1 (hs₁.mem_iff.1 hx)) hsh⟩
+    reverse_mem_shsh (fun _ hx => mem_range.1 (hs₁.mem_iff.1 hx)) hμ⟩
 
 /-- **The free Littlewood–Richardson rule** (Coq `LRrule_langQ`): a word splits as a word of
 `language t₁` followed by a word of `language t₂` exactly when it lies in the language of a
@@ -135,14 +135,14 @@ theorem LRrule_language {t₁ t₂ : List (List ℕ)} (ht₁ : IsStdTab t₁) (w
   constructor
   · rintro ⟨u, v, rfl, hu, hv⟩
     exact ⟨RSQ (u ++ v), LRtriple_RSQ_append hu hv, rfl⟩
-  · rintro ⟨t, ⟨p₁, p₂, p, hp₁, hp₂, hp, hsh⟩, hw⟩
+  · rintro ⟨t, ⟨p₁, p₂, p, hp₁, hp₂, hp, hμ⟩, hw⟩
     have hstd₁ : IsStd p₁ := isStd_of_isStdTab_RS ht₁ hp₁
     have hpl : PlacticEquiv (invStd (std w)) p :=
       placticEquiv_iff_RS_eq.2 (by rw [RS_invStd_std, mem_language.1 hw, ← hp])
-    obtain ⟨hf, hs⟩ := hstd₁.mem_shsh.1 hsh
+    obtain ⟨hf, hs⟩ := hstd₁.mem_shsh.1 hμ
     have hlenw : w.length = p.length := by simpa using hpl.perm.length_eq
     have hn : p₁.length ≤ w.length := by
-      have := length_of_mem_shsh hsh
+      have := length_of_mem_shsh hμ
       omega
     set n := p₁.length
     refine ⟨w.take n, w.drop n, (List.take_append_drop _ _).symm, ?_, ?_⟩
@@ -164,13 +164,13 @@ theorem LRtriple_cat_equiv {t₁ t₂ : List (List ℕ)} (ht₁ : IsStdTab t₁)
   · rintro ⟨h₁, h₂⟩
     exact ⟨length_eq_sizeTab_of_mem_language h₁, length_eq_sizeTab_of_mem_language h₂,
       RSQ (u₁ ++ u₂), LRtriple_RSQ_append h₁ h₂, rfl⟩
-  · rintro ⟨hl₁, -, t, ⟨p₁, p₂, p, hp₁, hp₂, hp, hsh⟩, hw⟩
+  · rintro ⟨hl₁, -, t, ⟨p₁, p₂, p, hp₁, hp₂, hp, hμ⟩, hw⟩
     have hstd₁ : IsStd p₁ := isStd_of_isStdTab_RS ht₁ hp₁
     have hlen₁ : p₁.length = u₁.length := by
       rw [← sizeTab_RS p₁, hp₁, hl₁]
     have hpl : PlacticEquiv (invStd (std (u₁ ++ u₂))) p :=
       placticEquiv_iff_RS_eq.2 (by rw [RS_invStd_std, mem_language.1 hw, ← hp])
-    obtain ⟨hf, hs⟩ := hstd₁.mem_shsh.1 hsh
+    obtain ⟨hf, hs⟩ := hstd₁.mem_shsh.1 hμ
     rw [hlen₁] at hf hs
     constructor
     · rw [mem_language_iff_RS_invStd, ← filter_lt_invStd_std_append u₁ u₂, ← hp₁, ← hf]

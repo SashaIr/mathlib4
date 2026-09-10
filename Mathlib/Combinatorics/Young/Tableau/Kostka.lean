@@ -26,9 +26,9 @@ the *superstandard* one, whose `i`-th row consists of `λ i` copies of `i`; in o
 
 ## Main definitions
 
-* `Young.superTab lam` : the tableau whose `i`-th row is `lam i` copies of `i`.
-* `Young.kostka lam mu` : the Kostka number, the number of tableaux of shape `lam` and
-  content `mu`.
+* `Young.superTab η` : the tableau whose `i`-th row is `η i` copies of `i`.
+* `Young.kostka η μ` : the Kostka number, the number of tableaux of shape `η` and
+  content `μ`.
 
 ## Main results
 
@@ -157,34 +157,34 @@ lemma dominate_replicate {m n a b : ℕ} (hmn : m ≤ n) (hab : a < b) :
 /-- The rows of the superstandard tableau, starting the labels at `i`. -/
 def superTabFrom (i : ℕ) : List ℕ → List (List ℕ)
   | [] => []
-  | n :: lam => List.replicate n i :: superTabFrom (i + 1) lam
+  | n :: η => List.replicate n i :: superTabFrom (i + 1) η
 
-/-- The *superstandard* tableau of a partition: its `i`-th row consists of `lam i` copies
+/-- The *superstandard* tableau of a partition: its `i`-th row consists of `η i` copies
 of the letter `i`.  It is the unique tableau whose content equals its shape. -/
-def superTab (lam : List ℕ) : List (List ℕ) := superTabFrom 0 lam
+def superTab (η : List ℕ) : List (List ℕ) := superTabFrom 0 η
 
 @[simp] lemma superTabFrom_nil (i : ℕ) : superTabFrom i [] = [] := rfl
 
-@[simp] lemma superTabFrom_cons (i n : ℕ) (lam : List ℕ) :
-    superTabFrom i (n :: lam) = List.replicate n i :: superTabFrom (i + 1) lam := rfl
+@[simp] lemma superTabFrom_cons (i n : ℕ) (η : List ℕ) :
+    superTabFrom i (n :: η) = List.replicate n i :: superTabFrom (i + 1) η := rfl
 
-@[simp] lemma shape_superTabFrom (i : ℕ) (lam : List ℕ) : shape (superTabFrom i lam) = lam := by
-  induction lam generalizing i with
+@[simp] lemma shape_superTabFrom (i : ℕ) (η : List ℕ) : shape (superTabFrom i η) = η := by
+  induction η generalizing i with
   | nil => simp
-  | cons n lam ih => simp [ih]
+  | cons n η ih => simp [ih]
 
-@[simp] lemma shape_superTab (lam : List ℕ) : shape (superTab lam) = lam :=
-  shape_superTabFrom 0 lam
+@[simp] lemma shape_superTab (η : List ℕ) : shape (superTab η) = η :=
+  shape_superTabFrom 0 η
 
-lemma headD_superTabFrom (i : ℕ) (lam : List ℕ) :
-    (superTabFrom i lam).headD [] = List.replicate (lam.headD 0) i := by
-  cases lam <;> simp
+lemma headD_superTabFrom (i : ℕ) (η : List ℕ) :
+    (superTabFrom i η).headD [] = List.replicate (η.headD 0) i := by
+  cases η <;> simp
 
-lemma getD_superTabFrom (i : ℕ) (lam : List ℕ) (j : ℕ) :
-    (superTabFrom i lam).getD j [] = List.replicate (lam.getD j 0) (i + j) := by
-  induction lam generalizing i j with
+lemma getD_superTabFrom (i : ℕ) (η : List ℕ) (j : ℕ) :
+    (superTabFrom i η).getD j [] = List.replicate (η.getD j 0) (i + j) := by
+  induction η generalizing i j with
   | nil => simp
-  | cons n lam ih =>
+  | cons n η ih =>
     cases j with
     | zero => simp
     | succ m =>
@@ -192,34 +192,34 @@ lemma getD_superTabFrom (i : ℕ) (lam : List ℕ) (j : ℕ) :
       congr 1
       omega
 
-lemma getD_superTab (lam : List ℕ) (j : ℕ) :
-    (superTab lam).getD j [] = List.replicate (lam.getD j 0) j := by
-  change (superTabFrom 0 lam).getD j [] = _
-  simpa using getD_superTabFrom 0 lam j
+lemma getD_superTab (η : List ℕ) (j : ℕ) :
+    (superTab η).getD j [] = List.replicate (η.getD j 0) j := by
+  change (superTabFrom 0 η).getD j [] = _
+  simpa using getD_superTabFrom 0 η j
 
-lemma isTableau_superTabFrom (i : ℕ) {lam : List ℕ} (h : IsPart lam) :
-    IsTableau (superTabFrom i lam) := by
-  induction lam generalizing i with
+lemma isTableau_superTabFrom (i : ℕ) {η : List ℕ} (h : IsPart η) :
+    IsTableau (superTabFrom i η) := by
+  induction η generalizing i with
   | nil => simp
-  | cons n lam ih =>
+  | cons n η ih =>
     obtain ⟨hhead, hpart⟩ := h
     have hn : n ≠ 0 := by
-      have := IsPart.headD_ne_zero (sh := n :: lam) ⟨hhead, hpart⟩
+      have := IsPart.headD_ne_zero (μ := n :: η) ⟨hhead, hpart⟩
       simpa using this
-    have hle : lam.headD 0 ≤ n := by cases lam <;> simp_all
+    have hle : η.headD 0 ≤ n := by cases η <;> simp_all
     refine ⟨?_, isRow_replicate n i, ?_, ih (i + 1) hpart⟩
     · simp [hn]
     · rw [headD_superTabFrom]
       exact dominate_replicate hle (by omega)
 
-lemma isTableau_superTab {lam : List ℕ} (h : IsPart lam) : IsTableau (superTab lam) :=
+lemma isTableau_superTab {η : List ℕ} (h : IsPart η) : IsTableau (superTab η) :=
   isTableau_superTabFrom 0 h
 
-lemma count_toWord_superTabFrom (i : ℕ) (lam : List ℕ) (j : ℕ) :
-    (toWord (superTabFrom i lam)).count j = if i ≤ j then lam.getD (j - i) 0 else 0 := by
-  induction lam generalizing i with
+lemma count_toWord_superTabFrom (i : ℕ) (η : List ℕ) (j : ℕ) :
+    (toWord (superTabFrom i η)).count j = if i ≤ j then η.getD (j - i) 0 else 0 := by
+  induction η generalizing i with
   | nil => simp
-  | cons n lam ih =>
+  | cons n η ih =>
     rw [superTabFrom_cons, toWord_cons, List.count_append, ih, List.count_replicate]
     rcases lt_trichotomy j i with h | h | h
     · have h1 : ¬ (i ≤ j) := by omega
@@ -237,14 +237,14 @@ lemma count_toWord_superTabFrom (i : ℕ) (lam : List ℕ) (j : ℕ) :
       rw [ite_eq_right h3, h4, List.getD_cons_succ, add_zero]
       congr 1
 
-lemma count_toWord_superTab (lam : List ℕ) (j : ℕ) :
-    (toWord (superTab lam)).count j = lam.getD j 0 := by
-  change (toWord (superTabFrom 0 lam)).count j = _
-  simpa using count_toWord_superTabFrom 0 lam j
+lemma count_toWord_superTab (η : List ℕ) (j : ℕ) :
+    (toWord (superTab η)).count j = η.getD j 0 := by
+  change (toWord (superTabFrom 0 η)).count j = _
+  simpa using count_toWord_superTabFrom 0 η j
 
 /-- The content of the superstandard tableau of a partition is that partition. -/
-theorem evalseq_toWord_superTab {lam : List ℕ} (h : IsPart lam) :
-    evalseq (toWord (superTab lam)) = lam :=
+theorem evalseq_toWord_superTab {η : List ℕ} (h : IsPart η) :
+    evalseq (toWord (superTab η)) = η :=
   ext_getD_of_getLastD_ne_zero (getLastD_evalseq_ne_zero _) h.getLastD_ne_zero
     (fun i => by rw [getD_evalseq, count_toWord_superTab])
 
@@ -294,31 +294,31 @@ theorem eq_superTab_of_evalseq_eq {t : List (List ℕ)} (ht : IsTableau t)
 
 /-! ### Kostka numbers -/
 
-/-- The Kostka number `K lam mu`: the number of tableaux of shape `lam` and content
-`mu`. -/
-noncomputable def kostka (lam mu : List ℕ) : ℕ :=
-  Nat.card {t : List (List ℕ) // IsTableau t ∧ shape t = lam ∧ evalseq (toWord t) = mu}
+/-- The Kostka number `K η μ`: the number of tableaux of shape `η` and content
+`μ`. -/
+noncomputable def kostka (η μ : List ℕ) : ℕ :=
+  Nat.card {t : List (List ℕ) // IsTableau t ∧ shape t = η ∧ evalseq (toWord t) = μ}
 
-/-- A Kostka number `K lam mu` vanishes unless the shape `lam` dominates the content
-`mu`. -/
-theorem kostka_eq_zero_of_not_partdom {lam mu : List ℕ} (h : ¬ Partdom mu lam) :
-    kostka lam mu = 0 := by
-  have : IsEmpty {t : List (List ℕ) // IsTableau t ∧ shape t = lam ∧ evalseq (toWord t) = mu} := by
+/-- A Kostka number `K η μ` vanishes unless the shape `η` dominates the content
+`μ`. -/
+theorem kostka_eq_zero_of_not_partdom {η μ : List ℕ} (h : ¬ Partdom μ η) :
+    kostka η μ = 0 := by
+  have : IsEmpty {t : List (List ℕ) // IsTableau t ∧ shape t = η ∧ evalseq (toWord t) = μ} := by
     constructor
     rintro ⟨t, ht, rfl, rfl⟩
     exact h (partdom_evalseq_toWord ht)
   exact Nat.card_of_isEmpty
 
-/-- The Kostka number `K lam lam` is `1`: the superstandard tableau is the unique tableau
+/-- The Kostka number `K η η` is `1`: the superstandard tableau is the unique tableau
 whose content equals its shape. -/
-theorem kostka_self {lam : List ℕ} (h : IsPart lam) : kostka lam lam = 1 := by
+theorem kostka_self {η : List ℕ} (h : IsPart η) : kostka η η = 1 := by
   rw [kostka, Nat.card_eq_one_iff_exists]
-  refine ⟨⟨superTab lam, isTableau_superTab h, shape_superTab lam,
+  refine ⟨⟨superTab η, isTableau_superTab h, shape_superTab η,
     evalseq_toWord_superTab h⟩, ?_⟩
-  rintro ⟨t, ht, hsh, hev⟩
+  rintro ⟨t, ht, hμ, hev⟩
   refine Subtype.ext ?_
-  have heq := eq_superTab_of_evalseq_eq ht (by rw [hev, hsh])
-  rw [hsh] at heq
+  have heq := eq_superTab_of_evalseq_eq ht (by rw [hev, hμ])
+  rw [hμ] at heq
   exact heq
 
 /-! ### The content of a word and its insertion tableau -/

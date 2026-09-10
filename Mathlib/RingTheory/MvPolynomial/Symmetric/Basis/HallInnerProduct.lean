@@ -25,8 +25,8 @@ dual bases for it.
 * `MvPolynomial.hallInner` : the Hall scalar product.
 * `MvPolynomial.hallInner_schurSub` : the Schur polynomials are orthonormal.
 * `MvPolynomial.hallInner_comm` : the Hall scalar product is symmetric.
-* `MvPolynomial.hallInner_hSub_eq_coeff` : `⟨h_mu, f⟩` is the coefficient of the monomial
-  `x^mu` in `f`.
+* `MvPolynomial.hallInner_hSub_eq_coeff` : `⟨h_μ, f⟩` is the coefficient of the monomial
+  `x^μ` in `f`.
 * `MvPolynomial.hallInner_hSub_mSub` : the bases `h` and `m` are dual to each other.
 -/
 
@@ -44,9 +44,9 @@ variable {m n : ℕ} {R : Type*}
 
 /-- The monomial symmetric polynomial of a partition of `n` is homogeneous of degree
 `n`. -/
-lemma isHomogeneous_monomialSym [CommSemiring R] {lam : List ℕ} (hlam : IsPart lam)
-    (hlen : lam.length ≤ m) (hsum : lam.sum = n) :
-    (monomialSym m R lam).IsHomogeneous n := by
+lemma isHomogeneous_monomialSym [CommSemiring R] {η : List ℕ} (hη : IsPart η)
+    (hlen : η.length ≤ m) (hsum : η.sum = n) :
+    (monomialSym m R η).IsHomogeneous n := by
   classical
   rw [monomialSym]
   refine IsHomogeneous.sum _ _ _ fun d hd => isHomogeneous_monomial 1 ?_
@@ -54,20 +54,20 @@ lemma isHomogeneous_monomialSym [CommSemiring R] {lam : List ℕ} (hlam : IsPart
   have h1 : ∑ i ∈ d.support, d i = ∑ i : Fin m, d i :=
     Finset.sum_subset (Finset.subset_univ _) fun i _ hi => Finsupp.notMem_support_iff.1 hi
   change (∑ i ∈ d.support, d i) = n
-  rw [h1, sum_eq_of_mem_degOrbit_shapeContent hlam hlen hd, hsum]
+  rw [h1, sum_eq_of_mem_degOrbit_shapeContent hη hlen hd, hsum]
 
-lemma monomialSym_mem_symHomogeneousSubmodule [CommRing R] (lam : PartIdx n m) :
-    monomialSym m R lam.1 ∈ symHomogeneousSubmodule m n R :=
-  ⟨isHomogeneous_monomialSym lam.2.1 lam.2.2.2 lam.2.2.1, monomialSym_isSymmetric lam.1⟩
+lemma monomialSym_mem_symHomogeneousSubmodule [CommRing R] (η : PartIdx n m) :
+    monomialSym m R η.1 ∈ symHomogeneousSubmodule m n R :=
+  ⟨isHomogeneous_monomialSym η.2.1 η.2.2.2 η.2.2.1, monomialSym_isSymmetric η.1⟩
 
 /-- The monomial symmetric polynomial of a partition of `n` with at most `m` parts, as an
 element of the module of symmetric homogeneous polynomials of degree `n`. -/
-noncomputable def mSub (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
+noncomputable def mSub (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
     symHomogeneousSubmodule m n R :=
-  ⟨monomialSym m R lam.1, monomialSym_mem_symHomogeneousSubmodule lam⟩
+  ⟨monomialSym m R η.1, monomialSym_mem_symHomogeneousSubmodule η⟩
 
-@[simp] lemma coe_mSub (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
-    (mSub m n R lam : MvPolynomial (Fin m) R) = monomialSym m R lam.1 := rfl
+@[simp] lemma coe_mSub (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
+    (mSub m n R η : MvPolynomial (Fin m) R) = monomialSym m R η.1 := rfl
 
 lemma linearIndependent_mSub (m n : ℕ) (R : Type*) [CommRing R] :
     LinearIndependent R (mSub m n R) :=
@@ -78,14 +78,14 @@ lemma linearIndependent_mSub (m n : ℕ) (R : Type*) [CommRing R] :
 monomial symmetric polynomials of the partitions of `n` with at most `m` parts given by
 its coefficients. -/
 lemma eq_sum_coeff_mSub [CommRing R] (f : symHomogeneousSubmodule m n R) :
-    f = ∑ mu : PartIdx n m,
-      coeff (shapeContent m mu.1) (f : MvPolynomial (Fin m) R) • mSub m n R mu := by
+    f = ∑ μ : PartIdx n m,
+      coeff (shapeContent m μ.1) (f : MvPolynomial (Fin m) R) • mSub m n R μ := by
   classical
   apply Subtype.ext
-  have hcoe : ((∑ mu : PartIdx n m, coeff (shapeContent m mu.1) (f : MvPolynomial (Fin m) R)
-        • mSub m n R mu : symHomogeneousSubmodule m n R) : MvPolynomial (Fin m) R)
-      = ∑ mu : PartIdx n m, coeff (shapeContent m mu.1) (f : MvPolynomial (Fin m) R)
-        • monomialSym m R mu.1 := by
+  have hcoe : ((∑ μ : PartIdx n m, coeff (shapeContent m μ.1) (f : MvPolynomial (Fin m) R)
+        • mSub m n R μ : symHomogeneousSubmodule m n R) : MvPolynomial (Fin m) R)
+      = ∑ μ : PartIdx n m, coeff (shapeContent m μ.1) (f : MvPolynomial (Fin m) R)
+        • monomialSym m R μ.1 := by
     simp
   rw [hcoe]
   conv_lhs => rw [eq_sum_monomialSym_partsFinset f.2.2 f.2.1]
@@ -95,8 +95,8 @@ lemma span_mSub (m n : ℕ) (R : Type*) [CommRing R] :
     ⊤ ≤ Submodule.span R (Set.range (mSub m n R)) := by
   intro f _
   rw [eq_sum_coeff_mSub f]
-  exact Submodule.sum_mem _ fun mu _ =>
-    Submodule.smul_mem _ _ (Submodule.subset_span ⟨mu, rfl⟩)
+  exact Submodule.sum_mem _ fun μ _ =>
+    Submodule.smul_mem _ _ (Submodule.subset_span ⟨μ, rfl⟩)
 
 /-- **The monomial symmetric polynomials form a basis** of the module of symmetric
 homogeneous polynomials of degree `n` in `m` variables. -/
@@ -104,23 +104,23 @@ noncomputable def mBasis (m n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (PartIdx n m) R (symHomogeneousSubmodule m n R) :=
   Module.Basis.mk (linearIndependent_mSub m n R) (span_mSub m n R)
 
-@[simp] lemma mBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
-    mBasis m n R lam = mSub m n R lam := by
+@[simp] lemma mBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
+    mBasis m n R η = mSub m n R η := by
   rw [mBasis, Module.Basis.mk_apply]
 
-lemma coe_mBasis (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
-    (mBasis m n R lam : MvPolynomial (Fin m) R) = monomialSym m R lam.1 := by
+lemma coe_mBasis (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
+    (mBasis m n R η : MvPolynomial (Fin m) R) = monomialSym m R η.1 := by
   rw [mBasis_apply, coe_mSub]
 
-@[simp] lemma schurBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (lam : PartIdx n m) :
-    schurBasis m n R lam = schurSub m n R lam := by
+@[simp] lemma schurBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (η : PartIdx n m) :
+    schurBasis m n R η = schurSub m n R η := by
   rw [schurBasis, Module.Basis.mk_apply]
 
 /-- The coordinates of a symmetric homogeneous polynomial in the basis of the monomial
 symmetric polynomials are its coefficients. -/
 lemma repr_mBasis_apply [CommRing R] (f : symHomogeneousSubmodule m n R)
-    (lam : PartIdx n m) :
-    (mBasis m n R).repr f lam = coeff (shapeContent m lam.1) (f : MvPolynomial (Fin m) R) := by
+    (η : PartIdx n m) :
+    (mBasis m n R).repr f η = coeff (shapeContent m η.1) (f : MvPolynomial (Fin m) R) := by
   conv_lhs => rw [eq_sum_coeff_mSub f]
   simp only [← mBasis_apply]
   rw [Module.Basis.repr_sum_self]
@@ -129,12 +129,12 @@ lemma repr_mBasis_apply [CommRing R] (f : symHomogeneousSubmodule m n R)
 
 /-- The number of tableaux of a given content does not change when the alphabet is
 enlarged, as long as the extra letters do not occur. -/
-lemma kostkaNum_alphabet {N N' : ℕ} {sh : List ℕ} {c : ℕ → ℕ} (hc : ∀ i, N ≤ i → c i = 0)
-    (hle : N ≤ N') : kostkaNum N' sh c = kostkaNum N sh c := by
-  have hset : tabSet N' sh c = tabSet N sh c := by
+lemma kostkaNum_alphabet {N N' : ℕ} {μ : List ℕ} {c : ℕ → ℕ} (hc : ∀ i, N ≤ i → c i = 0)
+    (hle : N ≤ N') : kostkaNum N' μ c = kostkaNum N μ c := by
+  have hset : tabSet N' μ c = tabSet N μ c := by
     ext P
     simp only [tabSet, Set.mem_ofPred_eq]
-    refine and_congr_right fun hP => and_congr_right fun hsh => ?_
+    refine and_congr_right fun hP => and_congr_right fun hμ => ?_
     constructor
     · rintro ⟨hlt, hcount⟩
       refine ⟨fun x hx => ?_, fun i hi => hcount i (lt_of_lt_of_le hi hle)⟩
@@ -153,51 +153,51 @@ lemma kostkaNum_alphabet {N N' : ℕ} {sh : List ℕ} {c : ℕ → ℕ} (hc : �
 
 /-- The bridge between the two definitions of the Kostka numbers, over an alphabet of any
 size at least the number of parts of the content. -/
-lemma kostkaNum_eq_kostka' {mu : List ℕ} (hmu : IsPart mu) (hlen : mu.length ≤ m)
-    (sh : List ℕ) : kostkaNum m sh (fun i => mu.getD i 0) = kostka sh mu := by
-  have h1 : kostkaNum m sh (fun i => mu.getD i 0)
-      = kostkaNum mu.length sh (fun i => mu.getD i 0) :=
+lemma kostkaNum_eq_kostka' {μ : List ℕ} (hμ : IsPart μ) (hlen : μ.length ≤ m)
+    (ν : List ℕ) : kostkaNum m ν (fun i => μ.getD i 0) = kostka ν μ := by
+  have h1 : kostkaNum m ν (fun i => μ.getD i 0)
+      = kostkaNum μ.length ν (fun i => μ.getD i 0) :=
     kostkaNum_alphabet (fun i hi => List.getD_eq_default _ _ hi) hlen
   rw [h1]
-  exact kostkaNum_eq_kostka hmu sh
+  exact kostkaNum_eq_kostka hμ ν
 
 /-- The expansion of a Schur polynomial in the monomial symmetric polynomials, indexed by
 `PartIdx n m`. -/
-lemma schurPoly_eq_sum_partIdx [CommRing R] (lam : PartIdx n m) :
-    schurPoly (Fin m) R lam.1
-      = ∑ mu : PartIdx n m, (kostka lam.1 mu.1 : R) • monomialSym m R mu.1 := by
+lemma schurPoly_eq_sum_partIdx [CommRing R] (η : PartIdx n m) :
+    schurPoly (Fin m) R η.1
+      = ∑ μ : PartIdx n m, (kostka η.1 μ.1 : R) • monomialSym m R μ.1 := by
   classical
-  rw [schurPoly_eq_sum_kostkaNum_monomialSym lam.1, lam.2.2.1, partsFinset,
+  rw [schurPoly_eq_sum_kostkaNum_monomialSym η.1, η.2.2.1, partsFinset,
     Finset.sum_image fun x _ y _ h => Subtype.ext h]
-  exact Finset.sum_congr rfl fun mu _ => by
-    rw [kostkaNum_eq_kostka' mu.2.1 mu.2.2.2 lam.1]
+  exact Finset.sum_congr rfl fun μ _ => by
+    rw [kostkaNum_eq_kostka' μ.2.1 μ.2.2.2 η.1]
 
-lemma repr_mBasis_schurSub [CommRing R] (lam mu : PartIdx n m) :
-    (mBasis m n R).repr (schurSub m n R lam) mu = (kostka lam.1 mu.1 : R) := by
+lemma repr_mBasis_schurSub [CommRing R] (η μ : PartIdx n m) :
+    (mBasis m n R).repr (schurSub m n R η) μ = (kostka η.1 μ.1 : R) := by
   rw [repr_mBasis_apply]
-  have hcoe : ((schurSub m n R lam : symHomogeneousSubmodule m n R) : MvPolynomial (Fin m) R)
-      = ∑ nu : PartIdx n m, (kostka lam.1 nu.1 : R) • monomialSym m R nu.1 := by
+  have hcoe : ((schurSub m n R η : symHomogeneousSubmodule m n R) : MvPolynomial (Fin m) R)
+      = ∑ ν : PartIdx n m, (kostka η.1 ν.1 : R) • monomialSym m R ν.1 := by
     rw [coe_schurSub, schurPoly_eq_sum_partIdx]
   rw [hcoe, coeff_sum]
-  rw [Finset.sum_eq_single mu]
+  rw [Finset.sum_eq_single μ]
   · rw [coeff_smul, coeff_monomialSym_shapeContent, smul_eq_mul, mul_one]
-  · intro nu _ hne
+  · intro ν _ hne
     rw [coeff_smul, coeff_monomialSym, ite_eq_right, smul_zero]
     intro hmem
     have h2 := degShape_eq_iff.2 (mem_degOrbit_iff.1 hmem)
-    rw [degShape_shapeContent mu.2.1 mu.2.2.2, degShape_shapeContent nu.2.1 nu.2.2.2] at h2
+    rw [degShape_shapeContent μ.2.1 μ.2.2.2, degShape_shapeContent ν.2.1 ν.2.2.2] at h2
     exact hne (Subtype.ext h2.symm)
   · intro h
-    exact absurd (Finset.mem_univ mu) h
+    exact absurd (Finset.mem_univ μ) h
 
-lemma repr_schurBasis_hSub [CommRing R] (lam mu : PartIdx n m) :
-    (schurBasis m n R).repr (hSub m n R mu) lam = (kostka lam.1 mu.1 : R) := by
-  have hsum : hSub m n R mu
-      = ∑ nu : PartIdx n m, (kostka nu.1 mu.1 : R) • schurBasis m n R nu := by
+lemma repr_schurBasis_hSub [CommRing R] (η μ : PartIdx n m) :
+    (schurBasis m n R).repr (hSub m n R μ) η = (kostka η.1 μ.1 : R) := by
+  have hsum : hSub m n R μ
+      = ∑ ν : PartIdx n m, (kostka ν.1 μ.1 : R) • schurBasis m n R ν := by
     apply Subtype.ext
-    have hcoe : ((∑ nu : PartIdx n m, (kostka nu.1 mu.1 : R) • schurBasis m n R nu
+    have hcoe : ((∑ ν : PartIdx n m, (kostka ν.1 μ.1 : R) • schurBasis m n R ν
           : symHomogeneousSubmodule m n R) : MvPolynomial (Fin m) R)
-        = ∑ nu : PartIdx n m, (kostka nu.1 mu.1 : R) • schurPoly (Fin m) R nu.1 := by
+        = ∑ ν : PartIdx n m, (kostka ν.1 μ.1 : R) • schurPoly (Fin m) R ν.1 := by
       simp
     rw [hcoe, coe_hSub, hProd_eq_sum_partIdx]
   rw [hsum, Module.Basis.repr_sum_self]
@@ -210,8 +210,8 @@ orthonormal basis. -/
 noncomputable def hallInner (m n : ℕ) (R : Type*) [CommRing R] :
     symHomogeneousSubmodule m n R →ₗ[R] symHomogeneousSubmodule m n R →ₗ[R] R :=
   LinearMap.mk₂ R
-    (fun f g => ∑ lam : PartIdx n m,
-      (schurBasis m n R).repr f lam * (schurBasis m n R).repr g lam)
+    (fun f g => ∑ η : PartIdx n m,
+      (schurBasis m n R).repr f η * (schurBasis m n R).repr g η)
     (by intro f₁ f₂ g; simp [add_mul, Finset.sum_add_distrib])
     (by intro c f g; simp [Finset.mul_sum, mul_assoc])
     (by intro f g₁ g₂; simp [mul_add, Finset.sum_add_distrib])
@@ -222,12 +222,12 @@ noncomputable def hallInner (m n : ℕ) (R : Type*) [CommRing R] :
 
 lemma hallInner_apply [CommRing R] (f g : symHomogeneousSubmodule m n R) :
     hallInner m n R f g
-      = ∑ lam : PartIdx n m,
-          (schurBasis m n R).repr f lam * (schurBasis m n R).repr g lam := rfl
+      = ∑ η : PartIdx n m,
+          (schurBasis m n R).repr f η * (schurBasis m n R).repr g η := rfl
 
 /-- **The Schur polynomials are orthonormal** for the Hall scalar product. -/
-theorem hallInner_schurSub [CommRing R] (lam mu : PartIdx n m) :
-    hallInner m n R (schurSub m n R lam) (schurSub m n R mu) = if lam = mu then 1 else 0 := by
+theorem hallInner_schurSub [CommRing R] (η μ : PartIdx n m) :
+    hallInner m n R (schurSub m n R η) (schurSub m n R μ) = if η = μ then 1 else 0 := by
   classical
   rw [hallInner_apply]
   simp only [← schurBasis_apply, Module.Basis.repr_self]
@@ -239,48 +239,48 @@ theorem hallInner_comm [CommRing R] (f g : symHomogeneousSubmodule m n R) :
   simp only [hallInner_apply]
   exact Finset.sum_congr rfl fun _ _ => mul_comm _ _
 
-/-- **The Hall scalar product against `h_mu` extracts a coefficient**: pairing with the
-product of complete homogeneous symmetric polynomials `h_mu` gives the coefficient of the
-monomial `x^mu`. -/
-theorem hallInner_hSub_eq_coeff [CommRing R] (mu : PartIdx n m)
+/-- **The Hall scalar product against `h_μ` extracts a coefficient**: pairing with the
+product of complete homogeneous symmetric polynomials `h_μ` gives the coefficient of the
+monomial `x^μ`. -/
+theorem hallInner_hSub_eq_coeff [CommRing R] (μ : PartIdx n m)
     (f : symHomogeneousSubmodule m n R) :
-    hallInner m n R (hSub m n R mu) f
-      = coeff (shapeContent m mu.1) (f : MvPolynomial (Fin m) R) := by
-  have key : hallInner m n R (hSub m n R mu)
-      = (Finsupp.lapply mu).comp ((mBasis m n R).repr : _ →ₗ[R] _) := by
-    refine (schurBasis m n R).ext fun lam => ?_
+    hallInner m n R (hSub m n R μ) f
+      = coeff (shapeContent m μ.1) (f : MvPolynomial (Fin m) R) := by
+  have key : hallInner m n R (hSub m n R μ)
+      = (Finsupp.lapply μ).comp ((mBasis m n R).repr : _ →ₗ[R] _) := by
+    refine (schurBasis m n R).ext fun η => ?_
     simp only [schurBasis_apply, LinearMap.comp_apply, Finsupp.lapply_apply,
       LinearEquiv.coe_coe]
     rw [repr_mBasis_schurSub, hallInner_apply]
-    rw [Finset.sum_eq_single lam]
+    rw [Finset.sum_eq_single η]
     · rw [repr_schurBasis_hSub, ← schurBasis_apply, Module.Basis.repr_self,
         Finsupp.single_eq_same, mul_one]
-    · intro nu _ hne
+    · intro ν _ hne
       rw [← schurBasis_apply, Module.Basis.repr_self, Finsupp.single_apply,
         ite_eq_right (fun h => hne h.symm), mul_zero]
     · intro h
-      exact absurd (Finset.mem_univ lam) h
+      exact absurd (Finset.mem_univ η) h
   rw [key]
   simp only [LinearMap.comp_apply, Finsupp.lapply_apply, LinearEquiv.coe_coe]
   rw [repr_mBasis_apply]
 
-/-- The Hall scalar product of `h_mu` with a Schur polynomial is a Kostka number. -/
-theorem hallInner_hSub_schurSub [CommRing R] (lam mu : PartIdx n m) :
-    hallInner m n R (hSub m n R mu) (schurSub m n R lam) = (kostka lam.1 mu.1 : R) := by
+/-- The Hall scalar product of `h_μ` with a Schur polynomial is a Kostka number. -/
+theorem hallInner_hSub_schurSub [CommRing R] (η μ : PartIdx n m) :
+    hallInner m n R (hSub m n R μ) (schurSub m n R η) = (kostka η.1 μ.1 : R) := by
   rw [hallInner_hSub_eq_coeff, ← repr_mBasis_apply, repr_mBasis_schurSub]
 
 /-- **The bases `h` and `m` are dual** for the Hall scalar product. -/
-theorem hallInner_hSub_mSub [CommRing R] (lam mu : PartIdx n m) :
-    hallInner m n R (hSub m n R lam) (mSub m n R mu) = if lam = mu then 1 else 0 := by
+theorem hallInner_hSub_mSub [CommRing R] (η μ : PartIdx n m) :
+    hallInner m n R (hSub m n R η) (mSub m n R μ) = if η = μ then 1 else 0 := by
   classical
   rw [hallInner_hSub_eq_coeff, coe_mSub, coeff_monomialSym]
-  by_cases h : lam = mu
+  by_cases h : η = μ
   · subst h
     rw [ite_eq_left (self_mem_degOrbit _), ite_eq_left rfl]
   · rw [ite_eq_right h, ite_eq_right]
     intro hmem
     refine h (Subtype.ext ?_)
     have := degShape_eq_iff.2 (mem_degOrbit_iff.1 hmem)
-    rwa [degShape_shapeContent lam.2.1 lam.2.2.2, degShape_shapeContent mu.2.1 mu.2.2.2] at this
+    rwa [degShape_shapeContent η.2.1 η.2.2.2, degShape_shapeContent μ.2.1 μ.2.2.2] at this
 
 end MvPolynomial

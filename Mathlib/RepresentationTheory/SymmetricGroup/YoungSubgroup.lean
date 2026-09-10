@@ -75,12 +75,12 @@ theorem sum_pProd_youngSubgroup (k : ℕ) (l : List ℕ) :
       = ((l.map Nat.factorial).prod : ℚ) • hProd k ℚ l := by
   induction l with
   | nil =>
-    have h0 : ∑ sigma : Perm (Fin 0), pProd k ℚ (cycleTypeList sigma) = 1 := by
+    have h0 : ∑ σ : Perm (Fin 0), pProd k ℚ (cycleTypeList σ) = 1 := by
       have h := factorial_nsmul_hsymm_eq_sum_perm k 0 ℚ
       simpa using h.symm
     have hsum : ∑ h : youngSubgroup ([] : List ℕ),
         pProd k ℚ (cycleTypeList (h : Perm (Fin ([] : List ℕ).sum)))
-        = ∑ sigma : Perm (Fin 0), pProd k ℚ (cycleTypeList sigma) :=
+        = ∑ σ : Perm (Fin 0), pProd k ℚ (cycleTypeList σ) :=
       Fintype.sum_equiv Subgroup.topEquiv.toEquiv _ _ fun _ => rfl
     rw [hsum, h0]
     simp
@@ -122,20 +122,20 @@ theorem sum_pProd_youngSubgroup (k : ℕ) (l : List ℕ) :
 /-! ### The permutation character of a Young subgroup -/
 
 /-- The number of cosets of the Young subgroup `H_l` fixed by a permutation. -/
-noncomputable def youngPermChar (l : List ℕ) (sigma : Perm (Fin l.sum)) : ℚ :=
-  (Nat.card {q : Perm (Fin l.sum) ⧸ youngSubgroup l // sigma • q = q} : ℚ)
+noncomputable def youngPermChar (l : List ℕ) (σ : Perm (Fin l.sum)) : ℚ :=
+  (Nat.card {q : Perm (Fin l.sum) ⧸ youngSubgroup l // σ • q = q} : ℚ)
 
 /-- The number of fixed cosets is a class function. -/
 theorem youngPermChar_isClassFun (l : List ℕ) : IsClassFun (youngPermChar l) := by
-  intro sigma tau
+  intro σ τ
   refine congrArg Nat.cast (Nat.card_congr ?_)
   refine
-    { toFun := fun q => ⟨tau • (q : Perm (Fin l.sum) ⧸ youngSubgroup l), ?_⟩
-      invFun := fun q => ⟨tau⁻¹ • (q : Perm (Fin l.sum) ⧸ youngSubgroup l), ?_⟩
+    { toFun := fun q => ⟨τ • (q : Perm (Fin l.sum) ⧸ youngSubgroup l), ?_⟩
+      invFun := fun q => ⟨τ⁻¹ • (q : Perm (Fin l.sum) ⧸ youngSubgroup l), ?_⟩
       left_inv := fun q => ?_
       right_inv := fun q => ?_ }
-  · rw [← mul_smul, show sigma * tau = tau * (tau⁻¹ * sigma * tau) by group, mul_smul, q.2]
-  · rw [← mul_smul, show tau⁻¹ * sigma * tau * tau⁻¹ = tau⁻¹ * sigma by group, mul_smul, q.2]
+  · rw [← mul_smul, show σ * τ = τ * (τ⁻¹ * σ * τ) by group, mul_smul, q.2]
+  · rw [← mul_smul, show τ⁻¹ * σ * τ * τ⁻¹ = τ⁻¹ * σ by group, mul_smul, q.2]
   · exact Subtype.ext (by simp [← mul_smul])
   · exact Subtype.ext (by simp [← mul_smul])
 
@@ -148,18 +148,18 @@ theorem frobChar_youngPermChar (k : ℕ) (l : List ℕ) :
     intro a b
     rw [cycleTypeList_conj]
   have hmain := FDRep.sum_card_fixedPoints_quotient_mul (youngSubgroup l)
-    (fun sigma => pProd k ℚ (cycleTypeList sigma)) hclass
+    (fun σ => pProd k ℚ (cycleTypeList σ)) hclass
   have hlagrange : Nat.card (Perm (Fin l.sum) ⧸ youngSubgroup l) * (l.map Nat.factorial).prod
       = Nat.factorial l.sum := by
     rw [← card_youngSubgroup l, ← Subgroup.card_eq_card_quotient_mul_card_subgroup,
       Nat.card_eq_fintype_card, Fintype.card_perm, Fintype.card_fin]
   rw [frobChar]
-  have hterm : ∀ sigma : Perm (Fin l.sum), youngPermChar l sigma • pProd k ℚ (cycleTypeList sigma)
-      = (Nat.card {q : Perm (Fin l.sum) ⧸ youngSubgroup l // sigma • q = q} :
-          MvPolynomial (Fin k) ℚ) * pProd k ℚ (cycleTypeList sigma) := by
-    intro sigma
+  have hterm : ∀ σ : Perm (Fin l.sum), youngPermChar l σ • pProd k ℚ (cycleTypeList σ)
+      = (Nat.card {q : Perm (Fin l.sum) ⧸ youngSubgroup l // σ • q = q} :
+          MvPolynomial (Fin k) ℚ) * pProd k ℚ (cycleTypeList σ) := by
+    intro σ
     rw [youngPermChar, Nat.cast_smul_eq_nsmul ℚ, nsmul_eq_mul]
-  rw [Finset.sum_congr rfl fun sigma _ => hterm sigma, hmain,
+  rw [Finset.sum_congr rfl fun σ _ => hterm σ, hmain,
     sum_pProd_youngSubgroup k l, Nat.cast_smul_eq_nsmul ℚ, nsmul_eq_mul, ← mul_assoc,
     ← Nat.cast_mul, hlagrange, ← nsmul_eq_mul, ← Nat.cast_smul_eq_nsmul ℚ, smul_smul,
     inv_mul_cancel₀ (Nat.cast_ne_zero.2 (Nat.factorial_ne_zero _)), one_smul]

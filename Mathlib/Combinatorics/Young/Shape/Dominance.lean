@@ -25,7 +25,7 @@ A Lean 4 port of the dominance order part of `theories/Combi/partition.v` from
 
 * `Young.Partdom.refl`, `Young.Partdom.trans`, `Young.Partdom.antisymm` : dominance
   is a partial order on partitions.
-* `Young.sum_map_min` (Coq `sum_conj`) : `∑ min (sh i) k` is the sum of the first
+* `Young.sum_map_min` (Coq `sum_conj`) : `∑ min (μ i) k` is the sum of the first
   `k` parts of the conjugate partition.
 * `Young.partdom_conjPart_iff` (Coq `partdom_conj_intpartn`) : conjugation is an
   order-reversing involution for the dominance order on partitions of a given size.
@@ -103,11 +103,11 @@ lemma sum_take_incrFirstN (c : List ℕ) (n k : ℕ) :
       have : min (m + 1) n = min m n := by omega
       omega
 
-/-- Coq `sum_conj`: `∑_{l ∈ sh} min l k` is the sum of the `k` first parts of the
-conjugate of `sh`. -/
-lemma sum_map_min (sh : List ℕ) (k : ℕ) :
-    (sh.map (fun l => min l k)).sum = ((conjPart sh).take k).sum := by
-  induction sh with
+/-- Coq `sum_conj`: `∑_{l ∈ μ} min l k` is the sum of the `k` first parts of the
+conjugate of `μ`. -/
+lemma sum_map_min (μ : List ℕ) (k : ℕ) :
+    (μ.map (fun l => min l k)).sum = ((conjPart μ).take k).sum := by
+  induction μ with
   | nil => simp
   | cons a s ih =>
     rw [conjPart_cons, sum_take_incrFirstN]
