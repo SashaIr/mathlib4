@@ -320,7 +320,7 @@ lemma ext_getD_of_getLastD_ne_zero {p q : List ℕ} (hp : p.getLastD 1 ≠ 0) (h
     intro a b ha hab
     by_contra! hlt
     have hane : a ≠ [] := fun hc ↦ by simp [hc] at hlt
-    have h1 : a.getD (a.length - 1) 0 ≠ 0 := by rwa [← getLastD_eq_getD 1 hane]
+    have h1 : a.getD (a.length - 1) 0 ≠ 0 := by rwa [← getLastD_eq_getD hane]
     have h2 : b.getD (a.length - 1) 0 = 0 := List.getD_eq_default _ _ (by omega)
     exact h1 (by rw [hab, h2])
   have hlen : p.length = q.length :=
