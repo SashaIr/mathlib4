@@ -5,11 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Set.Monotone
-public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Combinatorics.ErdosSzekeresList
+public import Mathlib.Data.Finset.Sort
 
 /-!
 # Erdős–Szekeres theorem
@@ -19,8 +16,14 @@ known as the Erdős–Szekeres theorem: given a sequence of more than `r * s` di
 values, there is an increasing sequence of length longer than `r` or a decreasing sequence of length
 longer than `s`.
 
-We use the proof outlined at
-https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
+The combinatorial content is `List.erdos_szekeres`, in
+`Mathlib/Combinatorics/ErdosSzekeresList.lean`: a list of more than `r * s` entries has a weakly
+increasing sublist of more than `r` entries, or a strictly decreasing sublist of more than `s`
+entries — no injectivity assumption there.  Here that statement is transported to a finite
+linearly ordered type `α` and an injective `f : α → β`, by applying it to the list of the elements
+of `α` in increasing order, mapped by `f`: a sublist of that list is the image of a sublist `u` of
+the sorted list, which is strictly increasing, and the injectivity of `f` upgrades the weakly
+increasing chain of values to a strictly increasing one.
 
 ## Tags
 
@@ -33,136 +36,73 @@ open Function Finset
 
 namespace Theorems100
 
-variable {α β : Type*} [Fintype α] [LinearOrder α] [LinearOrder β] {f : α → β} {i : α}
+variable {α β : Type*} [LinearOrder α] [LinearOrder β] {f : α → β}
 
-/-- The possible lengths of an increasing sequence which ends at `i`. -/
-private noncomputable def incSequencesTo (f : α → β) (i : α) : Finset ℕ :=
-  open scoped Classical in
-  image card {t : Finset α | IsGreatest t i ∧ StrictMonoOn f t}
+/-- If the entries of `l` increase and the values of `f` on them do not decrease, then `f` is
+strictly monotone on the elements of `l`, provided `f` is injective. -/
+private lemma strictMonoOn_of_pairwise (hinj : Injective f) {l : List α}
+    (hlt : l.Pairwise (· < ·)) (hle : l.Pairwise fun a b => f a ≤ f b) :
+    StrictMonoOn f {x | x ∈ l} := by
+  intro a ha b hb hab
+  simp only [Set.mem_ofPred_eq] at ha hb
+  obtain ⟨i, hi, rfl⟩ := List.getElem_of_mem ha
+  obtain ⟨j, hj, rfl⟩ := List.getElem_of_mem hb
+  rcases lt_trichotomy i j with h | rfl | h
+  · exact lt_of_le_of_ne (List.pairwise_iff_getElem.1 hle i j hi hj h)
+      fun e => absurd (hinj e) hab.ne
+  · exact absurd rfl hab.ne
+  · exact absurd (List.pairwise_iff_getElem.1 hlt j i hj hi h) (asymm hab)
 
-/-- The possible lengths of a decreasing sequence which ends at `i`. -/
-private noncomputable def decSequencesTo (f : α → β) (i : α) : Finset ℕ :=
-  open scoped Classical in
-  image card {t : Finset α | IsGreatest t i ∧ StrictAntiOn f t}
-
-/-- The singleton sequence is increasing, so 1 is a possible length. -/
-private lemma one_mem_incSequencesTo : 1 ∈ incSequencesTo f i := mem_image.2 ⟨{i}, by simp⟩
-/-- The singleton sequence is decreasing, so 1 is a possible length. -/
-private lemma one_mem_decSequencesTo : 1 ∈ decSequencesTo f i := one_mem_incSequencesTo (β := βᵒᵈ)
-
-/-- The singleton sequence is increasing, so the set of lengths is nonempty. -/
-private lemma incSequencesTo_nonempty : (incSequencesTo f i).Nonempty := ⟨1, one_mem_incSequencesTo⟩
-/-- The singleton sequence is decreasing, so the set of lengths is nonempty. -/
-private lemma decSequencesTo_nonempty : (decSequencesTo f i).Nonempty := ⟨1, one_mem_decSequencesTo⟩
-
-/-- The maximum length of an increasing sequence which ends at `i`. -/
-private noncomputable def maxIncSequencesTo (f : α → β) (i : α) : ℕ :=
-  max' (incSequencesTo f i) incSequencesTo_nonempty
-
-/-- The maximum length of a decreasing sequence which ends at `i`. -/
-private noncomputable def maxDecSequencesTo (f : α → β) (i : α) : ℕ :=
-  max' (decSequencesTo f i) decSequencesTo_nonempty
-
-private lemma one_le_maxIncSequencesTo : 1 ≤ maxIncSequencesTo f i :=
-  le_max' _ _ one_mem_incSequencesTo
-private lemma one_le_maxDecSequencesTo : 1 ≤ maxDecSequencesTo f i :=
-  le_max' _ _ one_mem_decSequencesTo
-
-private lemma maxIncSequencesTo_mem : maxIncSequencesTo f i ∈ incSequencesTo f i :=
-  max'_mem _ incSequencesTo_nonempty
-private lemma maxDecSequencesTo_mem : maxDecSequencesTo f i ∈ decSequencesTo f i :=
-  max'_mem _ decSequencesTo_nonempty
+/-- If the entries of `l` increase and the values of `f` on them decrease, then `f` is strictly
+antitone on the elements of `l`. -/
+private lemma strictAntiOn_of_pairwise {l : List α}
+    (hlt : l.Pairwise (· < ·)) (hgt : l.Pairwise fun a b => f b < f a) :
+    StrictAntiOn f {x | x ∈ l} := by
+  intro a ha b hb hab
+  simp only [Set.mem_ofPred_eq] at ha hb
+  obtain ⟨i, hi, rfl⟩ := List.getElem_of_mem ha
+  obtain ⟨j, hj, rfl⟩ := List.getElem_of_mem hb
+  rcases lt_trichotomy i j with h | rfl | h
+  · exact List.pairwise_iff_getElem.1 hgt i j hi hj h
+  · exact absurd rfl hab.ne
+  · exact absurd (List.pairwise_iff_getElem.1 hlt j i hj hi h) (asymm hab)
 
 /--
-We will want to show that if `i ≠ j`, then the pairs
-`(maxIncSequencesTo f i, maxDecSequencesTo f i)` and
-`(maxIncSequencesTo f j, maxDecSequencesTo f j)` are different.
-To this end, we will assume wlog that `i < j`, and show that if `f i < f j`,
-then `maxIncSequencesTo f i < maxIncSequencesTo f j`, and later dualise to prove that if `f j < f i`
-then `maxDecSequencesTo f i < maxDecSequencesTo f j`.
--/
-private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
-    maxIncSequencesTo f i < maxIncSequencesTo f j := by
-  rw [Nat.lt_iff_add_one_le]
-  refine le_max' _ _ ?_
-  have : maxIncSequencesTo f i ∈ incSequencesTo f i := max'_mem _ incSequencesTo_nonempty
-  simp only [incSequencesTo, mem_image, mem_filter, mem_univ, true_and, and_assoc] at this
-  obtain ⟨t, hti, ht₁, ht₂⟩ := this
-  simp only [incSequencesTo, mem_image, mem_filter, mem_univ, true_and, and_assoc]
-  have : ∀ x ∈ t, x < j := by
-    intro x hx
-    exact (hti.2 hx).trans_lt hij
-  refine ⟨insert j t, ?_, ?_, ?_⟩
-  next =>
-    convert hti.insert j
-    next => simp
-    next => rw [max_eq_left hij.le]
-  next =>
-    simp only [coe_insert]
-    rw [strictMonoOn_insert_iff_of_forall_le]
-    · refine ⟨?_, ht₁⟩
-      intro x hx hxj
-      exact (ht₁.monotoneOn hx hti.1 (hti.2 hx)).trans_lt hfij
-    · exact fun x hx ↦ (this x hx).le
-  have : j ∉ t := fun hj ↦ lt_irrefl _ (this _ hj)
-  simp [this, ht₂]
-
-private lemma maxDecSequencesTo_gt {i j : α} (hij : i < j) (hfij : f j < f i) :
-    maxDecSequencesTo f i < maxDecSequencesTo f j :=
-  maxIncSequencesTo_lt (β := βᵒᵈ) hij hfij
-
-/--
-For each entry, we form a pair of labels consisting of the maximum lengths of increasing and
-decreasing sequences ending there.
--/
-private noncomputable def paired (f : α → β) (i : α) : ℕ × ℕ :=
-  (maxIncSequencesTo f i, maxDecSequencesTo f i)
-
-/--
-By combining the previous two lemmas, we see that since `f` is injective, the pairs of labels
-must also be unique.
--/
-private lemma paired_injective (hf : Injective f) : Injective (paired f) := by
-  apply Injective.of_lt_imp_ne
-  intro i j hij q
-  cases lt_or_gt_of_ne (hf.ne hij.ne)
-  case inl h => exact (maxIncSequencesTo_lt hij h).ne congr($q.1)
-  case inr h => exact (maxDecSequencesTo_gt hij h).ne congr($q.2)
-
-/-- **Erdős–Szekeres Theorem**: Given a sequence of more than `r * s` distinct values, there is an
+**Erdős–Szekeres Theorem**: Given a sequence of more than `r * s` distinct values, there is an
 increasing sequence of length longer than `r` or a decreasing sequence of length longer than `s`.
 
-Proof idea:
-We label each value in the sequence with two numbers specifying the longest increasing
-subsequence ending there, and the longest decreasing subsequence ending there.
-We then show the pair of labels must be unique. Now if there is no increasing sequence longer than
-`r` and no decreasing sequence longer than `s`, then there are at most `r * s` possible labels,
-which is a contradiction if there are more than `r * s` elements.
+This is the list statement `List.erdos_szekeres` applied to the elements of `α` listed in
+increasing order.
 -/
-theorem erdos_szekeres {r s : ℕ} {f : α → β} (hn : r * s < Fintype.card α) (hf : Injective f) :
+theorem erdos_szekeres [Fintype α] {r s : ℕ} {f : α → β} (hn : r * s < Fintype.card α)
+    (hf : Injective f) :
     (∃ t : Finset α, r < #t ∧ StrictMonoOn f t) ∨
       ∃ t : Finset α, s < #t ∧ StrictAntiOn f t := by
   classical
-  -- It suffices to prove that there is some `i` where one of the max lengths is bigger than
-  -- `r` or `s`, as this corresponds to a monotone sequence of the required length.
-  rsuffices ⟨i, hi⟩ : ∃ i, r < maxIncSequencesTo f i ∨ s < maxDecSequencesTo f i
-  · refine Or.imp ?_ ?_ hi
-    on_goal 1 =>
-      have : maxIncSequencesTo f i ∈ image card _ := maxIncSequencesTo_mem
-    on_goal 2 =>
-      have : maxDecSequencesTo f i ∈ image card _ := maxDecSequencesTo_mem
-    all_goals
-      intro hi
-      obtain ⟨t, ht₁, ht₂⟩ := mem_image.1 this
-      refine ⟨t, by rwa [ht₂], ?_⟩
-      rw [mem_filter] at ht₁
-      exact ht₁.2.2
-  -- If such an `i` does not exist, then our pairs of labels lie in a small set, which is a
-  -- contradiction since the pairs are unique.
-  by_contra! q
-  have : Set.MapsTo (paired f) (univ : Finset α) (Icc 1 r ×ˢ Icc 1 s : Finset _) := by
-    simp [paired, one_le_maxIncSequencesTo, one_le_maxDecSequencesTo, Set.MapsTo, *]
-  refine hn.not_ge ?_
-  simpa using card_le_card_of_injOn (paired f) this (paired_injective hf).injOn
+  set L : List α := (univ : Finset α).sort (· ≤ ·) with hL
+  have hsorted : L.Pairwise (· < ·) :=
+    (List.pairwise_and_iff.2 ⟨Finset.pairwise_sort _ _, Finset.sort_nodup _ _⟩).imp
+      lt_iff_le_and_ne.2
+  have hlen : (L.map f).length = Fintype.card α := by simp [hL]
+  obtain ⟨t, hsub, hchain, hcard⟩ | ⟨t, hsub, hchain, hcard⟩ :=
+    List.erdos_szekeres r s (L.map f) (by rw [hlen]; exact hn)
+  · obtain ⟨u, husub, rfl⟩ := List.sublist_map_iff.1 hsub
+    have hu : u.Pairwise (· < ·) := hsorted.sublist husub
+    refine Or.inl ⟨u.toFinset, ?_, ?_⟩
+    · rw [List.toFinset_card_of_nodup (hu.imp ne_of_lt)]
+      simpa using hcard
+    · rw [List.coe_toFinset]
+      refine strictMonoOn_of_pairwise hf hu ?_
+      have := List.isChain_iff_pairwise.1 hchain
+      rwa [List.pairwise_map] at this
+  · obtain ⟨u, husub, rfl⟩ := List.sublist_map_iff.1 hsub
+    have hu : u.Pairwise (· < ·) := hsorted.sublist husub
+    refine Or.inr ⟨u.toFinset, ?_, ?_⟩
+    · rw [List.toFinset_card_of_nodup (hu.imp ne_of_lt)]
+      simpa using hcard
+    · rw [List.coe_toFinset]
+      refine strictAntiOn_of_pairwise hu ?_
+      have := List.isChain_iff_pairwise.1 hchain
+      rwa [List.pairwise_map] at this
 
 end Theorems100
