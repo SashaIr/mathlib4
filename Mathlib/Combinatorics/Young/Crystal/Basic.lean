@@ -19,25 +19,25 @@ changes the leftmost remaining `i + 1` into an `i`, and `f i` changes the rightm
 
 ## Main definitions
 
-* `List.crystalEps i w` : the number of unmatched letters `i` in `w`.
-* `List.crystalPhi i w` : the number of unmatched letters `i + 1` in `w`.
-* `List.crystalE i w` : the crystal raising operator.
-* `List.crystalF i w` : the crystal lowering operator.
+* `Young.crystalEps i w` : the number of unmatched letters `i` in `w`.
+* `Young.crystalPhi i w` : the number of unmatched letters `i + 1` in `w`.
+* `Young.crystalE i w` : the crystal raising operator.
+* `Young.crystalF i w` : the crystal lowering operator.
 
 ## Main results
 
-* `List.crystalEps_append`, `List.crystalPhi_append` : the counts of unmatched letters of a
+* `Young.crystalEps_append`, `Young.crystalPhi_append` : the counts of unmatched letters of a
   concatenation.
-* `List.crystalE_append`, `List.crystalF_append` : the *tensor rule*, describing on which
+* `Young.crystalE_append`, `Young.crystalF_append` : the *tensor rule*, describing on which
   factor of a concatenation the operators act.
-* `List.crystalF_crystalE`, `List.crystalE_crystalF` : `f i` is the inverse of `e i`.
-* `List.crystalPhi_eq_zero_iff` : there is no unmatched `i + 1` iff every suffix contains at
+* `Young.crystalF_crystalE`, `Young.crystalE_crystalF` : `f i` is the inverse of `e i`.
+* `Young.crystalPhi_eq_zero_iff` : there is no unmatched `i + 1` iff every suffix contains at
   least as many letters `i` as letters `i + 1`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -544,4 +544,4 @@ theorem crystalPhi_eq_zero_iff (i : ℕ) (w : List ℕ) :
         · rw [ite_eq_right h0]; exact hw
       · rwa [crystalPhi_cons_of_ne hne']
 
-end List
+end Young

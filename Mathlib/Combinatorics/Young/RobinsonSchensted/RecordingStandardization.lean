@@ -23,13 +23,15 @@ the standardized word is the recording tableau of the word.
 
 ## Main results
 
-* `List.RSQ_std` : `RSQ (std w) = RSQ w`.
-* `List.RS_invStd_std` : **`RS (invStd (std w)) = RSQ w`** (Coq `RSinvstdE`).
+* `Young.RSQ_std` : `RSQ (std w) = RSQ w`.
+* `Young.RS_invStd_std` : **`RS (invStd (std w)) = RSQ w`** (Coq `RSinvstdE`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T : Type*} [LinearOrder T]
 
@@ -44,4 +46,4 @@ tableau** (Coq `RSinvstdE`). -/
 theorem RS_invStd_std (w : List T) : RS (invStd (std w)) = RSQ w := by
   rw [RS_invStd (std_isStd w), RSQ_std]
 
-end List
+end Young

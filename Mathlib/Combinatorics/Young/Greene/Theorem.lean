@@ -15,22 +15,28 @@ public import Mathlib.Combinatorics.Young.Shape.Dominance
 A Lean 4 port of the row case of `theories/LRrule/Greene_inv.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-Greene's invariant `List.greeneRow w k` is the maximal number of letters of the word `w`
+Greene's invariant `Young.greeneRow w k` is the maximal number of letters of the word `w`
 that can be covered by `k` nondecreasing subsequences.  Greene's theorem states that this
 number equals the sum of the `k` first parts of the shape of the Robinson-Schensted
-tableau `List.RS w`.
+tableau `Young.RS w`.
 
 ## Main results
 
-* `List.greeneRow_eq_sum_take_shape` : **Greene's theorem** (Coq `Greene_row_RS`),
+* `Young.greeneRow_eq_sum_take_shape` : **Greene's theorem** (Coq `Greene_row_RS`),
   `greeneRow w k = ((shape (RS w)).take k).sum`.
-* `List.greeneRow_one` : the case `k = 1` recovers Schensted's theorem, the Greene
+* `Young.greeneRow_one` : the case `k = 1` recovers Schensted's theorem, the Greene
   invariant `greeneRow w 1` is the maximal length of a nondecreasing subsequence of `w`.
+
+## References
+
+* [C. Greene, *An extension of Schensted's theorem*][greene1974]
+* [B. E. Sagan, *The symmetric group*][sagan2001]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -101,4 +107,4 @@ theorem shape_RS_eq_iff_greeneRow_eq {u v : List T} :
       fun k => ?_
     rw [getD_shape_RS, getD_shape_RS, h, h]
 
-end List
+end Young

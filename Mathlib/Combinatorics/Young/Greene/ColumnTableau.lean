@@ -20,17 +20,17 @@ is the number of boxes of `t` lying in the `k` first columns, that is
 
 ## Main definitions
 
-* `List.colCol t k` : the colouring of the reading word of `t` in which a letter in the
+* `Young.colCol t k` : the colouring of the reading word of `t` in which a letter in the
   column `j < k` gets the colour `j`, the other letters being uncoloured.
 
 ## Main results
 
-* `List.greeneCol_toWord` : the Greene column invariant of the reading word of a tableau.
+* `Young.greeneCol_toWord` : the Greene column invariant of the reading word of a tableau.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -228,4 +228,4 @@ theorem greeneCol_toWord {t : List (List T)} (ht : IsTableau t) (k : ℕ) :
   rw [← greeneSize_colCol t k]
   exact le_greeneCol (isGreeneDecCol_colCol ht k)
 
-end List
+end Young

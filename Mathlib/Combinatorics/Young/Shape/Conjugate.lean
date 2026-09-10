@@ -15,22 +15,22 @@ A Lean 4 port of the conjugation part of `theories/Combi/partition.v` from
 
 ## Main definitions
 
-* `List.incrFirstN sh n` : add one box to each of the first `n` rows of `sh`
+* `Young.incrFirstN sh n` : add one box to each of the first `n` rows of `sh`
   (Coq `incr_first_n`).
-* `List.conjPart sh` : the conjugate partition (Coq `conj_part`).
+* `Young.conjPart sh` : the conjugate partition (Coq `conj_part`).
 
 ## Main results
 
-* `List.isPart_conjPart` : the conjugate of a partition is a partition.
-* `List.sum_conjPart` : conjugation preserves the size.
-* `List.length_conjPart` : the conjugate has `sh 0` parts.
-* `List.inShape_conjPart` : `(r, c)` is a box of `sh` iff `(c, r)` is a box of `conjPart sh`.
-* `List.conjPart_conjPart` : conjugation is an involution on partitions.
+* `Young.isPart_conjPart` : the conjugate of a partition is a partition.
+* `Young.sum_conjPart` : conjugation preserves the size.
+* `Young.length_conjPart` : the conjugate has `sh 0` parts.
+* `Young.inShape_conjPart` : `(r, c)` is a box of `sh` iff `(c, r)` is a box of `conjPart sh`.
+* `Young.conjPart_conjPart` : conjugation is an involution on partitions.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -216,4 +216,4 @@ lemma conjPart_conjPart {sh : List ℕ} (h : IsPart sh) : conjPart (conjPart sh)
   exact Nat.le_antisymm (Nat.not_lt.1 fun hc => absurd ((key _).1 hc) (lt_irrefl _))
     (Nat.not_lt.1 fun hc => absurd ((key _).2 hc) (lt_irrefl _))
 
-end List
+end Young

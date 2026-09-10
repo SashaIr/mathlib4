@@ -25,7 +25,7 @@ partition `Equiv.Perm.cycleTypeList`.
 
 * `Equiv.Perm.cycleTypeList σ` : the cycle type of `σ : Equiv.Perm (Fin n)`, as a weakly
   decreasing list of positive integers summing to `n`.
-* `List.zcard l` : the integer `z_λ = ∏_i i ^ m_i · m_i !`, where `m_i` is the number of
+* `Young.zcard l` : the integer `z_λ = ∏_i i ^ m_i · m_i !`, where `m_i` is the number of
   parts of `λ` equal to `i`; it is the cardinality of the centralizer of a permutation of
   cycle type `λ`.
 
@@ -44,7 +44,7 @@ partition `Equiv.Perm.cycleTypeList`.
 
 @[expose] public section
 
-open Equiv Finset Nat List
+open Equiv Finset Nat List Young
 
 namespace Equiv.Perm
 
@@ -80,7 +80,7 @@ lemma cycleTypeList_eq_iff_isConj {σ τ : Perm (Fin n)} :
 
 end Equiv.Perm
 
-namespace List
+namespace Young
 
 /-- The parts of a list that are at least `2`: for a cycle type, the lengths of the
 nontrivial cycles, i.e. Mathlib's `Equiv.Perm.cycleType`. -/
@@ -106,7 +106,7 @@ lemma sum_bigParts_add_count_one {l : List ℕ} (h : IsPart l) :
   have := congrArg Multiset.sum (coe_eq_bigParts_add_replicate h)
   simpa [Multiset.sum_replicate] using this.symm
 
-end List
+end Young
 
 namespace Equiv.Perm
 
@@ -142,7 +142,7 @@ lemma exists_cycleTypeList_eq {l : List ℕ} (hl : IsPart l) (hn : l.sum = n) :
 
 end Equiv.Perm
 
-namespace List
+namespace Young
 
 /-- `z_λ = ∏_i i ^ m_i · m_i !`, where `m_i` is the number of parts of `λ` equal to `i`.
 It is the cardinality of the centralizer of a permutation of cycle type `λ`. -/
@@ -187,7 +187,7 @@ lemma zcard_eq (l : List ℕ) (hl : IsPart l) :
     exact two_le_of_mem_bigParts (Multiset.mem_toFinset.1 hmem)
   rw [hcount i h2]
 
-end List
+end Young
 
 namespace Equiv.Perm
 

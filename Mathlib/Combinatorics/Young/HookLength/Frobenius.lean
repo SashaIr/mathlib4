@@ -15,30 +15,30 @@ Let `lam` be a partition of `n` with at most `N` parts and let
 
 `x_i = lam_{N - 1 - i} + i`,  `i = 0, …, N - 1`
 
-be its *first column hook lengths*, read from the bottom row upwards (`List.frobVec`).  The
+be its *first column hook lengths*, read from the bottom row upwards (`Young.frobVec`).  The
 number `f^lam` of standard Young tableaux of shape `lam` is then given by the Frobenius
 formula
 
 `f^lam · ∏_i x_i ! = n ! · ∏_{i < j} (x_j - x_i)`.
 
 The proof is an induction on `n` using the branching rule
-`List.numStdTab_branching` and the shift identity `List.sum_mul_vdmProd_update` for the
+`Young.numStdTab_branching` and the shift identity `Young.sum_mul_vdmProd_update` for the
 Vandermonde product: removing a removable corner from the row `N - 1 - i` of `lam` decreases
 `x_i` by one, and the shapes for which this is not allowed contribute zero because the
 resulting family has a repeated entry.
 
 ## Main definitions
 
-* `List.frobVec N lam` : the first column hook lengths of `lam`, padded to `N` rows.
+* `Young.frobVec N lam` : the first column hook lengths of `lam`, padded to `N` rows.
 
 ## Main results
 
-* `List.numStdTab_mul_prod_factorial` : the Frobenius formula displayed above.
+* `Young.numStdTab_mul_prod_factorial` : the Frobenius formula displayed above.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List Finset
 
@@ -296,4 +296,4 @@ theorem numStdTab_mul_prod_factorial (N : ℕ) :
       push_cast
       ring
 
-end List
+end Young

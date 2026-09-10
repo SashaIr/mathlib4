@@ -37,6 +37,8 @@ with at most `m` parts form a basis of the symmetric homogeneous polynomials of 
 
 @[expose] public section
 
+open Young
+
 open List
 
 namespace MvPolynomial

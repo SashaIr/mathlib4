@@ -24,17 +24,19 @@ for the free Schur functions.
 
 ## Main results
 
-* `List.placticEquiv_shiftn_iff` : two words are Knuth equivalent if and only if their
+* `Young.placticEquiv_shiftn_iff` : two words are Knuth equivalent if and only if their
   shifts are (Coq `shift_plactcongr`).
-* `List.placticEquiv_sfilterleq` : the large letters of Knuth equivalent words, shifted
+* `Young.placticEquiv_sfilterleq` : the large letters of Knuth equivalent words, shifted
   down, are Knuth equivalent.
-* `List.exists_placticEquiv_mem_shsh` : **Schützenberger's theorem** (Coq
+* `Young.exists_placticEquiv_mem_shsh` : **Schützenberger's theorem** (Coq
   `Schutzenberger_shuffle_plact`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {u v u₁ v₁ w₁ w₂ : List ℕ} {n : ℕ}
 
@@ -104,4 +106,4 @@ theorem exists_placticEquiv_mem_shsh (hu₁ : ∀ x ∈ u₁, x < u₁.length)
   rw [mem_shsh hu₂mem, hlen]
   exact ⟨rfl, rfl⟩
 
-end List
+end Young

@@ -35,6 +35,8 @@ of them (Coq `card_intcompn`).
 
 @[expose] public section
 
+open Young
+
 namespace List
 
 open List

@@ -15,23 +15,23 @@ A Lean 4 port of the corner part of `theories/Combi/partition.v` from
 
 ## Main definitions
 
-* `List.incrNth sh i` : add a box at the end of row `i` (mathcomp `incr_nth`).
-* `List.decrNth sh i` : remove the last box of row `i` (Coq `decr_nth`).
-* `List.IsRemCorner sh i` : row `i` ends with a removable corner.
-* `List.IsAddCorner sh i` : a box can be added at the end of row `i`.
+* `Young.incrNth sh i` : add a box at the end of row `i` (mathcomp `incr_nth`).
+* `Young.decrNth sh i` : remove the last box of row `i` (Coq `decr_nth`).
+* `Young.IsRemCorner sh i` : row `i` ends with a removable corner.
+* `Young.IsAddCorner sh i` : a box can be added at the end of row `i`.
 
 ## Main results
 
-* `List.isPart_incrNth` / `List.isPart_decrNth` : adding a box at an addable
+* `Young.isPart_incrNth` / `Young.isPart_decrNth` : adding a box at an addable
   corner, resp. removing a box at a removable corner, of a partition yields a
   partition.
-* `List.decrNth_incrNth` / `List.incrNth_decrNth` : the two operations are
+* `Young.decrNth_incrNth` / `Young.incrNth_decrNth` : the two operations are
   mutually inverse.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -313,4 +313,4 @@ lemma isAddCorner_decrNth {sh : List ℕ} {i : ℕ} (h : IsPart sh) (hc : IsRemC
     omega
   omega
 
-end List
+end Young

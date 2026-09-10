@@ -31,7 +31,7 @@ from the fact that removing one part `r` from `lam` divides `z_lam` by `r · m_r
 ## Main results
 
 * `MvPolynomial.nsmul_hsymm_eq_sum_psum_mul_hsymm` : the recursion `n · h_n = ∑_r p_r · h_{n-r}`.
-* `List.zcard_dropPart` : `z_lam = r · m_r(lam) · z_{lam ∖ r}`.
+* `Young.zcard_dropPart` : `z_lam = r · m_r(lam) · z_{lam ∖ r}`.
 * `MvPolynomial.cycleIndexSum` : the sum `∑_{lam ⊢ n} p_lam / z_lam`.
 * `MvPolynomial.hsymm_eq_cycleIndexSum` : the cycle index formula `h_n = ∑_{lam ⊢ n} p_lam / z_lam`.
 * `MvPolynomial.factorial_nsmul_hsymm_eq_sum_perm` : `n ! · h_n = ∑_{σ ∈ S_n} p_{cycleType σ}`.
@@ -44,7 +44,7 @@ from the fact that removing one part `r` from `lam` divides `z_lam` by `r · m_r
 
 @[expose] public section
 
-open List
+open List Young
 
 namespace MvPolynomial
 
@@ -156,7 +156,7 @@ theorem nsmul_hsymm_eq_sum_psum_mul_hsymm (m n : ℕ) (R : Type*) [CommRing R] :
 
 end MvPolynomial
 
-namespace List
+namespace Young
 
 /-! ### Removing one part from a partition -/
 
@@ -283,7 +283,7 @@ lemma dropPart_insPart {lam : List ℕ} (hlam : IsPart lam) (r : ℕ) :
 lemma insPart_dropPart {lam : List ℕ} (hlam : IsPart lam) {r : ℕ} (hr : r ∈ lam) :
     insPart (dropPart lam r) r = lam := by
   rw [insPart, coe_dropPart, Multiset.cons_erase (by simpa using hr), sortDesc_coe hlam]
-end List
+end Young
 
 namespace MvPolynomial
 
@@ -311,7 +311,7 @@ noncomputable def cycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ 
 
 end MvPolynomial
 
-namespace List
+namespace Young
 
 /-- The scalar identity behind the recursion: the reciprocals of the `z`'s of the partitions
 obtained by removing one part sum up to `n / z_lam`. -/
@@ -339,7 +339,7 @@ lemma sum_inv_zcard_dropPart {lam : List ℕ} (hlam : IsPart lam) :
     exact (div_self (by rw [mul_comm]; exact hrz)).symm
   rw [Finset.sum_congr rfl hterm, ← Finset.sum_mul, ← Nat.cast_sum, sum_count_mul_self]
 
-end List
+end Young
 
 namespace MvPolynomial
 

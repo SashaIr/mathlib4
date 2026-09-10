@@ -26,18 +26,18 @@ which is the counting form of the identity `∑_λ (f^λ)² = n!`.
 
 ## Main results
 
-* `List.card_stdWord` : there are `n!` standard words of length `n`.
-* `List.RS_RSQ_bijOn_stdWord` : the Robinson–Schensted correspondence restricted to
+* `Young.card_stdWord` : there are `n!` standard words of length `n`.
+* `Young.RS_RSQ_bijOn_stdWord` : the Robinson–Schensted correspondence restricted to
   standard words of length `n`.
-* `List.card_stdTabPair` : there are `n!` pairs of standard tableaux of the same shape
+* `Young.card_stdTabPair` : there are `n!` pairs of standard tableaux of the same shape
   with `n` boxes.
-* `List.sum_sq_numStdTab` : `∑_λ (f^λ)² = n!`, the sum being over the partitions `λ`
+* `Young.sum_sq_numStdTab` : `∑_λ (f^λ)² = n!`, the sum being over the partitions `λ`
   of `n` and `f^λ` denoting the number of standard tableaux of shape `λ`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -147,4 +147,4 @@ theorem sum_sq_numStdTab (n : ℕ) :
   refine Finset.sum_congr rfl fun lam _ => ?_
   rw [Nat.card_congr (stdTabPairFiberEquiv n lam), Nat.card_prod, numStdTab, sq]
 
-end List
+end Young

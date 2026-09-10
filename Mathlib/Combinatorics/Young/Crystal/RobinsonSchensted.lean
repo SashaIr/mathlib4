@@ -5,6 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Combinatorics.Young.Crystal.Plactic
 public import Mathlib.Combinatorics.Young.Crystal.Tableau
 public import Mathlib.Combinatorics.Young.Plactic.Monoid
@@ -14,12 +15,12 @@ public import Mathlib.Combinatorics.Young.Tableau.Kostka
 # The crystal operators, tableaux and the Robinson–Schensted correspondence
 
 The crystal operators preserve the set of reading words of tableaux of a given shape
-(`List.exists_isTableau_crystalE`), and they commute with the Robinson–Schensted
-insertion (`List.exists_RS_crystalE`), because they are compatible with the plactic
+(`Young.exists_isTableau_crystalE`), and they commute with the Robinson–Schensted
+insertion (`Young.exists_RS_crystalE`), because they are compatible with the plactic
 congruence.  Moreover a tableau on which no raising operator acts is the superstandard
-tableau of its shape (`List.eq_superTab_of_crystalPhi_eq_zero`), so that every tableau
+tableau of its shape (`Young.eq_superTab_of_crystalPhi_eq_zero`), so that every tableau
 can be raised to the superstandard tableau of its shape
-(`List.reflTransGen_tabRaise_superTab`).
+(`Young.reflTransGen_tabRaise_superTab`).
 
 These are the two ingredients of the crystal proof of the Littlewood–Richardson rule: the
 crystal graph on tableaux of a fixed shape is connected, with the superstandard tableau as
@@ -27,21 +28,21 @@ its highest weight element.
 
 ## Main definitions
 
-* `List.TabRaise` : one step of the crystal raising action on tableaux.
+* `Young.TabRaise` : one step of the crystal raising action on tableaux.
 
 ## Main results
 
-* `List.exists_isTableau_crystalE`, `List.exists_isTableau_crystalF` : the crystal
+* `Young.exists_isTableau_crystalE`, `Young.exists_isTableau_crystalF` : the crystal
   operators preserve reading words of tableaux of a given shape.
-* `List.exists_RS_crystalE` : the crystal operators commute with `List.RS`.
-* `List.eq_superTab_of_crystalPhi_eq_zero` : a highest weight tableau is superstandard.
-* `List.reflTransGen_tabRaise_superTab` : every tableau is connected to the superstandard
+* `Young.exists_RS_crystalE` : the crystal operators commute with `Young.RS`.
+* `Young.eq_superTab_of_crystalPhi_eq_zero` : a highest weight tableau is superstandard.
+* `Young.reflTransGen_tabRaise_superTab` : every tableau is connected to the superstandard
   tableau of its shape by raising operators.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -126,18 +127,6 @@ theorem eq_superTab_of_crystalPhi_eq_zero {t : List (List ℕ)} (ht : IsTableau 
   eq_superTabFrom_of_crystalPhi_eq_zero ht (fun _ _ => Nat.zero_le _) (fun i _ => h i)
 
 /-! ### The crystal operators on tableaux -/
-
-lemma sum_set_add_getElem (l : List ℕ) {j : ℕ} (h : j < l.length) (a : ℕ) :
-    (l.set j a).sum + l[j] = l.sum + a := by
-  induction l generalizing j with
-  | nil => simp at h
-  | cons x l ih =>
-    cases j with
-    | zero => simp; omega
-    | succ m =>
-      have := ih (j := m) (by simpa using h)
-      simp only [List.set_cons_succ, List.sum_cons, List.getElem_cons_succ]
-      omega
 
 /-- The raising operator decreases the sum of the letters by one. -/
 lemma sum_crystalE {i : ℕ} {w w' : List ℕ} (h : crystalE i w = some w') : w'.sum + 1 = w.sum := by
@@ -279,4 +268,4 @@ lemma crystalPhi_toWord_superTab {lam : List ℕ} (h : IsPart lam) (i : ℕ) :
     crystalPhi i (toWord (superTab lam)) = 0 :=
   crystalPhi_toWord_superTabFrom h 0 i (Nat.zero_le _)
 
-end List
+end Young

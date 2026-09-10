@@ -36,6 +36,8 @@ using the recursion `n · h_n = ∑_{r=1}^n p_r · h_{n-r}`.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

@@ -5,7 +5,8 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+public import Mathlib.Combinatorics.Young.Tableau.Map
 
 /-!
 # Schensted insertion under a map of the alphabet
@@ -17,14 +18,14 @@ the alphabet `τ`.
 
 ## Main results
 
-* `List.insRow_map` : `insRow (r.map f) (f l) = (insRow r l).map f`.
-* `List.insTab_mapTab` : `insTab (mapTab f P) (f l) = mapTab f (insTab P l)`.
-* `List.RS_map` : `RS (w.map f) = mapTab f (RS w)`.
+* `Young.insRow_map` : `insRow (r.map f) (f l) = (insRow r l).map f`.
+* `Young.insTab_mapTab` : `insTab (mapTab f P) (f l) = mapTab f (insTab P l)`.
+* `Young.RS_map` : `RS (w.map f) = mapTab f (RS w)`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -76,4 +77,4 @@ lemma RS_map (w : List σ) : RS (w.map f) = mapTab f (RS w) := by
 
 end MapRS
 
-end List
+end Young

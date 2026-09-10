@@ -46,6 +46,8 @@ combinatorial consequences are:
 
 @[expose] public section
 
+open Young
+
 open Equiv MvPolynomial List
 
 namespace Equiv.Perm

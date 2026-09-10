@@ -20,15 +20,17 @@ is a bijection from Mathlib's partitions of `n` onto the list-based partitions o
 
 ## Main results
 
-* `List.isPart_sortDesc`, `List.sortDesc_coe` : sorting in decreasing order produces a
+* `Young.isPart_sortDesc`, `Young.sortDesc_coe` : sorting in decreasing order produces a
   partition, and it is the identity on partitions.
-* `List.listPartEquivNatPartition` : the list-based partitions of `n` are in bijection
+* `Young.listPartEquivNatPartition` : the list-based partitions of `n` are in bijection
   with `Nat.Partition n`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 /-- The parts of a multiset of naturals, listed in weakly decreasing order. -/
 def sortDesc (m : Multiset ℕ) : List ℕ := m.sort (· ≥ ·)
@@ -87,4 +89,4 @@ lemma card_listPart (n : ℕ) :
     Fintype.card {p : List ℕ // IsPart p ∧ p.sum = n} = Fintype.card (Nat.Partition n) :=
   Fintype.card_congr (listPartEquivNatPartition n)
 
-end List
+end Young

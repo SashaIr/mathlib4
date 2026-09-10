@@ -20,26 +20,40 @@ larger and not longer.
 
 ## Main definitions
 
-* `List.Dominate u v` : `u` is entrywise strictly larger than `v`, and shorter.
-* `List.IsRow r` : `r` is weakly increasing.
-* `List.IsTableau t` : `t` is a Young tableau.
-* `List.shape t` : the shape of a tableau, as a list of row lengths.
-* `List.toWord t` : the reading word of a tableau.
-* `List.sizeTab t` : the number of boxes of a tableau.
+* `Young.Dominate u v` : `u` is entrywise strictly larger than `v`, and shorter.
+* `Young.IsRow r` : `r` is weakly increasing.
+* `Young.IsTableau t` : `t` is a Young tableau.
+* `Young.shape t` : the shape of a tableau, as a list of row lengths.
+* `Young.toWord t` : the reading word of a tableau.
+* `Young.sizeTab t` : the number of boxes of a tableau.
 
 ## Main results
 
-* `List.isPart_shape` : the shape of a tableau is a partition.
-* `List.IsTableau.row_le` / `List.IsTableau.col_lt` : rows are weakly increasing
+* `Young.isPart_shape` : the shape of a tableau is a partition.
+* `Young.IsTableau.row_le` / `Young.IsTableau.col_lt` : rows are weakly increasing
   and columns are strictly increasing.
-* `List.IsTableau.index_le_getElem` : in a tableau of natural numbers, the entries of the
+* `Young.IsTableau.index_le_getElem` : in a tableau of natural numbers, the entries of the
   `i`-th row are at least `i`.
-* `List.length_toWord` : the reading word has one letter per box.
+* `Young.length_toWord` : the reading word has one letter per box.
+
+## Implementation notes
+
+As for shapes, the list model is the computational layer and the bundled
+`SemistandardYoungTableau` of `Mathlib/Combinatorics/Young/SemistandardTableau.lean` is the
+user-facing type; `Young.shapeTableauEquivSSYT`
+(`Mathlib/Combinatorics/Young/Tableau/Semistandard.lean`) is the dictionary between the
+two.  See `docs/Combi.lean`.
+
+## References
+
+* [W. Fulton, *Young tableaux*][fulton1997]
+* [B. E. Sagan, *The symmetric group*][sagan2001]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -332,4 +346,4 @@ lemma IsTableau.index_le_getElem {t : List (List ℕ)} (h : IsTableau t) {i c : 
       lt_of_lt_of_le hc (h.dominate_getD (Nat.lt_succ_self i)).length_le
     exact Nat.succ_le_of_lt (lt_of_le_of_lt (ih hlen) (h.col_lt hc))
 
-end List
+end Young

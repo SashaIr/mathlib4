@@ -19,23 +19,23 @@ that is, whose entries are exactly `0, …, n-1`.
 
 ## Main definitions
 
-* `List.IsStdTab t` : `t` is a standard tableau (Coq `is_stdtab`).
+* `Young.IsStdTab t` : `t` is a standard tableau (Coq `is_stdtab`).
 
 ## Main results
 
-* `List.IsStd.of_perm` : being standard only depends on the multiset of letters.
-* `List.IsStdTab.nodup_getD` : the rows of a standard tableau are duplicate-free.
-* `List.isStdTab_RS` : the insertion tableau of a standard word is a standard tableau
+* `Young.IsStd.of_perm` : being standard only depends on the multiset of letters.
+* `Young.IsStdTab.nodup_getD` : the rows of a standard tableau are duplicate-free.
+* `Young.isStdTab_RS` : the insertion tableau of a standard word is a standard tableau
   (Coq `RSstdE`).
-* `List.isStdTab_RS_std` : the insertion tableau of the standardization of any word is a
+* `Young.isStdTab_RS_std` : the insertion tableau of the standardization of any word is a
   standard tableau.
-* `List.mem_toWord_iff_of_isStdTab` : the entries of a standard tableau are exactly
+* `Young.mem_toWord_iff_of_isStdTab` : the entries of a standard tableau are exactly
   `0, …, n-1`, where `n` is its number of boxes.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -80,4 +80,4 @@ lemma mem_toWord_iff_of_isStdTab {t : List (List ℕ)} (h : IsStdTab t) (x : ℕ
   have hperm : (toWord t).Perm (List.range (toWord t).length) := h.2
   rw [hperm.mem_iff, List.mem_range, length_toWord]
 
-end List
+end Young

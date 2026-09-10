@@ -35,6 +35,8 @@ diagram of `p`.
 
 @[expose] public section
 
+open Young
+
 namespace Nat.Partition
 
 open List
@@ -122,17 +124,17 @@ def conjEquivLengthLe (n k : ℕ) :
 
 /-- The dominance order on partitions of `n`: every partial sum of the parts of `p`, in
 decreasing order, is at most the corresponding partial sum for `q`. -/
-def Partdom (p q : Partition n) : Prop := List.Partdom p.partsList q.partsList
+def Partdom (p q : Partition n) : Prop := Young.Partdom p.partsList q.partsList
 
-theorem partdom_refl (p : Partition n) : Partdom p p := List.Partdom.refl _
+theorem partdom_refl (p : Partition n) : Partdom p p := Young.Partdom.refl _
 
 theorem Partdom.trans {p q r : Partition n} (h1 : Partdom p q) (h2 : Partdom q r) :
-    Partdom p r := List.Partdom.trans h1 h2
+    Partdom p r := Young.Partdom.trans h1 h2
 
 theorem Partdom.antisymm {p q : Partition n} (h1 : Partdom p q) (h2 : Partdom q p) : p = q := by
   refine Partition.ext ?_
   rw [← coe_partsList p, ← coe_partsList q,
-    List.Partdom.antisymm (isPart_partsList p) (isPart_partsList q) h1 h2]
+    Young.Partdom.antisymm (isPart_partsList p) (isPart_partsList q) h1 h2]
 
 /-- Conjugation reverses the dominance order. -/
 theorem partdom_conj_iff {p q : Partition n} : Partdom q.conj p.conj ↔ Partdom p q := by

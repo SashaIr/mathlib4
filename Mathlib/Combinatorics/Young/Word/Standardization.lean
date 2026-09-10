@@ -25,26 +25,26 @@ permutation of `0, …, n-1`, and it has the same pattern of relative order as `
 
 ## Main definitions
 
-* `List.IsStd u` : the word `u` is standard, i.e. a permutation of `0, …, n-1`
+* `Young.IsStd u` : the word `u` is standard, i.e. a permutation of `0, …, n-1`
   (Coq `is_std`).
-* `List.stdLt w i j` : position `i` comes before position `j` in the order used for
+* `Young.stdLt w i j` : position `i` comes before position `j` in the order used for
   standardization: either the letter at `i` is smaller, or the letters are equal and
   `i < j`.
-* `List.stdRank w i` : the rank of position `i` for this order.
-* `List.std w` : the standardized word (Coq `std`).
+* `Young.stdRank w i` : the rank of position `i` for this order.
+* `Young.std w` : the standardized word (Coq `std`).
 
 ## Main results
 
-* `List.std_isStd` : `List.std w` is a standard word (Coq `std_is_std`).
-* `List.getElem_std_lt_getElem_std_iff` : standardization preserves the relative order
+* `Young.std_isStd` : `Young.std w` is a standard word (Coq `std_is_std`).
+* `Young.getElem_std_lt_getElem_std_iff` : standardization preserves the relative order
   of the letters.
-* `List.length_schensted_std` : `w` and `List.std w` have nondecreasing subsequences of
+* `Young.length_schensted_std` : `w` and `Young.std w` have nondecreasing subsequences of
   the same lengths, so their Schensted rows have the same length.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -173,7 +173,7 @@ theorem getElem_std_lt_getElem_std_iff (w : List T) {i j : ℕ} (hi : i < w.leng
   exact stdRank_lt_stdRank_iff
 
 /-- For two positions in increasing order, the letters of `w` are weakly increasing iff
-those of `List.std w` are. -/
+those of `Young.std w` are. -/
 lemma getElem_std_le_iff {w : List T} {i j : ℕ} (hi : i < w.length) (hj : j < w.length)
     (hij : i < j) :
     ((std w)[i]'(by simpa using hi) ≤ (std w)[j]'(by simpa using hj)) ↔ w[i] ≤ w[j] := by
@@ -248,4 +248,4 @@ theorem length_schensted_std (w : List T) :
   rw [hset] at h1
   exact h1.unique (schensted_isGreatest w)
 
-end List
+end Young

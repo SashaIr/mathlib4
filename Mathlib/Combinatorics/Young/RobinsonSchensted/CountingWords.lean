@@ -10,7 +10,7 @@ public import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
 /-!
 # Counting words over a finite alphabet with the Robinson–Schensted correspondence
 
-Applying the bijection `List.RS_RSQ_bijOn` to the words of length `n` over the alphabet
+Applying the bijection `Young.RS_RSQ_bijOn` to the words of length `n` over the alphabet
 `Fin m` gives the classical identity
 
 `∑_λ K_λ(m) · f^λ = m ^ n`,
@@ -21,21 +21,21 @@ shape `λ` with entries in `Fin m` and `f^λ` is the number of standard tableaux
 
 ## Main definitions
 
-* `List.tabPair m n` : the pairs consisting of a tableau over `Fin m` and a standard
+* `Young.tabPair m n` : the pairs consisting of a tableau over `Fin m` and a standard
   tableau of the same shape with `n` boxes.
-* `List.numTab m sh` : the number of tableaux of shape `sh` with entries in `Fin m`.
+* `Young.numTab m sh` : the number of tableaux of shape `sh` with entries in `Fin m`.
 
 ## Main results
 
-* `List.card_word` : there are `m ^ n` words of length `n` over `Fin m`.
-* `List.RS_RSQ_bijOn_word` : the Robinson–Schensted correspondence restricted to the
+* `Young.card_word` : there are `m ^ n` words of length `n` over `Fin m`.
+* `Young.RS_RSQ_bijOn_word` : the Robinson–Schensted correspondence restricted to the
   words of length `n` over `Fin m`.
-* `List.sum_numTab_mul_numStdTab` : `∑_λ K_λ(m) · f^λ = m ^ n`.
+* `Young.sum_numTab_mul_numStdTab` : `∑_λ K_λ(m) · f^λ = m ^ n`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -131,4 +131,4 @@ theorem sum_numTab_mul_numStdTab (m n : ℕ) :
   refine Finset.sum_congr rfl fun lam _ => ?_
   rw [Nat.card_congr (tabPairFiberEquiv m n lam), Nat.card_prod, numTab, numStdTab]
 
-end List
+end Young

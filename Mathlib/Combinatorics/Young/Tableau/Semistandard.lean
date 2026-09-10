@@ -6,14 +6,14 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Combinatorics.Young.SemistandardTableau
-public import Mathlib.Combinatorics.Young.Shape.YoungDiagram
+public import Mathlib.Combinatorics.Young.Shape.ToYoungDiagram
 public import Mathlib.Combinatorics.Young.Tableau.Basic
 
 /-!
 # Tableaux and Mathlib's semistandard Young tableaux
 
 Following Coq-Combi, a Young tableau is here a list of rows (`t : List (List ℕ)` with
-`List.IsTableau t`), whose shape `List.shape t` is the list of row lengths.  Mathlib
+`Young.IsTableau t`), whose shape `Young.shape t` is the list of row lengths.  Mathlib
 represents the same object as a function `ℕ → ℕ → ℕ` vanishing outside a `YoungDiagram`
 (`SemistandardYoungTableau`).
 
@@ -23,22 +23,22 @@ semistandard Young tableau.
 
 ## Main definitions
 
-* `List.ssytOfTableau` : the semistandard Young tableau of a Coq-Combi tableau.
-* `List.tableauOfSSYT` : the list of rows of a semistandard Young tableau.
-* `List.tableauEquivSSYT` : the tableaux of a given shape are in bijection with the
+* `Young.ssytOfTableau` : the semistandard Young tableau of a Coq-Combi tableau.
+* `Young.tableauOfSSYT` : the list of rows of a semistandard Young tableau.
+* `Young.tableauEquivSSYT` : the tableaux of a given shape are in bijection with the
   semistandard Young tableaux of the corresponding Young diagram.
 
 ## Main results
 
-* `List.isTableau_tableauOfSSYT`, `List.shape_tableauOfSSYT` : the rows of a
+* `Young.isTableau_tableauOfSSYT`, `Young.shape_tableauOfSSYT` : the rows of a
   semistandard Young tableau form a tableau with the expected shape.
-* `List.entry_tableauOfSSYT` : the entries are preserved by the dictionary.
-* `List.sizeTab_eq_card` : the number of boxes agrees.
+* `Young.entry_tableauOfSSYT` : the entries are preserved by the dictionary.
+* `Young.sizeTab_eq_card` : the number of boxes agrees.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -183,17 +183,17 @@ lemma sizeTab_eq_card (htab : IsTableau t) :
     sizeTab t = (youngDiagram (shape t) (isPart_shape htab)).card := by
   rw [card_youngDiagram, sizeTab]
 
-end List
+end Young
 
 namespace Nat.Partition
 
-open List
+open List Young
 
 /-- **The tableaux whose shape is the partition `p` are the semistandard Young tableaux of
 the Young diagram of `p`.** -/
 def tableauEquivSSYT {n : ℕ} (p : Partition n) :
     {t : List (List ℕ) // IsTableau t ∧ shape t = p.partsList} ≃
       SemistandardYoungTableau p.youngDiagram :=
-  List.shapeTableauEquivSSYT p.partsList (isPart_partsList p)
+  Young.shapeTableauEquivSSYT p.partsList (isPart_partsList p)
 
 end Nat.Partition

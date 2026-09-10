@@ -19,7 +19,7 @@ horizontal strip:
 
 The proof is by induction on the number of variables.  The branching rule
 `MvPolynomial.schurPoly_branching` splits off the last variable on both sides, and the
-combinatorial input is the diamond identity `List.card_upDiamond_eq_card_downDiamondLe`.
+combinatorial input is the diamond identity `Young.card_upDiamond_eq_card_downDiamondLe`.
 
 ## Main results
 
@@ -27,6 +27,8 @@ combinatorial input is the diamond identity `List.card_upDiamond_eq_card_downDia
 -/
 
 @[expose] public section
+
+open Young
 
 namespace MvPolynomial
 

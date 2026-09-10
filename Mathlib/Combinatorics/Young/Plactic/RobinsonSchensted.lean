@@ -17,33 +17,33 @@ A Lean 4 port of the converse half of the plactic congruence theorem from
 equivalent to the reading word of its Robinson–Schensted insertion tableau, hence that two words
 with the same insertion tableau are Knuth equivalent.  Here we prove the converse: an elementary
 Knuth transformation does not change the insertion tableau.  Together the two directions give
-`List.placticEquiv_iff_RS_eq`, the statement that the plactic classes are exactly the fibres of the
-map `List.RS`.
+`Young.placticEquiv_iff_RS_eq`, the statement that the plactic classes are exactly the fibres of the
+map `Young.RS`.
 
 The proof follows Knuth's original argument.  Inserting a word `u` into a tableau `r :: t`
-amounts to inserting `u` into the row `r` and inserting the word `List.bumpWord r u` of
-bumped letters into `t`.  The key lemma `List.knuthRel_row` states that two words related
+amounts to inserting `u` into the row `r` and inserting the word `Young.bumpWord r u` of
+bumped letters into `t`.  The key lemma `Young.knuthRel_row` states that two words related
 by one elementary Knuth transformation give the same row and bumped words which are again
 related by (at most) one elementary Knuth transformation.
 
 ## Main definitions
 
-* `List.bumpWord r u` : the word of letters bumped out of the row `r` when inserting the
+* `Young.bumpWord r u` : the word of letters bumped out of the row `r` when inserting the
   letters of `u`, one after the other.
-* `List.KnuthMove` : one elementary Knuth transformation, on a three letter word.
-* `List.KnuthRel` : equality or one elementary Knuth transformation, in either direction.
+* `Young.KnuthMove` : one elementary Knuth transformation, on a three letter word.
+* `Young.KnuthRel` : equality or one elementary Knuth transformation, in either direction.
 
 ## Main results
 
-* `List.knuthRel_row` : Knuth's lemma on row insertion.
-* `List.RS_eq_of_placticEquiv` : Knuth equivalent words have the same insertion tableau.
-* `List.placticEquiv_iff_RS_eq` : two words are Knuth equivalent if and only if they have
+* `Young.knuthRel_row` : Knuth's lemma on row insertion.
+* `Young.RS_eq_of_placticEquiv` : Knuth equivalent words have the same insertion tableau.
+* `Young.placticEquiv_iff_RS_eq` : two words are Knuth equivalent if and only if they have
   the same insertion tableau.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -547,4 +547,4 @@ the plactic classes are the fibres of the Robinson–Schensted map (Coq `plactic
 theorem placticEquiv_iff_RS_eq {u v : List T} : PlacticEquiv u v ↔ RS u = RS v :=
   ⟨RS_eq_of_placticEquiv, plactic_of_RS_eq⟩
 
-end List
+end Young

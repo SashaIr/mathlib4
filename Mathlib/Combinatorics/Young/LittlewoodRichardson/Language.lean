@@ -14,7 +14,7 @@ public import Mathlib.Data.List.Permutation
 /-!
 # Free Schur functions as languages, and Littlewood–Richardson triples
 
-A Lean 4 port of the languages `langQ` and of the Littlewood–Richardson–Schützenberger
+A Lean 4 port of the languages `language` and of the Littlewood–Richardson–Schützenberger
 triples `LRtriple` of `theories/LRrule/shuffle.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
@@ -24,35 +24,37 @@ standard tableaux `t₁`, `t₂`, `t` form a *Littlewood–Richardson triple* wh
 insertion tableau of some word of the shifted shuffle of two words with insertion tableaux
 `t₁` and `t₂`.
 
-The main theorem `List.LRrule_langQ` is the free Littlewood–Richardson rule: the
+The main theorem `Young.LRrule_language` is the free Littlewood–Richardson rule: the
 concatenation of the languages of `t₁` and `t₂` is the union of the languages of the
 tableaux `t` making `(t₁, t₂, t)` a Littlewood–Richardson triple.
 
 ## Main definitions
 
-* `List.langQ T t` : the words over `T` whose recording tableau is `t` (Coq `langQ`).
-* `List.LRtriple t₁ t₂ t` : the Littlewood–Richardson triples (Coq `LRtriple`).
+* `Young.language T t` : the words over `T` whose recording tableau is `t` (Coq `langQ`).
+* `Young.LRtriple t₁ t₂ t` : the Littlewood–Richardson triples (Coq `LRtriple`).
 
 ## Main results
 
-* `List.LRtriple_RSQ_append` : concatenating a word of `langQ t₁` and a word of `langQ t₂`
+* `Young.LRtriple_RSQ_append` : concatenating a word of `language t₁` and a word of `language t₂`
   produces a Littlewood–Richardson triple (Coq `LRtriple_cat_langQ`).
-* `List.LRrule_langQ` : **the free Littlewood–Richardson rule** (Coq `LRrule_langQ`).
-* `List.LRtriple_cat_equiv` : the same statement in the form of Coq
+* `Young.LRrule_language` : **the free Littlewood–Richardson rule** (Coq `LRrule_langQ`).
+* `Young.LRtriple_cat_equiv` : the same statement in the form of Coq
   `LRtriple_cat_equiv`.
-* `List.isStdTab_of_LRtriple` : the third tableau of a Littlewood–Richardson triple is
+* `Young.isStdTab_of_LRtriple` : the third tableau of a Littlewood–Richardson triple is
   standard and has as many boxes as the first two together (Coq
   `is_stdtab_of_n_LRtriple`).
-* `List.LRtriple_conjTab` : transposing the three tableaux of a Littlewood–Richardson
+* `Young.LRtriple_conjTab` : transposing the three tableaux of a Littlewood–Richardson
   triple gives a Littlewood–Richardson triple (Coq `LRtriple_conj`).
-* `List.LRtriple_iff_exists_perm` : a characterisation of the Littlewood–Richardson triples
+* `Young.LRtriple_iff_exists_perm` : a characterisation of the Littlewood–Richardson triples
   by a search over a finite list of words, and the resulting decision procedure
-  `List.decidableLRtriple` (Coq `pred_LRtriple` and `LRtripleP`).
+  `Young.decidableLRtriple` (Coq `pred_LRtriple` and `LRtripleP`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T : Type*} [LinearOrder T]
 
@@ -60,21 +62,22 @@ variable {T : Type*} [LinearOrder T]
 
 /-- The language of the tableau `t` over the alphabet `T`: the words whose recording
 tableau is `t` (Coq `langQ`). -/
-def langQ (T : Type*) [LinearOrder T] (t : List (List ℕ)) : Set (List T) := {w | RSQ w = t}
+def language (T : Type*) [LinearOrder T] (t : List (List ℕ)) : Set (List T) := {w | RSQ w = t}
 
-@[simp] lemma mem_langQ {w : List T} {t : List (List ℕ)} : w ∈ langQ T t ↔ RSQ w = t := Iff.rfl
+@[simp] lemma mem_language {w : List T} {t : List (List ℕ)} :
+    w ∈ language T t ↔ RSQ w = t := Iff.rfl
 
 /-- A word belongs to the language of `t` exactly when the insertion tableau of the inverse
 of its standardization is `t` (Coq `langQE`). -/
-lemma mem_langQ_iff_RS_invStd {w : List T} {t : List (List ℕ)} :
-    w ∈ langQ T t ↔ RS (invStd (std w)) = t := by
-  rw [mem_langQ, RS_invStd_std]
+lemma mem_language_iff_RS_invStd {w : List T} {t : List (List ℕ)} :
+    w ∈ language T t ↔ RS (invStd (std w)) = t := by
+  rw [mem_language, RS_invStd_std]
 
 /-- The words of the language of `t` have as many letters as `t` has boxes
 (Coq `size_langQ`). -/
-lemma length_eq_sizeTab_of_mem_langQ {w : List T} {t : List (List ℕ)} (h : w ∈ langQ T t) :
+lemma length_eq_sizeTab_of_mem_language {w : List T} {t : List (List ℕ)} (h : w ∈ language T t) :
     w.length = sizeTab t := by
-  rw [mem_langQ] at h
+  rw [mem_language] at h
   rw [← h, sizeTab_RSQ]
 
 /-! ### Littlewood–Richardson triples -/
@@ -86,9 +89,9 @@ def LRtriple (t₁ t₂ t : List (List ℕ)) : Prop :=
   ∃ p₁ p₂ p : List ℕ, RS p₁ = t₁ ∧ RS p₂ = t₂ ∧ RS p = t ∧ p ∈ shsh p₁ p₂
 
 /-- **Concatenating words of two languages produces a Littlewood–Richardson triple** (Coq
-`LRtriple_cat_langQ`). -/
-theorem LRtriple_RSQ_append {t₁ t₂ : List (List ℕ)} {u₁ u₂ : List T} (h₁ : u₁ ∈ langQ T t₁)
-    (h₂ : u₂ ∈ langQ T t₂) : LRtriple t₁ t₂ (RSQ (u₁ ++ u₂)) := by
+`LRtriple_cat_language`). -/
+theorem LRtriple_RSQ_append {t₁ t₂ : List (List ℕ)} {u₁ u₂ : List T} (h₁ : u₁ ∈ language T t₁)
+    (h₂ : u₂ ∈ language T t₂) : LRtriple t₁ t₂ (RSQ (u₁ ++ u₂)) := by
   refine ⟨invStd (std u₁), invStd (std u₂), invStd (std (u₁ ++ u₂)), ?_, ?_, ?_,
     invStd_std_append_mem_shsh u₁ u₂⟩
   · rw [RS_invStd_std]; exact h₁
@@ -124,18 +127,18 @@ theorem LRtriple_conjTab {t₁ t₂ t : List (List ℕ)} (ht₁ : IsStdTab t₁)
     reverse_mem_shsh (fun _ hx => mem_range.1 (hs₁.mem_iff.1 hx)) hsh⟩
 
 /-- **The free Littlewood–Richardson rule** (Coq `LRrule_langQ`): a word splits as a word of
-`langQ t₁` followed by a word of `langQ t₂` exactly when it lies in the language of a
+`language t₁` followed by a word of `language t₂` exactly when it lies in the language of a
 tableau `t` forming a Littlewood–Richardson triple with `t₁` and `t₂`. -/
-theorem LRrule_langQ {t₁ t₂ : List (List ℕ)} (ht₁ : IsStdTab t₁) (w : List T) :
-    (∃ u v, w = u ++ v ∧ u ∈ langQ T t₁ ∧ v ∈ langQ T t₂) ↔
-      ∃ t, LRtriple t₁ t₂ t ∧ w ∈ langQ T t := by
+theorem LRrule_language {t₁ t₂ : List (List ℕ)} (ht₁ : IsStdTab t₁) (w : List T) :
+    (∃ u v, w = u ++ v ∧ u ∈ language T t₁ ∧ v ∈ language T t₂) ↔
+      ∃ t, LRtriple t₁ t₂ t ∧ w ∈ language T t := by
   constructor
   · rintro ⟨u, v, rfl, hu, hv⟩
     exact ⟨RSQ (u ++ v), LRtriple_RSQ_append hu hv, rfl⟩
   · rintro ⟨t, ⟨p₁, p₂, p, hp₁, hp₂, hp, hsh⟩, hw⟩
     have hstd₁ : IsStd p₁ := isStd_of_isStdTab_RS ht₁ hp₁
     have hpl : PlacticEquiv (invStd (std w)) p :=
-      placticEquiv_iff_RS_eq.2 (by rw [RS_invStd_std, mem_langQ.1 hw, ← hp])
+      placticEquiv_iff_RS_eq.2 (by rw [RS_invStd_std, mem_language.1 hw, ← hp])
     obtain ⟨hf, hs⟩ := hstd₁.mem_shsh.1 hsh
     have hlenw : w.length = p.length := by simpa using hpl.perm.length_eq
     have hn : p₁.length ≤ w.length := by
@@ -143,10 +146,10 @@ theorem LRrule_langQ {t₁ t₂ : List (List ℕ)} (ht₁ : IsStdTab t₁) (w : 
       omega
     set n := p₁.length
     refine ⟨w.take n, w.drop n, (List.take_append_drop _ _).symm, ?_, ?_⟩
-    · rw [mem_langQ_iff_RS_invStd, ← filter_lt_invStd_std_take hn, ← hp₁, ← hf]
+    · rw [mem_language_iff_RS_invStd, ← filter_lt_invStd_std_take hn, ← hp₁, ← hf]
       refine RS_eq_of_placticEquiv ?_
       simpa only [ltFilter] using placticEquiv_ltFilter (N := n) hpl
-    · rw [mem_langQ_iff_RS_invStd, ← sfilterleq_invStd_std_drop hn, ← hp₂, ← hs]
+    · rw [mem_language_iff_RS_invStd, ← sfilterleq_invStd_std_drop hn, ← hp₂, ← hs]
       exact RS_eq_of_placticEquiv (placticEquiv_sfilterleq _ hpl)
 
 /-- **The free Littlewood–Richardson rule, in the form of Coq `LRtriple_cat_equiv`**: two
@@ -154,26 +157,26 @@ words lie in the languages of `t₁` and `t₂` exactly when they have the right
 their concatenation lies in the language of a tableau forming a Littlewood–Richardson
 triple with `t₁` and `t₂`. -/
 theorem LRtriple_cat_equiv {t₁ t₂ : List (List ℕ)} (ht₁ : IsStdTab t₁) (u₁ u₂ : List T) :
-    (u₁ ∈ langQ T t₁ ∧ u₂ ∈ langQ T t₂) ↔
+    (u₁ ∈ language T t₁ ∧ u₂ ∈ language T t₂) ↔
       (u₁.length = sizeTab t₁ ∧ u₂.length = sizeTab t₂ ∧
-        ∃ t, LRtriple t₁ t₂ t ∧ u₁ ++ u₂ ∈ langQ T t) := by
+        ∃ t, LRtriple t₁ t₂ t ∧ u₁ ++ u₂ ∈ language T t) := by
   constructor
   · rintro ⟨h₁, h₂⟩
-    exact ⟨length_eq_sizeTab_of_mem_langQ h₁, length_eq_sizeTab_of_mem_langQ h₂,
+    exact ⟨length_eq_sizeTab_of_mem_language h₁, length_eq_sizeTab_of_mem_language h₂,
       RSQ (u₁ ++ u₂), LRtriple_RSQ_append h₁ h₂, rfl⟩
   · rintro ⟨hl₁, -, t, ⟨p₁, p₂, p, hp₁, hp₂, hp, hsh⟩, hw⟩
     have hstd₁ : IsStd p₁ := isStd_of_isStdTab_RS ht₁ hp₁
     have hlen₁ : p₁.length = u₁.length := by
       rw [← sizeTab_RS p₁, hp₁, hl₁]
     have hpl : PlacticEquiv (invStd (std (u₁ ++ u₂))) p :=
-      placticEquiv_iff_RS_eq.2 (by rw [RS_invStd_std, mem_langQ.1 hw, ← hp])
+      placticEquiv_iff_RS_eq.2 (by rw [RS_invStd_std, mem_language.1 hw, ← hp])
     obtain ⟨hf, hs⟩ := hstd₁.mem_shsh.1 hsh
     rw [hlen₁] at hf hs
     constructor
-    · rw [mem_langQ_iff_RS_invStd, ← filter_lt_invStd_std_append u₁ u₂, ← hp₁, ← hf]
+    · rw [mem_language_iff_RS_invStd, ← filter_lt_invStd_std_append u₁ u₂, ← hp₁, ← hf]
       refine RS_eq_of_placticEquiv ?_
       simpa only [ltFilter] using placticEquiv_ltFilter (N := u₁.length) hpl
-    · rw [mem_langQ_iff_RS_invStd, ← sfilterleq_invStd_std_append u₁ u₂, ← hp₂, ← hs]
+    · rw [mem_language_iff_RS_invStd, ← sfilterleq_invStd_std_append u₁ u₂, ← hp₂, ← hs]
       exact RS_eq_of_placticEquiv (placticEquiv_sfilterleq _ hpl)
 
 /-! ### A finite characterisation of the Littlewood–Richardson triples -/
@@ -200,15 +203,15 @@ theorem LRtriple_iff_exists_perm {t₁ t₂ t : List (List ℕ)} (ht₁ : IsStdT
     obtain ⟨htstd, hsize⟩ := isStdTab_of_LRtriple ht₁ ht₂ h
     obtain ⟨w, hwstd, hw⟩ := exists_isStd_RSQ_eq htstd
     have hlen : w.length = sizeTab t :=
-      length_eq_sizeTab_of_mem_langQ (T := ℕ) (mem_langQ.2 hw)
-    obtain ⟨u, v, huv, hu, hv⟩ := (LRrule_langQ ht₁ w).2 ⟨t, h, mem_langQ.2 hw⟩
-    have hulen : u.length = sizeTab t₁ := length_eq_sizeTab_of_mem_langQ hu
+      length_eq_sizeTab_of_mem_language (T := ℕ) (mem_language.2 hw)
+    obtain ⟨u, v, huv, hu, hv⟩ := (LRrule_language ht₁ w).2 ⟨t, h, mem_language.2 hw⟩
+    have hulen : u.length = sizeTab t₁ := length_eq_sizeTab_of_mem_language hu
     have htk : w.take (sizeTab t₁) = u := by rw [huv]; exact List.take_left' hulen
     have hdr : w.drop (sizeTab t₁) = v := by rw [huv]; exact List.drop_left' hulen
     exact ⟨w, List.mem_permutations.2 (by rw [← hsize, ← hlen]; exact hwstd),
       htk ▸ hu, hdr ▸ hv, hw⟩
   · rintro ⟨w, -, hu, hv, hw⟩
-    have h := LRtriple_RSQ_append (T := ℕ) (mem_langQ.2 hu) (mem_langQ.2 hv)
+    have h := LRtriple_RSQ_append (T := ℕ) (mem_language.2 hu) (mem_language.2 hv)
     rwa [List.take_append_drop, hw] at h
 
 /-- **Being a Littlewood–Richardson triple is decidable** (Coq `LRtripleP`). -/
@@ -216,4 +219,4 @@ def decidableLRtriple {t₁ t₂ t : List (List ℕ)} (ht₁ : IsStdTab t₁) (h
     Decidable (LRtriple t₁ t₂ t) :=
   decidable_of_iff _ (LRtriple_iff_exists_perm ht₁ ht₂).symm
 
-end List
+end Young

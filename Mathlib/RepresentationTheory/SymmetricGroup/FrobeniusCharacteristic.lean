@@ -43,9 +43,17 @@ product of class functions (induction from `S_m × S_n`, embedded in `S_{m+n}` b
 * `Equiv.Perm.frobChar_one`, `Equiv.Perm.frobChar_sign` : the characteristics of the trivial and of
   the signature characters are the complete homogeneous and the elementary symmetric
   polynomials `h_n` and `e_n`.
+
+## References
+
+* [I. G. Macdonald, *Symmetric functions and Hall polynomials*][macdonald1995]
+* [B. E. Sagan, *The symmetric group*][sagan2001]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
+
+open Young
 
 open Equiv MvPolynomial List
 

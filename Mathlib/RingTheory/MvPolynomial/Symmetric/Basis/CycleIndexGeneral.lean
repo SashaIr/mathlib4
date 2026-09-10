@@ -31,6 +31,8 @@ This is used to identify the Cauchy kernel with its power sum expansion in
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List

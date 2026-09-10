@@ -30,6 +30,8 @@ homogeneous polynomials of degree `n` in `m` variables.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

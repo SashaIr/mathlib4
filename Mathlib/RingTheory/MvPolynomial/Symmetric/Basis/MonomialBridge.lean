@@ -24,6 +24,8 @@ development, which are indexed by the list-based partitions of Coq-Combi.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

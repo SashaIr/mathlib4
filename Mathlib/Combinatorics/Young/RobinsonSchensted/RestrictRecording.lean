@@ -10,18 +10,18 @@ public import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
 /-!
 # Restricting the recording tableau
 
-The recording tableau `List.RSQ w` of a word is built by adding, at the `k`-th insertion,
+The recording tableau `Young.RSQ w` of a word is built by adding, at the `k`-th insertion,
 a box containing the letter `k`.  Hence removing from it the letters `≥ k` gives the
 recording tableau of the prefix of length `k` of `w`.
 
 ## Main results
 
-* `List.dropMax_RSQ` : `dropMax k (RSQ w) = RSQ (w.take k)`.
+* `Young.dropMax_RSQ` : `dropMax k (RSQ w) = RSQ (w.take k)`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -63,4 +63,4 @@ theorem dropMax_RSQ (w : List T) (k : ℕ) : dropMax k (RSQ w) = RSQ (w.take k) 
         rw [List.take_append_of_le_length hk]
       rw [htake, RSQ_concat, dropMax_addBox_of_le hk, ih]
 
-end List
+end Young

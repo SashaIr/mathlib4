@@ -156,35 +156,6 @@ end BinaryTree
 
 /-! ### Every rotation of the vector comes from a rotation of the tree -/
 
-namespace List
-
-variable {α : Type*} {l m : List α} {x y d : α} {i k : ℕ}
-
-lemma getD_append_cons_left (h : i < l.length) : (l ++ x :: m).getD i d = l.getD i d :=
-  List.getD_append _ _ _ _ h
-
-lemma getD_append_cons_self : (l ++ x :: m).getD l.length d = x := by
-  rw [List.getD_append_right _ _ _ _ le_rfl, Nat.sub_self, List.getD_cons_zero]
-
-lemma getD_append_cons_right : (l ++ x :: m).getD (l.length + 1 + k) d = m.getD k d := by
-  rw [List.getD_append_right _ _ _ _ (by omega)]
-  have : l.length + 1 + k - l.length = k + 1 := by omega
-  rw [this, List.getD_cons_succ]
-
-lemma set_append_cons_left (h : i < l.length) : (l ++ x :: m).set i y = l.set i y ++ x :: m := by
-  rw [List.set_append, ite_eq_left h]
-
-lemma set_append_cons_right : (l ++ x :: m).set (l.length + 1 + k) y = l ++ x :: m.set k y := by
-  rw [List.set_append, ite_eq_right (by omega)]
-  have : l.length + 1 + k - l.length = k + 1 := by omega
-  rw [this, List.set_cons_succ]
-
-/-- The set of a list at the position of a cons in the middle. -/
-lemma set_append_cons_self : (l ++ x :: m).set l.length y = l ++ y :: m := by
-  rw [List.set_append, ite_eq_right (by omega), Nat.sub_self, List.set_cons_zero]
-
-end List
-
 namespace BinaryTree
 
 open List
@@ -319,13 +290,6 @@ end BinaryTree
 /-! ### The Tamari order is the componentwise order -/
 
 namespace List
-
-/-- Two lists of naturals of the same length with the same entries are equal. -/
-lemma eq_of_length_eq_of_getD_eq {v w : List ℕ} (hl : v.length = w.length)
-    (h : ∀ i, v.getD i 0 = w.getD i 0) : v = w := by
-  refine List.ext_getElem hl fun i h1 h2 => ?_
-  have := h i
-  rwa [List.getD_eq_getElem _ _ h1, List.getD_eq_getElem _ _ h2] at this
 
 /-- A componentwise inequality between two lists with the same sum is an equality. -/
 lemma eq_of_forall₂_le_of_sum_eq {v w : List ℕ} (h : Forall₂ (· ≤ ·) v w)

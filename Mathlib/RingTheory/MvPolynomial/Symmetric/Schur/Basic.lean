@@ -31,9 +31,17 @@ Following `theories/MPoly/Schur_mpoly.v` of
   homogeneous symmetric polynomial.
 * `MvPolynomial.schurPoly_column` : the Schur polynomial of a one-column shape is the elementary
   symmetric polynomial.
+
+## References
+
+* [I. G. Macdonald, *Symmetric functions and Hall polynomials*][macdonald1995]
+* [B. E. Sagan, *The symmetric group*][sagan2001]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
+
+open Young
 
 namespace MvPolynomial
 

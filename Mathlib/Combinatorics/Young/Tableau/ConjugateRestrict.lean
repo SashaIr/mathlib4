@@ -18,15 +18,17 @@ correspondence for reversed words needs.
 
 ## Main results
 
-* `List.lt_length_ltFilter_getD_iff` : in a weakly increasing row, the letters `< k` form a
+* `Young.lt_length_ltFilter_getD_iff` : in a weakly increasing row, the letters `< k` form a
   prefix.
-* `List.shape_dropMax_conjTab` : `shape (dropMax k (conjTab t)) = conjPart (shape (dropMax k t))`
+* `Young.shape_dropMax_conjTab` : `shape (dropMax k (conjTab t)) = conjPart (shape (dropMax k t))`
   for a standard tableau `t`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 /-- In a weakly increasing row, the letters `< k` form a prefix: the restricted row has more
 than `j` letters exactly when the `j`-th letter of the row exists and is `< k`. -/
@@ -80,4 +82,4 @@ lemma shape_dropMax_conjTab {t : List (List ℕ)} (ht : IsStdTab t) (k : ℕ) :
   have h2 := key ((conjPart (shape (dropMax k t))).getD j 0)
   omega
 
-end List
+end Young

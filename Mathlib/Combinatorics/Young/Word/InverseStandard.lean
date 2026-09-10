@@ -20,24 +20,24 @@ of `i` in `w`.
 
 ## Main definitions
 
-* `List.invStd w` : the inverse of the standard word `w` (Coq `invstd`).
-* `List.IsInvSeq u v` : `u` and `v` are inverse to each other (Coq `invseq`).
+* `Young.invStd w` : the inverse of the standard word `w` (Coq `invstd`).
+* `Young.IsInvSeq u v` : `u` and `v` are inverse to each other (Coq `invseq`).
 
 ## Main results
 
-* `List.isStd_invStd` : the inverse of a standard word is a standard word
+* `Young.isStd_invStd` : the inverse of a standard word is a standard word
   (Coq `invstd_is_std`).
-* `List.invStd_invStd` : inverting is an involution (Coq `invstdK`).
-* `List.isInvSeq_invStd`, `List.IsInvSeq.symm` : `w` and `invStd w` are inverse sequences,
+* `Young.invStd_invStd` : inverting is an involution (Coq `invstdK`).
+* `Young.isInvSeq_invStd`, `Young.IsInvSeq.symm` : `w` and `invStd w` are inverse sequences,
   and the relation is symmetric.
-* `List.greeneRow_invStd` : a word and its inverse have the same Greene row invariants.
-* `List.shape_RS_invStd` : consequently, a standard word and its inverse have Robinson–
+* `Young.greeneRow_invStd` : a word and its inverse have the same Greene row invariants.
+* `Young.shape_RS_invStd` : consequently, a standard word and its inverse have Robinson–
   Schensted tableaux of the same shape.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -203,4 +203,4 @@ theorem shape_RS_invStd (hw : IsStd w) : shape (RS (invStd w)) = shape (RS w) :=
   refine sum_take_inj (isPart_shape (isTableau_RS _)) (isPart_shape (isTableau_RS _)) fun k => ?_
   rw [← greeneRow_eq_sum_take_shape, ← greeneRow_eq_sum_take_shape, greeneRow_invStd hw]
 
-end List
+end Young

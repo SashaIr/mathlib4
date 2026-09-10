@@ -18,14 +18,16 @@ its three letters.  This is the Lean 4 port of `plact_map_in_incr` in
 
 ## Main results
 
-* `List.placticEquiv_map_of_strictMonoOn` : Knuth equivalent words stay Knuth equivalent
+* `Young.placticEquiv_map_of_strictMonoOn` : Knuth equivalent words stay Knuth equivalent
   after applying a map which is strictly increasing on a set containing their letters.
-* `List.placticEquiv_map_of_strictMono` : the same for a globally strictly increasing map.
+* `Young.placticEquiv_map_of_strictMono` : the same for a globally strictly increasing map.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T T' : Type*} [LinearOrder T] [LinearOrder T']
 
@@ -73,4 +75,4 @@ theorem placticEquiv_map_of_strictMono {F : T → T'} (hF : StrictMono F) {u v :
   placticEquiv_map_of_strictMonoOn (S := Set.univ) (fun _ _ _ _ hxy => hF hxy) h
     (fun _ _ => by simp)
 
-end List
+end Young

@@ -18,15 +18,15 @@ shapes are equal: this is the description of a standard tableau as a chain of sh
 
 ## Main results
 
-* `List.mem_getD_iff_of_shape_dropMax_eq` : if the restrictions of two standard tableaux
+* `Young.mem_getD_iff_of_shape_dropMax_eq` : if the restrictions of two standard tableaux
   have the same shapes, then the two tableaux have the same letters in each row.
-* `List.eq_of_shape_dropMax_eq` : **two standard tableaux whose restrictions have the same
+* `Young.eq_of_shape_dropMax_eq` : **two standard tableaux whose restrictions have the same
   shapes are equal**.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -124,4 +124,4 @@ theorem eq_of_shape_dropMax_eq {P Q : List (List ℕ)} (hP : IsStdTab P) (hQ : I
       fun j hj hc => hbelow j hj ((hmem j m).2 hc)).symm
   rw [← recTab_rowsOf hP, ← recTab_rowsOf hQ, hrows]
 
-end List
+end Young

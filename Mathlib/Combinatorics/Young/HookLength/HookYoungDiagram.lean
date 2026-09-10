@@ -7,14 +7,14 @@ module
 
 public import Mathlib.Algebra.BigOperators.YoungDiagram
 public import Mathlib.Combinatorics.Young.HookLength.Formula
-public import Mathlib.Combinatorics.Young.Shape.YoungDiagram
+public import Mathlib.Combinatorics.Young.Shape.ToYoungDiagram
 
 /-!
 # Hook lengths and the hook length formula for Mathlib's Young diagrams
 
 The hook lengths of `Mathlib.Combinatorics.Young.HookLength.Basic` are defined for a shape
 given as a weakly decreasing list.  Through the dictionary of
-`Mathlib.Combinatorics.Young.Shape.YoungDiagram`, they are transported here to Mathlib's
+`Mathlib.Combinatorics.Young.Shape.ToYoungDiagram`, they are transported here to Mathlib's
 `YoungDiagram`, where the hook length of a box is expressed by `YoungDiagram.rowLen` and
 `YoungDiagram.colLen`, and the hook product is a product over the boxes of the diagram.
 
@@ -37,7 +37,7 @@ given as a weakly decreasing list.  Through the dictionary of
 
 namespace YoungDiagram
 
-open List
+open List Young
 
 /-- The hook length of a box of a Young diagram: the number of boxes to its right in its
 row, plus the number of boxes below it in its column, plus one for the box itself. -/
@@ -48,20 +48,20 @@ def hookLength (mu : YoungDiagram) (x : ℕ × ℕ) : ℕ :=
 def hookProd (mu : YoungDiagram) : ℕ := ∏ x ∈ mu.cells, mu.hookLength x
 
 /-- The number of standard Young tableaux of shape `mu`. -/
-noncomputable def numStdTab (mu : YoungDiagram) : ℕ := List.numStdTab mu.rowLens
+noncomputable def numStdTab (mu : YoungDiagram) : ℕ := Young.numStdTab mu.rowLens
 
 /-- The hook length of a box, read on the list of row lengths. -/
 lemma hookLength_eq (mu : YoungDiagram) (r c : ℕ) :
-    mu.hookLength (r, c) = List.hookLength mu.rowLens r c := by
-  rw [hookLength, List.hookLength, getD_rowLens, colLen_eq_getD_conjPart]
+    mu.hookLength (r, c) = Young.hookLength mu.rowLens r c := by
+  rw [hookLength, Young.hookLength, getD_rowLens, colLen_eq_getD_conjPart]
 
 /-- **The two hook products agree**: the product over the boxes of `mu` of the hook
 lengths is the hook product of its list of row lengths. -/
-theorem hookProd_eq_hookProd (mu : YoungDiagram) : mu.hookProd = List.hookProd mu.rowLens := by
-  rw [hookProd, prod_cells, List.hookProd]
+theorem hookProd_eq_hookProd (mu : YoungDiagram) : mu.hookProd = Young.hookProd mu.rowLens := by
+  rw [hookProd, prod_cells, Young.hookProd]
   rw [show mu.colLen 0 = mu.rowLens.length from (length_rowLens).symm]
   refine Finset.prod_congr rfl fun r _ => ?_
-  rw [List.rowHookProd, getD_rowLens]
+  rw [Young.rowHookProd, getD_rowLens]
   exact Finset.prod_congr rfl fun c _ => hookLength_eq mu r c
 
 /-- **The hook length formula for a Young diagram**: the number of standard Young tableaux
@@ -70,12 +70,12 @@ of shape `mu`, multiplied by the product of the hook lengths of the boxes of `mu
 theorem numStdTab_mul_hookProd (mu : YoungDiagram) :
     mu.numStdTab * mu.hookProd = Nat.factorial mu.card := by
   rw [numStdTab, hookProd_eq_hookProd, card_eq_sum_rowLens]
-  exact List.numStdTab_mul_hookProd (isPart_rowLens mu)
+  exact Young.numStdTab_mul_hookProd (isPart_rowLens mu)
 
 /-- **The hook length formula for a Young diagram**, in division form. -/
 theorem numStdTab_eq_factorial_div_hookProd (mu : YoungDiagram) :
     mu.numStdTab = Nat.factorial mu.card / mu.hookProd := by
   rw [numStdTab, hookProd_eq_hookProd, card_eq_sum_rowLens]
-  exact List.numStdTab_eq_factorial_div_hookProd (isPart_rowLens mu)
+  exact Young.numStdTab_eq_factorial_div_hookProd (isPart_rowLens mu)
 
 end YoungDiagram

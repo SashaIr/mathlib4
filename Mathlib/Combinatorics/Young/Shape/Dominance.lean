@@ -5,6 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.Young.Shape.Conjugate
@@ -17,41 +18,26 @@ A Lean 4 port of the dominance order part of `theories/Combi/partition.v` from
 
 ## Main definitions
 
-* `List.Partdom s t` : all the partial sums of `s` are at most those of `t`
+* `Young.Partdom s t` : all the partial sums of `s` are at most those of `t`
   (Coq `partdom`).
 
 ## Main results
 
-* `List.Partdom.refl`, `List.Partdom.trans`, `List.Partdom.antisymm` : dominance
+* `Young.Partdom.refl`, `Young.Partdom.trans`, `Young.Partdom.antisymm` : dominance
   is a partial order on partitions.
-* `List.sum_map_min` (Coq `sum_conj`) : `∑ min (sh i) k` is the sum of the first
+* `Young.sum_map_min` (Coq `sum_conj`) : `∑ min (sh i) k` is the sum of the first
   `k` parts of the conjugate partition.
-* `List.partdom_conjPart_iff` (Coq `partdom_conj_intpartn`) : conjugation is an
+* `Young.partdom_conjPart_iff` (Coq `partdom_conj_intpartn`) : conjugation is an
   order-reversing involution for the dominance order on partitions of a given size.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List Finset
 
 /-! ### Partial sums of a list -/
-
-lemma sum_take_succ_getD (l : List ℕ) (i : ℕ) :
-    (l.take (i + 1)).sum = (l.take i).sum + l.getD i 0 := by
-  induction l generalizing i with
-  | nil => simp
-  | cons a s ih =>
-    cases i with
-    | zero => simp
-    | succ j => simp only [List.take_succ_cons, List.sum_cons, ih j, List.getD_cons_succ]; omega
-
-lemma sum_take_eq_sum_range (l : List ℕ) (k : ℕ) :
-    (l.take k).sum = ∑ i ∈ Finset.range k, l.getD i 0 := by
-  induction k with
-  | zero => simp
-  | succ m ih => rw [sum_take_succ_getD, ih, Finset.sum_range_succ]
 
 lemma getD_map_of_zero {f : ℕ → ℕ} (hf : f 0 = 0) (l : List ℕ) (i : ℕ) :
     (l.map f).getD i 0 = f (l.getD i 0) := by
@@ -205,10 +191,6 @@ lemma partdom_conjPart_iff {s t : List ℕ} (hs : IsPart s) (ht : IsPart t) (hsu
 
 /-! ### Extremal partitions for the dominance order -/
 
-lemma sum_take_le_sum (l : List ℕ) (i : ℕ) : (l.take i).sum ≤ l.sum := by
-  have h := List.sum_take_add_sum_drop l i
-  omega
-
 /-- Coq `partdom_rowpartn`: the one-row partition `[n]` dominates every partition of `n`. -/
 lemma partdom_row {s : List ℕ} {n : ℕ} (hsum : s.sum = n) : Partdom s [n] := by
   intro i
@@ -235,4 +217,4 @@ lemma partdom_col {s : List ℕ} (hs : IsPart s) {n : ℕ} (hsum : s.sum = n) :
     _ ≤ ∑ j ∈ Finset.range i, s.getD j 0 :=
       Finset.sum_le_sum fun j hj => hs.getD_pos (lt_of_lt_of_le (Finset.mem_range.1 hj) hi)
 
-end List
+end Young

@@ -37,6 +37,8 @@ this is the composition of `Equiv.Perm.sumCongr` with the transport of structure
 
 @[expose] public section
 
+open Young
+
 open Equiv
 
 namespace Equiv.Perm
@@ -150,7 +152,7 @@ lemma partition_parts_tinj (u : Perm (Fin m)) (v : Perm (Fin n)) :
 types of the two factors. -/
 theorem cycleTypeList_tinj (u : Perm (Fin m)) (v : Perm (Fin n)) :
     cycleTypeList (tinj m n (u, v))
-      = List.sortDesc ((cycleTypeList u : Multiset ℕ) + (cycleTypeList v : Multiset ℕ)) := by
+      = Young.sortDesc ((cycleTypeList u : Multiset ℕ) + (cycleTypeList v : Multiset ℕ)) := by
   rw [cycleTypeList, partition_parts_tinj, coe_cycleTypeList, coe_cycleTypeList]
 
 end Equiv.Perm

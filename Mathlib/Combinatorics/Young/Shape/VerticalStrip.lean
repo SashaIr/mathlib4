@@ -22,22 +22,22 @@ conversely.
 
 ## Main definitions
 
-* `List.VertStrip lam mu` : the skew shape `lam / mu` is a vertical strip
+* `Young.VertStrip lam mu` : the skew shape `lam / mu` is a vertical strip
   (Coq `vb_strip`).
 
 ## Main results
 
-* `List.vertStrip_iff_diffShape` : a vertical strip is a skew shape all of whose rows
+* `Young.vertStrip_iff_diffShape` : a vertical strip is a skew shape all of whose rows
   have at most one box (Coq `vb_strip_diffP`).
-* `List.HorizStrip.vertStrip_conjPart`, `List.VertStrip.horizStrip_conjPart` :
+* `Young.HorizStrip.vertStrip_conjPart`, `Young.VertStrip.horizStrip_conjPart` :
   conjugation exchanges horizontal and vertical strips (Coq `hb_strip_conj`,
-  `vb_strip_conj`), together with the equivalences `List.vertStrip_conjPart_iff` and
-  `List.horizStrip_conjPart_iff` (Coq `vb_strip_conjE`, `hb_strip_conjE`).
+  `vb_strip_conj`), together with the equivalences `Young.vertStrip_conjPart_iff` and
+  `Young.horizStrip_conjPart_iff` (Coq `vb_strip_conjE`, `hb_strip_conjE`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -145,4 +145,4 @@ lemma horizStrip_conjPart_iff {lam mu : List ℕ} (hlam : IsPart lam) (hmu : IsP
   have := h.vertStrip_conjPart (isPart_conjPart hlam) (isPart_conjPart hmu)
   rwa [conjPart_conjPart hlam, conjPart_conjPart hmu] at this
 
-end List
+end Young

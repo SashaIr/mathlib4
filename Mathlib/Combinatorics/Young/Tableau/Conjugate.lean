@@ -23,21 +23,21 @@ preserve *standardness*, whose defining condition is symmetric in the two direct
 
 ## Main definitions
 
-* `List.conjTab` : the transpose of a list of rows (Coq `conj_tab`).
+* `Young.conjTab` : the transpose of a list of rows (Coq `conj_tab`).
 
 ## Main results
 
-* `List.shape_conjTab` : the shape of the transpose is the conjugate shape
+* `Young.shape_conjTab` : the shape of the transpose is the conjugate shape
   (Coq `shape_conj_tab`).
-* `List.conjTab_conjTab` : conjugation is an involution (Coq `conj_tabK`).
-* `List.perm_toWord_conjTab` : the transpose has the same entries as the tableau.
-* `List.IsStdTab.conjTab` : the transpose of a standard tableau is a standard tableau
+* `Young.conjTab_conjTab` : conjugation is an involution (Coq `conj_tabK`).
+* `Young.perm_toWord_conjTab` : the transpose has the same entries as the tableau.
+* `Young.IsStdTab.conjTab` : the transpose of a standard tableau is a standard tableau
   (Coq `is_stdtab_conj`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -52,9 +52,6 @@ def conjTab (t : List (List ℕ)) : List (List ℕ) :=
 @[simp] lemma length_conjTab (t : List (List ℕ)) :
     (conjTab t).length = (shape t).headD 0 := by
   simp [conjTab]
-
-/-- The first entry of a list of naturals, as a `getD`. -/
-lemma getD_zero_eq_headD (l : List ℕ) : l.getD 0 0 = l.headD 0 := by cases l <;> rfl
 
 /-- The rows of the transpose, indexed by the columns of `t`. -/
 lemma getD_conjTab (t : List (List ℕ)) {j : ℕ} (hj : j < (shape t).headD 0) :
@@ -279,7 +276,7 @@ lemma IsStdTab.isTableau_conjTab {t : List (List ℕ)} (h : IsStdTab t) :
       exact h.row_lt j.lt_succ_self hjlen
 
 /-- Coq `is_stdtab_conj`: the transpose of a standard tableau is a standard tableau. -/
-theorem IsStdTab.conjTab {t : List (List ℕ)} (h : IsStdTab t) : IsStdTab (List.conjTab t) :=
+theorem IsStdTab.conjTab {t : List (List ℕ)} (h : IsStdTab t) : IsStdTab (Young.conjTab t) :=
   ⟨h.isTableau_conjTab, h.2.of_perm (perm_toWord_conjTab (isPart_shape h.1))⟩
 
-end List
+end Young

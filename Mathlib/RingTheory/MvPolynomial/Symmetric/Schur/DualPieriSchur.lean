@@ -30,6 +30,8 @@ be cancelled; the statement over an arbitrary commutative semiring follows by ba
 
 @[expose] public section
 
+open Young
+
 open List
 
 namespace MvPolynomial

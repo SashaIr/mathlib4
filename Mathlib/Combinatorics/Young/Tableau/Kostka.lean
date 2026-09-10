@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 # Content of a tableau, dominance, and Kostka numbers
 
 The *content* (or evaluation) of a semistandard Young tableau with entries in `ℕ` is the
-list `List.evalseq (List.toWord t)` counting how many times each letter occurs.
+list `Young.evalseq (Young.toWord t)` counting how many times each letter occurs.
 
 Since the entries of a tableau increase strictly down the columns, the entry sitting in
 row `i` is at least `i`; hence all the boxes containing a letter `< k` lie in the first
@@ -26,27 +26,27 @@ the *superstandard* one, whose `i`-th row consists of `λ i` copies of `i`; in o
 
 ## Main definitions
 
-* `List.superTab lam` : the tableau whose `i`-th row is `lam i` copies of `i`.
-* `List.kostka lam mu` : the Kostka number, the number of tableaux of shape `lam` and
+* `Young.superTab lam` : the tableau whose `i`-th row is `lam i` copies of `i`.
+* `Young.kostka lam mu` : the Kostka number, the number of tableaux of shape `lam` and
   content `mu`.
 
 ## Main results
 
-* `List.le_of_mem_getD_tableau` : an entry of the `i`-th row of a tableau is at least `i`.
-* `List.partdom_evalseq_toWord` : the content of a tableau is dominated by its shape.
-* `List.isTableau_superTab`, `List.shape_superTab`, `List.evalseq_toWord_superTab` :
+* `Young.le_of_mem_getD_tableau` : an entry of the `i`-th row of a tableau is at least `i`.
+* `Young.partdom_evalseq_toWord` : the content of a tableau is dominated by its shape.
+* `Young.isTableau_superTab`, `Young.shape_superTab`, `Young.evalseq_toWord_superTab` :
   the superstandard tableau of a partition is a tableau of that shape and content.
-* `List.eq_superTab_of_evalseq_eq` : a tableau whose content equals its shape is the
+* `Young.eq_superTab_of_evalseq_eq` : a tableau whose content equals its shape is the
   superstandard tableau.
-* `List.kostka_eq_zero_of_not_partdom`, `List.kostka_self` : `K λ μ = 0` unless `λ`
+* `Young.kostka_eq_zero_of_not_partdom`, `Young.kostka_self` : `K λ μ = 0` unless `λ`
   dominates `μ`, and `K λ λ = 1`.
-* `List.partdom_evalseq_RS` : the shape of the insertion tableau of a word dominates the
+* `Young.partdom_evalseq_RS` : the shape of the insertion tableau of a word dominates the
   content of the word.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -332,4 +332,4 @@ theorem partdom_evalseq_RS (w : List ℕ) : Partdom (evalseq w) (shape (RS w)) :
   have h := partdom_evalseq_toWord (isTableau_RS w)
   rwa [evalseq_of_perm (perm_toWord_RS w)] at h
 
-end List
+end Young

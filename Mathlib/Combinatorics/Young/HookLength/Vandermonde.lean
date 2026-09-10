@@ -27,18 +27,20 @@ computed by multilinearity and by a Leibniz expansion respectively.
 
 ## Main definitions
 
-* `List.vdmProd` : the Vandermonde product `∏_{i < j} (x j - x i)`.
-* `List.fallMat` : the matrix of falling factorials of a family of integers.
+* `Young.vdmProd` : the Vandermonde product `∏_{i < j} (x j - x i)`.
+* `Young.fallMat` : the matrix of falling factorials of a family of integers.
 
 ## Main results
 
-* `List.det_fallMat` : the determinant of the falling factorial matrix is `vdmProd`.
-* `List.sum_mul_vdmProd_update` : the shift identity displayed above.
+* `Young.det_fallMat` : the determinant of the falling factorial matrix is `vdmProd`.
+* `Young.sum_mul_vdmProd_update` : the shift identity displayed above.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 open Finset Matrix Polynomial
 
@@ -174,4 +176,4 @@ theorem sum_mul_vdmProd_update (x : Fin k → ℤ) :
   rw [hsum, sub_mul, neg_mul]
   ring
 
-end List
+end Young

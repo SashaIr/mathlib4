@@ -47,6 +47,8 @@ and cancelling `a_delta` gives the result.
 
 @[expose] public section
 
+open Young
+
 open List
 
 namespace MvPolynomial

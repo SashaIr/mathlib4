@@ -21,15 +21,15 @@ sum of the lengths of the `k` first rows of `t`.
 
 ## Main definitions
 
-* `List.rowLen t r` : the length of the `r`-th row of `t` (`0` if there is no such row).
-* `List.rowOffset t r` : the position at which the `r`-th row starts in the reading word.
-* `List.coordOf t i` : the coordinates (row, column) of the position `i` of the reading
+* `Young.rowLen t r` : the length of the `r`-th row of `t` (`0` if there is no such row).
+* `Young.rowOffset t r` : the position at which the `r`-th row starts in the reading word.
+* `Young.coordOf t i` : the coordinates (row, column) of the position `i` of the reading
   word.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -453,4 +453,4 @@ theorem greeneRow_toWord {t : List (List T)} [LinearOrder T] (ht : IsTableau t) 
   rw [← greeneSize_rowCol t k]
   exact le_greeneRow (isGreeneCol_rowCol ht k)
 
-end List
+end Young

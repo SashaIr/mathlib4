@@ -21,23 +21,23 @@ words of length `n`.
 
 ## Main definitions
 
-* `List.yamOfStdTab Q` : the Yamanouchi word of a standard tableau (Coq `yam_of_stdtab`).
-* `List.stdTabOfYam y` : the standard tableau of a Yamanouchi word
+* `Young.yamOfStdTab Q` : the Yamanouchi word of a standard tableau (Coq `yam_of_stdtab`).
+* `Young.stdTabOfYam y` : the standard tableau of a Yamanouchi word
   (Coq `stdtab_of_yam`).
 
 ## Main results
 
-* `List.stdTabOfYam_spec` : the tableau of a Yamanouchi word is standard, its shape is
+* `Young.stdTabOfYam_spec` : the tableau of a Yamanouchi word is standard, its shape is
   the evaluation of the word, and its recording word is the reversed word.
-* `List.yamOfStdTab_spec` : the word of a standard tableau is Yamanouchi and its
+* `Young.yamOfStdTab_spec` : the word of a standard tableau is Yamanouchi and its
   evaluation is the shape of the tableau.
-* `List.stdTabEquivYam` : standard tableaux with `n` boxes are in bijection with
+* `Young.stdTabEquivYam` : standard tableaux with `n` boxes are in bijection with
   Yamanouchi words of length `n` (Coq `stdtab_of_yamK` / `yam_of_stdtabK`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -166,4 +166,4 @@ def stdTabEquivYam (n : ℕ) :
   left_inv Q := Subtype.ext (stdTabOfYam_yamOfStdTab Q.2.1)
   right_inv y := Subtype.ext (yamOfStdTab_stdTabOfYam y.2.1)
 
-end List
+end Young

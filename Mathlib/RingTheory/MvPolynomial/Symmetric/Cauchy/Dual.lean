@@ -23,7 +23,7 @@ variable, the left-hand side gets multiplied by `∑_r e_r(x) y_k^r`, which by t
 Pieri rule `MvPolynomial.schurPoly_mul_esymm` adds a vertical strip to the `x` side; the
 right-hand side is expanded by the branching rule `MvPolynomial.schurPoly_branching'`, which
 removes a horizontal strip on the `y` side.  Conjugation exchanges the two kinds of
-strips, which is `List.vertStrip_conjPart_iff`.
+strips, which is `Young.vertStrip_conjPart_iff`.
 
 ## Main results
 
@@ -33,6 +33,8 @@ strips, which is `List.vertStrip_conjPart_iff`.
 -/
 
 @[expose] public section
+
+open Young
 
 namespace MvPolynomial
 

@@ -16,15 +16,17 @@ the truth of `w[i] ≤ w[j]` for `i < j` (Coq `eq_inv` and `eq_inv_std` in
 
 ## Main results
 
-* `List.std_eq_std_of_le_iff` : two words of the same length whose letters compare in the
+* `Young.std_eq_std_of_le_iff` : two words of the same length whose letters compare in the
   same way have the same standardization.
-* `List.std_take_std` : standardizing a prefix of a standardized word is the same as
+* `Young.std_take_std` : standardizing a prefix of a standardized word is the same as
   standardizing the corresponding prefix of the original word.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T T' : Type*} [LinearOrder T] [LinearOrder T']
 
@@ -90,4 +92,4 @@ theorem std_take_std (w : List T) (k : ℕ) : std ((std w).take k) = std (w.take
   rw [List.getElem_take, List.getElem_take, List.getElem_take, List.getElem_take]
   exact getElem_std_le_iff (by omega) (by omega) hij
 
-end List
+end Young

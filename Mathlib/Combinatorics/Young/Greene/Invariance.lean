@@ -18,62 +18,18 @@ A Lean 4 port of `theories/LRrule/Greene_inv.v` from
 
 ## Main results
 
-* `List.greeneRow_placticStep` : one Knuth move does not change the Greene invariants.
-* `List.greeneRow_placticEquiv` : Knuth equivalent words have the same Greene invariants
+* `Young.greeneRow_placticStep` : one Knuth move does not change the Greene invariants.
+* `Young.greeneRow_placticEquiv` : Knuth equivalent words have the same Greene invariants
   `greeneRow · k`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
 variable {T : Type*} [LinearOrder T]
-
-/-! ### Reading letters of a word split in three pieces -/
-
-section Split
-
-variable (p m s : List T)
-
-omit [LinearOrder T] in
-lemma length_append_mid : (p ++ m ++ s).length = p.length + m.length + s.length := by
-  simp [Nat.add_assoc]
-
-omit [LinearOrder T] in
-lemma getElem_mid_left {i : ℕ} (hi : i < p.length) :
-    (p ++ m ++ s)[i]'(by simp; omega) = p[i] := by
-  rw [List.getElem_append_left (by simp; omega), List.getElem_append_left hi]
-
-omit [LinearOrder T] in
-lemma getElem_mid_mid {j : ℕ} (hj : j < m.length) :
-    (p ++ m ++ s)[p.length + j]'(by simp; omega) = m[j] := by
-  rw [List.getElem_append_left (by simp; omega), List.getElem_append_right (by omega)]
-  simp
-
-omit [LinearOrder T] in
-lemma getElem_mid_right {i : ℕ} (hi : i < s.length) :
-    (p ++ m ++ s)[p.length + m.length + i]'(by simp; omega) = s[i] := by
-  rw [List.getElem_append_right (by simp)]
-  congr 1
-  simp
-
-omit [LinearOrder T] in
-lemma getElem_mid_left' {i : ℕ} (hi : i < p.length) (h : i < (p ++ m ++ s).length) :
-    (p ++ m ++ s)[i] = p[i] := getElem_mid_left p m s hi
-
-omit [LinearOrder T] in
-lemma getElem_mid_mid' {i j : ℕ} (hj : j < m.length) (hij : i = p.length + j)
-    (h : i < (p ++ m ++ s).length) : (p ++ m ++ s)[i] = m[j] := by
-  subst hij; exact getElem_mid_mid p m s hj
-
-omit [LinearOrder T] in
-lemma getElem_mid_right' {i j : ℕ} (hj : j < s.length) (hij : i = p.length + m.length + j)
-    (h : i < (p ++ m ++ s).length) : (p ++ m ++ s)[i] = s[j] := by
-  subst hij; exact getElem_mid_right p m s hj
-
-end Split
 
 /-! ### Splitting the size of a colouring -/
 
@@ -809,4 +765,4 @@ theorem greeneRow_placticEquiv {u v : List T} (h : PlacticEquiv u v) (k : ℕ) :
   | symm a b _ ih => exact ih.symm
   | trans a b c _ _ ih1 ih2 => exact ih1.trans ih2
 
-end List
+end Young

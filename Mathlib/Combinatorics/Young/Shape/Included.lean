@@ -15,21 +15,21 @@ from [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
 ## Main definitions
 
-* `List.Included inner outer` : the Ferrers diagram of `inner` is contained in
+* `Young.Included inner outer` : the Ferrers diagram of `inner` is contained in
   that of `outer` (Coq `included`).
-* `List.diffShape inner outer` : the skew shape `outer / inner` (Coq `diff_shape`).
+* `Young.diffShape inner outer` : the skew shape `outer / inner` (Coq `diff_shape`).
 
 ## Main results
 
-* `List.included_iff` : characterisation of inclusion in terms of parts.
-* `List.Included.antisymm` : inclusion is antisymmetric on partitions.
-* `List.included_conjPart_iff` : inclusion is preserved and reflected by conjugation.
-* `List.sum_diffShape` : the size of a skew shape.
+* `Young.included_iff` : characterisation of inclusion in terms of parts.
+* `Young.Included.antisymm` : inclusion is antisymmetric on partitions.
+* `Young.included_conjPart_iff` : inclusion is preserved and reflected by conjugation.
+* `Young.sum_diffShape` : the size of a skew shape.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -45,7 +45,7 @@ def Included : List ℕ → List ℕ → Prop
 instance : ∀ (s t : List ℕ), Decidable (Included s t)
   | [], _ => inferInstanceAs (Decidable True)
   | _ :: _, [] => inferInstanceAs (Decidable False)
-  | _ :: i, _ :: o => @instDecidableAnd _ _ inferInstance (List.instDecidableIncluded i o)
+  | _ :: i, _ :: o => @instDecidableAnd _ _ inferInstance (Young.instDecidableIncluded i o)
 
 @[simp] lemma included_nil (t : List ℕ) : Included [] t := trivial
 
@@ -97,7 +97,7 @@ lemma included_iff {s t : List ℕ} :
 /-- Coq `part_includedP`: for partitions, inclusion is pointwise domination. -/
 lemma IsPart.included_iff_getD {s t : List ℕ} (hs : IsPart s) :
     Included s t ↔ ∀ i, s.getD i 0 ≤ t.getD i 0 := by
-  refine ⟨fun h => h.getD_le, fun h => List.included_iff.2 ⟨?_, h⟩⟩
+  refine ⟨fun h => h.getD_le, fun h => Young.included_iff.2 ⟨?_, h⟩⟩
   by_contra hlt
   push Not at hlt
   have h1 : 0 < s.getD t.length 0 := hs.getD_pos hlt
@@ -223,4 +223,4 @@ lemma sum_diffShape {inner outer : List ℕ} (h : Included inner outer) :
       simp only [diffShape_cons_cons, List.sum_cons, ih hst]
       omega
 
-end List
+end Young

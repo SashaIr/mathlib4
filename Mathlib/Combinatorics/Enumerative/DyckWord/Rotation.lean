@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Combinatorics.Enumerative.DyckWord.Basic
+public import Mathlib.Combinatorics.Enumerative.DyckWord.List
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Prod
 
@@ -48,8 +48,10 @@ of length `2 * n` are `n + 1` times as many as the Dyck words (Coq
   with `n` letters `U` and the pairs (Dyck word of length `2 * n`, rotation index).
 * `List.card_words_count_eq` : there are `m.choose k` words of length `m` with `k`
   letters `U` (Coq `card_bal_hsz`).
-* `List.succ_two_mul_catalan_eq_choose` : `(2 * n + 1) * catalan n = (2 * n + 1).choose n`
+* `succ_two_mul_catalan_eq_choose` : `(2 * n + 1) * catalan n = (2 * n + 1).choose n`
   (Coq `card_Dyck_hsz`).
+* `List.existsUnique_dyckWord_dropLast_rotate` : the cycle lemma, stated for the bundled
+  type `DyckWord`.
 * `List.card_balanced_eq_succ_mul_catalan` : the balanced words of length `2 * n` are
   `n + 1` times as many as the Dyck words of length `2 * n` (Coq `card_bal_Dyck_hsz`).
 -/
@@ -437,13 +439,19 @@ noncomputable def cycleEquiv (n : ℕ) :
 
 /-- The Catalan formula obtained from the cycle lemma: there are
 `(2 * n + 1).choose n / (2 * n + 1)` Dyck words of length `2 * n` (Coq `card_Dyck_hsz`). -/
-theorem succ_two_mul_catalan_eq_choose (n : ℕ) :
+theorem _root_.succ_two_mul_catalan_eq_choose (n : ℕ) :
     (2 * n + 1) * catalan n = (2 * n + 1).choose n := by
   have h2 := Fintype.card_congr (cycleEquiv n)
   rw [card_words_count_eq, Fintype.card_prod, card_isDyckWord_length_eq_catalan,
     Fintype.card_fin] at h2
   rw [mul_comm]
   exact h2.symm
+
+/-- The **cycle lemma** for the bundled type `DyckWord`: a word of height `-1` has exactly one
+rotation which, after dropping its last letter, is (the underlying word of) a Dyck word. -/
+theorem existsUnique_dyckWord_dropLast_rotate {w : List DyckStep} (hw : dyckHeight w = -1) :
+    ∃! k, (1 ≤ k ∧ k ≤ w.length) ∧ ∃ p : DyckWord, p.toList = (w.rotate k).dropLast := by
+  simpa only [isDyckWord_iff_exists_dyckWord] using existsUnique_isDyckWord_dropLast_rotate hw
 
 /-- The balanced words of length `2 * n` are `n + 1` times as many as the Dyck words of the same
 length (Coq `card_bal_Dyck_hsz`). -/

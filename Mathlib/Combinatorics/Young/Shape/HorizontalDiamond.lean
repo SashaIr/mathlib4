@@ -5,6 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
 public import Mathlib.Combinatorics.Young.Shape.MinMax
 
@@ -14,43 +15,38 @@ public import Mathlib.Combinatorics.Young.Shape.MinMax
 Given two partitions `rho` and `tau`, consider
 
 * the shapes `lam` of a given size containing both `rho` and `tau` by horizontal strips
-  (`List.upDiamond`), and
+  (`Young.upDiamond`), and
 * the shapes `sigma` contained in both `rho` and `tau` by horizontal strips, of size at
-  least `|tau| - r` (`List.downDiamondLe`).
+  least `|tau| - r` (`Young.downDiamondLe`).
 
-The main result `List.card_upDiamond_eq_card_downDiamondLe` is that, for `|lam| = |rho| + r`,
+The main result `Young.card_upDiamond_eq_card_downDiamondLe` is that, for `|lam| = |rho| + r`,
 these two sets have the same cardinality.  This is the combinatorial heart of the Pieri
 rule: it is exactly what makes the induction on the number of variables work.
 
 The proof runs through the reflection of the box of the interpolating shapes already used
-for `List.card_midSet_symm`: the shapes `sigma` below both `rho` and `tau` are the shapes
+for `Young.card_midSet_symm`: the shapes `sigma` below both `rho` and `tau` are the shapes
 interpolating between `partMax rho.tail tau.tail` and `partMin rho tau`, while the shapes
 `lam` above both are obtained from those by adding a first part.
 
 ## Main definitions
 
-* `List.upDiamond rho tau N` : the partitions of `N` containing `rho` and `tau` by
+* `Young.upDiamond rho tau N` : the partitions of `N` containing `rho` and `tau` by
   horizontal strips.
-* `List.downDiamondLe rho tau r` : the partitions contained in `rho` and in `tau` by
+* `Young.downDiamondLe rho tau r` : the partitions contained in `rho` and in `tau` by
   horizontal strips, of size at least `|tau| - r`.
 
 ## Main results
 
-* `List.card_upDiamond_eq_card_downDiamondLe` : the diamond identity.
+* `Young.card_upDiamond_eq_card_downDiamondLe` : the diamond identity.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
 /-! ### A small list lemma -/
-
-lemma sum_tail_add_getD_zero (l : List ℕ) : l.tail.sum + l.getD 0 0 = l.sum := by
-  cases l with
-  | nil => simp
-  | cons a s => simp [List.sum_cons]; omega
 
 /-! ### The two sides of the diamond -/
 
@@ -381,4 +377,4 @@ theorem card_upDiamond_eq_card_downDiamondLe (hrho : IsPart rho) (htau : IsPart 
       simp only [List.tail_cons]
       exact pieriFlip_pieriFlip hBpart hsub hmid)⟩
 
-end List
+end Young

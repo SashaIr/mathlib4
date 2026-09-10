@@ -17,29 +17,29 @@ A Lean 4 port of the tableau part of `theories/LRrule/Schensted.v` from
 A letter is inserted in a tableau by inserting it in the first row; the entry it bumps
 out, if any, is then inserted in the next row, and so on.  Inserting all the letters of
 a word `w` from left to right produces the insertion tableau `RS w`, whose first row is
-the Schensted row `List.schensted w`.
+the Schensted row `Young.schensted w`.
 
 ## Main definitions
 
-* `List.bumped r l` : the entry of the row `r` bumped out by the insertion of `l`
+* `Young.bumped r l` : the entry of the row `r` bumped out by the insertion of `l`
   (Coq `bumped`).
-* `List.insTab t l` : insertion of the letter `l` in the tableau `t` (Coq `instab`).
-* `List.RS w` : the insertion tableau of the word `w` (Coq `RS`).
+* `Young.insTab t l` : insertion of the letter `l` in the tableau `t` (Coq `instab`).
+* `Young.RS w` : the insertion tableau of the word `w` (Coq `RS`).
 
 ## Main results
 
-* `List.isTableau_insTab` : inserting a letter in a tableau yields a tableau
+* `Young.isTableau_insTab` : inserting a letter in a tableau yields a tableau
   (Coq `is_tableau_instab`).
-* `List.isTableau_RS` : `List.RS w` is a tableau (Coq `is_tableau_RS`).
-* `List.headD_RS` : the first row of `List.RS w` is `List.schensted w` (Coq `Sch_RS`).
-* `List.sizeTab_RS` : `List.RS w` has one box per letter of `w` (Coq `size_RS`).
-* `List.RS_first_row_isGreatest` : the length of the first row of `List.RS w` is the
+* `Young.isTableau_RS` : `Young.RS w` is a tableau (Coq `is_tableau_RS`).
+* `Young.headD_RS` : the first row of `Young.RS w` is `Young.schensted w` (Coq `Sch_RS`).
+* `Young.sizeTab_RS` : `Young.RS w` has one box per letter of `w` (Coq `size_RS`).
+* `Young.RS_first_row_isGreatest` : the length of the first row of `Young.RS w` is the
   maximal length of a nondecreasing subsequence of `w`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -366,4 +366,4 @@ theorem perm_toWord_RS (w : List T) : (toWord (RS w)).Perm w := by
       _ ~ (l :: w) := ih.cons l
       _ ~ (w ++ [l]) := (List.perm_append_singleton l w).symm
 
-end List
+end Young

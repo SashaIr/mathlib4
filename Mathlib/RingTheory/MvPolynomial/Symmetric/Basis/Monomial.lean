@@ -45,6 +45,8 @@ the permutations of the variables.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

@@ -8,13 +8,14 @@ module
 public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
-# Bijections between fibered sets
+# Fiberwise bijections
+
+A *fibered set* is a finite set `S` equipped with a map `f : S → I`; the *fiber* of `i` is
+the preimage of `i`.  Two fibered sets whose fibers all have the same cardinality are in
+bijection *fiberwise*, that is by a bijection commuting with the two maps.
 
 This file ports `theories/Combi/fibered_set.v` of
-[Coq-Combi](https://github.com/math-comp/Coq-Combi).  A *fibered set* is a finite set `S`
-equipped with a map `f : S → I`; the *fiber* of `i` is the preimage of `i`.  The point of
-the file is that two fibered sets whose fibers all have the same cardinality are in
-bijection *fiberwise*, that is by a bijection commuting with the two maps.
+[Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
 ## Main results
 

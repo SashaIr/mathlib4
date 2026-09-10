@@ -33,6 +33,8 @@ of the involution `omega` for the second.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

@@ -37,6 +37,8 @@ As a consequence the Schur class functions take integer values.
 
 @[expose] public section
 
+open Young
+
 open Equiv MvPolynomial Finset List
 
 namespace Equiv.Perm

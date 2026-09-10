@@ -26,24 +26,24 @@ strictly decreasing subsequence meets each row at most once).
 
 ## Main definitions
 
-* `List.decLengths w` : the set of lengths of the strictly decreasing subsequences of `w`.
-* `List.firstCol t` : the first column of a tableau.
+* `Young.decLengths w` : the set of lengths of the strictly decreasing subsequences of `w`.
+* `Young.firstCol t` : the first column of a tableau.
 
 ## Main results
 
-* `List.decLengths_placticEquiv` : Knuth equivalent words have the same strictly
+* `Young.decLengths_placticEquiv` : Knuth equivalent words have the same strictly
   decreasing subsequence lengths.
-* `List.isGreatest_decLengths_toWord` : for a tableau, the longest strictly decreasing
+* `Young.isGreatest_decLengths_toWord` : for a tableau, the longest strictly decreasing
   subsequence of the reading word has the length of the number of rows.
-* `List.isGreatest_decLengths_RS` : the number of rows of the insertion tableau of `w` is
+* `Young.isGreatest_decLengths_RS` : the number of rows of the insertion tableau of `w` is
   the length of the longest strictly decreasing subsequence of `w`.
-* `List.length_le_mul_schensted` : a word is no longer than the product of the lengths of
+* `Young.length_le_mul_schensted` : a word is no longer than the product of the lengths of
   its longest nondecreasing and longest strictly decreasing subsequences.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -57,18 +57,6 @@ lemma zero_mem_decLengths (w : List T) : 0 ∈ decLengths w :=
   ⟨[], List.nil_sublist w, List.Pairwise.nil, rfl⟩
 
 /-! ### Strictly decreasing subsequences of the reading word of a tableau -/
-
-lemma length_le_one_of_pairwise {s : List T} (h1 : s.Pairwise (· ≤ ·))
-    (h2 : s.Pairwise (· > ·)) : s.length ≤ 1 := by
-  match s with
-  | [] => simp
-  | [a] => simp
-  | a :: b :: t =>
-    exfalso
-    simp only [List.pairwise_cons, List.mem_cons] at h1 h2
-    have hab1 : a ≤ b := h1.1 b (Or.inl rfl)
-    have hab2 : b < a := h2.1 b (Or.inl rfl)
-    order
 
 /-- A strictly decreasing subsequence of the reading word of a tableau meets each row at
 most once, hence has at most as many letters as the tableau has rows. -/
@@ -140,18 +128,6 @@ lemma pairwise_lt_firstCol {t : List (List T)} (ht : IsTableau t) :
       exact this
 
 omit [LinearOrder T] in
-lemma filterMap_head?_sublist_flatten (L : List (List T)) :
-    (L.filterMap List.head?).Sublist L.flatten := by
-  induction L with
-  | nil => simp
-  | cons r L ih =>
-    cases r with
-    | nil => simpa [List.filterMap_cons] using ih
-    | cons a r =>
-      simp only [List.filterMap_cons, List.head?_cons, List.flatten_cons, List.cons_append]
-      exact List.Sublist.cons_cons a (ih.trans (List.sublist_append_right r L.flatten))
-
-omit [LinearOrder T] in
 lemma reverse_firstCol_sublist_toWord (t : List (List T)) :
     (firstCol t).reverse.Sublist (toWord t) := by
   have h := filterMap_head?_sublist_flatten t.reverse
@@ -170,13 +146,6 @@ theorem isGreatest_decLengths_toWord {t : List (List T)} (ht : IsTableau t) :
     exact length_le_of_dec_sublist_toWord ht hsub hdec
 
 /-! ### Invariance under the Knuth transformations -/
-
-lemma sublist_three_cases {α : Type*} {S : List α} {a b c : α} (h : S.Sublist [a, b, c]) :
-    S = [] ∨ S = [a] ∨ S = [b] ∨ S = [c] ∨ S = [a, b] ∨ S = [a, c] ∨ S = [b, c] ∨
-      S = [a, b, c] := by
-  have h2 := List.mem_sublists'.2 h
-  simp [List.sublists'] at h2
-  tauto
 
 lemma exists_repl_of_sublist {S B : List T} (h : S.Sublist B) (hdec : S.Pairwise (· > ·)) :
     ∃ S' : List T, S'.Sublist B ∧ S'.Pairwise (· > ·) ∧ S'.length = S.length ∧
@@ -343,4 +312,4 @@ theorem length_le_mul_schensted (w : List T) :
         simpa using List.sum_le_length_nsmul (shape (RS w)) (schensted w).length hb
     _ = (schensted w).length * (RS w).length := by rw [hlen]; ring
 
-end List
+end Young

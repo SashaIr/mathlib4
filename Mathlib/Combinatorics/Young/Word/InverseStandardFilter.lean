@@ -12,20 +12,20 @@ public import Mathlib.Combinatorics.Young.Word.InverseStandard
 /-!
 # Restricting the inverse of a standard word
 
-The inverse `List.invStd w` of a standard word lists, for each letter of `w` in increasing
+The inverse `Young.invStd w` of a standard word lists, for each letter of `w` in increasing
 order, its position in `w`.  Keeping only the letters `< k` of the inverse therefore means
 keeping only the positions in the prefix of length `k` of `w`, so that the restricted word
 is the inverse of the standardisation of that prefix.
 
 ## Main results
 
-* `List.std_of_isStd` : a standard word is its own standardisation.
-* `List.ltFilter_invStd` : `ltFilter k (invStd w) = invStd (std (w.take k))`.
+* `Young.std_of_isStd` : a standard word is its own standardisation.
+* `Young.ltFilter_invStd` : `ltFilter k (invStd w) = invStd (std (w.take k))`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -37,16 +37,6 @@ lemma filter_map_eq_map_filter {α β : Type*} (f : α → β) (q : β → Bool)
   induction l with
   | nil => simp
   | cons a l ih => by_cases h : q (f a) <;> simp [h, ih]
-
-/-- The index of the last element of a list in which it occurs only once. -/
-lemma idxOf_append_singleton {α : Type*} [DecidableEq α] {L : List α} {v : α} (h : v ∉ L) :
-    (L ++ [v]).idxOf v = L.length := by
-  induction L with
-  | nil => simp
-  | cons a L ih =>
-    have ha : a ≠ v := fun he => h (by simp [he])
-    have hL : v ∉ L := fun hc => h (by simp [hc])
-    simp [ha, ih hL]
 
 /-- In the list of the elements `< n` satisfying a predicate, the index of `v` is the
 number of elements `< v` satisfying it. -/
@@ -238,4 +228,4 @@ theorem ltFilter_invStd (hw : IsStd w) (k : ℕ) :
       = invStd (invStd (ltFilter k (invStd w))) := (invStd_invStd hstd).symm
     _ = invStd (std (w.take k)) := by rw [key]
 
-end List
+end Young

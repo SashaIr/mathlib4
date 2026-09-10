@@ -20,18 +20,18 @@ the word.
 
 ## Main results
 
-* `List.eq_of_isStd_of_lt_iff` : a standard word is determined by the relative order of
+* `Young.eq_of_isStd_of_lt_iff` : a standard word is determined by the relative order of
   its letters.
-* `List.std_swap_eq` : standardizing commutes with exchanging two adjacent distinct
+* `Young.std_swap_eq` : standardizing commutes with exchanging two adjacent distinct
   letters.
-* `List.std_placticStep`, `List.std_placticEquiv` : standardization preserves Knuth
+* `Young.std_placticStep`, `Young.std_placticEquiv` : standardization preserves Knuth
   equivalence (Coq `std_plact`).
-* `List.shape_RS_std` : `shape (RS (std w)) = shape (RS w)` (Coq `shape_RS_std`).
+* `Young.shape_RS_std` : `shape (RS (std w)) = shape (RS w)` (Coq `shape_RS_std`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -116,7 +116,7 @@ lemma swp_lt_swp_iff {k i j : ℕ} (h1 : i = k → j ≠ k + 1) (h2 : i = k + 1 
 variable {α : Type*}
 
 /-- Exchanging two adjacent letters of a word amounts to composing with the transposition
-`List.swp`. -/
+`Young.swp`. -/
 lemma getD_swap_adj (p s : List α) (a b d : α) (i : ℕ) :
     (p ++ b :: a :: s).getD i d = (p ++ a :: b :: s).getD (swp p.length i) d := by
   rcases lt_trichotomy i p.length with h | h | h
@@ -205,21 +205,6 @@ theorem std_swap_eq {p s : List T} {a b : T} (hab : a ≠ b) {P S : List ℕ} {A
     · exact Or.inr ⟨h, (key i j h).2 h'⟩
 
 /-! ### Standardization preserves Knuth equivalence -/
-
-lemma split_three_getElem {α : Type*} (L : List α) (k : ℕ) (h : k + 3 ≤ L.length) :
-    L = L.take k ++ L[k]'(by omega) :: L[k+1]'(by omega) :: L[k+2]'(by omega) ::
-      L.drop (k + 3) := by
-  conv_lhs => rw [← List.take_append_drop k L]
-  congr 1
-  rw [List.drop_eq_getElem_cons (by omega), List.drop_eq_getElem_cons (by omega),
-    List.drop_eq_getElem_cons (by omega)]
-
-lemma split_three_getD {α : Type*} (L : List α) (k : ℕ) (d : α) (h : k + 3 ≤ L.length) :
-    L = L.take k ++ L.getD k d :: L.getD (k+1) d :: L.getD (k+2) d :: L.drop (k + 3) := by
-  rw [List.getD_eq_getElem _ _ (show k < L.length by omega),
-    List.getD_eq_getElem _ _ (show k + 1 < L.length by omega),
-    List.getD_eq_getElem _ _ (show k + 2 < L.length by omega)]
-  exact split_three_getElem L k h
 
 /-- Coq `std_plact`: standardization preserves the elementary Knuth transformations. -/
 theorem std_placticStep {u v : List T} (h : PlacticStep u v) :
@@ -318,4 +303,4 @@ theorem shape_RS_std (w : List T) : shape (RS (std w)) = shape (RS w) := by
   rw [h2]
   exact shape_RS_std_toWord (isTableau_RS w)
 
-end List
+end Young

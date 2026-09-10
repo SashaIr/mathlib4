@@ -20,19 +20,21 @@ Reversing a standard word transposes its Robinson–Schensted insertion tableau 
 
 The proof combines three results already available in the library: reversing a word with
 distinct letters conjugates the shape of its insertion tableau
-(`List.shape_RS_reverse_of_nodup`), restricting a word to its letters `< k` restricts its
-insertion tableau (`List.RS_ltFilter`), transposing a standard tableau commutes with that
-restriction (`List.shape_dropMax_conjTab`), and a standard tableau is determined by the
-shapes of its restrictions (`List.eq_of_shape_dropMax_eq`).
+(`Young.shape_RS_reverse_of_nodup`), restricting a word to its letters `< k` restricts its
+insertion tableau (`Young.RS_ltFilter`), transposing a standard tableau commutes with that
+restriction (`Young.shape_dropMax_conjTab`), and a standard tableau is determined by the
+shapes of its restrictions (`Young.eq_of_shape_dropMax_eq`).
 
 ## Main results
 
-* `List.RS_reverse` : `RS w.reverse = conjTab (RS w)` for a standard word `w`.
+* `Young.RS_reverse` : `RS w.reverse = conjTab (RS w)` for a standard word `w`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 /-- Restricting to the letters `< N` commutes with reversing a word. -/
 lemma ltFilter_reverse (N : ℕ) (w : List ℕ) : ltFilter N w.reverse = (ltFilter N w).reverse :=
@@ -47,4 +49,4 @@ theorem RS_reverse {w : List ℕ} (hw : IsStd w) : RS w.reverse = conjTab (RS w)
   rw [shape_dropMax_conjTab hstd, ← RS_ltFilter, ← RS_ltFilter, ltFilter_reverse]
   exact shape_RS_reverse_of_nodup ((IsStd.nodup hw).filter _)
 
-end List
+end Young

@@ -26,6 +26,8 @@ classical statement `s_lam = a_{lam + delta} / a_delta`.
 
 @[expose] public section
 
+open Young
+
 open List
 
 namespace MvPolynomial

@@ -16,7 +16,7 @@ polynomial in `m + 1` variables is the sum, over the shapes `nu` obtained from `
 removing a horizontal strip, of the Schur polynomial of shape `nu` in the first `m`
 variables times the appropriate power of the last variable.
 
-This is the polynomial form of the recursion `List.kostkaNum_succ` on the largest letter
+This is the polynomial form of the recursion `Young.kostkaNum_succ` on the largest letter
 of a tableau.
 
 ## Main results
@@ -25,6 +25,8 @@ of a tableau.
 -/
 
 @[expose] public section
+
+open Young
 
 namespace MvPolynomial
 

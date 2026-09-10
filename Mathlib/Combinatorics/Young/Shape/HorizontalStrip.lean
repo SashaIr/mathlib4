@@ -32,18 +32,18 @@ product of intervals `loBd i ≤ nu_i ≤ hiBd i`, and that the reflection
 
 ## Main definitions
 
-* `List.HorizStrip outer inner` : the skew shape `outer / inner` is a horizontal strip.
-* `List.midSet lam rho s` : the partitions `nu` of `s` interpolating between `rho` and
+* `Young.HorizStrip outer inner` : the skew shape `outer / inner` is a horizontal strip.
+* `Young.midSet lam rho s` : the partitions `nu` of `s` interpolating between `rho` and
   `lam` by horizontal strips.
 
 ## Main results
 
-* `List.card_midSet_symm` : the commutation of the Pieri rule described above.
+* `Young.card_midSet_symm` : the commutation of the Pieri rule described above.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -301,7 +301,7 @@ theorem card_midSet_symm (lam rho : List ℕ) (hrho : IsPart rho)
       rwa [hts] at this
     exact ⟨⟨pieriFlip lam rho mu, hmu'⟩, Subtype.ext (pieriFlip_pieriFlip hrho hsub hmu)⟩
 
-/-- The form of `List.card_midSet_symm` used in the Pieri rule: adding a horizontal strip
+/-- The form of `Young.card_midSet_symm` used in the Pieri rule: adding a horizontal strip
 of size `a` and then one of size `b` can be done in as many ways as the other way
 around. -/
 theorem card_midSet_add_comm (lam rho : List ℕ) (hrho : IsPart rho) (hsub : Included rho lam)
@@ -310,4 +310,4 @@ theorem card_midSet_add_comm (lam rho : List ℕ) (hrho : IsPart rho) (hsub : In
   have := card_midSet_symm lam rho hrho hsub (s := rho.sum + a) (by omega) (by omega)
   rwa [show lam.sum + rho.sum - (rho.sum + a) = rho.sum + b by omega] at this
 
-end List
+end Young

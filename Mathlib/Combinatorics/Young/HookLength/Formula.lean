@@ -17,13 +17,13 @@ of shape a partition `lam` of `n` is
 `f^lam = n ! / ∏_{(i, j) ∈ lam} h(i, j)`,
 
 where `h(i, j)` is the hook length of the box `(i, j)`.  It is stated in the division free
-form `List.numStdTab_mul_hookProd`:
+form `Young.numStdTab_mul_hookProd`:
 
 `f^lam · ∏_{(i, j) ∈ lam} h(i, j) = n !`.
 
-The proof combines the Frobenius formula `List.numStdTab_mul_prod_factorial`, which computes
+The proof combines the Frobenius formula `Young.numStdTab_mul_prod_factorial`, which computes
 `f^lam` in terms of the first column hook lengths `x_i` of `lam`, with the identity
-`List.rowHookProd_mul_prod_colHook_sub` between the hook lengths of a row and the first
+`Young.rowHookProd_mul_prod_colHook_sub` between the hook lengths of a row and the first
 column hook lengths: multiplying the latter over all the rows gives
 
 `(∏ hook lengths) · ∏_{i < j} (x_j - x_i) = ∏_i x_i !`,
@@ -32,14 +32,21 @@ which is exactly what is needed to turn the Frobenius formula into the hook leng
 
 ## Main results
 
-* `List.prod_factorial_frobVec_eq` : `∏_i x_i ! = (∏ hook lengths) · ∏_{i < j} (x_j - x_i)`.
-* `List.numStdTab_mul_hookProd` : the hook length formula.
-* `List.numStdTab_pos` : there is at least one standard tableau of any partition shape.
+* `Young.prod_factorial_frobVec_eq` : `∏_i x_i ! = (∏ hook lengths) · ∏_{i < j} (x_j - x_i)`.
+* `Young.numStdTab_mul_hookProd` : the hook length formula.
+* `Young.numStdTab_pos` : there is at least one standard tableau of any partition shape.
+
+## References
+
+* [B. E. Sagan, *The symmetric group*][sagan2001]
+* [C. Greene, A. Nijenhuis and H. S. Wilf, *A probabilistic proof of a formula for the
+  number of Young tableaux of a given shape*][greene-nijenhuis-wilf1979]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List Finset
 
@@ -47,7 +54,7 @@ variable {sh : List ℕ}
 
 /-! ### The first column hook lengths as a family indexed by `Fin (length sh)` -/
 
-/-- The first column hook lengths of `List.frobVec` are those of `List.colHook`, read in
+/-- The first column hook lengths of `Young.frobVec` are those of `Young.colHook`, read in
 the reverse order. -/
 lemma frobVec_eq_colHook (sh : List ℕ) (i : Fin sh.length) :
     frobVec sh.length sh i = colHook sh (i.rev : ℕ) := by
@@ -56,7 +63,7 @@ lemma frobVec_eq_colHook (sh : List ℕ) (i : Fin sh.length) :
   simp only [frobVec, colHook]
   omega
 
-/-- The first column hook lengths increase with the index of `List.frobVec`. -/
+/-- The first column hook lengths increase with the index of `Young.frobVec`. -/
 lemma frobVec_lt_frobVec (hsh : IsPart sh) {i j : Fin sh.length} (hij : j < i) :
     frobVec sh.length sh j < frobVec sh.length sh i := by
   have hlt : ((i.rev : Fin sh.length) : ℕ) < ((j.rev : Fin sh.length) : ℕ) := by
@@ -223,4 +230,4 @@ theorem numStdTab_eq_factorial_div_hookProd (hsh : IsPart sh) :
     numStdTab sh = Nat.factorial sh.sum / hookProd sh := by
   rw [← numStdTab_mul_hookProd hsh, Nat.mul_div_cancel _ (hookProd_pos hsh)]
 
-end List
+end Young

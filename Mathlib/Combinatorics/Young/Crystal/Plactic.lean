@@ -20,15 +20,15 @@ words appearing in the two Knuth transformations.
 
 ## Main results
 
-* `List.crystalEps_of_placticEquiv`, `List.crystalPhi_of_placticEquiv` : the numbers of
+* `Young.crystalEps_of_placticEquiv`, `Young.crystalPhi_of_placticEquiv` : the numbers of
   unmatched letters are plactic invariants.
-* `List.crystalE_of_placticEquiv` : the raising operator is defined on a word iff it is
+* `Young.crystalE_of_placticEquiv` : the raising operator is defined on a word iff it is
   defined on any Knuth equivalent word, and the results are Knuth equivalent.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -327,4 +327,4 @@ theorem crystalE_of_placticEquiv (i : ℕ) {u v u' : List ℕ} (h : PlacticEquiv
     ∃ v', crystalE i v = some v' ∧ PlacticEquiv u' v' :=
   (crystalRel_of_placticEquiv i h).2.2.2 u' hu
 
-end List
+end Young

@@ -22,6 +22,8 @@ sums are orthogonal for the Hall scalar product, with `⟨p_lam, p_lam⟩ = z_la
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

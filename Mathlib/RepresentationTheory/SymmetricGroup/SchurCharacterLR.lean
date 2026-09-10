@@ -28,6 +28,8 @@ sum, over the partitions `ν` of `m + n`, of `c^ν_{λμ}` copies of `χ^ν` (Co
 
 @[expose] public section
 
+open Young
+
 open Equiv MvPolynomial List
 
 namespace Equiv.Perm

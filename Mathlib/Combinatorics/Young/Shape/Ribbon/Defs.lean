@@ -5,6 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Combinatorics.Young.Shape.Included
 public import Mathlib.Combinatorics.Young.Shape.TrimZeros
@@ -23,28 +24,28 @@ number of rows it occupies.
 
 ## Main definitions
 
-* `List.RibbonOn start stop inner outer` : the skew shape `outer / inner` is a ribbon
+* `Young.RibbonOn start stop inner outer` : the skew shape `outer / inner` is a ribbon
   occupying the rows `start, …, stop` (Coq `ribbon_on`).
-* `List.ribbonHeight inner outer` : the number of nonempty rows of the skew shape
+* `Young.ribbonHeight inner outer` : the number of nonempty rows of the skew shape
   `outer / inner` (Coq `ribbon_height`).
 
 ## Main results
 
-* `List.RibbonOn.start_le_stop`, `List.RibbonOn.getD_lt`, `List.RibbonOn.included` :
+* `Young.RibbonOn.start_le_stop`, `Young.RibbonOn.getD_lt`, `Young.RibbonOn.included` :
   the basic properties of a ribbon (Coq `ribbon_on_start_stop`, `ribbon_on_included`).
-* `List.RibbonOn.sum_add` : the number of boxes of a ribbon, in terms of its first row and
+* `Young.RibbonOn.sum_add` : the number of boxes of a ribbon, in terms of its first row and
   of the row where it stops.
-* `List.RibbonOn.ribbonHeight_eq` : the height of a ribbon occupying the rows
+* `Young.RibbonOn.ribbonHeight_eq` : the height of a ribbon occupying the rows
   `start, …, stop` is `stop - start + 1` (Coq `ribbon_on_height`).
-* `List.RibbonOn.unique` : the rows occupied by a ribbon are determined by the skew shape
+* `Young.RibbonOn.unique` : the rows occupied by a ribbon are determined by the skew shape
   (Coq `ribbon_on_inj`).
-* `List.exists_ribbonOn_nil_iff` : a partition is a ribbon over the empty shape exactly
+* `Young.exists_ribbonOn_nil_iff` : a partition is a ribbon over the empty shape exactly
   when it is a hook.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -60,16 +61,6 @@ def RibbonOn (start stop : ℕ) (inner outer : List ℕ) : Prop :=
 (Coq `ribbon_height`). -/
 def ribbonHeight (inner outer : List ℕ) : ℕ :=
   (diffShape inner outer).countP (fun x ↦ decide (0 < x))
-
-/-- Counting the elements of a list satisfying a predicate, by index. -/
-lemma countP_eq_card_filter_range (l : List ℕ) (p : ℕ → Bool) :
-    l.countP p = ((Finset.range l.length).filter (fun i ↦ p (l.getD i 0))).card := by
-  induction l with
-  | nil => simp
-  | cons a t ih =>
-    rw [List.countP_cons, ih, List.length_cons, Finset.card_filter, Finset.card_filter,
-      Finset.sum_range_succ']
-    simp only [List.getD_cons_succ, List.getD_cons_zero]
 
 lemma ribbonHeight_eq_card (inner outer : List ℕ) :
     ribbonHeight inner outer =
@@ -263,4 +254,4 @@ lemma exists_ribbonOn_nil_iff {mu : List ℕ} (hmu : IsPart mu) (hne : mu ≠ []
     · simpa using hmu.getD_pos hlen
     · omega
 
-end List
+end Young

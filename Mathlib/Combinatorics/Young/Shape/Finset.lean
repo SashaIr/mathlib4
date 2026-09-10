@@ -11,19 +11,19 @@ public import Mathlib.Combinatorics.Young.Shape.NatPartition
 # Partitions as a finite set of lists
 
 The partitions of `n` form a finite type; it is often more convenient to see them as a
-finite set `List.partFinset n` of lists, so that sums over partitions of various sizes
-can be compared without any dependent-type juggling.  `List.partFinsetLe N` gathers the
+finite set `Young.partFinset n` of lists, so that sums over partitions of various sizes
+can be compared without any dependent-type juggling.  `Young.partFinsetLe N` gathers the
 partitions of size at most `N`.
 
 ## Main definitions
 
-* `List.partFinset n` : the partitions of `n`.
-* `List.partFinsetLe N` : the partitions of size at most `N`.
+* `Young.partFinset n` : the partitions of `n`.
+* `Young.partFinsetLe N` : the partitions of size at most `N`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -82,4 +82,4 @@ lemma sum_partFinset_eq_sum_partFinsetLe {M : Type*} [AddCommMonoid M] {k N : �
     ∑ l ∈ partFinset k, f l = ∑ l ∈ partFinsetLe N, if l.sum = k then f l else 0 := by
   rw [Finset.sum_ite, Finset.sum_const_zero, add_zero, filter_partFinsetLe hk]
 
-end List
+end Young

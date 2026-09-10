@@ -24,25 +24,27 @@ Consequently `invStd (std (u ++ v))` is a shifted shuffle of `invStd (std u)` an
 
 ## Main definitions
 
-* `List.stdBefore w` : the relation "position `i` carries a smaller standardized letter
+* `Young.stdBefore w` : the relation "position `i` carries a smaller standardized letter
   than position `j`" on the positions of `w`.
 
 ## Main results
 
-* `List.filter_lt_invStd_std_append` : the positions `< |u|` of `invStd (std (u ++ v))`
+* `Young.filter_lt_invStd_std_append` : the positions `< |u|` of `invStd (std (u ++ v))`
   spell `invStd (std u)` (Coq `invstd_catgtn`).
-* `List.sfilterleq_invStd_std_append` : the positions `≥ |u|` of `invStd (std (u ++ v))`,
+* `Young.sfilterleq_invStd_std_append` : the positions `≥ |u|` of `invStd (std (u ++ v))`,
   shifted down, spell `invStd (std v)` (Coq `invstd_catleq`).
-* `List.filter_lt_invStd_std_take` and `List.sfilterleq_invStd_std_drop` : the same
+* `Young.filter_lt_invStd_std_take` and `Young.sfilterleq_invStd_std_drop` : the same
   statements for the prefix and the suffix of a word (Coq `sfiltergtn_invstd` and
   `sfilterleq_invstd`).
-* `List.invStd_std_append_mem_shsh` : `invStd (std (u ++ v))` is a shifted shuffle of
+* `Young.invStd_std_append_mem_shsh` : `invStd (std (u ++ v))` is a shifted shuffle of
   `invStd (std u)` and `invStd (std v)` (Coq `invstd_cat_in_shsh`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T : Type*} [LinearOrder T] {u v : List T}
 
@@ -211,4 +213,4 @@ theorem invStd_std_append_mem_shsh (u v : List T) :
   simp only [length_invStd, length_std]
   exact ⟨filter_lt_invStd_std_append u v, sfilterleq_invStd_std_append u v⟩
 
-end List
+end Young

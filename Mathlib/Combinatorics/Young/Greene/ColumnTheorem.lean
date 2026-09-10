@@ -16,22 +16,22 @@ public import Mathlib.Combinatorics.Young.RobinsonSchensted.ColumnInsertion
 A Lean 4 port of the column case of `theories/LRrule/Greene_inv.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-The Greene column invariant `List.greeneCol w k` is the maximal number of letters of the
+The Greene column invariant `Young.greeneCol w k` is the maximal number of letters of the
 word `w` that can be covered by `k` strictly decreasing subsequences.  Greene's theorem for
 columns states that this number is the sum of the `k` first parts of the *conjugate* of the
-shape of the Robinson-Schensted tableau `List.RS w`.
+shape of the Robinson-Schensted tableau `Young.RS w`.
 
 ## Main results
 
-* `List.greeneCol_eq_sum_take_conjPart` : **Greene's theorem for columns** (Coq
+* `Young.greeneCol_eq_sum_take_conjPart` : **Greene's theorem for columns** (Coq
   `Greene_col_RS`), `greeneCol w k = ((conjPart (shape (RS w))).take k).sum`.
-* `List.greeneCol_one` : the case `k = 1` recovers the dual of Schensted's theorem, the
+* `Young.greeneCol_one` : the case `k = 1` recovers the dual of Schensted's theorem, the
   invariant `greeneCol w 1` is the maximal length of a strictly decreasing subsequence.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -128,4 +128,4 @@ theorem getD_conjPart_shape_RS (w : List T) (k : ℕ) :
   rw [greeneCol_eq_sum_take_conjPart, greeneCol_eq_sum_take_conjPart, sum_take_succ_getD]
   omega
 
-end List
+end Young

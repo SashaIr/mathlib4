@@ -24,28 +24,28 @@ whose reading word is Yamanouchi, and the insertion tableau of a Yamanouchi word
 
 ## Main definitions
 
-* `List.Dominant l` : every letter of `l` occurs at least as often as its successor.
-* `List.yamTab sh` : the Yamanouchi tableau of shape `sh` (Coq `yamtab`).
+* `Young.Dominant l` : every letter of `l` occurs at least as often as its successor.
+* `Young.yamTab sh` : the Yamanouchi tableau of shape `sh` (Coq `yamtab`).
 
 ## Main results
 
-* `List.PlacticStep.isYam_iff`, `List.PlacticEquiv.isYam_iff` : being Yamanouchi is
+* `Young.PlacticStep.isYam_iff`, `Young.PlacticEquiv.isYam_iff` : being Yamanouchi is
   invariant under Knuth equivalence (Coq `is_yam_plactic`).
-* `List.eq_yamTab_of_isYam_toWord` : a tableau whose reading word is Yamanouchi is a
+* `Young.eq_yamTab_of_isYam_toWord` : a tableau whose reading word is Yamanouchi is a
   Yamanouchi tableau (Coq `yamtab_unique`).
-* `List.RS_eq_yamTab` : the insertion tableau of a Yamanouchi word `y` is
-  `yamTab (evalseq y)` (Coq `RS_yam`), and `List.shape_RS_of_isYam` : its shape is
+* `Young.RS_eq_yamTab` : the insertion tableau of a Yamanouchi word `y` is
+  `yamTab (evalseq y)` (Coq `RS_yam`), and `Young.shape_RS_of_isYam` : its shape is
   `evalseq y` (Coq `shape_RS_yam`).
-* `List.placticEquiv_hyperYam` : a Yamanouchi word is Knuth equivalent to the
+* `Young.placticEquiv_hyperYam` : a Yamanouchi word is Knuth equivalent to the
   hyperstandard Yamanouchi word of its evaluation (Coq `yam_plactic_hyper`).
-* `List.isYam_placticEquiv_iff` : for a Yamanouchi word `y`, the words Knuth equivalent
+* `Young.isYam_placticEquiv_iff` : for a Yamanouchi word `y`, the words Knuth equivalent
   to `y` are exactly the Yamanouchi words of the same evaluation (Coq
   `yam_plactic_shape`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -403,4 +403,4 @@ theorem isYam_placticEquiv_iff {y z : List ℕ} (h : IsYam y) :
   · rintro ⟨hz, hev⟩
     rw [placticEquiv_iff_RS_eq, RS_eq_yamTab h, RS_eq_yamTab hz, hev]
 
-end List
+end Young

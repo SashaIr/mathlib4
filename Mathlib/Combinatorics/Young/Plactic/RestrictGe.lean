@@ -20,13 +20,15 @@ the counterpart, for upper sets, of
 
 ## Main results
 
-* `List.placticEquiv_filter_of_isUpperSet` : Knuth equivalent words have Knuth equivalent
+* `Young.placticEquiv_filter_of_isUpperSet` : Knuth equivalent words have Knuth equivalent
   restrictions to an upper set of letters.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T : Type*} [LinearOrder T] {p : T → Bool}
 
@@ -64,4 +66,4 @@ theorem placticEquiv_filter_of_isUpperSet (hp : ∀ x y : T, x ≤ y → p x →
   | symm _ _ _ ih => exact ih.symm
   | trans _ _ _ _ _ ih1 ih2 => exact ih1.trans ih2
 
-end List
+end Young

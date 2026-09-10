@@ -36,6 +36,8 @@ Pieri rule `MvPolynomial.schurPoly_mul_hsymm` puts back on the `x` side.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

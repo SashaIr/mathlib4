@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.Sort
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.PartialOrder
@@ -31,62 +32,38 @@ of `w`.
 
 ## Main definitions
 
-* `List.insPos r l` : the position at which `l` is inserted in the row `r`
+* `Young.insPos r l` : the position at which `l` is inserted in the row `r`
   (Coq `inspos`).
-* `List.insRow r l` : the row `r` after insertion of `l` (Coq `insert`).
-* `List.schensted w` : the row obtained by inserting all letters of `w`, from left to
+* `Young.insRow r l` : the row `r` after insertion of `l` (Coq `insert`).
+* `Young.schensted w` : the row obtained by inserting all letters of `w`, from left to
   right, into the empty row (Coq `Sch`).
 
 ## Main results
 
-* `List.insRow_pairwise_le` : row insertion preserves rows.
-* `List.schensted_exists_sublist` : the `k`-th entry of `List.schensted w` is the last
+* `Young.insRow_pairwise_le` : row insertion preserves rows.
+* `Young.schensted_exists_sublist` : the `k`-th entry of `Young.schensted w` is the last
   letter of some nondecreasing subsequence of `w` of length `k + 1` (Coq `Sch_exists`).
-* `List.schensted_min_last` : the `k`-th entry of `List.schensted w` is minimal among
+* `Young.schensted_min_last` : the `k`-th entry of `Young.schensted w` is minimal among
   the last letters of the nondecreasing subsequences of `w` of length `k + 1`
   (Coq `Sch_leq_last`).
-* `List.schensted_isGreatest` : Schensted's theorem, the length of `List.schensted w`
+* `Young.schensted_isGreatest` : Schensted's theorem, the length of `Young.schensted w`
   is the maximal length of a nondecreasing subsequence of `w` (Coq `Sch_max_size`).
+
+## References
+
+* [D. E. Knuth, *Permutations, matrices, and generalized Young tableaux*][knuth1970]
+* [B. E. Sagan, *The symmetric group*][sagan2001]
+* [W. Fulton, *Young tableaux*][fulton1997]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
 variable {T : Type*}
-
-/-! ### Auxiliary facts on nondecreasing lists -/
-
-/-- In a nondecreasing list, every entry is at most the last one. -/
-lemma le_getLast_of_pairwise_le [Preorder T] {s : List T} (hs : s.Pairwise (· ≤ ·)) {z : T}
-    (hz : s.getLast? = some z) {a : T} (ha : a ∈ s) : a ≤ z := by
-  induction s with
-  | nil => simp at ha
-  | cons b s ih =>
-    rw [List.pairwise_cons] at hs
-    cases s with
-    | nil =>
-      rw [List.getLast?_singleton, Option.some.injEq] at hz
-      rw [List.mem_singleton] at ha
-      subst ha
-      exact le_of_eq hz
-    | cons c s =>
-      rw [List.getLast?_cons_cons] at hz
-      rcases List.mem_cons.1 ha with rfl | ha'
-      · exact hs.1 z (List.mem_of_getLast? hz)
-      · exact ih hs.2 hz ha'
-
-/-- Monotonicity of a nondecreasing list, in terms of `getElem?`. -/
-lemma pairwise_le_getElem?_mono [Preorder T] {s : List T} (hs : s.Pairwise (· ≤ ·)) {i j : ℕ}
-    (hij : i ≤ j) {a b : T} (hi : s[i]? = some a) (hj : s[j]? = some b) : a ≤ b := by
-  rcases Nat.lt_or_eq_of_le hij with h | rfl
-  · obtain ⟨hi', rfl⟩ := List.getElem?_eq_some_iff.1 hi
-    obtain ⟨hj', rfl⟩ := List.getElem?_eq_some_iff.1 hj
-    exact List.pairwise_iff_getElem.1 hs i j hi' hj' h
-  · rw [hi] at hj; exact le_of_eq (Option.some.inj hj)
-
 
 /-! ### Insertion in a row -/
 
@@ -135,11 +112,11 @@ lemma insRow_length (r : List T) (l : T) :
       omega
 
 lemma length_le_insRow_length (r : List T) (l : T) : r.length ≤ (insRow r l).length := by
-  rw [insRow_length]; exact Nat.le_max_left r.length (r.insPos l + 1)
+  rw [insRow_length]; exact Nat.le_max_left r.length (insPos r l + 1)
 
 lemma insPos_lt_insRow_length (r : List T) (l : T) : insPos r l < (insRow r l).length := by
   rw [insRow_length]
-  exact Nat.lt_of_succ_le (Nat.le_max_right r.length (r.insPos l + 1))
+  exact Nat.lt_of_succ_le (Nat.le_max_right r.length (insPos r l + 1))
 
 /-- Below the insertion position, the entries of `r` are at most `l`. -/
 lemma le_of_lt_insPos {r : List T} {l : T} {k : ℕ} (hk : k < insPos r l) {x : T}
@@ -266,16 +243,6 @@ lemma schensted_getElem_le (w : List T) {i j : ℕ} (hij : i ≤ j) (hj : j < (s
   · exact le_rfl
 
 /-! ### Sublists ending with the last letter -/
-
-omit [LinearOrder T] in
-/-- A sublist of `w ++ [l]` either is a sublist of `w`, or is obtained from a sublist of
-`w` by appending `l`. -/
-lemma sublist_concat_cases {s w : List T} {l : T} (h : s.Sublist (w ++ [l])) :
-    s.Sublist w ∨ ∃ s', s = s' ++ [l] ∧ s'.Sublist w := by
-  obtain ⟨l₁, l₂, rfl, h₁, h₂⟩ := List.sublist_append_iff.1 h
-  rcases sublist_singleton.1 h₂ with rfl | rfl
-  · exact Or.inl (by simpa using h₁)
-  · exact Or.inr ⟨l₁, rfl, h₁⟩
 
 /-! ### Schensted's theorem -/
 
@@ -409,4 +376,4 @@ theorem schensted_isGreatest (w : List T) :
   · rintro n ⟨s, hsub, hsort, rfl⟩
     exact sublist_length_le_schensted hsub hsort
 
-end List
+end Young

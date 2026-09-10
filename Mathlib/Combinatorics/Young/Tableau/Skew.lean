@@ -23,25 +23,25 @@ domination after dropping that many entries.
 
 ## Main definitions
 
-* `List.SkewDominate d u v` : `u` dominates `v` after dropping its first `d` entries
+* `Young.SkewDominate d u v` : `u` dominates `v` after dropping its first `d` entries
   (Coq `skew_dominate`).
-* `List.IsSkewTableau inner t` : `t` is a skew tableau with inner shape `inner`
+* `Young.IsSkewTableau inner t` : `t` is a skew tableau with inner shape `inner`
   (Coq `is_skew_tableau`).
-* `List.addShape` : pointwise sum of two shapes, used to build the outer shape
-  `List.outerShape inner t` of a skew tableau.
+* `Young.addShape` : pointwise sum of two shapes, used to build the outer shape
+  `Young.outerShape inner t` of a skew tableau.
 
 ## Main results
 
-* `List.isSkewTableau_nil_iff_isTableau` : skew tableaux with an empty inner shape are
+* `Young.isSkewTableau_nil_iff_isTableau` : skew tableaux with an empty inner shape are
   exactly the tableaux.
-* `List.isPart_outerShape` : the outer shape of a skew tableau is a partition.
-* `List.included_outerShape` and `List.diffShape_outerShape` : the inner shape is
+* `Young.isPart_outerShape` : the outer shape of a skew tableau is a partition.
+* `Young.included_outerShape` and `Young.diffShape_outerShape` : the inner shape is
   included in the outer shape, and the skew shape between them is the shape of the rows.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -196,4 +196,4 @@ lemma diffShape_outerShape {inner : List ℕ} {t : List (List T)}
         List.cons.injEq, true_and]
       exact ih h'
 
-end List
+end Young

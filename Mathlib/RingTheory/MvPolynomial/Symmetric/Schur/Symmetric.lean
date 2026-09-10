@@ -18,7 +18,7 @@ Following `theories/MPoly/Schur_mpoly.v` of
 
 The coefficient of a monomial `x^d` in `s_λ` is the Kostka number counting the tableaux of
 shape `λ` and content `d`, and the Kostka numbers are invariant under permuting the
-letters (`List.kostkaNum_permContent`), which is the combinatorial heart of the matter.
+letters (`Young.kostkaNum_permContent`), which is the combinatorial heart of the matter.
 
 ## Main results
 
@@ -28,6 +28,8 @@ letters (`List.kostkaNum_permContent`), which is the combinatorial heart of the 
 -/
 
 @[expose] public section
+
+open Young
 
 namespace MvPolynomial
 

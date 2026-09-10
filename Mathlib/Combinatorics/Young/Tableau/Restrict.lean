@@ -5,6 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
 public import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
 public import Mathlib.Combinatorics.Young.Shape.NatPartition
@@ -24,22 +25,22 @@ the combinatorial content of the Pieri rule.
 
 ## Main definitions
 
-* `List.ltFilter N r` : the letters `< N` of a row `r`.
-* `List.dropMax N P` : the tableau `P` with all the letters `N` removed.
-* `List.addMax N sh Q` : the tableau `Q` completed to the shape `sh` by letters `N`.
-* `List.tabSet N sh c` : the tableaux of shape `sh`, entries `< N` and content `c`.
-* `List.kostkaNum N sh c` : the number of such tableaux.
+* `Young.ltFilter N r` : the letters `< N` of a row `r`.
+* `Young.dropMax N P` : the tableau `P` with all the letters `N` removed.
+* `Young.addMax N sh Q` : the tableau `Q` completed to the shape `sh` by letters `N`.
+* `Young.tabSet N sh c` : the tableaux of shape `sh`, entries `< N` and content `c`.
+* `Young.kostkaNum N sh c` : the number of such tableaux.
 
 ## Main results
 
-* `List.kostkaNum_succ` : the recursion
+* `Young.kostkaNum_succ` : the recursion
   `K_{sh, c} = ∑_{nu} K_{nu, c}`, the sum being over the shapes `nu` such that `sh / nu`
   is a horizontal strip with `c N` boxes.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -177,34 +178,6 @@ lemma IsTableau.getD_ne_nil {t : List (List ℕ)} (h : IsTableau t) {i : ℕ} (h
   rw [hc] at hpos
   simp at hpos
 
-/-- Two lists of nonempty rows with the same rows are equal. -/
-lemma eq_of_getD_eq {A B : List (List ℕ)} (hA : ∀ i < A.length, A.getD i [] ≠ [])
-    (hB : ∀ i < B.length, B.getD i [] ≠ []) (h : ∀ i, A.getD i [] = B.getD i []) : A = B := by
-  have hlen : A.length = B.length := by
-    by_contra hne
-    rcases lt_or_gt_of_ne hne with hlt | hlt
-    · exact hB A.length hlt (by rw [← h, List.getD_eq_default _ _ (le_refl _)])
-    · exact hA B.length hlt (by rw [h, List.getD_eq_default _ _ (le_refl _)])
-  refine List.ext_getElem hlen fun i h1 h2 => ?_
-  rw [← List.getD_eq_getElem _ _ h1, ← List.getD_eq_getElem _ _ h2]
-  exact h i
-
-/-- The length of a list of letters `< M`, counted letter by letter. -/
-lemma length_eq_sum_count {l : List ℕ} {M : ℕ} (h : ∀ x ∈ l, x < M) :
-    l.length = ∑ i ∈ Finset.range M, l.count i := by
-  induction l with
-  | nil => simp
-  | cons a l ih =>
-    have ha : a < M := h a (by simp)
-    have hl : ∀ x ∈ l, x < M := fun x hx => h x (by simp [hx])
-    have hcount : ∀ i, (a :: l).count i = l.count i + if a = i then 1 else 0 := by
-      intro i
-      rw [List.count_cons]
-      by_cases hai : a = i <;> simp [hai]
-    simp only [List.length_cons, ih hl]
-    rw [Finset.sum_congr rfl (fun i _ => hcount i), Finset.sum_add_distrib,
-      Finset.sum_ite_eq (Finset.range M) a (fun _ => 1), ite_eq_left (Finset.mem_range.2 ha)]
-
 /-! ### Removing the largest letter -/
 
 /-- The tableau `P` with all the letters `≥ N` removed. -/
@@ -275,20 +248,6 @@ lemma getD_dropMax {N : ℕ} {P : List (List ℕ)} (hP : IsTableau P) (i : ℕ) 
       | succ j => simpa using ih hP.of_cons j
 
 /-! ### Rows and the flattening -/
-
-lemma mem_flatten_of_mem_getD {P : List (List ℕ)} {x : ℕ} {i : ℕ} (hx : x ∈ P.getD i []) :
-    x ∈ P.flatten := by
-  rcases lt_or_ge i P.length with hi | hi
-  · rw [List.getD_eq_getElem _ _ hi] at hx
-    exact List.mem_flatten.2 ⟨P[i], List.getElem_mem hi, hx⟩
-  · rw [List.getD_eq_default _ _ hi] at hx
-    simp at hx
-
-lemma mem_getD_of_mem_flatten {P : List (List ℕ)} {x : ℕ} (hx : x ∈ P.flatten) :
-    ∃ j, x ∈ P.getD j [] := by
-  obtain ⟨l, hl, hxl⟩ := List.mem_flatten.1 hx
-  obtain ⟨j, hj, rfl⟩ := List.getElem_of_mem hl
-  exact ⟨j, by rwa [List.getD_eq_getElem _ _ hj]⟩
 
 /-! ### `dropMax` is a tableau -/
 
@@ -696,4 +655,4 @@ theorem kostkaNum_succ (hsh : IsPart sh) (hm : m + c N = sh.sum) :
       ⟨fun Q => hstrip Q.2.1⟩
     exact Nat.card_of_isEmpty
 
-end List
+end Young

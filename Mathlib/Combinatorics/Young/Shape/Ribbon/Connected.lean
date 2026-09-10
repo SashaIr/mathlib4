@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Ribbon
+public import Mathlib.Combinatorics.Young.Shape.Ribbon.Defs
 public import Mathlib.Logic.Relation
 
 /-!
@@ -14,8 +14,8 @@ public import Mathlib.Logic.Relation
 A Lean 4 port of the textbook characterisation of ribbons of `theories/Combi/skewpart.v`
 from [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-`Combinatorics/Young/Shape/Ribbon.lean` defines a ribbon by the *operative* condition
-`List.RibbonOn`: the skew shape occupies an interval of rows, and each row of the outer
+`Mathlib/Combinatorics/Young/Shape/Ribbon/Defs.lean` defines a ribbon by the *operative* condition
+`Young.RibbonOn`: the skew shape occupies an interval of rows, and each row of the outer
 shape ends exactly one box to the right of where the previous row of the inner shape
 ended.  Textbooks instead define a ribbon (or border strip) as a skew shape which is
 **connected** and **contains no `2 × 2` square**.  This file gives those two conditions and
@@ -23,25 +23,30 @@ proves that, together with nonemptiness, they characterise the ribbons.
 
 ## Main definitions
 
-* `List.SkewBox inner outer` : the boxes of the skew shape `outer / inner`.
-* `List.Adjacent` : two boxes of the plane share a side.
-* `List.SkewConnected` : any two boxes of the skew shape are joined by a path of boxes
+* `Young.SkewBox inner outer` : the boxes of the skew shape `outer / inner`.
+* `Young.Adjacent` : two boxes of the plane share a side.
+* `Young.SkewConnected` : any two boxes of the skew shape are joined by a path of boxes
   (Coq `conn4_skew`).
-* `List.HasNoSquare` : the skew shape contains no `2 × 2` square of boxes
+* `Young.HasNoSquare` : the skew shape contains no `2 × 2` square of boxes
   (Coq `has_no_square`).
-* `List.IsRibbon` : the textbook definition — nonempty, connected, and without a `2 × 2`
+* `Young.IsRibbon` : the textbook definition — nonempty, connected, and without a `2 × 2`
   square.
 
 ## Main results
 
-* `List.hasNoSquare_iff` : having no `2 × 2` square means `outer_{i+1} ≤ inner_i + 1`.
-* `List.isRibbon_iff_exists_ribbonOn` : **the textbook definition agrees with the
+* `Young.hasNoSquare_iff` : having no `2 × 2` square means `outer_{i+1} ≤ inner_i + 1`.
+* `Young.isRibbon_iff_exists_ribbonOn` : **the textbook definition agrees with the
   operative one** (Coq `ribbon_textbook`).
+
+## References
+
+* [I. G. Macdonald, *Symmetric functions and Hall polynomials*][macdonald1995]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -288,4 +293,4 @@ theorem isRibbon_iff_exists_ribbonOn (hinner : IsPart inner) (houter : IsPart ou
         have := hinner.getD_succ_le i
         omega
 
-end List
+end Young

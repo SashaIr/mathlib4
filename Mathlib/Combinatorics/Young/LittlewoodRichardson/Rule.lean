@@ -15,34 +15,40 @@ Following the crystal (Lascoux–Schützenberger) proof of the Littlewood–Rich
 show here that for two fixed shapes `lam` and `mu`, the number of pairs `(S, T)` of
 tableaux of shapes `lam` and `mu` whose plactic product `RS (toWord S ++ toWord T)` is a
 given tableau `V` only depends on the shape of `V`.  This common value is the
-Littlewood–Richardson coefficient `List.lrCoeff lam mu nu`, defined as the number of such
+Littlewood–Richardson coefficient `Young.lrCoeff lam mu nu`, defined as the number of such
 pairs whose product is the superstandard tableau of shape `nu`.
 
 The proof is the crystal one: the crystal operators act on pairs of tableaux
-(`List.pairE` and `List.pairF`) compatibly with the plactic product, they preserve the
+(`Young.pairE` and `Young.pairF`) compatibly with the plactic product, they preserve the
 shapes of the two factors, and the crystal graph on tableaux of a fixed shape is connected
 with the superstandard tableau as its highest weight element
-(`List.reflTransGen_tabRaise_superTab`).
+(`Young.reflTransGen_tabRaise_superTab`).
 
 ## Main definitions
 
-* `List.lrPairs lam mu V` : the pairs of tableaux of shapes `lam` and `mu` with plactic
+* `Young.lrPairs lam mu V` : the pairs of tableaux of shapes `lam` and `mu` with plactic
   product `V`.
-* `List.pairE`, `List.pairF` : the crystal operators acting on pairs of tableaux.
-* `List.lrCoeff lam mu nu` : the Littlewood–Richardson coefficient.
+* `Young.pairE`, `Young.pairF` : the crystal operators acting on pairs of tableaux.
+* `Young.lrCoeff lam mu nu` : the Littlewood–Richardson coefficient.
 
 ## Main results
 
-* `List.ncard_lrPairs_eq_lrCoeff` : for any tableau `V`, the number of pairs of tableaux
+* `Young.ncard_lrPairs_eq_lrCoeff` : for any tableau `V`, the number of pairs of tableaux
   of shapes `lam` and `mu` with plactic product `V` is `lrCoeff lam mu (shape V)`.
-* `List.lrCoeff_eq_ncard_lrTableaux` : the coefficient counts the tableaux of shape `lam`
+* `Young.lrCoeff_eq_ncard_lrTableaux` : the coefficient counts the tableaux of shape `lam`
   whose product with the superstandard tableau of shape `mu` is superstandard.
-* `List.lrCoeff_nil_right` : `c^lam_{lam, ∅} = 1`.
+* `Young.lrCoeff_nil_right` : `c^lam_{lam, ∅} = 1`.
+
+## References
+
+* [W. Fulton, *Young tableaux*][fulton1997]
+* [I. G. Macdonald, *Symmetric functions and Hall polynomials*][macdonald1995]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -293,4 +299,4 @@ theorem lrCoeff_nil_right {lam : List ℕ} (hlam : IsPart lam) : lrCoeff lam [] 
         rw [toWord_nil, List.append_nil, RS_toWord (isTableau_superTab hlam)]⟩
   rw [lrCoeff, hset, Set.ncard_singleton]
 
-end List
+end Young

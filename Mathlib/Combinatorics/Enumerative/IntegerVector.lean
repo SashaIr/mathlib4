@@ -40,6 +40,8 @@ list into a given number of consecutive slices.
 
 @[expose] public section
 
+open Young
+
 namespace List
 
 /-! ### Integer vectors of given sum and length -/

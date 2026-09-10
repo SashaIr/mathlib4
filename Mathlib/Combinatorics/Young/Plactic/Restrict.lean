@@ -20,16 +20,16 @@ word is the restriction of the insertion tableau (Coq `filter_gtnX_RS` in
 
 ## Main results
 
-* `List.placticEquiv_ltFilter` : Knuth equivalent words have Knuth equivalent
+* `Young.placticEquiv_ltFilter` : Knuth equivalent words have Knuth equivalent
   restrictions.
-* `List.toWord_dropMax` : the reading word of the restriction of a tableau is the
+* `Young.toWord_dropMax` : the reading word of the restriction of a tableau is the
   restriction of its reading word.
-* `List.RS_ltFilter` : **`RS (ltFilter N w) = dropMax N (RS w)`**.
+* `Young.RS_ltFilter` : **`RS (ltFilter N w) = dropMax N (RS w)`**.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -120,4 +120,4 @@ theorem RS_ltFilter (N : ℕ) (w : List ℕ) : RS (ltFilter N w) = dropMax N (RS
   rw [← toWord_dropMax hP N, placticEquiv_iff_RS_eq] at h1
   rw [h1, RS_toWord (isTableau_dropMax hP)]
 
-end List
+end Young

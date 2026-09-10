@@ -14,19 +14,19 @@ public import Mathlib.Combinatorics.Young.Greene.Invariance
 A Lean 4 port of the column case of `theories/LRrule/Greene_inv.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-We show that the Greene column invariants `List.greeneCol w k` (the maximal number of
+We show that the Greene column invariants `Young.greeneCol w k` (the maximal number of
 letters of `w` covered by `k` strictly decreasing subsequences) do not change under the
 elementary Knuth transformations, hence are invariants of the plactic class of a word.
 
 ## Main results
 
-* `List.greeneCol_placticEquiv` : Knuth equivalent words have the same Greene column
+* `Young.greeneCol_placticEquiv` : Knuth equivalent words have the same Greene column
   invariants (Coq `Greene_col_invar_plactic`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -677,4 +677,4 @@ theorem greeneCol_placticEquiv {u v : List T} (h : PlacticEquiv u v) (k : ℕ) :
   | symm a b _ ih => exact ih.symm
   | trans a b c _ _ ih1 ih2 => exact ih1.trans ih2
 
-end List
+end Young

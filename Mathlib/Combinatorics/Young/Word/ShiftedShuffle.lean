@@ -23,25 +23,25 @@ its letters `≥ n`, shifted down by `n`, spell `v`.
 
 ## Main definitions
 
-* `List.shiftn n s` : shift all the letters of `s` up by `n` (Coq `shiftn`).
-* `List.sfilterleq n s` : keep the letters of `s` that are at least `n` and shift them down
+* `Young.shiftn n s` : shift all the letters of `s` up by `n` (Coq `shiftn`).
+* `Young.sfilterleq n s` : keep the letters of `s` that are at least `n` and shift them down
   by `n` (Coq `sfilterleq`).
-* `List.shsh u v` : the shifted shuffle of `u` and `v` (Coq `shsh`).
+* `Young.shsh u v` : the shifted shuffle of `u` and `v` (Coq `shsh`).
 
 ## Main results
 
-* `List.mem_shsh` : the characterisation of the words in a shifted shuffle
+* `Young.mem_shsh` : the characterisation of the words in a shifted shuffle
   (Coq `mem_shsh`).
-* `List.IsStd.mem_shsh` : the same, for `u` a standard word.
-* `List.reverse_mem_shsh` : reversing a word of a shifted shuffle gives a word of the
+* `Young.IsStd.mem_shsh` : the same, for `u` a standard word.
+* `Young.reverse_mem_shsh` : reversing a word of a shifted shuffle gives a word of the
   shifted shuffle of the reversed words.
-* `List.IsStd.of_mem_shsh` : a shifted shuffle of two standard words is standard
+* `Young.IsStd.of_mem_shsh` : a shifted shuffle of two standard words is standard
   (Coq `std_shsh`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -135,7 +135,7 @@ theorem mem_shsh (hu : ∀ x ∈ u, x < u.length) :
 theorem IsStd.mem_shsh (hu : IsStd u) :
     w ∈ shsh u v ↔
       w.filter (fun x => decide (x < u.length)) = u ∧ sfilterleq u.length w = v :=
-  List.mem_shsh fun _ hx => mem_range.1 (hu.mem_iff.1 hx)
+  Young.mem_shsh fun _ hx => mem_range.1 (hu.mem_iff.1 hx)
 
 /-- **Reversing a word of a shifted shuffle** gives a word of the shifted shuffle of the
 reversed words. -/
@@ -156,4 +156,4 @@ theorem IsStd.of_mem_shsh (hu : IsStd u) (hv : IsStd v) (h : w ∈ shsh u v) : I
   rw [IsStd, length_of_mem_shsh h]
   exact this
 
-end List
+end Young

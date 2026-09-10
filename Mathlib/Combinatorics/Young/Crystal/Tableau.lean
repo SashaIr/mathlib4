@@ -11,30 +11,30 @@ public import Mathlib.Combinatorics.Young.Tableau.Skew
 /-!
 # Crystal operators on skew tableaux
 
-The crystal operators `List.crystalE` and `List.crystalF` act on words.  This file shows
+The crystal operators `Young.crystalE` and `Young.crystalF` act on words.  This file shows
 that they preserve the set of reading words of skew tableaux of a given shape: if `t` is a
 skew tableau with inner shape `inner` and `crystalE i (toWord t) = some w`, then `w` is the
 reading word of a skew tableau `t'` with the same inner shape and the same shape, and
 similarly for `crystalF`.
 
-The proof goes by induction on the rows, using the tensor rule `List.crystalE_append` to
+The proof goes by induction on the rows, using the tensor rule `Young.crystalE_append` to
 decide whether the operator acts on the top row of the tableau or on the rows below it.
 
 ## Main definitions
 
-* `List.countLt v r` : the number of entries of the list `r` which are smaller than `v`.
+* `Young.countLt v r` : the number of entries of the list `r` which are smaller than `v`.
 
 ## Main results
 
-* `List.IsRow.crystalE_eq` and `List.IsRow.crystalF_eq` : on a row, the crystal operators
+* `Young.IsRow.crystalE_eq` and `Young.IsRow.crystalF_eq` : on a row, the crystal operators
   change the first letter `i + 1` into an `i`, resp. the last letter `i` into an `i + 1`.
-* `List.exists_isSkewTableau_crystalE` and `List.exists_isSkewTableau_crystalF` : the
+* `Young.exists_isSkewTableau_crystalE` and `Young.exists_isSkewTableau_crystalF` : the
   crystal operators preserve reading words of skew tableaux of a given shape.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -566,4 +566,4 @@ theorem exists_isSkewTableau_crystalF {i : ℕ} :
             exact dominate_set_succ_of_getElem_eq hdom (countLt_pred_lt_length hc)
               (IsRow.getElem_countLt_pred hrow1 hc)
 
-end List
+end Young

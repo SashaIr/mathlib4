@@ -5,6 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Data.List.Chain
 public import Mathlib.Data.List.GetD
 
@@ -16,28 +17,49 @@ Coq library [Coq-Combi](https://github.com/math-comp/Coq-Combi) (F. Hivert et al
 distributed under the GPL).
 
 Following the Coq development, *shapes* are plain lists of natural numbers
-(`List ℕ`), and being a partition is a predicate `List.IsPart` on such lists:
+(`List ℕ`), and being a partition is a predicate `Young.IsPart` on such lists:
 a list is a partition when it is weakly decreasing and has no zero part.
 Everywhere, the `i`-th part of a shape `sh` is `sh.getD i 0`, which is `0` when
 `i` is out of range; this matches the `nth 0 sh i` idiom of the Coq sources.
 
 ## Main definitions
 
-* `List.InShape sh (r, c)` : the box `(r, c)` belongs to the diagram of `sh`.
-* `List.IsPart sh` : `sh` is a partition.
+* `Young.InShape sh (r, c)` : the box `(r, c)` belongs to the diagram of `sh`.
+* `Young.IsPart sh` : `sh` is a partition.
 
 ## Main results
 
-* `List.isPart_iff_getD` : the recursive definition agrees with the pointwise one.
-* `List.IsPart.getD_antitone` : the parts are weakly decreasing.
-* `List.isPart_iff_chain` : a partition is a weakly decreasing list without zeroes.
-* `List.IsPart.ext_getD` : two partitions with the same parts are equal.
-* `List.IsPart.length_le_sum`, `List.IsPart.sum_le_headD_mul_length` : size bounds.
+* `Young.isPart_iff_getD` : the recursive definition agrees with the pointwise one.
+* `Young.IsPart.getD_antitone` : the parts are weakly decreasing.
+* `Young.isPart_iff_chain` : a partition is a weakly decreasing list without zeroes.
+* `Young.IsPart.ext_getD` : two partitions with the same parts are equal.
+* `Young.IsPart.length_le_sum`, `Young.IsPart.sum_le_headD_mul_length` : size bounds.
+
+## Implementation notes
+
+Mathlib has two bundled types for the same objects: `YoungDiagram`, and `Nat.Partition n`
+for the partitions of a fixed `n`.  Those are the user-facing types, and a result that a
+user is expected to quote should be available for them.  The list model of this directory
+is the computational layer: the whole development is by induction on shapes and on words,
+which is what plain lists are good at.  The two are related by the dictionaries
+`Young.partEquivYoungDiagram`, `Young.rowLens_youngDiagram`
+(`Mathlib/Combinatorics/Young/Shape/ToYoungDiagram.lean`) and
+`Young.listPartEquivNatPartition` (`Mathlib/Combinatorics/Young/Shape/NatPartition.lean`).
+See `docs/Combi.lean` for the overall picture.
+
+Everything of that layer lives in the `Young` namespace; the root `List` namespace is
+reserved for statements about lists as such.
+
+## References
+
+* [W. Fulton, *Young tableaux*][fulton1997]
+* [I. G. Macdonald, *Symmetric functions and Hall polynomials*][macdonald1995]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -67,7 +89,7 @@ def IsPart : List ℕ → Prop
 
 instance : ∀ sh : List ℕ, Decidable (IsPart sh)
   | [] => inferInstanceAs (Decidable True)
-  | _ :: s => @instDecidableAnd _ _ inferInstance (List.instDecidableIsPart s)
+  | _ :: s => @instDecidableAnd _ _ inferInstance (Young.instDecidableIsPart s)
 
 @[simp] lemma isPart_nil : IsPart [] := trivial
 
@@ -213,17 +235,6 @@ lemma isPart_iff_chain {sh : List ℕ} :
         simp only [List.mem_cons, not_or] at h0 ⊢
         exact h0.2
 
-lemma getLastD_eq_getD {sh : List ℕ} (d : ℕ) (h : sh ≠ []) :
-    sh.getLastD d = sh.getD (sh.length - 1) 0 := by
-  induction sh generalizing d with
-  | nil => simp at h
-  | cons a s ih =>
-    cases s with
-    | nil => simp
-    | cons b t =>
-      rw [List.getLastD_cons, ih a (by simp)]
-      simp
-
 /-- A convenient pointwise characterisation of partitions: the parts decrease and
 the parts inside the list are positive. -/
 lemma isPart_iff_getD_pos {sh : List ℕ} :
@@ -233,7 +244,7 @@ lemma isPart_iff_getD_pos {sh : List ℕ} :
   cases sh with
   | nil => simp
   | cons a s =>
-    rw [getLastD_eq_getD 1 (by simp)]
+    rw [getLastD_eq_getD (by simp)]
     exact (hpos _ (by simp)).ne'
 
 lemma IsPart.sublist {sh1 sh2 : List ℕ} (hsub : sh1.Sublist sh2) (h : IsPart sh2) :
@@ -299,12 +310,6 @@ lemma IsPart.sum_le_headD_mul_length {sh : List ℕ} (h : IsPart sh) :
     simp only [List.sum_cons, List.length_cons, List.headD_cons, Nat.mul_succ]
     omega
 
-/-- Coq `leq_head_sumn`. -/
-lemma headD_le_sum (sh : List ℕ) : sh.headD 0 ≤ sh.sum := by
-  cases sh with
-  | nil => simp
-  | cons a s => simp
-
 /-! ### Equality of partitions -/
 
 /-- A list without trailing zero is determined by its sequence of entries. -/
@@ -337,4 +342,4 @@ lemma IsPart.inShape_of_le {sh : List ℕ} (h : IsPart sh) {r c j k : ℕ}
     (hrc : InShape sh (r, c)) (hj : j ≤ r) (hk : k ≤ c) : InShape sh (j, k) :=
   lt_of_le_of_lt hk (lt_of_lt_of_le hrc (h.getD_antitone hj))
 
-end List
+end Young

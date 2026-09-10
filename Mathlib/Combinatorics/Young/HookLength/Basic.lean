@@ -27,21 +27,21 @@ row `r` are exactly the numbers `1, …, colHook sh r` from which the numbers
 
 ## Main definitions
 
-* `List.hookLength sh i j` : the hook length of the box `(i, j)` of `sh`.
-* `List.colHook sh r` : the hook length of the first box of the row `r`.
-* `List.rowHookProd sh r` : the product of the hook lengths of the row `r`.
-* `List.hookProd sh` : the product of all the hook lengths of `sh`.
+* `Young.hookLength sh i j` : the hook length of the box `(i, j)` of `sh`.
+* `Young.colHook sh r` : the hook length of the first box of the row `r`.
+* `Young.rowHookProd sh r` : the product of the hook lengths of the row `r`.
+* `Young.hookProd sh` : the product of all the hook lengths of `sh`.
 
 ## Main results
 
-* `List.rowHookProd_mul_prod_colHook_sub` : the product of the hook lengths of a row, times
+* `Young.rowHookProd_mul_prod_colHook_sub` : the product of the hook lengths of a row, times
   the product of the differences `colHook sh r - colHook sh s` for `s > r`, is
   `(colHook sh r)!`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List Finset
 
@@ -232,4 +232,4 @@ theorem rowHookProd_mul_prod_colHook_sub (hsh : IsPart sh) {r : ℕ} (hr : r < s
     rw [hB, Finset.prod_image hinjB]
   rw [rowHookProd, hprodA, hprodB, ← Finset.prod_union hdisj, hunion, prod_range_sub]
 
-end List
+end Young

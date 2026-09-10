@@ -21,15 +21,17 @@ nondecreasing.
 
 ## Main definitions
 
-* `List.IsGreeneCol w k c` : `c` is a `k`-colouring of the positions of `w`.
-* `List.greeneSize w c` : the number of coloured positions.
-* `List.greeneRow w k` : the Greene invariant, the maximum of `greeneSize` over the
+* `Young.IsGreeneCol w k c` : `c` is a `k`-colouring of the positions of `w`.
+* `Young.greeneSize w c` : the number of coloured positions.
+* `Young.greeneRow w k` : the Greene invariant, the maximum of `greeneSize` over the
   `k`-colourings of `w`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T : Type*} [LinearOrder T]
 
@@ -111,4 +113,4 @@ lemma greeneRow_le_length (w : List T) (k : ℕ) : greeneRow w k ≤ w.length :=
 lemma greeneRow_mono (w : List T) {k l : ℕ} (h : k ≤ l) : greeneRow w k ≤ greeneRow w l := by
   refine greeneRow_le fun c hc => le_greeneRow ⟨fun i x hx => (hc.lt_of_colour hx).trans_le h, hc.2⟩
 
-end List
+end Young

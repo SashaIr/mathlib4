@@ -14,7 +14,7 @@ public import Mathlib.Combinatorics.Young.Tableau.Standard
 A Lean 4 port of the pair-of-tableaux part of `theories/LRrule/Schensted.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-The recording word of `List.RSmap` lists the rows in which the successive boxes of the
+The recording word of `Young.RSmap` lists the rows in which the successive boxes of the
 insertion tableau appear.  Labelling the box created at step `k` by `k` produces the
 *recording tableau*, a standard tableau of the same shape as the insertion tableau.  The
 Robinson–Schensted correspondence therefore sends a word to a pair of tableaux of the
@@ -22,27 +22,27 @@ same shape, the second of which is standard, and this pair determines the word.
 
 ## Main definitions
 
-* `List.addBox q i k` : append the label `k` at the end of row `i` of `q`.
-* `List.recTab rows` : the tableau recording the rows listed by `rows`.
-* `List.RSQ w` : the recording tableau of the word `w` (Coq the second component of
+* `Young.addBox q i k` : append the label `k` at the end of row `i` of `q`.
+* `Young.recTab rows` : the tableau recording the rows listed by `rows`.
+* `Young.RSQ w` : the recording tableau of the word `w` (Coq the second component of
   `RStabmap`).
-* `List.rowsOf Q` : the recording word read off a recording tableau.
+* `Young.rowsOf Q` : the recording word read off a recording tableau.
 
 ## Main results
 
-* `List.shape_addBox` : adding a box changes the shape by `List.incrNth`.
-* `List.isTableau_addBox` : adding a box with a larger label at an addable corner of a
+* `Young.shape_addBox` : adding a box changes the shape by `Young.incrNth`.
+* `Young.isTableau_addBox` : adding a box with a larger label at an addable corner of a
   tableau yields a tableau.
-* `List.shape_RSQ` : the recording tableau has the same shape as the insertion tableau.
-* `List.isStdTab_RSQ` : the recording tableau is a standard tableau.
-* `List.rowsOf_RSQ` : the recording word can be read off the recording tableau.
-* `List.RS_RSQ_injective` : the pair (insertion tableau, recording tableau) determines
+* `Young.shape_RSQ` : the recording tableau has the same shape as the insertion tableau.
+* `Young.isStdTab_RSQ` : the recording tableau is a standard tableau.
+* `Young.rowsOf_RSQ` : the recording word can be read off the recording tableau.
+* `Young.RS_RSQ_injective` : the pair (insertion tableau, recording tableau) determines
   the word.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -62,7 +62,7 @@ def addBox : List (List ℕ) → ℕ → ℕ → List (List ℕ)
 @[simp] lemma addBox_cons_succ (q0 : List ℕ) (q : List (List ℕ)) (i k : ℕ) :
     addBox (q0 :: q) (i + 1) k = q0 :: addBox q i k := rfl
 
-/-- Adding a box at the end of row `i` changes the shape by `List.incrNth`. -/
+/-- Adding a box at the end of row `i` changes the shape by `Young.incrNth`. -/
 lemma shape_addBox {q : List (List ℕ)} {i : ℕ} (hi : i ≤ q.length) (k : ℕ) :
     shape (addBox q i k) = incrNth (shape q) i := by
   induction q generalizing i with
@@ -424,4 +424,4 @@ theorem RS_RSQ_injective {w w' : List T} (h : RS w = RS w') (hQ : RSQ w = RSQ w'
   · rw [RSmap_fst, RSmap_fst, h]
   · rw [← rowsOf_RSQ, ← rowsOf_RSQ, hQ]
 
-end List
+end Young

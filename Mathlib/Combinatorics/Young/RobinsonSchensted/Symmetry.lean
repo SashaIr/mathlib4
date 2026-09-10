@@ -21,26 +21,26 @@ its insertion and recording tableaux (Coq `RSinvstdE` and `invseqRSPQE`).
 The proof compares the two standard tableaux through the shapes of their restrictions.
 The restriction of the insertion tableau `RS (invStd w)` to the letters `< k` is the
 insertion tableau of the word obtained by keeping the letters `< k` of `invStd w`
-(`List.RS_ltFilter`), that is of the inverse of the standardisation of the prefix
-`w.take k` (`List.ltFilter_invStd`); since a standard word, its inverse and its
+(`Young.RS_ltFilter`), that is of the inverse of the standardisation of the prefix
+`w.take k` (`Young.ltFilter_invStd`); since a standard word, its inverse and its
 standardisation all have insertion tableaux of the same shape, this is the shape of
 `RS (w.take k)`, which is the shape of the restriction of `RSQ w` to the letters `< k`
-(`List.dropMax_RSQ`).  A standard tableau being determined by the shapes of its
-restrictions (`List.eq_of_shape_dropMax_eq`), the two tableaux are equal.
+(`Young.dropMax_RSQ`).  A standard tableau being determined by the shapes of its
+restrictions (`Young.eq_of_shape_dropMax_eq`), the two tableaux are equal.
 
 ## Main results
 
-* `List.RS_invStd` : **the insertion tableau of the inverse of a standard word is the
+* `Young.RS_invStd` : **the insertion tableau of the inverse of a standard word is the
   recording tableau of the word** (Coq `RSinvstdE`).
-* `List.RSQ_invStd` : dually, the recording tableau of the inverse is the insertion
+* `Young.RSQ_invStd` : dually, the recording tableau of the inverse is the insertion
   tableau.
-* `List.IsInvSeq.RS_eq_RSQ` : the same statement for a pair of inverse standard words
+* `Young.IsInvSeq.RS_eq_RSQ` : the same statement for a pair of inverse standard words
   (Coq `invseqRSPQE`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -76,4 +76,4 @@ theorem IsInvSeq.RS_eq_RSQ {u v : List ℕ} (hu : IsStd u) (h : IsInvSeq u v) :
   rw [h.eq_invStd hu]
   exact RS_invStd hu
 
-end List
+end Young

@@ -21,28 +21,28 @@ Robinson–Schensted map injective.
 
 ## Main definitions
 
-* `List.invInsRow r b` : reverse row insertion (Coq `invins`): the last entry of `r`
+* `Young.invInsRow r b` : reverse row insertion (Coq `invins`): the last entry of `r`
   smaller than `b` is replaced by `b` and returned.
-* `List.bumpRow t l` : the index of the row of `t` in which the insertion of `l` creates
+* `Young.bumpRow t l` : the index of the row of `t` in which the insertion of `l` creates
   a new box (Coq `instabnrow`).
-* `List.invInsTab t i` : reverse insertion in a tableau (Coq `invinstabnrow`).
-* `List.RSmap w` : the insertion tableau of `w` together with the recording word of the
+* `Young.invInsTab t i` : reverse insertion in a tableau (Coq `invinstabnrow`).
+* `Young.RSmap w` : the insertion tableau of `w` together with the recording word of the
   rows in which the boxes appear (Coq `RSmap`).
-* `List.RSmapinv t rows` : the word reconstructed from such a pair (Coq `RSmapinv`).
+* `Young.RSmapinv t rows` : the word reconstructed from such a pair (Coq `RSmapinv`).
 
 ## Main results
 
-* `List.invInsRow_insRow` : reverse row insertion undoes row insertion.
-* `List.invInsTab_insTab` : reverse insertion undoes insertion in a tableau
+* `Young.invInsRow_insRow` : reverse row insertion undoes row insertion.
+* `Young.invInsTab_insTab` : reverse insertion undoes insertion in a tableau
   (Coq `invinstabnrow_instabnrow`).
-* `List.RSmapinv_RSmap` : the word can be recovered from `List.RSmap w`
+* `Young.RSmapinv_RSmap` : the word can be recovered from `Young.RSmap w`
   (Coq `RS_bij_1`).
-* `List.RSmap_injective` : the Robinson–Schensted map is injective.
+* `Young.RSmap_injective` : the Robinson–Schensted map is injective.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -191,7 +191,7 @@ lemma RSmap_concat (w : List T) (l : T) :
     RSmap (w ++ [l]) = (insTab (RSmap w).1 l, (RSmap w).2 ++ [bumpRow (RSmap w).1 l]) := by
   simp [RSmap]
 
-/-- The first component of `List.RSmap` is the insertion tableau. -/
+/-- The first component of `Young.RSmap` is the insertion tableau. -/
 lemma RSmap_fst (w : List T) : (RSmap w).1 = RS w := by
   induction w using List.reverseRecOn with
   | nil => rfl
@@ -209,7 +209,7 @@ def RSmapinvAux : List (List T) → List ℕ → Option (List T)
 def RSmapinv (t : List (List T)) (rows : List ℕ) : Option (List T) :=
   RSmapinvAux t rows.reverse
 
-/-- Coq `RS_bij_1`: the word can be recovered from its image under `List.RSmap`. -/
+/-- Coq `RS_bij_1`: the word can be recovered from its image under `Young.RSmap`. -/
 theorem RSmapinv_RSmap (w : List T) : RSmapinv (RSmap w).1 (RSmap w).2 = some w := by
   induction w using List.reverseRecOn with
   | nil => rfl
@@ -392,4 +392,4 @@ lemma insRow_invInsRow {r : List T} (hr : IsRow r) {b : T} : ∀ {r' : List T} {
         · rw [bumped_cons, ite_eq_left hxb]
       · exact absurd h (by simp)
 
-end List
+end Young

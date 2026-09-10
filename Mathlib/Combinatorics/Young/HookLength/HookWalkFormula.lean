@@ -23,23 +23,23 @@ formula follows by induction on the number of boxes.
 
 ## Main results
 
-* `List.hookProd_decrNth_mul` : the hook lengths of the diagram obtained by removing a
+* `Young.hookProd_decrNth_mul` : the hook lengths of the diagram obtained by removing a
   corner: they are those of `lam`, the hook lengths of the boxes above and to the left of the
   corner being decreased by one.
-* `List.sum_hookWalkProb_cells` : starting from a uniformly chosen box, the walk ends at the
+* `Young.sum_hookWalkProb_cells` : starting from a uniformly chosen box, the walk ends at the
   corner of the row `al` with probability `(∏ hook lengths of lam) / (|lam| * ∏ hook lengths
   of lam ∖ al)`.
-* `List.sum_hookProd_div_hookProd_decrNth` : **the Greene–Nijenhuis–Wilf identity**, the sum
+* `Young.sum_hookProd_div_hookProd_decrNth` : **the Greene–Nijenhuis–Wilf identity**, the sum
   of these probabilities over the corners is one.
-* `List.numStdTab_mul_hookProd_hookWalk` : **the hook length formula**, proved by the hook
+* `Young.numStdTab_mul_hookProd_hookWalk` : **the hook length formula**, proved by the hook
   walk.
-* `List.sum_hookWalkProb_cells_div_sum` : the walk started at a uniformly chosen box ends at
+* `Young.sum_hookWalkProb_cells_div_sum` : the walk started at a uniformly chosen box ends at
   a corner with the branching probability `f^(lam ∖ c) / f^lam`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List Finset
 
@@ -485,9 +485,9 @@ private lemma numStdTab_mul_hookProd_aux :
 number of standard Young tableaux of shape a partition `lam` of `n`, multiplied by the
 product of the hook lengths of the boxes of `lam`, is `n !`.
 
-This is the theorem `List.numStdTab_mul_hookProd`, obtained here by a different route: the
+This is the theorem `Young.numStdTab_mul_hookProd`, obtained here by a different route: the
 proof by the hook walk replaces the Frobenius formula for the number of standard tableaux by
-the Greene–Nijenhuis–Wilf identity `List.sum_hookProd_div_hookProd_decrNth`. -/
+the Greene–Nijenhuis–Wilf identity `Young.sum_hookProd_div_hookProd_decrNth`. -/
 theorem numStdTab_mul_hookProd_hookWalk (hlam : IsPart lam) :
     numStdTab lam * hookProd lam = Nat.factorial lam.sum :=
   numStdTab_mul_hookProd_aux lam.sum lam hlam rfl
@@ -528,4 +528,4 @@ theorem sum_hookWalkProb_cells_div_sum (hlam : IsPart lam) (hal : IsRemCorner la
   field_simp at h1 h2 ⊢
   nlinarith [h1, h2, hfac, hprodmu, hprod, hnumu, hnum]
 
-end List
+end Young

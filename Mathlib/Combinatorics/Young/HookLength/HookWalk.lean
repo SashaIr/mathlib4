@@ -6,6 +6,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Combinatorics.Young.HookLength.Basic
 public import Mathlib.Combinatorics.Young.Shape.Corners
 public import Mathlib.Tactic.FieldSimp
@@ -28,34 +29,32 @@ coordinates.
 
 ## Main definitions
 
-* `List.hookWalkProb lam c x` : the probability that the hook walk started at the box `x`
+* `Young.hookWalkProb lam c x` : the probability that the hook walk started at the box `x`
   of `lam` ends at the box `c`.
 
 ## Main results
 
-* `List.hookWalkProb_eq_zero_of_not_le` : the walk cannot reach a box that is not weakly
+* `Young.hookWalkProb_eq_zero_of_not_le` : the walk cannot reach a box that is not weakly
   below and to the right of the starting box.
-* `List.sum_hookWalkProb_corners` : the walk ends at a corner with probability one.
-* `List.hookWalkProb_corner` : **the Greene–Nijenhuis–Wilf formula** for the probability of
+* `Young.sum_hookWalkProb_corners` : the walk ends at a corner with probability one.
+* `Young.hookWalkProb_corner` : **the Greene–Nijenhuis–Wilf formula** for the probability of
   ending at a given corner `(al, be)`, starting from a box `(a, b)` with `a ≤ al` and
   `b ≤ be`.
+
+## References
+
+* [C. Greene, A. Nijenhuis and H. S. Wilf, *A probabilistic proof of a formula for the
+  number of Young tableaux of a given shape*][greene-nijenhuis-wilf1979]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List Finset
 
 /-! ### Two auxiliary lemmas -/
-
-/-- An entry of a list of natural numbers is at most the sum of the list. -/
-lemma getD_le_sum (l : List ℕ) (i : ℕ) : l.getD i 0 ≤ l.sum := by
-  rcases lt_or_ge i l.length with h | h
-  · exact List.single_le_sum (fun _ _ => Nat.zero_le _) _ (by
-      rw [List.getD_eq_getElem l 0 h]; exact List.getElem_mem h)
-  · rw [List.getD_eq_default _ _ h]
-    exact Nat.zero_le _
 
 /-- A telescoping sum: for `b ≤ m`, the sum of `f a * ∏_{a < i < m} (1 + f i)` over the
 `a ∈ [b, m]` is `∏_{b ≤ i < m} (1 + f i) + f m - 1`. -/
@@ -587,4 +586,4 @@ theorem hookWalkProb_corner (hlam : IsPart lam) (hal : IsRemCorner lam al) {a b 
         (∏ j ∈ Finset.Ioo b (lam.getD al 0 - 1), (1 + gnwCol lam al j)) :=
   hookWalkProb_corner_aux hlam hal _ (getD_corner hal) _ a b le_rfl ha hb
 
-end List
+end Young

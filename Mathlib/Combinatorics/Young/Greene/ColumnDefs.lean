@@ -14,21 +14,23 @@ A Lean 4 port of the column case of `theories/LRrule/Greene.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
 The column analogue of the Greene invariants replaces nondecreasing subsequences by
-*strictly decreasing* ones: `List.greeneCol w k` is the maximal total number of letters of
+*strictly decreasing* ones: `Young.greeneCol w k` is the maximal total number of letters of
 `w` that can be covered by `k` strictly decreasing subsequences.  As in the row case a
 union of `k` such subsequences is encoded by a colouring of the positions of `w` by `k`
 colours.
 
 ## Main definitions
 
-* `List.IsGreeneDecCol w k c` : `c` is a `k`-colouring of the positions of `w` whose
+* `Young.IsGreeneDecCol w k c` : `c` is a `k`-colouring of the positions of `w` whose
   colour classes are strictly decreasing.
-* `List.greeneCol w k` : the Greene column invariant.
+* `Young.greeneCol w k` : the Greene column invariant.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T : Type*} [LinearOrder T]
 
@@ -102,4 +104,4 @@ lemma greeneCol_le_length (w : List T) (k : ℕ) : greeneCol w k ≤ w.length :=
 lemma greeneCol_mono (w : List T) {k l : ℕ} (h : k ≤ l) : greeneCol w k ≤ greeneCol w l :=
   greeneCol_le fun _ hc => le_greeneCol ⟨fun _ _ hx => (hc.lt_of_colour hx).trans_le h, hc.2⟩
 
-end List
+end Young

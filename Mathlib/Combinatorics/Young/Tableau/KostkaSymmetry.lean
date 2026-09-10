@@ -16,23 +16,23 @@ depend on the order of the letters: it is invariant under permuting the content 
 This is the combinatorial heart of the symmetry of the Schur polynomials.
 
 The proof is the classical one, using the Bender–Knuth style commutation of two steps of
-the Pieri rule (`List.card_midSet_add_comm`): peeling off the two largest letters of a
+the Pieri rule (`Young.card_midSet_add_comm`): peeling off the two largest letters of a
 tableau expresses the Kostka number as a sum over the shapes obtained after removing both
 letters, weighted by the number of intermediate shapes, and this weight is symmetric in
 the multiplicities of the two letters.
 
 ## Main results
 
-* `List.kostkaNum_swap_top` : invariance under exchanging the multiplicities of the two
+* `Young.kostkaNum_swap_top` : invariance under exchanging the multiplicities of the two
   largest letters.
-* `List.kostkaNum_swap` : invariance under exchanging the multiplicities of two adjacent
+* `Young.kostkaNum_swap` : invariance under exchanging the multiplicities of two adjacent
   letters.
-* `List.kostkaNum_permContent` : invariance under an arbitrary permutation of the letters.
+* `Young.kostkaNum_permContent` : invariance under an arbitrary permutation of the letters.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -284,4 +284,4 @@ theorem kostkaNum_eq_of_multiset_eq (N : ℕ) (sh : List ℕ) (c d : ℕ → ℕ
   refine kostkaNum_congr N sh fun i hi => ?_
   simpa [permContent, dite_eq_left hi] using hσ ⟨i, hi⟩
 
-end List
+end Young

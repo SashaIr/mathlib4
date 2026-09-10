@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Ribbon
+public import Mathlib.Combinatorics.Young.Shape.Ribbon.Defs
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.MurnaghanNakayama
 
 /-!
@@ -16,7 +16,7 @@ The Murnaghan-Nakayama rule of
 language of the bialternant formula: the shape `mnShape lam r k` is obtained by adding `r` to the
 entry of row `k` of the staircase shift of `lam` and sorting the result.  Here we check that this is
 the same thing as adding a *ribbon* (a border strip) of `r` boxes to `lam`, in the combinatorial
-sense of `Mathlib/Combinatorics/Young/Shape/Ribbon.lean` (Coq `ribbon_on`), and that the sign
+sense of `Mathlib/Combinatorics/Young/Shape/Ribbon/Defs.lean` (Coq `ribbon_on`), and that the sign
 `(-1)^(mnHeight lam r k)` of the rule is `(-1)` to the number of rows of the ribbon minus one.
 
 ## Main results
@@ -33,6 +33,8 @@ sense of `Mathlib/Combinatorics/Young/Shape/Ribbon.lean` (Coq `ribbon_on`), and 
 -/
 
 @[expose] public section
+
+open Young
 
 open List
 

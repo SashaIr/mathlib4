@@ -28,6 +28,8 @@ vanishing linear combination shows that its coefficient vanishes.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

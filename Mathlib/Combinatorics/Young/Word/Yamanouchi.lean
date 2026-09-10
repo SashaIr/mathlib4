@@ -22,26 +22,26 @@ removing the zeroes, and the hyperstandard Yamanouchi word of a given evaluation
 
 ## Main definitions
 
-* `List.evalseq s` : the evaluation of `s`, the list of the numbers of occurrences
+* `Young.evalseq s` : the evaluation of `s`, the list of the numbers of occurrences
   of `0, 1, 2, ...` in `s` (Coq `evalseq`).
-* `List.IsYam s` : `s` is a Yamanouchi word (Coq `is_yam`).
-* `List.decrYam s` : remove the zeroes of `s` and decrease all other letters
+* `Young.IsYam s` : `s` is a Yamanouchi word (Coq `is_yam`).
+* `Young.decrYam s` : remove the zeroes of `s` and decrease all other letters
   (Coq `decr_yam`).
-* `List.hyperYam ev` : the hyperstandard Yamanouchi word `... 2222 11111 0000000`
+* `Young.hyperYam ev` : the hyperstandard Yamanouchi word `... 2222 11111 0000000`
   of evaluation `ev` (Coq `hyper_yam`).
 
 ## Main results
 
-* `List.getD_evalseq` : the `i`-th entry of `evalseq s` is the number of `i` in `s`.
-* `List.isYam_iff_count` (Coq `is_yamP`) : characterisation of Yamanouchi words.
-* `List.IsYam.isPart_evalseq` : the evaluation of a Yamanouchi word is a partition.
-* `List.evalseq_hyperYam`, `List.isYam_hyperYam` : for any partition `ev` there is
+* `Young.getD_evalseq` : the `i`-th entry of `evalseq s` is the number of `i` in `s`.
+* `Young.isYam_iff_count` (Coq `is_yamP`) : characterisation of Yamanouchi words.
+* `Young.IsYam.isPart_evalseq` : the evaluation of a Yamanouchi word is a partition.
+* `Young.evalseq_hyperYam`, `Young.isYam_hyperYam` : for any partition `ev` there is
   a Yamanouchi word of evaluation `ev`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -80,7 +80,7 @@ lemma getLastD_incrNth_ne_zero {l : List ℕ} (hl : l.getLastD 1 ≠ 0) (i : ℕ
     rw [hc] at hlen
     simp at hlen
     omega
-  rw [getLastD_eq_getD 1 hne, getD_incrNth, hlen]
+  rw [getLastD_eq_getD hne, getD_incrNth, hlen]
   rcases Nat.lt_or_ge (i + 1) l.length with h | h
   · have hmax : max l.length (i + 1) = l.length := by omega
     rw [hmax, ite_eq_right (by omega)]
@@ -88,7 +88,7 @@ lemma getLastD_incrNth_ne_zero {l : List ℕ} (hl : l.getLastD 1 ≠ 0) (i : ℕ
       intro hc
       rw [hc] at h
       simp at h
-    rw [← getLastD_eq_getD 1 hlne]
+    rw [← getLastD_eq_getD hlne]
     simpa using hl
   · have hmax : max l.length (i + 1) = i + 1 := by omega
     rw [hmax]
@@ -187,7 +187,8 @@ lemma count_decrYam (s : List ℕ) (i : ℕ) : (decrYam s).count i = s.count (i 
     | succ n =>
       simp only [decrYam_succ_cons, List.count_cons, ih, beq_iff_eq, Nat.add_right_cancel_iff]
 
-lemma getLastD_tail_ne_zero {l : List ℕ} (h : l.getLastD 1 ≠ 0) : l.tail.getLastD 1 ≠ 0 := by
+lemma getLastD_tail_ne_zero {l : List ℕ} (h : l.getLastD 1 ≠ 0) :
+    l.tail.getLastD 1 ≠ 0 := by
   cases l with
   | nil => simp
   | cons a t =>
@@ -195,8 +196,8 @@ lemma getLastD_tail_ne_zero {l : List ℕ} (h : l.getLastD 1 ≠ 0) : l.tail.get
     cases t with
     | nil => simp
     | cons b u =>
-      rw [List.getLastD_cons, getLastD_eq_getD a (by simp)] at h
-      rw [getLastD_eq_getD 1 (by simp)]
+      rw [List.getLastD_cons, getLastD_eq_getD (d' := 0) (by simp)] at h
+      rw [getLastD_eq_getD (d' := 0) (by simp)]
       exact h
 
 /-- Coq `evalseq_decr_yam`. -/
@@ -356,4 +357,4 @@ lemma isYam_hyperYam {ev : List ℕ} (h : IsPart ev) : IsYam (hyperYam ev) := by
   rw [List.getD_reverse _ (by omega), List.getD_reverse _ (by omega)]
   exact h.getD_antitone (by omega)
 
-end List
+end Young

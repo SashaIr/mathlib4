@@ -20,13 +20,13 @@ These are used to describe the shapes lying between two partitions: a shape `nu`
 
 ## Main definitions
 
-* `List.partMin` : the componentwise minimum.
-* `List.partMax` : the componentwise maximum.
+* `Young.partMin` : the componentwise minimum.
+* `Young.partMax` : the componentwise maximum.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -141,4 +141,4 @@ lemma partMax_eq_cons_tail : ∀ (s t : List ℕ), s ≠ [] ∨ t ≠ [] →
   | a :: s, [], _ => by simp
   | a :: s, b :: t, _ => by simp
 
-end List
+end Young

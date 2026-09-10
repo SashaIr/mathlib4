@@ -11,20 +11,20 @@ public import Mathlib.Combinatorics.Young.Tableau.Semistandard
 /-!
 # The superstandard tableau is the highest weight tableau
 
-The Coq-Combi superstandard tableau of a shape `lam` (`List.superTab`, whose `i`-th row
+The Coq-Combi superstandard tableau of a shape `lam` (`Young.superTab`, whose `i`-th row
 consists of copies of `i`) and Mathlib's highest weight semistandard Young tableau
 (`SemistandardYoungTableau.highestWeight`) are the same object, seen through the
 dictionary of `Mathlib.Combinatorics.Young.Tableau.Semistandard`.
 
 ## Main results
 
-* `List.ssytOfTableau_superTab` : the two canonical tableaux of a shape agree.
-* `List.tableauOfSSYT_highestWeight` : the same statement, read in the other direction.
+* `Young.ssytOfTableau_superTab` : the two canonical tableaux of a shape agree.
+* `Young.tableauOfSSYT_highestWeight` : the same statement, read in the other direction.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -54,4 +54,4 @@ theorem tableauOfSSYT_highestWeight {lam : List ℕ} (hlam : IsPart lam) :
     (shapeTableauEquivSSYT lam hlam).symm_apply_eq.2 rfl] at h
   exact congrArg Subtype.val h.symm
 
-end List
+end Young

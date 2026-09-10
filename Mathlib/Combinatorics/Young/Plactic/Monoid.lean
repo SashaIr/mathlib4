@@ -18,31 +18,31 @@ following `theories/LRrule/plactic.v` of
 
 Knuth equivalence is compatible with concatenation of words, so the quotient of the free
 monoid on a linearly ordered alphabet by the plactic congruence is a monoid, the *plactic
-monoid*.  By `List.placticEquiv_iff_RS_eq` its elements are in bijection with the
-Robinson–Schensted insertion tableaux, that is (by `List.RS_toWord`) with all Young
+monoid*.  By `Young.placticEquiv_iff_RS_eq` its elements are in bijection with the
+Robinson–Schensted insertion tableaux, that is (by `Young.RS_toWord`) with all Young
 tableaux over the alphabet.  Transporting the product gives the *plactic product* of two
 tableaux: insert the reading word of the second tableau into the first one.
 
 ## Main definitions
 
-* `List.PlacticMonoid T` : the quotient of `List T` by Knuth equivalence.
-* `List.tabMul` : the plactic product of two tableaux (Coq `plactic` product on
+* `Young.PlacticMonoid T` : the quotient of `List T` by Knuth equivalence.
+* `Young.tabMul` : the plactic product of two tableaux (Coq `plactic` product on
   tableaux).
 
 ## Main results
 
-* `List.exists_word_RS` : every tableau is an insertion tableau.
-* `List.RS_toWord` : the insertion tableau of the reading word of a tableau is the
+* `Young.exists_word_RS` : every tableau is an insertion tableau.
+* `Young.RS_toWord` : the insertion tableau of the reading word of a tableau is the
   tableau itself (Coq `RS_tabE`).
-* `List.RS_append` : the insertion tableau of a concatenation only depends on the
+* `Young.RS_append` : the insertion tableau of a concatenation only depends on the
   insertion tableaux of the two factors.
-* `List.placticMonoidEquivTableau` : the plactic monoid is in bijection with the set of
-  tableaux, and this bijection turns the product into `List.tabMul`.
+* `Young.placticMonoidEquivTableau` : the plactic monoid is in bijection with the set of
+  tableaux, and this bijection turns the product into `Young.tabMul`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -204,4 +204,4 @@ def placticMonoidMulEquivTableau :
   { placticMonoidEquivTableau with
     map_mul' := fun a b => Subtype.ext (placticMonoidEquivTableau_mul a b) }
 
-end List
+end Young

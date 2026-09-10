@@ -32,6 +32,8 @@ dual bases for it.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

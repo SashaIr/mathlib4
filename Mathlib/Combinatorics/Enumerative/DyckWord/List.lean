@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.DyckWord
+public import Mathlib.Combinatorics.Enumerative.DyckWord.Defs
 public import Mathlib.Data.Nat.SuccPred
 
 /-!

@@ -13,8 +13,8 @@ public import Mathlib.Combinatorics.Young.YoungDiagram
 # Shapes and Mathlib's Young diagrams
 
 The Coq-Combi development, and therefore this port, represents the shape of a Young diagram
-by the weakly decreasing list of its row lengths (`sh : List ℕ` with `List.IsPart sh`),
-and the box `(r, c)` belongs to that diagram when `List.InShape sh (r, c)`, that is
+by the weakly decreasing list of its row lengths (`sh : List ℕ` with `Young.IsPart sh`),
+and the box `(r, c)` belongs to that diagram when `Young.InShape sh (r, c)`, that is
 `c < sh.getD r 0`.  Mathlib instead represents a Young diagram by the finite lower set of
 its boxes (`YoungDiagram`).
 
@@ -26,26 +26,26 @@ connects both with Mathlib's `Nat.Partition`.
 
 ## Main definitions
 
-* `List.youngDiagram` : the Young diagram of a partition, as a `YoungDiagram`.
-* `List.partEquivYoungDiagram` : partitions are in bijection with Young diagrams.
+* `Young.youngDiagram` : the Young diagram of a partition, as a `YoungDiagram`.
+* `Young.partEquivYoungDiagram` : partitions are in bijection with Young diagrams.
 * `Nat.Partition.youngDiagram` : the Young diagram of a partition of `n` in Mathlib's sense.
 * `Nat.Partition.equivYoungDiagramCard` : the partitions of `n` are in bijection with the
   Young diagrams with `n` boxes.
 
 ## Main results
 
-* `List.mem_youngDiagram` : the boxes of `List.youngDiagram sh` are the boxes of `sh`.
-* `List.rowLen_youngDiagram`, `List.rowLens_youngDiagram` : rows and row lengths.
-* `List.colLen_youngDiagram` : the column lengths are the parts of the conjugate.
-* `List.card_youngDiagram` : the number of boxes is the size of the partition.
-* `List.transpose_youngDiagram` : `List.conjPart` is Mathlib's `YoungDiagram.transpose`.
-* `List.youngDiagram_le_iff` : `List.Included` is the containment order on Young diagrams.
+* `Young.mem_youngDiagram` : the boxes of `Young.youngDiagram sh` are the boxes of `sh`.
+* `Young.rowLen_youngDiagram`, `Young.rowLens_youngDiagram` : rows and row lengths.
+* `Young.colLen_youngDiagram` : the column lengths are the parts of the conjugate.
+* `Young.card_youngDiagram` : the number of boxes is the size of the partition.
+* `Young.transpose_youngDiagram` : `Young.conjPart` is Mathlib's `YoungDiagram.transpose`.
+* `Young.youngDiagram_le_iff` : `Young.Included` is the containment order on Young diagrams.
 * `Nat.Partition.youngDiagram_conj` : the conjugate of `Nat.Partition` is the transpose.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -212,35 +212,35 @@ def listPartEquivYoungDiagramCard (n : ℕ) :
   left_inv p := Subtype.ext (rowLens_youngDiagram p.2.1)
   right_inv mu := Subtype.ext (youngDiagram_rowLens mu.1)
 
-end List
+end Young
 
 /-! ### Mathlib's partitions of an integer -/
 
 namespace Nat.Partition
 
-open List
+open List Young
 
 variable {n : ℕ}
 
 /-- The Young diagram of a partition of `n`. -/
 def youngDiagram (p : Partition n) : YoungDiagram :=
-  List.youngDiagram p.partsList (isPart_partsList p)
+  Young.youngDiagram p.partsList (isPart_partsList p)
 
 @[simp] lemma rowLens_youngDiagram (p : Partition n) : p.youngDiagram.rowLens = p.partsList :=
-  List.rowLens_youngDiagram _
+  Young.rowLens_youngDiagram _
 
 @[simp] lemma mem_youngDiagram (p : Partition n) (r c : ℕ) :
     (r, c) ∈ p.youngDiagram ↔ c < p.partsList.getD r 0 :=
-  List.mk_mem_youngDiagram _ r c
+  Young.mk_mem_youngDiagram _ r c
 
 /-- A partition of `n` has a Young diagram with `n` boxes. -/
 @[simp] theorem card_youngDiagram (p : Partition n) : p.youngDiagram.card = n := by
-  rw [youngDiagram, List.card_youngDiagram, sum_partsList]
+  rw [youngDiagram, Young.card_youngDiagram, sum_partsList]
 
 /-- The number of rows of the Young diagram is the number of parts. -/
 @[simp] theorem colLen_zero_youngDiagram (p : Partition n) :
     p.youngDiagram.colLen 0 = Multiset.card p.parts := by
-  rw [youngDiagram, List.colLen_zero_youngDiagram, length_partsList]
+  rw [youngDiagram, Young.colLen_zero_youngDiagram, length_partsList]
 
 /-- **Conjugation of partitions is transposition of Young diagrams.** -/
 @[simp] theorem youngDiagram_conj (p : Partition n) :

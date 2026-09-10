@@ -30,6 +30,8 @@ two equal exponents, hence vanish.
 
 @[expose] public section
 
+open Young
+
 open List
 
 namespace MvPolynomial

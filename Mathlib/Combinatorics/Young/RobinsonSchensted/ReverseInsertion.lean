@@ -13,22 +13,22 @@ public import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
 A Lean 4 port of the remaining part of the reverse insertion theory of
 `theories/LRrule/Schensted.v` from [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-`List.invInsTab t i` removes the last box of row `i` of the tableau `t` and pushes the
+`Young.invInsTab t i` removes the last box of row `i` of the tableau `t` and pushes the
 removed letters upwards.  When the box removed is a *removable corner* of the shape of
 `t`, this operation is exactly the inverse of Schensted insertion: it produces a tableau
 `t'` and a letter `l` with `insTab t' l = t` and `bumpRow t' l = i`.
 
 ## Main results
 
-* `List.dominate_of_dominate_insRow` : domination can be undone (the converse of
-  `List.dominate_insRow_of_bumped`).
-* `List.invInsTab_spec` : reverse insertion at a removable corner succeeds and undoes
+* `Young.dominate_of_dominate_insRow` : domination can be undone (the converse of
+  `Young.dominate_insRow_of_bumped`).
+* `Young.invInsTab_spec` : reverse insertion at a removable corner succeeds and undoes
   insertion in a tableau (Coq `invinstabnrowK`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -36,7 +36,7 @@ variable {T : Type*} [LinearOrder T]
 
 /-! ### Undoing domination -/
 
-/-- The converse of `List.dominate_insRow_of_bumped`: if the rows obtained after
+/-- The converse of `Young.dominate_insRow_of_bumped`: if the rows obtained after
 inserting `l` in `r` and the bumped letter `b` in `u` dominate each other, then so did the
 original rows. -/
 lemma dominate_of_dominate_insRow {u r : List T} (hu : IsRow u) (hr : IsRow r) {l b : T}
@@ -190,4 +190,4 @@ theorem invInsTab_spec {t : List (List T)} (h : IsTableau t) {i : ℕ}
       · rw [List.headD_cons]
         exact hrmem
 
-end List
+end Young

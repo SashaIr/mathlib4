@@ -21,23 +21,23 @@ for the number `f^lam = numStdTab lam` of standard tableaux of shape `lam`.  It 
 combinatorial input of the hook length formula.
 
 The proof identifies standard tableaux of shape `lam` with the tableaux counted by the Kostka number
-`K_{lam, (1, …, 1)}` and specialises the recursion on the largest letter `List.kostkaNum_succ` of
+`K_{lam, (1, …, 1)}` and specialises the recursion on the largest letter `Young.kostkaNum_succ` of
 `Mathlib.Combinatorics.Young.Tableau.Restrict`: a horizontal strip of size one is exactly a
 removable corner.
 
 ## Main results
 
-* `List.numStdTab_eq_kostkaNum` : standard tableaux of shape `sh` are the tableaux of shape
+* `Young.numStdTab_eq_kostkaNum` : standard tableaux of shape `sh` are the tableaux of shape
   `sh` with letters `< |sh|` and content `(1, …, 1)`.
-* `List.horizStrip_decrNth` : removing a removable corner gives a horizontal strip.
-* `List.exists_remCorner_of_included_succ` : conversely, a partition contained in `lam` with
+* `Young.horizStrip_decrNth` : removing a removable corner gives a horizontal strip.
+* `Young.exists_remCorner_of_included_succ` : conversely, a partition contained in `lam` with
   one box less is `lam` with a removable corner removed.
-* `List.numStdTab_branching` : the branching rule.
+* `Young.numStdTab_branching` : the branching rule.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -208,4 +208,4 @@ theorem numStdTab_branching {lam : List ℕ} (hlam : IsPart lam) {n N : ℕ} (hs
     exact ⟨r, Finset.mem_filter.2 ⟨Finset.mem_range.2 (lt_of_lt_of_le hc.lt_length hN), hc⟩,
       Subtype.ext hr.symm⟩
 
-end List
+end Young

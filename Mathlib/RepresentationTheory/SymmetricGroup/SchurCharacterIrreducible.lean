@@ -49,6 +49,8 @@ is not allowed to import, so the specialisation is left to the user.)
 
 @[expose] public section
 
+open Young
+
 open Equiv MvPolynomial List FDRep
 
 namespace Equiv.Perm

@@ -20,14 +20,14 @@ Here we package conjugation of partitions as an explicit `Equiv`.
 
 ## Main results
 
-* `List.conjPartEquiv` : conjugation is an involutive bijection of the partitions of `n`.
-* `List.conjPartEquivLengthLe` : conjugation is a bijection between the partitions of `n`
+* `Young.conjPartEquiv` : conjugation is an involutive bijection of the partitions of `n`.
+* `Young.conjPartEquivLengthLe` : conjugation is a bijection between the partitions of `n`
   with at most `k` parts and the partitions of `n` all of whose parts are at most `k`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -85,4 +85,4 @@ def conjPartEquivLengthLe (n k : ℕ) :
     (p : {p : List ℕ // IsPart p ∧ p.sum = n ∧ p.length ≤ k}) :
     ((conjPartEquivLengthLe n k) p).1 = conjPart p.1 := rfl
 
-end List
+end Young

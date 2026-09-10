@@ -25,6 +25,8 @@ is multiplicative and that it acts on the power sums by
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

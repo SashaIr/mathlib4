@@ -42,9 +42,16 @@ when the modified entry does not collide with another entry of the vector.
 * `MvPolynomial.isPart_mnShape`, `MvPolynomial.sum_mnShape`, `MvPolynomial.included_mnShape` :
   the resulting shape is a partition of `|lam| + r` containing `lam`.
 * `MvPolynomial.psum_mul_schurPoly` : **the Murnaghan–Nakayama rule**.
+
+## References
+
+* [I. G. Macdonald, *Symmetric functions and Hall polynomials*][macdonald1995]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
+
+open Young
 
 namespace MvPolynomial
 

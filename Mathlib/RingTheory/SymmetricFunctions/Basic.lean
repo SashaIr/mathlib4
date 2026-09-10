@@ -63,9 +63,16 @@ variables, of bounded total degree and compatible with setting the last variable
   `e`, and acts on `p_lam` by the sign `(-1)^(n - length lam)`.
 * `SymFunc.schurFunc_mul_schurFunc` : **the Littlewood–Richardson rule** for symmetric
   functions, `s_lam · s_mu = ∑_nu c^nu_{lam mu} · s_nu`.
+
+## References
+
+* [I. G. Macdonald, *Symmetric functions and Hall polynomials*][macdonald1995]
+* [F. Hivert et al., *Coq-Combi*][hivert-coqcombi]
 -/
 
 @[expose] public section
+
+open Young
 
 open List
 

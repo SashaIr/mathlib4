@@ -22,19 +22,21 @@ insertion tableau of the word.
 
 ## Main definitions
 
-* `List.revCol n c` : the colouring `c` of a word of length `n`, read backwards.
+* `Young.revCol n c` : the colouring `c` of a word of length `n`, read backwards.
 
 ## Main results
 
-* `List.greeneRow_reverse_of_nodup` : `greeneRow w.reverse k = greeneCol w k` for a word `w`
+* `Young.greeneRow_reverse_of_nodup` : `greeneRow w.reverse k = greeneCol w k` for a word `w`
   with distinct letters.
-* `List.shape_RS_reverse_of_nodup` : the shape of the insertion tableau of `w.reverse` is
+* `Young.shape_RS_reverse_of_nodup` : the shape of the insertion tableau of `w.reverse` is
   the conjugate of the shape of the insertion tableau of `w`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 variable {T : Type*} [LinearOrder T]
 
@@ -119,4 +121,4 @@ theorem shape_RS_reverse_of_nodup {w : List T} (hnd : w.Nodup) :
   rw [← greeneRow_eq_sum_take_shape, ← greeneCol_eq_sum_take_conjPart,
     greeneRow_reverse_of_nodup hnd]
 
-end List
+end Young

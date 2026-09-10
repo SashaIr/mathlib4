@@ -26,15 +26,17 @@ or, dividing by `(n !)²` in the rationals,
 
 ## Main results
 
-* `List.factorial_eq_sum_sq_factorial_div_hookProd` : the Frobenius identity
+* `Young.factorial_eq_sum_sq_factorial_div_hookProd` : the Frobenius identity
   (Coq `Frobenius_ident`).
-* `List.inv_factorial_eq_sum_inv_sq_hookProd` : its rational form
+* `Young.inv_factorial_eq_sum_inv_sq_hookProd` : its rational form
   (Coq `Frobenius_ident_rat`).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
+
+open List
 
 open Finset
 
@@ -85,4 +87,4 @@ theorem inv_factorial_eq_sum_inv_sq_hookProd (n : ℕ) :
   rw [eq_div_of_mul_eq (pow_ne_zero 2 hfac) h2, sq]
   field_simp
 
-end List
+end Young

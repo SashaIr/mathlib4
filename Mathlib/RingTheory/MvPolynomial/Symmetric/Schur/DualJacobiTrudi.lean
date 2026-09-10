@@ -40,6 +40,8 @@ available in degree `n` for `n ≤ m` variables, the statement carries the hypot
 
 @[expose] public section
 
+open Young
+
 open List
 
 namespace MvPolynomial

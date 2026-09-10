@@ -21,22 +21,22 @@ undoing the corresponding Schensted insertion in `P`.
 
 ## Main definitions
 
-* `List.remBox Q i` : remove the last box of row `i` of `Q`.
+* `Young.remBox Q i` : remove the last box of row `i` of `Q`.
 
 ## Main results
 
-* `List.remBox_spec` : removing the last box of a row at a removable corner of a tableau
+* `Young.remBox_spec` : removing the last box of a row at a removable corner of a tableau
   yields a tableau, and adding the box back gives the original tableau.
-* `List.recTab_rowsOf` : a standard tableau is the recording tableau of its recording
+* `Young.recTab_rowsOf` : a standard tableau is the recording tableau of its recording
   word.
-* `List.exists_word_RS_RSQ` : surjectivity of the Robinson–Schensted correspondence.
-* `List.RS_RSQ_bijOn` : the Robinson–Schensted correspondence is a bijection between
+* `Young.exists_word_RS_RSQ` : surjectivity of the Robinson–Schensted correspondence.
+* `Young.RS_RSQ_bijOn` : the Robinson–Schensted correspondence is a bijection between
   words and pairs (tableau, standard tableau of the same shape).
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -245,7 +245,7 @@ theorem recTab_rowsOf {Q : List (List ℕ)} (hQ : IsStdTab Q) : recTab (rowsOf Q
 variable {T : Type*} [LinearOrder T]
 
 /-- Every pair consisting of a tableau and a standard tableau of the same shape is the
-image of a word under `List.RSmap` (Coq `RS_bij_2`). -/
+image of a word under `Young.RSmap` (Coq `RS_bij_2`). -/
 theorem exists_word_RSmap {P : List (List T)} (hP : IsTableau P) {Q : List (List ℕ)}
     (hQ : IsStdTab Q) (hsh : shape Q = shape P) : ∃ w : List T, RSmap w = (P, rowsOf Q) := by
   generalize hn : sizeTab Q = n
@@ -321,4 +321,4 @@ theorem RS_RSQ_bijOn_isStd :
     rw [h1] at hperm
     exact ⟨w, hP.2.of_perm hperm.symm, by simp [h1, h2]⟩
 
-end List
+end Young

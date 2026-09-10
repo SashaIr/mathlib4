@@ -35,6 +35,8 @@ The hypothesis `n ≤ m` guarantees that conjugation is a permutation of the par
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial

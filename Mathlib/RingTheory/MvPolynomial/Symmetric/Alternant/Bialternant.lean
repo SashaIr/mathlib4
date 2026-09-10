@@ -36,6 +36,8 @@ the Kostka matrix lets us identify them.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial Finset

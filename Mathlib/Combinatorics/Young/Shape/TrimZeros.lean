@@ -6,6 +6,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Combinatorics.Young.Shape.Basic
 public import Mathlib.Data.List.DropRight
 
@@ -13,25 +14,25 @@ public import Mathlib.Data.List.DropRight
 # Normalising a list of natural numbers by removing its trailing zeroes
 
 Shapes of Young diagrams are represented by lists of natural numbers without trailing
-zeroes (`List.IsPart`).  When a shape is produced pointwise (for instance as the list of
+zeroes (`Young.IsPart`).  When a shape is produced pointwise (for instance as the list of
 values of a function on an initial segment of `ℕ`), trailing zeroes have to be removed.
-This file provides `List.trimZeros` and `List.shapeOfFn` for that purpose.
+This file provides `Young.trimZeros` and `Young.shapeOfFn` for that purpose.
 
 ## Main definitions
 
-* `List.trimZeros l` : the list `l` with its trailing zeroes removed.
-* `List.shapeOfFn k f` : the shape whose `i`-th part is `f i` for `i < k`.
+* `Young.trimZeros l` : the list `l` with its trailing zeroes removed.
+* `Young.shapeOfFn k f` : the shape whose `i`-th part is `f i` for `i < k`.
 
 ## Main results
 
-* `List.getD_trimZeros`, `List.sum_trimZeros` : trimming changes neither the parts nor
+* `Young.getD_trimZeros`, `Young.sum_trimZeros` : trimming changes neither the parts nor
   the sum.
-* `List.getD_shapeOfFn`, `List.sum_shapeOfFn`, `List.isPart_shapeOfFn`.
+* `Young.getD_shapeOfFn`, `Young.sum_shapeOfFn`, `Young.isPart_shapeOfFn`.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
@@ -44,8 +45,8 @@ lemma trimZeros_append (l : List ℕ) :
     trimZeros l ++ l.rtakeWhile (fun x => x == 0) = l :=
   List.rdropWhile_append_rtakeWhile
 
-lemma mem_rtakeWhile_zero {l : List ℕ} {x : ℕ} (hx : x ∈ l.rtakeWhile (fun y => y == 0)) :
-    x = 0 := by
+lemma mem_rtakeWhile_zero {l : List ℕ} {x : ℕ}
+    (hx : x ∈ l.rtakeWhile (fun y => y == 0)) : x = 0 := by
   simpa using List.mem_rtakeWhile_imp hx
 
 lemma length_trimZeros_le (l : List ℕ) : (trimZeros l).length ≤ l.length :=
@@ -124,21 +125,4 @@ lemma shapeOfFn_getD {sh : List ℕ} (hsh : IsPart sh) {k : ℕ} (hk : sh.length
   · rfl
   · exact (List.getD_eq_default _ _ (by omega)).symm
 
-/-- The sum of a list of natural numbers as a sum of its parts. -/
-lemma sum_eq_sum_range_getD_length (l : List ℕ) :
-    l.sum = ∑ i ∈ Finset.range l.length, l.getD i 0 := by
-  induction l with
-  | nil => simp
-  | cons a t ih =>
-    rw [List.sum_cons, ih, List.length_cons, Finset.sum_range_succ']
-    simp [Nat.add_comm]
-
-lemma sum_eq_sum_range_getD (l : List ℕ) {k : ℕ} (hk : l.length ≤ k) :
-    l.sum = ∑ i ∈ Finset.range k, l.getD i 0 := by
-  rw [sum_eq_sum_range_getD_length l]
-  refine Finset.sum_subset
-    (fun x hx => Finset.mem_range.2 (lt_of_lt_of_le (Finset.mem_range.1 hx) hk))
-    fun i _ hi => ?_
-  exact List.getD_eq_default _ _ (by simpa using hi)
-
-end List
+end Young

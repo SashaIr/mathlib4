@@ -20,30 +20,30 @@ standardization of the reading word of a tableau has the same shape as the table
 
 ## Main definitions
 
-* `List.reshapeLike t v` : cut the word `v` into rows following the shape of `t`.
-* `List.stdTabOf t` : the standardization of the tableau `t`.
+* `Young.reshapeLike t v` : cut the word `v` into rows following the shape of `t`.
+* `Young.stdTabOf t` : the standardization of the tableau `t`.
 
 ## Main results
 
-* `List.isTableau_reshapeLike` : cutting a word which has the same pattern of relative
+* `Young.isTableau_reshapeLike` : cutting a word which has the same pattern of relative
   order as the reading word of a tableau produces a tableau.
-* `List.isStdTab_stdTabOf`, `List.shape_stdTabOf`, `List.toWord_stdTabOf` : the
+* `Young.isStdTab_stdTabOf`, `Young.shape_stdTabOf`, `Young.toWord_stdTabOf` : the
   standardization of a tableau is a standard tableau of the same shape, whose reading word
   is the standardization of the reading word.
-* `List.shape_RS_std_toWord` : the insertion tableau of the standardized reading word of
+* `Young.shape_RS_std_toWord` : the insertion tableau of the standardized reading word of
   a tableau has the shape of the tableau.
 -/
 
 @[expose] public section
 
-namespace List
+namespace Young
 
 open List
 
 /-! ### Cutting a word along the rows of a tableau -/
 
 /-- Cut the word `v` into rows following the shape of the tableau `t`; the last letters of
-`v` form the first row, as in the reading word `List.toWord`. -/
+`v` form the first row, as in the reading word `Young.toWord`. -/
 def reshapeLike {T α : Type*} : List (List T) → List α → List (List α)
   | [], _ => []
   | t0 :: t, v => v.drop (v.length - t0.length) :: reshapeLike t (v.take (v.length - t0.length))
@@ -228,4 +228,4 @@ theorem shape_RS_std_toWord {t : List (List T)} (ht : IsTableau t) :
     shape (RS (std (toWord t))) = shape t := by
   rw [← toWord_stdTabOf t, RS_toWord (isTableau_stdTabOf ht), shape_stdTabOf]
 
-end List
+end Young

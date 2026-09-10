@@ -34,6 +34,8 @@ in two variables, so the `p_lam` do not form a basis over `ℤ`.)
 
 @[expose] public section
 
+open Young
+
 open List
 
 namespace MvPolynomial

@@ -20,7 +20,7 @@ the Schur polynomials gives the classical product formula
 `s_λ · s_μ = ∑_ν c^ν_{λμ} · s_ν`,
 
 the sum being over the partitions `ν` of `|λ| + |μ|` and `c^ν_{λμ}` being the
-Littlewood–Richardson coefficient `List.lrCoeff`.
+Littlewood–Richardson coefficient `Young.lrCoeff`.
 
 ## Main results
 
@@ -32,6 +32,8 @@ Littlewood–Richardson coefficient `List.lrCoeff`.
 -/
 
 @[expose] public section
+
+open Young
 
 namespace MvPolynomial
 

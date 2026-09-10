@@ -29,6 +29,8 @@ tableaux of shape `λ` and `s_λ` is the Schur polynomial of shape `λ`.
 
 @[expose] public section
 
+open Young
+
 namespace MvPolynomial
 
 open List MvPolynomial
