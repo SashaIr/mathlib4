@@ -363,7 +363,7 @@ theorem getD_eq_replicate_of_isYam_toWord {t : List (List ℕ)} (htab : IsTablea
 tableau of its shape. -/
 theorem eq_yamTab_of_isYam_toWord {t : List (List ℕ)} (htab : IsTableau t)
     (hyam : IsYam (toWord t)) : t = yamTab (shape t) := by
-  refine eq_of_getD_eq (fun i hi ↦ ?_) (fun i hi ↦ ?_) fun i ↦ ?_
+  refine eq_of_getD_eq (d := ([] : List ℕ)) (fun i hi ↦ ?_) (fun i hi ↦ ?_) fun i ↦ ?_
   · exact IsTableau.getD_ne_nil htab hi
   · exact IsTableau.getD_ne_nil (isTableau_yamTab (isPart_shape htab)) hi
   · rw [getD_yamTab, getD_eq_replicate_of_isYam_toWord htab hyam]

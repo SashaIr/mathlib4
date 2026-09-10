@@ -5,7 +5,8 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.GroupTheory.Perm.Sign
 
 /-!
@@ -29,9 +30,9 @@ the number of transpositions needed to write it, that is on its signature.
   morphism to a commutative group kills the alternating group.
 * `Equiv.Perm.map_eq_map_of_sign_eq` : the image of a permutation only depends on its
   signature.
-* `Equiv.Perm.signChar` : the signature as a morphism to the invertible complex numbers.
+* `Equiv.Perm.signChar` : the signature as a morphism to the invertible elements of a ring.
 * `Equiv.Perm.eq_one_or_eq_signChar` : a morphism from the symmetric group to the invertible
-  complex numbers is either trivial or the signature (Coq `repr1`).
+  elements of an integral domain is either trivial or the signature (Coq `repr1`).
 -/
 
 @[expose] public section
@@ -62,7 +63,8 @@ theorem map_eq_one_and_map_eq_map_swap (f : Perm α →* G) (σ : Perm α) :
     (sign σ = 1 → f σ = 1) ∧
       (∀ a b : α, a ≠ b → sign σ = -1 → f σ = f (swap a b)) := by
   induction σ using Equiv.Perm.swap_induction_on with
-  | one => exact ⟨fun _ => map_one f, fun a b _ h => by simp at h⟩
+  | one =>
+    exact ⟨fun _ => map_one f, fun a b _ h => by rw [map_one] at h; exact absurd h (by decide)⟩
   | swap_mul τ x y hxy ih =>
     have hsign : sign (swap x y * τ) = -sign τ := by
       rw [map_mul, Equiv.Perm.sign_swap hxy, neg_one_mul]
@@ -94,21 +96,25 @@ theorem map_eq_map_of_sign_eq (f : Perm α →* G) {σ τ : Perm α} (h : sign �
   rw [map_mul, map_inv, ← div_eq_mul_inv] at hker
   exact eq_of_div_eq_one hker
 
-/-- The signature as a morphism to the invertible complex numbers, that is the sign
-representation of the symmetric group (Coq `sign_repr`). -/
-noncomputable def signChar (α : Type*) [DecidableEq α] [Fintype α] : Perm α →* ℂˣ :=
-  (Units.map (Int.castRingHom ℂ).toMonoidHom).comp (Equiv.Perm.sign (α := α))
+/-- The signature as a morphism to the invertible elements of a ring `K`, that is the sign
+representation of the symmetric group over `K` (Coq `sign_repr`). -/
+def signChar (α : Type*) [DecidableEq α] [Fintype α] (K : Type*) [Ring K] : Perm α →* Kˣ :=
+  (Units.map (Int.castRingHom K).toMonoidHom).comp (Equiv.Perm.sign (α := α))
 
-@[simp] lemma signChar_apply (σ : Perm α) : ((signChar α σ : ℂˣ) : ℂ) = (sign σ : ℤ) := rfl
+@[simp] lemma signChar_apply {K : Type*} [Ring K] (σ : Perm α) :
+    ((signChar α K σ : Kˣ) : K) = (sign σ : ℤ) := rfl
+
+variable {K : Type*} [CommRing K] [IsDomain K]
 
 /-- **The linear characters of the symmetric group**: a morphism from the symmetric group
-to the invertible complex numbers is either trivial or the signature (Coq `repr1`). -/
-theorem eq_one_or_eq_signChar (f : Perm α →* ℂˣ) : f = 1 ∨ f = signChar α := by
+to the invertible elements of an integral domain is either trivial or the signature
+(Coq `repr1`). -/
+theorem eq_one_or_eq_signChar (f : Perm α →* Kˣ) : f = 1 ∨ f = signChar α K := by
   by_cases hcard : ∃ a b : α, a ≠ b
   · obtain ⟨a, b, hab⟩ := hcard
-    have hz : (f (swap a b) : ℂ) * (f (swap a b) : ℂ) = 1 := by
+    have hz : (f (swap a b) : K) * (f (swap a b) : K) = 1 := by
       simpa using congrArg (Units.val) (map_swap_sq f (a := a) (b := b))
-    have hz' : (f (swap a b) : ℂ) = 1 ∨ (f (swap a b) : ℂ) = -1 := by
+    have hz' : (f (swap a b) : K) = 1 ∨ (f (swap a b) : K) = -1 := by
       rcases mul_self_eq_one_iff.1 hz with h | h
       · exact Or.inl h
       · exact Or.inr h

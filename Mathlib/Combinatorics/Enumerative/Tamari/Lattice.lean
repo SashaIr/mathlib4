@@ -95,7 +95,8 @@ instance finite_tamariVector (n : ℕ) :
     rw [v.2.2] at this
     omega
   · intro v w hvw
-    refine Subtype.ext (eq_of_length_eq_of_getD_eq (by rw [v.2.2, w.2.2]) fun i => ?_)
+    refine Subtype.ext
+      (eq_of_length_eq_of_getD_eq (d := (0 : ℕ)) (by rw [v.2.2, w.2.2]) fun i => ?_)
     by_cases hi : i < n
     · exact congrArg Fin.val (congrFun hvw ⟨i, hi⟩)
     · rw [List.getD_eq_default _ _ (by rw [v.2.2]; omega),

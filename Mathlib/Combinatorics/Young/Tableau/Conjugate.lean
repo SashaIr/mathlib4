@@ -67,7 +67,7 @@ lemma getD_conjTab (t : List (List ℕ)) {j : ℕ} (hj : j < (shape t).headD 0) 
 lemma lt_headD_shape_of_inShape {t : List (List ℕ)} (h : IsPart (shape t)) {i j : ℕ}
     (hij : InShape (shape t) (i, j)) : j < (shape t).headD 0 := by
   have hmono := h.getD_antitone (Nat.zero_le i)
-  have h0 := getD_zero_eq_headD (shape t)
+  have h0 := getD_zero_eq_headD (d := (0 : ℕ)) (shape t)
   simp only [InShape] at hij
   omega
 
@@ -193,7 +193,7 @@ private lemma coe_flatten_eq_sum_boxes {u : List (List ℕ)} (h : IsPart (shape 
     intro i
     have hle : (u.getD i []).length ≤ C := by
       have := h.getD_antitone (Nat.zero_le i)
-      have h0 := getD_zero_eq_headD (shape u)
+      have h0 := getD_zero_eq_headD (d := (0 : ℕ)) (shape u)
       rw [← getD_shape]
       omega
     rw [coe_eq_sum_singleton_range (u.getD i []) hle]
