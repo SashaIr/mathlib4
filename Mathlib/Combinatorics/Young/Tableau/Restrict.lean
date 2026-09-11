@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
-public import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
-public import Mathlib.Combinatorics.Young.Shape.NatPartition
+public import Mathlib.Combinatorics.Enumerative.Partition.List.HorizontalStrip
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Multiset
 
 /-!
 # Removing the largest letter of a tableau

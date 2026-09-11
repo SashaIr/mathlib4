@@ -6,17 +6,23 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
-public import Mathlib.Combinatorics.Young.Shape.Basic
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Basic
 
 /-!
 # Comparison with Mathlib's partitions
 
 The Coq-Combi development represents an integer partition as a weakly decreasing list of positive
-integers, and this is the representation used in `Mathlib.Combinatorics.Young.Shape.Basic`.
+integers, and this is the representation used in
+`Mathlib.Combinatorics.Enumerative.Partition.List.Basic`.
 Mathlib instead uses a multiset of positive integers (`Nat.Partition`).
 
 This file provides the dictionary between the two: sorting a multiset in decreasing order
 is a bijection from Mathlib's partitions of `n` onto the list-based partitions of `n`.
+
+## Main definitions
+
+* `Young.sortDesc` : the parts of a multiset of naturals, in weakly decreasing order.
+* `Nat.Partition.partsList` : the parts of a partition of `n`, as a weakly decreasing list.
 
 ## Main results
 
@@ -24,6 +30,8 @@ is a bijection from Mathlib's partitions of `n` onto the list-based partitions o
   partition, and it is the identity on partitions.
 * `Young.listPartEquivNatPartition` : the list-based partitions of `n` are in bijection
   with `Nat.Partition n`.
+* `Nat.Partition.isPart_partsList` : the list of parts of a partition of `n` is a partition
+  in the sense of the list model.
 -/
 
 @[expose] public section
@@ -90,3 +98,68 @@ lemma card_listPart (n : ℕ) :
   Fintype.card_congr (listPartEquivNatPartition n)
 
 end Young
+
+namespace Nat.Partition
+
+open List Young
+
+variable {n : ℕ}
+
+/-- The parts of a partition of `n`, listed in weakly decreasing order. -/
+def partsList (p : Partition n) : List ℕ := sortDesc p.parts
+
+lemma isPart_partsList (p : Partition n) : IsPart p.partsList :=
+  isPart_sortDesc fun _ hi => p.parts_pos hi
+
+@[simp] lemma coe_partsList (p : Partition n) : (p.partsList : Multiset ℕ) = p.parts :=
+  coe_sortDesc _
+
+@[simp] lemma sum_partsList (p : Partition n) : p.partsList.sum = n := by
+  rw [partsList, sum_sortDesc, p.parts_sum]
+
+@[simp] lemma mem_partsList {p : Partition n} {i : ℕ} : i ∈ p.partsList ↔ i ∈ p.parts :=
+  mem_sortDesc
+
+@[simp] lemma length_partsList (p : Partition n) :
+    p.partsList.length = Multiset.card p.parts := by
+  rw [← coe_partsList p, Multiset.coe_card]
+
+lemma length_partsList_le (p : Partition n) : p.partsList.length ≤ n :=
+  (isPart_partsList p).length_le_sum.trans (le_of_eq (sum_partsList p))
+
+@[simp] lemma partsList_eq_nil_iff {p : Partition n} : p.partsList = [] ↔ n = 0 := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · rw [← sum_partsList p, h, List.sum_nil]
+  · subst h
+    exact (isPart_partsList p).eq_nil_of_sum_eq_zero (sum_partsList p)
+
+/-- The partition of `n` whose parts are the entries of a weakly decreasing list of
+positive integers summing to `n`. -/
+def ofList (l : List ℕ) (h : IsPart l) (hs : l.sum = n) : Partition n :=
+  listPartEquivNatPartition n ⟨l, h, hs⟩
+
+@[simp] lemma parts_ofList {l : List ℕ} (h : IsPart l) (hs : l.sum = n) :
+    (ofList l h hs).parts = (l : Multiset ℕ) := rfl
+
+@[simp] lemma partsList_ofList {l : List ℕ} (h : IsPart l) (hs : l.sum = n) :
+    (ofList l h hs).partsList = l :=
+  sortDesc_coe h
+
+/-- The partition of `n` with the single part `n` has `[n]` as its list of parts. -/
+@[simp] lemma partsList_indiscrete (hn : n ≠ 0) : (indiscrete n).partsList = [n] := by
+  rw [partsList, indiscrete_parts hn]
+  exact sortDesc_coe (isPart_cons.2 ⟨by simpa using Nat.one_le_iff_ne_zero.2 hn, isPart_nil⟩)
+
+lemma partsList_injective : Function.Injective (partsList : Partition n → List ℕ) := by
+  intro p q h
+  refine Partition.ext ?_
+  rw [← coe_partsList p, ← coe_partsList q, h]
+
+@[simp] lemma partsList_inj {p q : Partition n} : p.partsList = q.partsList ↔ p = q :=
+  partsList_injective.eq_iff
+
+@[simp] lemma ofList_partsList (p : Partition n) :
+    ofList p.partsList (isPart_partsList p) (sum_partsList p) = p :=
+  partsList_injective (by simp)
+
+end Nat.Partition

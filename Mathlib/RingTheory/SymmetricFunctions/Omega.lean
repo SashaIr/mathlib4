@@ -186,22 +186,22 @@ noncomputable def omegaSymFuncAlgEquiv (R : Type*) [CommRing R] : SymFunc R ≃�
 /-! ### `omega` on the classical symmetric functions -/
 
 /-- `omega` exchanges the Schur functions of two conjugate shapes. -/
-@[simp] theorem omegaSymFunc_schurFunc (η : PartIdx n n) :
-    omegaSymFunc R (schurFunc n R η).1 = (schurFunc n R (conjIdx (le_refl n) η)).1 := by
-  rw [omegaSymFunc_of_mem (schurFunc n R η).2]
-  exact congrArg Subtype.val (omegaFunc_schurFunc η)
+@[simp] theorem omegaSymFunc_schurFunc (μ : Nat.Partition n) :
+    omegaSymFunc R (schurFunc n R μ).1 = (schurFunc n R μ.conj).1 := by
+  rw [omegaSymFunc_of_mem (schurFunc n R μ).2]
+  exact congrArg Subtype.val (omegaFunc_schurFunc μ)
 
 /-- `omega` exchanges the complete homogeneous and the elementary symmetric functions. -/
-@[simp] theorem omegaSymFunc_hsymFunc (η : PartIdx n n) :
-    omegaSymFunc R (hsymFunc n R η).1 = (esymFunc n R (conjIdx (le_refl n) η)).1 := by
-  rw [omegaSymFunc_of_mem (hsymFunc n R η).2]
-  exact congrArg Subtype.val (omegaFunc_hsymFunc η)
+@[simp] theorem omegaSymFunc_hsymFunc (μ : Nat.Partition n) :
+    omegaSymFunc R (hsymFunc n R μ).1 = (esymFunc n R μ.conj).1 := by
+  rw [omegaSymFunc_of_mem (hsymFunc n R μ).2]
+  exact congrArg Subtype.val (omegaFunc_hsymFunc μ)
 
-/-- `omega` acts on the power sum symmetric functions by the sign `(-1)^(n - length η)`. -/
-@[simp] theorem omegaSymFunc_psymFunc (η : PartIdx n n) :
-    omegaSymFunc R (psymFunc n R η).1
-      = ((-1) ^ (n - η.1.length) : R) • (psymFunc n R η).1 := by
-  rw [omegaSymFunc_of_mem (psymFunc n R η).2]
-  exact congrArg Subtype.val (omegaFunc_psymFunc η)
+/-- `omega` acts on the power sum symmetric functions by the sign `(-1)^(n - length μ)`. -/
+@[simp] theorem omegaSymFunc_psymFunc (μ : Nat.Partition n) :
+    omegaSymFunc R (psymFunc n R μ).1
+      = ((-1) ^ (n - Multiset.card μ.parts) : R) • (psymFunc n R μ).1 := by
+  rw [omegaSymFunc_of_mem (psymFunc n R μ).2]
+  exact congrArg Subtype.val (omegaFunc_psymFunc μ)
 
 end SymFunc

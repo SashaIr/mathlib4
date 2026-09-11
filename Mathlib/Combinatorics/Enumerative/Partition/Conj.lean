@@ -5,18 +5,18 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.ConjugateEquiv
-public import Mathlib.Combinatorics.Young.Shape.Dominance
-public import Mathlib.Combinatorics.Young.Shape.NatPartition
+public import Mathlib.Combinatorics.Enumerative.Partition.List.ConjugateEquiv
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Dominance
+public import Mathlib.Combinatorics.Enumerative.Partition.YoungDiagram
 
 /-!
-# Conjugation of Mathlib's integer partitions
+# Conjugation and dominance for the partitions of an integer
 
-Transporting the conjugation of partitions of `Mathlib.Combinatorics.Young.Shape.Conjugate`
-(the Lean 4 port of `conj_part` of [Coq-Combi](https://github.com/math-comp/Coq-Combi)) along the
-dictionary of `Mathlib.Combinatorics.Young.Shape.NatPartition` equips Mathlib's
-`Nat.Partition n` with a conjugation: the parts of `p.conj` are the column lengths of the Young
-diagram of `p`.
+The conjugate of a partition of `n` is defined here as the transpose of its Young diagram:
+the `i`-th part of `p.conj` is the number of parts of `p` which are larger than `i`.
+Through the dictionary of `Mathlib.Combinatorics.Enumerative.Partition.List.YoungDiagram`,
+this is the conjugation `Young.conjPart` of the list model, which is what all the proofs go
+through.  The dominance order is transported from the list model in the same way.
 
 ## Main definitions
 
@@ -25,6 +25,7 @@ diagram of `p`.
 
 ## Main results
 
+* `Nat.Partition.youngDiagram_conj` : the Young diagram of the conjugate is the transpose.
 * `Nat.Partition.conj_conj` : conjugation is an involution.
 * `Nat.Partition.card_parts_conj_le_iff`, `Nat.Partition.forall_mem_parts_conj_le_iff` :
   conjugation exchanges the number of parts and the size of the largest part.
@@ -35,7 +36,7 @@ diagram of `p`.
 
 @[expose] public section
 
-open Young
+open Young YoungDiagram
 
 namespace Nat.Partition
 
@@ -43,45 +44,37 @@ open List
 
 variable {n : ℕ}
 
-/-- The parts of a partition of `n`, listed in weakly decreasing order. -/
-def partsList (p : Partition n) : List ℕ := sortDesc p.parts
-
-lemma isPart_partsList (p : Partition n) : IsPart p.partsList :=
-  isPart_sortDesc fun _ hi => p.parts_pos hi
-
-@[simp] lemma coe_partsList (p : Partition n) : (p.partsList : Multiset ℕ) = p.parts :=
-  coe_sortDesc _
-
-@[simp] lemma sum_partsList (p : Partition n) : p.partsList.sum = n := by
-  rw [partsList, sum_sortDesc, p.parts_sum]
-
-@[simp] lemma mem_partsList {p : Partition n} {i : ℕ} : i ∈ p.partsList ↔ i ∈ p.parts :=
-  mem_sortDesc
-
-@[simp] lemma length_partsList (p : Partition n) :
-    p.partsList.length = Multiset.card p.parts := by
-  rw [← coe_partsList p, Multiset.coe_card]
-
-/-- The conjugate of a partition: the `i`-th part of `p.conj` is the number of parts of
-`p` which are larger than `i`. -/
+/-- The conjugate of a partition: its Young diagram is the transpose of the Young diagram of
+`p`, so that the `i`-th part of `p.conj` is the number of parts of `p` larger than `i`. -/
 def conj (p : Partition n) : Partition n where
-  parts := (conjPart p.partsList : Multiset ℕ)
-  parts_pos := fun {i} hi =>
-    (isPart_conjPart (isPart_partsList p)).pos_of_mem (by simpa using hi)
+  parts := (p.youngDiagram.transpose.rowLens : Multiset ℕ)
+  parts_pos hi := p.youngDiagram.transpose.pos_of_mem_rowLens _ (by simpa using hi)
   parts_sum := by
-    rw [Multiset.sum_coe, sum_conjPart, sum_partsList]
-
-@[simp] lemma parts_conj (p : Partition n) :
-    p.conj.parts = (conjPart p.partsList : Multiset ℕ) := rfl
+    rw [Multiset.sum_coe, ← YoungDiagram.card_eq_sum_rowLens, YoungDiagram.card_transpose,
+      card_youngDiagram]
 
 @[simp] lemma partsList_conj (p : Partition n) : p.conj.partsList = conjPart p.partsList := by
-  change sortDesc p.conj.parts = _
-  rw [parts_conj, sortDesc_coe (isPart_conjPart (isPart_partsList p))]
+  have h := isPart_partsList p
+  change sortDesc (p.youngDiagram.transpose.rowLens : Multiset ℕ) = _
+  rw [sortDesc_coe (isPart_rowLens _), youngDiagram, transpose_ofRowLens h,
+    rowLens_ofRowLens_eq_self (hw := (isPart_conjPart h).sortedGE) (isPart_conjPart h).2]
+
+@[simp] lemma parts_conj (p : Partition n) :
+    p.conj.parts = (conjPart p.partsList : Multiset ℕ) := by
+  rw [← coe_partsList, partsList_conj]
+
+/-- **Conjugation of partitions is transposition of Young diagrams.** -/
+@[simp] theorem youngDiagram_conj (p : Partition n) :
+    p.conj.youngDiagram = p.youngDiagram.transpose := by
+  rw [youngDiagram, youngDiagram, transpose_ofRowLens (isPart_partsList p)]
+  exact ofRowLens_congr (isPart_partsList p.conj) (isPart_conjPart (isPart_partsList p))
+    (partsList_conj p)
 
 /-- Conjugation is an involution. -/
 @[simp] theorem conj_conj (p : Partition n) : p.conj.conj = p := by
   refine Partition.ext ?_
-  rw [parts_conj, partsList_conj, conjPart_conjPart (isPart_partsList p), coe_partsList]
+  rw [← coe_partsList, ← coe_partsList p, partsList_conj, partsList_conj,
+    conjPart_conjPart (isPart_partsList p)]
 
 theorem conj_injective : Function.Injective (conj : Partition n → Partition n) :=
   Function.LeftInverse.injective conj_conj

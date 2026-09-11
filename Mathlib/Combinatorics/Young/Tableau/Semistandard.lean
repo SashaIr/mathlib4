@@ -6,7 +6,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Combinatorics.Young.SemistandardTableau
-public import Mathlib.Combinatorics.Young.Shape.ToYoungDiagram
+public import Mathlib.Combinatorics.Enumerative.Partition.YoungDiagram
 public import Mathlib.Combinatorics.Young.Tableau.Basic
 
 /-!
@@ -173,15 +173,15 @@ def tableauEquivSSYT (μ : YoungDiagram) :
 of `μ`.** -/
 def shapeTableauEquivSSYT (μ : List ℕ) (hμ : IsPart μ) :
     {t : List (List ℕ) // IsTableau t ∧ shape t = μ} ≃
-      SemistandardYoungTableau (youngDiagram μ hμ) :=
-  (Equiv.subtypeEquivRight fun _ => by rw [rowLens_youngDiagram]).trans
-    (tableauEquivSSYT (youngDiagram μ hμ))
+      SemistandardYoungTableau (YoungDiagram.ofRowLens μ hμ.sortedGE) :=
+  (Equiv.subtypeEquivRight fun _ => by rw [YoungDiagram.rowLens_ofRowLens_eq_self hμ.2]).trans
+    (tableauEquivSSYT (YoungDiagram.ofRowLens μ hμ.sortedGE))
 
 /-- The number of boxes of a tableau is the number of boxes of the corresponding Young
 diagram. -/
 lemma sizeTab_eq_card (htab : IsTableau t) :
-    sizeTab t = (youngDiagram (shape t) (isPart_shape htab)).card := by
-  rw [card_youngDiagram, sizeTab]
+    sizeTab t = (YoungDiagram.ofRowLens (shape t) (isPart_shape htab).sortedGE).card := by
+  rw [card_ofRowLens_eq_sum (isPart_shape htab), sizeTab]
 
 end Young
 

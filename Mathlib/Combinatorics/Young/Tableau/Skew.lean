@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Included
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Included
 public import Mathlib.Combinatorics.Young.Tableau.Basic
 
 /-!
@@ -133,20 +133,17 @@ theorem isPart_outerShape {inner : List ℕ} (hinner : IsPart inner) {t : List (
   | nil => simpa [outerShape] using hinner
   | cons t0 t ih =>
     obtain ⟨hne, -, hdom, hskew⟩ := h
-    have hinner' : IsPart inner.tail := by
-      cases inner with
-      | nil => trivial
-      | cons a s => exact hinner.2
+    have hinner' : IsPart inner.tail := hinner.tail
     have hi0 : inner.tail.headD 0 ≤ inner.headD 0 := by
       cases inner with
       | nil => simp
       | cons a s =>
         cases s with
         | nil => simp
-        | cons b s => simpa using hinner.1
+        | cons b s => simpa using hinner.headD_le_of_cons
     have ihp := ih hinner' hskew
     rw [outerShape, shape_cons, addShape_cons_right]
-    refine ⟨?_, ihp⟩
+    refine isPart_cons.2 ⟨?_, ihp⟩
     by_cases hemp : inner.tail = [] ∧ t = []
     · obtain ⟨h1, h2⟩ := hemp
       rw [h1, h2]

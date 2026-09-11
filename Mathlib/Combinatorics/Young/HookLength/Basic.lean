@@ -6,7 +6,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Combinatorics.Young.Shape.Conjugate
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Conjugate
 public import Mathlib.Data.Nat.Factorial.BigOperators
 
 /-!

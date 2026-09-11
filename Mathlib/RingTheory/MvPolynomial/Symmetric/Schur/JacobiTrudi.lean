@@ -16,9 +16,9 @@ Following `theories/MPoly/Schur_altdef.v` of
 expressing a Schur polynomial as a determinant of complete homogeneous symmetric
 polynomials:
 
-`s_η = det (h_{η_i - i + j})_{0 ≤ i, j < m}`,
+`s_μ = det (h_{μ_i - i + j})_{0 ≤ i, j < m}`,
 
-for a partition `η` with at most `m` parts, in `m` variables.
+for a partition `μ` with at most `m` parts, in `m` variables.
 
 The proof is the classical one.  Write `e^{(j)}_r` for the elementary symmetric polynomial
 in the variables other than `X j`.  Since
@@ -26,11 +26,11 @@ in the variables other than `X j`.  Since
 
 `∑_r (-1)^r e^{(j)}_r h_{a - r} = (X j) ^ a`,
 
-which says exactly that the product of the Jacobi-Trudi matrix of `η` with the matrix
-`B_{k j} = (-1)^{m-1-k} e^{(j)}_{m-1-k}` is the matrix `(X j ^ (η + delta)_i)` whose
-determinant is the alternant `a_{η + delta}`.  Taking `η = 0`, the Jacobi-Trudi matrix
+which says exactly that the product of the Jacobi-Trudi matrix of `μ` with the matrix
+`B_{k j} = (-1)^{m-1-k} e^{(j)}_{m-1-k}` is the matrix `(X j ^ (μ + delta)_i)` whose
+determinant is the alternant `a_{μ + delta}`.  Taking `μ = 0`, the Jacobi-Trudi matrix
 is upper triangular with `1` on the diagonal, so `det B` is the Vandermonde alternant
-`a_delta`; comparing with Jacobi's bialternant formula `a_{η + delta} = s_η · a_delta`
+`a_delta`; comparing with Jacobi's bialternant formula `a_{μ + delta} = s_μ · a_delta`
 and cancelling `a_delta` gives the result.
 
 ## Main definitions and results
@@ -40,8 +40,8 @@ and cancelling `a_delta` gives the result.
 * `MvPolynomial.hsymmInt m R n` : the complete homogeneous symmetric polynomial indexed by an
   integer, zero for negative indices.
 * `MvPolynomial.sum_esymmErase_mul_hsymmInt` : `∑_{r < m} (-1)^r e^{(j)}_r h_{a-r} = (X j)^a`.
-* `MvPolynomial.jtMatrix m R η` : the Jacobi-Trudi matrix `(h_{η_i - i + j})`.
-* `MvPolynomial.det_jtMatrix_mul_alt` : `det (jtMatrix η) · a_delta = a_{η + delta}`.
+* `MvPolynomial.jtMatrix m R μ` : the Jacobi-Trudi matrix `(h_{μ_i - i + j})`.
+* `MvPolynomial.det_jtMatrix_mul_alt` : `det (jtMatrix μ) · a_delta = a_{μ + delta}`.
 * `MvPolynomial.schurPoly_eq_det_jtMatrix` : **the Jacobi-Trudi formula**.
 -/
 
@@ -185,10 +185,10 @@ theorem sum_esymmErase_mul_hsymmInt (j : Fin m) (a : ℕ) :
 
 /-! ### The Jacobi-Trudi matrix -/
 
-/-- The Jacobi-Trudi matrix of a shape `η`: its `(i, j)` entry is `h_{η_i - i + j}`. -/
-noncomputable def jtMatrix (m : ℕ) (R : Type*) [CommRing R] (η : List ℕ) :
+/-- The Jacobi-Trudi matrix of a shape `μ`: its `(i, j)` entry is `h_{μ_i - i + j}`. -/
+noncomputable def jtMatrix (m : ℕ) (R : Type*) [CommRing R] (μ : List ℕ) :
     Matrix (Fin m) (Fin m) (MvPolynomial (Fin m) R) :=
-  Matrix.of fun i k => hsymmInt m R ((η.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
+  Matrix.of fun i k => hsymmInt m R ((μ.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
 
 /-- The auxiliary matrix `B_{k j} = (-1)^{m-1-k} e^{(j)}_{m-1-k}`. -/
 noncomputable def jtAuxMatrix (m : ℕ) (R : Type*) [CommRing R] :
@@ -196,26 +196,26 @@ noncomputable def jtAuxMatrix (m : ℕ) (R : Type*) [CommRing R] :
   Matrix.of fun k j => (-1 : MvPolynomial (Fin m) R) ^ (m - 1 - (k : ℕ))
     * esymmErase m R j (m - 1 - (k : ℕ))
 
-/-- The product of the Jacobi-Trudi matrix of `η` with the auxiliary matrix is the
-matrix `(X j ^ (η + delta)_i)` of the alternant. -/
-theorem jtMatrix_mul_jtAuxMatrix (η : List ℕ) :
-    jtMatrix m R η * jtAuxMatrix m R
-      = Matrix.of fun i j : Fin m => (X j : MvPolynomial (Fin m) R) ^ partVec m η i := by
+/-- The product of the Jacobi-Trudi matrix of `μ` with the auxiliary matrix is the
+matrix `(X j ^ (μ + delta)_i)` of the alternant. -/
+theorem jtMatrix_mul_jtAuxMatrix (μ : List ℕ) :
+    jtMatrix m R μ * jtAuxMatrix m R
+      = Matrix.of fun i j : Fin m => (X j : MvPolynomial (Fin m) R) ^ partVec m μ i := by
   refine Matrix.ext fun i j => ?_
   rw [Matrix.mul_apply]
-  have hL : ∑ k : Fin m, jtMatrix m R η i k * jtAuxMatrix m R k j
-      = ∑ k ∈ Finset.range m, hsymmInt m R ((η.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
+  have hL : ∑ k : Fin m, jtMatrix m R μ i k * jtAuxMatrix m R k j
+      = ∑ k ∈ Finset.range m, hsymmInt m R ((μ.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
           * ((-1 : MvPolynomial (Fin m) R) ^ (m - 1 - k) * esymmErase m R j (m - 1 - k)) :=
-    Fin.sum_univ_eq_sum_range (fun k : ℕ => hsymmInt m R ((η.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
+    Fin.sum_univ_eq_sum_range (fun k : ℕ => hsymmInt m R ((μ.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
       * ((-1 : MvPolynomial (Fin m) R) ^ (m - 1 - k) * esymmErase m R j (m - 1 - k))) m
-  rw [hL, Matrix.of_apply, ← sum_esymmErase_mul_hsymmInt (R := R) j (partVec m η i),
+  rw [hL, Matrix.of_apply, ← sum_esymmErase_mul_hsymmInt (R := R) j (partVec m μ i),
     ← Finset.sum_range_reflect (fun r => (-1 : MvPolynomial (Fin m) R) ^ r * esymmErase m R j r
-      * hsymmInt m R ((partVec m η i : ℤ) - r)) m]
+      * hsymmInt m R ((partVec m μ i : ℤ) - r)) m]
   refine Finset.sum_congr rfl fun k hk => ?_
   have hk' : k < m := Finset.mem_range.1 hk
   have hi : (i : ℕ) < m := i.isLt
-  have hcast : ((η.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
-      = ((partVec m η i : ℕ) : ℤ) - ((m - 1 - k : ℕ) : ℤ) := by
+  have hcast : ((μ.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))
+      = ((partVec m μ i : ℕ) : ℤ) - ((m - 1 - k : ℕ) : ℤ) := by
     simp only [partVec]
     omega
   rw [hcast]
@@ -251,24 +251,24 @@ lemma det_jtAuxMatrix : (jtAuxMatrix m R).det = alt m R (partVec m []) := by
   exact h
 
 /-- The determinant of the Jacobi-Trudi matrix times the Vandermonde alternant is the
-alternant of `η + delta`. -/
-theorem det_jtMatrix_mul_alt (η : List ℕ) :
-    (jtMatrix m R η).det * alt m R (partVec m []) = alt m R (partVec m η) := by
-  have h := congrArg Matrix.det (jtMatrix_mul_jtAuxMatrix (m := m) (R := R) η)
+alternant of `μ + delta`. -/
+theorem det_jtMatrix_mul_alt (μ : List ℕ) :
+    (jtMatrix m R μ).det * alt m R (partVec m []) = alt m R (partVec m μ) := by
+  have h := congrArg Matrix.det (jtMatrix_mul_jtAuxMatrix (m := m) (R := R) μ)
   rw [Matrix.det_mul, det_jtAuxMatrix, det_of_pow_eq_alt] at h
   exact h
 
 /-! ### The Jacobi-Trudi formula -/
 
 /-- **The Jacobi-Trudi formula** over `ℤ`. -/
-theorem schurPoly_eq_det_jtMatrix_int {η : List ℕ} (hη : IsPart η)
-    (hlen : η.length ≤ m) :
-    schurPoly (Fin m) ℤ η = (jtMatrix m ℤ η).det := by
+theorem schurPoly_eq_det_jtMatrix_int {μ : List ℕ} (hμ : IsPart μ)
+    (hlen : μ.length ≤ m) :
+    schurPoly (Fin m) ℤ μ = (jtMatrix m ℤ μ).det := by
   have hne : alt m ℤ (partVec m []) ≠ 0 := by
-    rw [← altPart_of_le (m := m) (R := ℤ) (η := ([] : List ℕ)) (by simp)]
+    rw [← altPart_of_le (m := m) (R := ℤ) (μ := ([] : List ℕ)) (by simp)]
     exact altPart_nil_ne_zero m
   refine mul_right_cancel₀ hne ?_
-  rw [det_jtMatrix_mul_alt, alt_partVec_eq_schurPoly_mul hη hlen]
+  rw [det_jtMatrix_mul_alt, alt_partVec_eq_schurPoly_mul hμ hlen]
 
 /-- The complete homogeneous symmetric polynomials with an integer index are compatible
 with base change. -/
@@ -279,16 +279,16 @@ lemma map_hsymmInt {S : Type*} [CommRing S] (f : R →+* S) (n : ℤ) :
   · exact MvPolynomial.map_hsymm (Fin m) R _ f
   · exact map_zero _
 
-/-- **The Jacobi-Trudi formula**: the Schur polynomial of a partition `η` with at most
-`m` parts is the determinant of the matrix `(h_{η_i - i + j})_{0 ≤ i, j < m}` of complete
+/-- **The Jacobi-Trudi formula**: the Schur polynomial of a partition `μ` with at most
+`m` parts is the determinant of the matrix `(h_{μ_i - i + j})_{0 ≤ i, j < m}` of complete
 homogeneous symmetric polynomials in `m` variables. -/
-theorem schurPoly_eq_det_jtMatrix {η : List ℕ} (hη : IsPart η) (hlen : η.length ≤ m) :
-    schurPoly (Fin m) R η = (jtMatrix m R η).det := by
+theorem schurPoly_eq_det_jtMatrix {μ : List ℕ} (hμ : IsPart μ) (hlen : μ.length ≤ m) :
+    schurPoly (Fin m) R μ = (jtMatrix m R μ).det := by
   have h := congrArg (MvPolynomial.map (Int.castRingHom R))
-    (schurPoly_eq_det_jtMatrix_int (m := m) hη hlen)
+    (schurPoly_eq_det_jtMatrix_int (m := m) hμ hlen)
   rw [map_schurPoly, RingHom.map_det] at h
-  have hmat : (MvPolynomial.map (Int.castRingHom R)).mapMatrix (jtMatrix m ℤ η)
-      = jtMatrix m R η :=
+  have hmat : (MvPolynomial.map (Int.castRingHom R)).mapMatrix (jtMatrix m ℤ μ)
+      = jtMatrix m R μ :=
     Matrix.ext fun i k => map_hsymmInt (m := m) (Int.castRingHom R) _
   rw [h, hmat]
 

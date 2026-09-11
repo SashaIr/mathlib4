@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Ribbon.Defs
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Ribbon.Defs
 public import Mathlib.Logic.Relation
 
 /-!
@@ -14,7 +14,8 @@ public import Mathlib.Logic.Relation
 A Lean 4 port of the textbook characterisation of ribbons of `theories/Combi/skewpart.v`
 from [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-`Mathlib/Combinatorics/Young/Shape/Ribbon/Defs.lean` defines a ribbon by the *operative* condition
+`Mathlib/Combinatorics/Enumerative/Partition/List/Ribbon/Defs.lean` defines a ribbon by the
+*operative* condition
 `Young.RibbonOn`: the skew shape occupies an interval of rows, and each row of the outer
 shape ends exactly one box to the right of where the previous row of the inner shape
 ended.  Textbooks instead define a ribbon (or border strip) as a skew shape which is

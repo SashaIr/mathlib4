@@ -59,7 +59,7 @@ lemma IsClassFun.apply_eq_of_cycleTypeList_eq {f : Perm (Fin n) → ℚ} (hf : I
 lemma exists_comp_cycleTypeList {f : Perm (Fin n) → ℚ} (hf : IsClassFun f) :
     ∃ c : List ℕ → ℚ, ∀ σ, f σ = c (cycleTypeList σ) := by
   classical
-  refine ⟨fun η => if h : ∃ σ : Perm (Fin n), cycleTypeList σ = η then f h.choose
+  refine ⟨fun μ => if h : ∃ σ : Perm (Fin n), cycleTypeList σ = μ then f h.choose
     else 0, fun σ => ?_⟩
   have hex : ∃ τ : Perm (Fin n), cycleTypeList τ = cycleTypeList σ := ⟨σ, rfl⟩
   change f σ = if h : ∃ τ : Perm (Fin n), cycleTypeList τ = cycleTypeList σ
@@ -70,21 +70,21 @@ lemma exists_comp_cycleTypeList {f : Perm (Fin n) → ℚ} (hf : IsClassFun f) :
 /-- Averaging a function of the cycle type over the symmetric group. -/
 lemma sum_comp_cycleTypeList (c : List ℕ → ℚ) :
     ((Nat.factorial n : ℚ))⁻¹ * ∑ σ : Perm (Fin n), c (cycleTypeList σ)
-      = ∑ η ∈ partFinset n, c η * ((zcard η : ℚ))⁻¹ := by
+      = ∑ μ ∈ partFinset n, c μ * ((zcard μ : ℚ))⁻¹ := by
   classical
   rw [← Finset.sum_fiberwise_of_maps_to (fun σ _ => cycleTypeList_mem_partFinset σ)
     (fun σ : Perm (Fin n) => c (cycleTypeList σ)), Finset.mul_sum]
-  refine Finset.sum_congr rfl fun η hη => ?_
-  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
-  have hz : (zcard η : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
+  refine Finset.sum_congr rfl fun μ hμ => ?_
+  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
+  have hz : (zcard μ : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
   have hne : (Nat.factorial n : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (Nat.factorial_ne_zero _)
-  have hc : ((Finset.univ.filter fun σ : Perm (Fin n) => cycleTypeList σ = η).card : ℚ)
-      * (zcard η : ℚ) = (Nat.factorial n : ℚ) := by
+  have hc : ((Finset.univ.filter fun σ : Perm (Fin n) => cycleTypeList σ = μ).card : ℚ)
+      * (zcard μ : ℚ) = (Nat.factorial n : ℚ) := by
     exact_mod_cast card_cycleTypeList_mul_zcard (n := n) hpart hsum
   rw [Finset.sum_congr rfl fun σ hσ => by rw [(Finset.mem_filter.1 hσ).2],
     Finset.sum_const, nsmul_eq_mul]
   field_simp
-  linear_combination c η * hc
+  linear_combination c μ * hc
 
 /-! ### The characteristic as an element of the module of symmetric polynomials -/
 
@@ -115,10 +115,10 @@ noncomputable def frobCharSub (hnk : n ≤ k) (f : Perm (Fin n) → ℚ) :
 power sum basis. -/
 lemma frobCharSub_comp_cycleTypeList (hnk : n ≤ k) (c : List ℕ → ℚ) :
     frobCharSub hnk (fun σ : Perm (Fin n) => c (cycleTypeList σ))
-      = ∑ η : PartIdx n k, (c η.1 * ((zcard η.1 : ℚ))⁻¹) • pSub k n ℚ η := by
+      = ∑ μ : PartIdx n k, (c μ.1 * ((zcard μ.1 : ℚ))⁻¹) • pSub k n ℚ μ := by
   refine Subtype.ext ?_
   rw [coe_frobCharSub, frobChar_comp_cycleTypeList,
-    sum_partFinset_eq_sum_partIdx hnk fun η => (c η * ((zcard η : ℚ))⁻¹) • pProd k ℚ η]
+    sum_partFinset_eq_sum_partIdx hnk fun μ => (c μ * ((zcard μ : ℚ))⁻¹) • pProd k ℚ μ]
   rw [Submodule.coe_sum]
   rfl
 
@@ -154,8 +154,8 @@ theorem hallInner_frobCharSub (hnk : n ≤ k) {f g : Perm (Fin n) → ℚ}
     · intro hx
       exact absurd (Finset.mem_univ x) hx
   rw [Finset.sum_congr rfl fun x _ => by rw [hinner x], classInner,
-    sum_comp_cycleTypeList (n := n) (fun η => c η * d η),
-    sum_partFinset_eq_sum_partIdx hnk fun η => c η * d η * ((zcard η : ℚ))⁻¹]
+    sum_comp_cycleTypeList (n := n) (fun μ => c μ * d μ),
+    sum_partFinset_eq_sum_partIdx hnk fun μ => c μ * d μ * ((zcard μ : ℚ))⁻¹]
   exact Finset.sum_congr rfl fun x _ => by ring
 
 /-- **The Frobenius characteristic is surjective**: every symmetric homogeneous polynomial
@@ -163,20 +163,20 @@ of degree `n` in `k ≥ n` variables is the characteristic of a class function o
 theorem exists_isClassFun_frobCharSub_eq (hnk : n ≤ k) (F : symHomogeneousSubmodule k n ℚ) :
     ∃ f : Perm (Fin n) → ℚ, IsClassFun f ∧ frobCharSub hnk f = F := by
   classical
-  set a : PartIdx n k → ℚ := fun η => hallInner k n ℚ F (pSubInvZ k n ℚ η) with ha
-  set c : List ℕ → ℚ := fun η =>
-    if h : IsPart η ∧ η.sum = n ∧ η.length ≤ k then (zcard η : ℚ) * a ⟨η, h⟩ else 0
+  set a : PartIdx n k → ℚ := fun μ => hallInner k n ℚ F (pSubInvZ k n ℚ μ) with ha
+  set c : List ℕ → ℚ := fun μ =>
+    if h : IsPart μ ∧ μ.sum = n ∧ μ.length ≤ k then (zcard μ : ℚ) * a ⟨μ, h⟩ else 0
     with hcdef
   refine ⟨fun σ => c (cycleTypeList σ), fun σ τ => by
     simp only [cycleTypeList_conj], ?_⟩
   rw [frobCharSub_comp_cycleTypeList hnk c]
-  have hterm : ∀ η : PartIdx n k, c η.1 * ((zcard η.1 : ℚ))⁻¹ = a η := by
-    intro η
-    have hz : (zcard η.1 : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos η.2.1).ne'
+  have hterm : ∀ μ : PartIdx n k, c μ.1 * ((zcard μ.1 : ℚ))⁻¹ = a μ := by
+    intro μ
+    have hz : (zcard μ.1 : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos μ.2.1).ne'
     rw [hcdef]
-    simp only [dite_eq_left η.2]
+    simp only [dite_eq_left μ.2]
     field_simp
-  rw [Finset.sum_congr rfl fun η _ => by rw [hterm η]]
+  rw [Finset.sum_congr rfl fun μ _ => by rw [hterm μ]]
   exact (eq_sum_hallInner_pSubInvZ_smul hnk F).symm
 
 /-- The Frobenius characteristic is injective on class functions. -/

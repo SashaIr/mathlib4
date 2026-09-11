@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.Group.List.GetD
-public import Mathlib.Combinatorics.Young.Shape.Basic
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Basic
 public import Mathlib.Data.List.DropRight
 
 /-!

@@ -120,23 +120,23 @@ theorem coeff_msymm {n : ℕ} (μ : Nat.Partition n) (d : Fin m →₀ ℕ) :
     rw [← hshape a.1 hbd, a.2]
 
 /-- **The two definitions of the monomial symmetric polynomials agree**: the monomial
-symmetric polynomial of a partition `η` with at most `m` parts is Mathlib's `msymm` of
-the corresponding partition of `|η|`. -/
-theorem monomialSym_eq_msymm {n : ℕ} {η : List ℕ} (hη : IsPart η) (hsum : η.sum = n)
-    (hlen : η.length ≤ m) :
-    monomialSym m R η = msymm (Fin m) R (listPartEquivNatPartition n ⟨η, hη, hsum⟩) := by
+symmetric polynomial of a partition `μ` with at most `m` parts is Mathlib's `msymm` of
+the corresponding partition of `|μ|`. -/
+theorem monomialSym_eq_msymm {n : ℕ} {μ : List ℕ} (hμ : IsPart μ) (hsum : μ.sum = n)
+    (hlen : μ.length ≤ m) :
+    monomialSym m R μ = msymm (Fin m) R (listPartEquivNatPartition n ⟨μ, hμ, hsum⟩) := by
   classical
   refine MvPolynomial.ext _ _ fun d => ?_
   rw [coeff_monomialSym, coeff_msymm, listPartEquivNatPartition_apply]
-  have hiff : d ∈ degOrbit (shapeContent m η)
-      ↔ (degShape d : Multiset ℕ) = (η : Multiset ℕ) := by
-    rw [mem_degOrbit_iff, ← degShape_eq_iff, degShape_shapeContent hη hlen]
+  have hiff : d ∈ degOrbit (shapeContent m μ)
+      ↔ (degShape d : Multiset ℕ) = (μ : Multiset ℕ) := by
+    rw [mem_degOrbit_iff, ← degShape_eq_iff, degShape_shapeContent hμ hlen]
     constructor
     · intro h; rw [h]
     · intro h
       have := congrArg sortDesc h
-      rwa [sortDesc_coe (isPart_degShape d), sortDesc_coe hη] at this
-  by_cases hd : d ∈ degOrbit (shapeContent m η)
+      rwa [sortDesc_coe (isPart_degShape d), sortDesc_coe hμ] at this
+  by_cases hd : d ∈ degOrbit (shapeContent m μ)
   · rw [ite_eq_left hd, ite_eq_left (hiff.1 hd)]
   · rw [ite_eq_right hd, ite_eq_right fun h => hd (hiff.2 h)]
 

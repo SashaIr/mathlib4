@@ -232,17 +232,17 @@ lemma crystalPhi_le_count (i : ℕ) (w : List ℕ) : crystalPhi i w ≤ w.count 
     · rw [crystalPhi_cons_of_ne hne, List.count_cons_of_ne hne]
       exact ih
 
-lemma crystalPhi_toWord_superTabFrom {η : List ℕ} (h : IsPart η) (k : ℕ) :
-    ∀ i, k ≤ i → crystalPhi i (toWord (superTabFrom k η)) = 0 := by
-  induction η generalizing k with
+lemma crystalPhi_toWord_superTabFrom {μ : List ℕ} (h : IsPart μ) (k : ℕ) :
+    ∀ i, k ≤ i → crystalPhi i (toWord (superTabFrom k μ)) = 0 := by
+  induction μ generalizing k with
   | nil => simp
-  | cons n η ih =>
+  | cons n μ ih =>
     intro i hi
-    have hpart : IsPart η := h.2
-    have hle : η.getD 0 0 ≤ n := by
-      cases η with
+    have hpart : IsPart μ := h.of_cons
+    have hle : μ.getD 0 0 ≤ n := by
+      cases μ with
       | nil => simp
-      | cons a l => simpa using h.1
+      | cons a l => simpa using h.headD_le_of_cons
     rw [superTabFrom_cons, toWord_cons, crystalPhi_append]
     have hrow : IsRow (List.replicate n k) := isRow_replicate n k
     have hphi : crystalPhi i (List.replicate n k) = 0 := by
@@ -254,7 +254,7 @@ lemma crystalPhi_toWord_superTabFrom {η : List ℕ} (h : IsPart η) (k : ℕ) :
     · have heps : crystalEps k (List.replicate n k) = n := by
         rw [hrow.crystalEps_eq_count, List.count_replicate]
         simp
-      have hcount := crystalPhi_le_count k (toWord (superTabFrom (k + 1) η))
+      have hcount := crystalPhi_le_count k (toWord (superTabFrom (k + 1) μ))
       rw [count_toWord_superTabFrom, ite_eq_left (show k + 1 ≤ k + 1 by omega),
         Nat.sub_self] at hcount
       rw [heps]
@@ -264,8 +264,8 @@ lemma crystalPhi_toWord_superTabFrom {η : List ℕ} (h : IsPart η) (k : ℕ) :
 
 /-- The reading word of a superstandard tableau has no unmatched letter: it is the highest
 weight element of its crystal. -/
-lemma crystalPhi_toWord_superTab {η : List ℕ} (h : IsPart η) (i : ℕ) :
-    crystalPhi i (toWord (superTab η)) = 0 :=
+lemma crystalPhi_toWord_superTab {μ : List ℕ} (h : IsPart μ) (i : ℕ) :
+    crystalPhi i (toWord (superTab μ)) = 0 :=
   crystalPhi_toWord_superTabFrom h 0 i (Nat.zero_le _)
 
 end Young

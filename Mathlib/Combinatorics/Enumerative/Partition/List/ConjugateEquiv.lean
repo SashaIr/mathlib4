@@ -5,13 +5,13 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Conjugate
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Conjugate
 public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Conjugation as a bijection of partitions
 
-A complement to `Mathlib.Combinatorics.Young.Shape.Conjugate`, in the spirit of
+A complement to `Mathlib.Combinatorics.Enumerative.Partition.List.Conjugate`, in the spirit of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi) (`theories/Combi/partition.v`),
 where conjugation is packaged as an involution of the finite type of partitions
 of an integer.

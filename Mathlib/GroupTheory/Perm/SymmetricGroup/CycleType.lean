@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Finset
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Finset
 public import Mathlib.GroupTheory.Perm.Centralizer
 
 /-!

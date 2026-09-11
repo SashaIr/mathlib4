@@ -16,7 +16,7 @@ Following `theories/MPoly/Schur_altdef.v` of
 for alternants (`MvPolynomial.altPart_mul_esymm`) and from Jacobi's bialternant formula
 (`MvPolynomial.altPart_eq_schurPoly_mul`) the dual Pieri rule for Schur polynomials:
 
-`s_μ * e_r = ∑_{η / μ a vertical strip of size r} s_η`.
+`s_ν * e_r = ∑_{μ / ν a vertical strip of size r} s_μ`.
 
 Over `ℤ` the Vandermonde alternant is a nonzero element of an integral domain, so it can
 be cancelled; the statement over an arbitrary commutative semiring follows by base change.
@@ -64,55 +64,55 @@ lemma altPart_nil_ne_zero (m : ℕ) : altPart m ℤ [] ≠ 0 := by
 /-! ### The dual Pieri rule -/
 
 /-- The dual Pieri rule over `ℤ`, obtained by cancelling the Vandermonde alternant. -/
-theorem schurPoly_mul_esymm_int {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) :
-    schurPoly (Fin m) ℤ μ * esymm (Fin m) ℤ r
-      = ∑ η ∈ partFinset (μ.sum + r),
-          if VertStrip η μ then schurPoly (Fin m) ℤ η else 0 := by
+theorem schurPoly_mul_esymm_int {ν : List ℕ} (hν : IsPart ν) (r : ℕ) :
+    schurPoly (Fin m) ℤ ν * esymm (Fin m) ℤ r
+      = ∑ μ ∈ partFinset (ν.sum + r),
+          if VertStrip μ ν then schurPoly (Fin m) ℤ μ else 0 := by
   classical
   refine mul_right_cancel₀ (altPart_nil_ne_zero m) ?_
-  have hlhs : schurPoly (Fin m) ℤ μ * esymm (Fin m) ℤ r * altPart m ℤ []
-      = altPart m ℤ μ * esymm (Fin m) ℤ r := by
-    rw [altPart_eq_schurPoly_mul hμ]; ring
-  have hrhs : (∑ η ∈ partFinset (μ.sum + r),
-        if VertStrip η μ then schurPoly (Fin m) ℤ η else 0) * altPart m ℤ []
-      = ∑ η ∈ partFinset (μ.sum + r), if VertStrip η μ then altPart m ℤ η else 0 := by
+  have hlhs : schurPoly (Fin m) ℤ ν * esymm (Fin m) ℤ r * altPart m ℤ []
+      = altPart m ℤ ν * esymm (Fin m) ℤ r := by
+    rw [altPart_eq_schurPoly_mul hν]; ring
+  have hrhs : (∑ μ ∈ partFinset (ν.sum + r),
+        if VertStrip μ ν then schurPoly (Fin m) ℤ μ else 0) * altPart m ℤ []
+      = ∑ μ ∈ partFinset (ν.sum + r), if VertStrip μ ν then altPart m ℤ μ else 0 := by
     rw [Finset.sum_mul]
-    refine Finset.sum_congr rfl fun η hη => ?_
-    obtain ⟨hηpart, -⟩ := mem_partFinset.1 hη
-    by_cases hstrip : VertStrip η μ
-    · rw [ite_eq_left hstrip, ite_eq_left hstrip, altPart_eq_schurPoly_mul hηpart]
+    refine Finset.sum_congr rfl fun μ hμ => ?_
+    obtain ⟨hμpart, -⟩ := mem_partFinset.1 hμ
+    by_cases hstrip : VertStrip μ ν
+    · rw [ite_eq_left hstrip, ite_eq_left hstrip, altPart_eq_schurPoly_mul hμpart]
     · rw [ite_eq_right hstrip, ite_eq_right hstrip, zero_mul]
   rw [hlhs, hrhs]
-  exact altPart_mul_esymm hμ r
+  exact altPart_mul_esymm hν r
 
 /-- The dual Pieri rule over `ℕ`, obtained from the one over `ℤ` by injectivity. -/
-theorem schurPoly_mul_esymm_nat {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) :
-    schurPoly (Fin m) ℕ μ * esymm (Fin m) ℕ r
-      = ∑ η ∈ partFinset (μ.sum + r),
-          if VertStrip η μ then schurPoly (Fin m) ℕ η else 0 := by
+theorem schurPoly_mul_esymm_nat {ν : List ℕ} (hν : IsPart ν) (r : ℕ) :
+    schurPoly (Fin m) ℕ ν * esymm (Fin m) ℕ r
+      = ∑ μ ∈ partFinset (ν.sum + r),
+          if VertStrip μ ν then schurPoly (Fin m) ℕ μ else 0 := by
   classical
   refine MvPolynomial.map_injective (Nat.castRingHom ℤ) Nat.cast_injective ?_
   rw [map_mul, map_schurPoly, MvPolynomial.map_esymm, map_sum]
-  rw [schurPoly_mul_esymm_int hμ r]
-  refine Finset.sum_congr rfl fun η _ => ?_
-  by_cases hstrip : VertStrip η μ
+  rw [schurPoly_mul_esymm_int hν r]
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  by_cases hstrip : VertStrip μ ν
   · rw [ite_eq_left hstrip, ite_eq_left hstrip, map_schurPoly]
   · rw [ite_eq_right hstrip, ite_eq_right hstrip, map_zero]
 
-/-- **The dual Pieri rule**: the product of the Schur polynomial of shape `μ` by the
+/-- **The dual Pieri rule**: the product of the Schur polynomial of shape `ν` by the
 elementary symmetric polynomial of degree `r` is the sum of the Schur polynomials of the
-shapes obtained from `μ` by adding a vertical strip with `r` boxes. -/
-theorem schurPoly_mul_esymm {R : Type*} [CommSemiring R] {μ : List ℕ} (hμ : IsPart μ)
+shapes obtained from `ν` by adding a vertical strip with `r` boxes. -/
+theorem schurPoly_mul_esymm {R : Type*} [CommSemiring R] {ν : List ℕ} (hν : IsPart ν)
     (r : ℕ) :
-    schurPoly (Fin m) R μ * esymm (Fin m) R r
-      = ∑ η ∈ partFinset (μ.sum + r),
-          if VertStrip η μ then schurPoly (Fin m) R η else 0 := by
+    schurPoly (Fin m) R ν * esymm (Fin m) R r
+      = ∑ μ ∈ partFinset (ν.sum + r),
+          if VertStrip μ ν then schurPoly (Fin m) R μ else 0 := by
   classical
-  have h := congrArg (MvPolynomial.map (Nat.castRingHom R)) (schurPoly_mul_esymm_nat (m := m) hμ r)
+  have h := congrArg (MvPolynomial.map (Nat.castRingHom R)) (schurPoly_mul_esymm_nat (m := m) hν r)
   rw [map_mul, map_schurPoly, MvPolynomial.map_esymm, map_sum] at h
   rw [h]
-  refine Finset.sum_congr rfl fun η _ => ?_
-  by_cases hstrip : VertStrip η μ
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  by_cases hstrip : VertStrip μ ν
   · rw [ite_eq_left hstrip, ite_eq_left hstrip, map_schurPoly]
   · rw [ite_eq_right hstrip, ite_eq_right hstrip, map_zero]
 

@@ -11,7 +11,7 @@ public import Mathlib.Combinatorics.Young.Tableau.Semistandard
 /-!
 # The superstandard tableau is the highest weight tableau
 
-The Coq-Combi superstandard tableau of a shape `η` (`Young.superTab`, whose `i`-th row
+The Coq-Combi superstandard tableau of a shape `μ` (`Young.superTab`, whose `i`-th row
 consists of copies of `i`) and Mathlib's highest weight semistandard Young tableau
 (`SemistandardYoungTableau.highestWeight`) are the same object, seen through the
 dictionary of `Mathlib.Combinatorics.Young.Tableau.Semistandard`.
@@ -30,28 +30,29 @@ open List
 
 /-- **The superstandard tableau of a shape is the highest weight semistandard Young
 tableau of its Young diagram.** -/
-theorem ssytOfTableau_superTab {η : List ℕ} (hη : IsPart η) :
-    ssytOfTableau (youngDiagram η hη) (isTableau_superTab hη)
-        (by rw [shape_superTab, rowLens_youngDiagram]) =
-      SemistandardYoungTableau.highestWeight (youngDiagram η hη) := by
+theorem ssytOfTableau_superTab {μ : List ℕ} (hμ : IsPart μ) :
+    ssytOfTableau (YoungDiagram.ofRowLens μ hμ.sortedGE) (isTableau_superTab hμ)
+        (by rw [shape_superTab, YoungDiagram.rowLens_ofRowLens_eq_self hμ.2]) =
+      SemistandardYoungTableau.highestWeight (YoungDiagram.ofRowLens μ hμ.sortedGE) := by
   ext i j
   rw [ssytOfTableau_apply, getD_superTab, SemistandardYoungTableau.highestWeight_apply]
-  simp only [mk_mem_youngDiagram]
-  rcases Nat.lt_or_ge j (η.getD i 0) with hj | hj
+  simp only [mk_mem_ofRowLens hμ]
+  rcases Nat.lt_or_ge j (μ.getD i 0) with hj | hj
   · rw [ite_eq_left hj, List.getD_eq_getElem _ _ (by simpa using hj), List.getElem_replicate]
   · rw [ite_eq_right (by omega), List.getD_eq_default _ _ (by simpa using hj)]
 
 /-- The list of rows of the highest weight semistandard Young tableau is the
 superstandard tableau. -/
-theorem tableauOfSSYT_highestWeight {η : List ℕ} (hη : IsPart η) :
-    tableauOfSSYT (youngDiagram η hη)
-        (SemistandardYoungTableau.highestWeight (youngDiagram η hη)) = superTab η := by
-  have h := congrArg (shapeTableauEquivSSYT η hη).symm (ssytOfTableau_superTab hη)
-  rw [show (shapeTableauEquivSSYT η hη).symm
-      (ssytOfTableau (youngDiagram η hη) (isTableau_superTab hη)
-        (by rw [shape_superTab, rowLens_youngDiagram]))
-      = ⟨superTab η, isTableau_superTab hη, shape_superTab η⟩ from
-    (shapeTableauEquivSSYT η hη).symm_apply_eq.2 rfl] at h
+theorem tableauOfSSYT_highestWeight {μ : List ℕ} (hμ : IsPart μ) :
+    tableauOfSSYT (YoungDiagram.ofRowLens μ hμ.sortedGE)
+        (SemistandardYoungTableau.highestWeight (YoungDiagram.ofRowLens μ hμ.sortedGE)) =
+      superTab μ := by
+  have h := congrArg (shapeTableauEquivSSYT μ hμ).symm (ssytOfTableau_superTab hμ)
+  rw [show (shapeTableauEquivSSYT μ hμ).symm
+      (ssytOfTableau (YoungDiagram.ofRowLens μ hμ.sortedGE) (isTableau_superTab hμ)
+        (by rw [shape_superTab, YoungDiagram.rowLens_ofRowLens_eq_self hμ.2]))
+      = ⟨superTab μ, isTableau_superTab hμ, shape_superTab μ⟩ from
+    (shapeTableauEquivSSYT μ hμ).symm_apply_eq.2 rfl] at h
   exact congrArg Subtype.val h.symm
 
 end Young

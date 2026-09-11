@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Basic
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Basic
 
 /-!
 # The componentwise minimum and maximum of two partitions
@@ -56,23 +56,26 @@ lemma isPart_partMin : ∀ {s t : List ℕ}, IsPart s → IsPart t → IsPart (p
   | [], t, _, _ => by simp
   | a :: s, [], _, _ => by simp
   | a :: s, b :: t, hs, ht => by
-      refine ⟨?_, isPart_partMin hs.2 ht.2⟩
+      refine isPart_cons.2 ⟨?_, isPart_partMin hs.of_cons ht.of_cons⟩
       have hs0 : s.getD 0 0 ≤ a := by
         cases s with
         | nil => simp
-        | cons c s' => simpa using hs.1
+        | cons c s' => simpa using hs.headD_le_of_cons
       have ht0 : t.getD 0 0 ≤ b := by
         cases t with
         | nil => simp
-        | cons c t' => simpa using ht.1
+        | cons c t' => simpa using ht.headD_le_of_cons
       have key : ∀ l : List ℕ, l = partMin s t → l.headD 1 ≤ min a b := by
         rintro (_ | ⟨x, l⟩) hl
-        · have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
+        · simp only [List.headD_nil]
+          have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
           have hb : 0 < (b :: t).headD 0 := ht.headD_pos (by simp)
-          grind
+          simp only [List.headD_cons] at ha hb
+          omega
         · have hx : x = (partMin s t).getD 0 0 := by rw [← hl]; rfl
           rw [getD_partMin] at hx
-          grind
+          simp only [List.headD_cons]
+          omega
       exact key _ rfl
 
 /-! ### The componentwise maximum -/
@@ -105,22 +108,25 @@ lemma isPart_partMax : ∀ {s t : List ℕ}, IsPart s → IsPart t → IsPart (p
   | [], t, _, ht => by simpa using ht
   | a :: s, [], hs, _ => by simpa using hs
   | a :: s, b :: t, hs, ht => by
-      refine ⟨?_, isPart_partMax hs.2 ht.2⟩
+      refine isPart_cons.2 ⟨?_, isPart_partMax hs.of_cons ht.of_cons⟩
       have hs0 : s.getD 0 0 ≤ a := by
         cases s with
         | nil => simp
-        | cons c s' => simpa using hs.1
+        | cons c s' => simpa using hs.headD_le_of_cons
       have ht0 : t.getD 0 0 ≤ b := by
         cases t with
         | nil => simp
-        | cons c t' => simpa using ht.1
+        | cons c t' => simpa using ht.headD_le_of_cons
       have key : ∀ l : List ℕ, l = partMax s t → l.headD 1 ≤ max a b := by
         rintro (_ | ⟨x, l⟩) hl
-        · have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
-          grind
+        · simp only [List.headD_nil]
+          have ha : 0 < (a :: s).headD 0 := hs.headD_pos (by simp)
+          simp only [List.headD_cons] at ha
+          omega
         · have hx : x = (partMax s t).getD 0 0 := by rw [← hl]; rfl
           rw [getD_partMax] at hx
-          grind
+          simp only [List.headD_cons]
+          omega
       exact key _ rfl
 
 /-! ### Sums -/

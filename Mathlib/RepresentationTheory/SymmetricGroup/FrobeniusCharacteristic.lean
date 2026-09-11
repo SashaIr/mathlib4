@@ -37,7 +37,7 @@ product of class functions (induction from `S_m × S_n`, embedded in `S_{m+n}` b
 * `Equiv.Perm.frobChar_classIndicator` : the characteristic of the indicator function of the
   class of cycle type `λ` is `p_λ / z_λ`.
 * `Equiv.Perm.frobChar_comp_cycleTypeList` : the characteristic of a function of the cycle type
-  is `∑_{η ⊢ n} c(η) · p_η / z_η`.
+  is `∑_{μ ⊢ n} c(μ) · p_μ / z_μ`.
 * `Equiv.Perm.frobChar_indTrivYoung` : the characteristic of the trivial character induced from
   a Young subgroup is the product `h_{l_1} ⋯ h_{l_r}`.
 * `Equiv.Perm.frobChar_one`, `Equiv.Perm.frobChar_sign` : the characteristics of the trivial and of
@@ -131,18 +131,18 @@ lemma frobChar_smul (m : ℕ) {n : ℕ} (c : ℚ) (f : Perm (Fin n) → ℚ) :
 
 /-- The Frobenius characteristic of the indicator function of the conjugacy class of cycle
 type `λ` is `p_λ / z_λ`. -/
-theorem frobChar_classIndicator (m : ℕ) {n : ℕ} {η : List ℕ} (hη : IsPart η)
-    (hsum : η.sum = n) :
-    frobChar m (fun σ : Perm (Fin n) => if cycleTypeList σ = η then 1 else 0)
-      = ((zcard η : ℚ))⁻¹ • pProd m ℚ η := by
+theorem frobChar_classIndicator (m : ℕ) {n : ℕ} {μ : List ℕ} (hμ : IsPart μ)
+    (hsum : μ.sum = n) :
+    frobChar m (fun σ : Perm (Fin n) => if cycleTypeList σ = μ then 1 else 0)
+      = ((zcard μ : ℚ))⁻¹ • pProd m ℚ μ := by
   classical
-  have hz : (zcard η : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hη).ne'
-  have hcard := card_cycleTypeList_mul_zcard (n := n) hη hsum
+  have hz : (zcard μ : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hμ).ne'
+  have hcard := card_cycleTypeList_mul_zcard (n := n) hμ hsum
   have key : ∀ σ : Perm (Fin n),
-      (if cycleTypeList σ = η then (1 : ℚ) else 0) • pProd m ℚ (cycleTypeList σ)
-        = if cycleTypeList σ = η then pProd m ℚ η else 0 := by
+      (if cycleTypeList σ = μ then (1 : ℚ) else 0) • pProd m ℚ (cycleTypeList σ)
+        = if cycleTypeList σ = μ then pProd m ℚ μ else 0 := by
     intro σ
-    by_cases h : cycleTypeList σ = η <;> simp [h]
+    by_cases h : cycleTypeList σ = μ <;> simp [h]
   rw [frobChar, Finset.sum_congr rfl fun σ _ => key σ, Finset.sum_ite,
     Finset.sum_const, Finset.sum_const_zero, add_zero, ← Nat.cast_smul_eq_nsmul ℚ, smul_smul]
   congr 1
@@ -234,24 +234,24 @@ theorem frobChar_indProd (k : ℕ) {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : P
 each conjugacy class contributes `p_λ / z_λ`. -/
 theorem frobChar_comp_cycleTypeList (m : ℕ) {n : ℕ} (c : List ℕ → ℚ) :
     frobChar m (fun σ : Perm (Fin n) => c (cycleTypeList σ))
-      = ∑ η ∈ partFinset n, (c η * ((zcard η : ℚ))⁻¹) • pProd m ℚ η := by
+      = ∑ μ ∈ partFinset n, (c μ * ((zcard μ : ℚ))⁻¹) • pProd m ℚ μ := by
   classical
   have hne : (Nat.factorial n : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (Nat.factorial_ne_zero _)
   rw [frobChar, ← Finset.sum_fiberwise_of_maps_to
     (fun σ _ => cycleTypeList_mem_partFinset σ)
     (fun σ : Perm (Fin n) => c (cycleTypeList σ) • pProd m ℚ (cycleTypeList σ)),
     Finset.smul_sum]
-  refine Finset.sum_congr rfl fun η hη => ?_
-  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
-  have hz : (zcard η : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
+  refine Finset.sum_congr rfl fun μ hμ => ?_
+  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
+  have hz : (zcard μ : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
   have hcard := card_cycleTypeList_mul_zcard (n := n) hpart hsum
   rw [Finset.sum_congr rfl fun σ hσ => by rw [(Finset.mem_filter.1 hσ).2],
     Finset.sum_const, ← Nat.cast_smul_eq_nsmul ℚ, smul_smul, smul_smul]
   congr 1
-  have hc : ((Finset.univ.filter fun σ : Perm (Fin n) => cycleTypeList σ = η).card : ℚ)
-      * (zcard η : ℚ) = (Nat.factorial n : ℚ) := by exact_mod_cast hcard
+  have hc : ((Finset.univ.filter fun σ : Perm (Fin n) => cycleTypeList σ = μ).card : ℚ)
+      * (zcard μ : ℚ) = (Nat.factorial n : ℚ) := by exact_mod_cast hcard
   field_simp
-  linear_combination c η * hc
+  linear_combination c μ * hc
 
 /-- The signature of a permutation in terms of the length of its cycle type. -/
 lemma sign_eq_neg_one_pow_length_cycleTypeList {n : ℕ} (σ : Perm (Fin n)) :
@@ -284,7 +284,7 @@ theorem frobChar_sign (m n : ℕ) :
   have hfun : (fun σ : Perm (Fin n) => ((Equiv.Perm.sign σ : ℤ) : ℚ))
       = fun σ : Perm (Fin n) => (-1 : ℚ) ^ (n + (cycleTypeList σ).length) :=
     funext fun σ => sign_eq_neg_one_pow_length_cycleTypeList σ
-  rw [hfun, frobChar_comp_cycleTypeList m (fun η => (-1 : ℚ) ^ (n + η.length)),
+  rw [hfun, frobChar_comp_cycleTypeList m (fun μ => (-1 : ℚ) ^ (n + μ.length)),
     esymm_eq_signedCycleIndexSum, signedCycleIndexSum]
 
 /-- The characteristic of the character of `S_{m+n}` induced from the trivial character of

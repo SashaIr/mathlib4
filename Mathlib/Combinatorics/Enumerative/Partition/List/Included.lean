@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Conjugate
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Conjugate
 
 /-!
 # Inclusion of Young diagrams and skew shapes
@@ -134,7 +134,7 @@ lemma Included.eq_of_sum_eq {s t : List ℕ} (ht : IsPart t) (h : Included s t)
       simp only [List.sum_cons] at hsum
       have hab' : a = b := by omega
       subst hab'
-      rw [ih ht.2 hst (by omega)]
+      rw [ih ht.of_cons hst (by omega)]
 
 /-- Coq `included_anti`. -/
 lemma Included.antisymm {s t : List ℕ} (ht : IsPart t)

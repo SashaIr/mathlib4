@@ -131,13 +131,13 @@ lemma partsList_tabPairShapeS (n : ℕ) (p : tabPairS σ n) :
     (tabPairShapeS n p).partsList = shape p.1.1 :=
   sortDesc_coe (isPart_shape p.2.1)
 
-/-- The pairs with prescribed shape `η` are the pairs of a tableau over `σ` of shape
-`η` and a standard tableau of shape `η`. -/
-def tabPairSFiberEquiv (n : ℕ) (η : Nat.Partition n) :
-    {p : tabPairS σ n // tabPairShapeS n p = η} ≃
-      SSYT σ η.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList} where
+/-- The pairs with prescribed shape `μ` are the pairs of a tableau over `σ` of shape
+`μ` and a standard tableau of shape `μ`. -/
+def tabPairSFiberEquiv (n : ℕ) (μ : Nat.Partition n) :
+    {p : tabPairS σ n // tabPairShapeS n p = μ} ≃
+      SSYT σ μ.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ.partsList} where
   toFun p :=
-    have h1 : shape p.1.1.1 = η.partsList := by
+    have h1 : shape p.1.1.1 = μ.partsList := by
       rw [← partsList_tabPairShapeS n p.1, p.2]
     (⟨p.1.1.1, p.1.2.1, h1⟩, ⟨p.1.1.2, p.1.2.2.1, by rw [p.1.2.2.2.1, h1]⟩)
   invFun q :=
@@ -145,7 +145,7 @@ def tabPairSFiberEquiv (n : ℕ) (η : Nat.Partition n) :
         change (shape q.1.1).sum = n
         rw [q.1.2.2, Nat.Partition.sum_partsList]⟩,
       Nat.Partition.ext (by
-        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = η.parts
+        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = μ.parts
         rw [q.1.2.2, Nat.Partition.coe_partsList])⟩
   left_inv p := rfl
   right_inv q := rfl
@@ -156,7 +156,7 @@ def tabPairSFiberEquiv (n : ℕ) (η : Nat.Partition n) :
 the sum, over the partitions `λ` of `n`, of `f^λ` copies of the Schur polynomial `s_λ`,
 where `f^λ` is the number of standard tableaux of shape `λ`. -/
 theorem sum_numStdTab_smul_schurPoly (n : ℕ) :
-    ∑ η : Nat.Partition n, numStdTab η.partsList • schurPoly σ R η.partsList
+    ∑ μ : Nat.Partition n, numStdTab μ.partsList • schurPoly σ R μ.partsList
       = (∑ i : σ, X i) ^ n := by
   classical
   rw [← sum_monomial_word (σ := σ) (R := R) n]
@@ -170,12 +170,12 @@ theorem sum_numStdTab_smul_schurPoly (n : ℕ) :
     exact (List.Perm.prod_eq (hp.map (X : σ → MvPolynomial σ R))).symm
   rw [h1, ← Fintype.sum_fiberwise (tabPairShapeS (σ := σ) n)
     (fun p => ((toWord p.1.1).map (X : σ → MvPolynomial σ R)).prod)]
-  refine Finset.sum_congr rfl fun η _ => ?_
-  have h2 : ∑ p : {p : tabPairS σ n // tabPairShapeS n p = η},
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  have h2 : ∑ p : {p : tabPairS σ n // tabPairShapeS n p = μ},
         ((toWord p.1.1.1).map (X : σ → MvPolynomial σ R)).prod
-      = ∑ q : SSYT σ η.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList},
+      = ∑ q : SSYT σ μ.partsList × {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ.partsList},
         ((toWord q.1.1).map (X : σ → MvPolynomial σ R)).prod :=
-    Fintype.sum_equiv (tabPairSFiberEquiv (σ := σ) n η) _ _ (fun _ => rfl)
+    Fintype.sum_equiv (tabPairSFiberEquiv (σ := σ) n μ) _ _ (fun _ => rfl)
   rw [h2, Fintype.sum_prod_type]
   simp only [Finset.sum_const, Finset.card_univ]
   rw [schurPoly, Finset.smul_sum, numStdTab_eq_card]

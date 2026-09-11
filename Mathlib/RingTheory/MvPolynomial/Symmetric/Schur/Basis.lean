@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Finset
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Finset
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Monomial
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LinearIndependent
@@ -47,6 +47,28 @@ variable {m : ℕ} {R : Type*}
 /-- The index set of the Schur basis: the partitions of `n` with at most `m` parts. -/
 abbrev PartIdx (n m : ℕ) : Type := {p : List ℕ // IsPart p ∧ p.sum = n ∧ p.length ≤ m}
 
+/-- A partition of `n` has at most `n` parts, so as soon as `n ≤ m` the index set of the
+bases in `m` variables is exactly the set `Nat.Partition n` of partitions of `n`. -/
+def natPartitionEquivPartIdx {n : ℕ} (hnm : n ≤ m) : Nat.Partition n ≃ PartIdx n m :=
+  (listPartEquivNatPartition n).symm.trans (Equiv.subtypeEquivRight fun p =>
+    ⟨fun h => ⟨h.1, h.2, h.1.length_le_sum.trans (by rw [h.2]; exact hnm)⟩,
+      fun h => ⟨h.1, h.2.1⟩⟩)
+
+@[simp] lemma coe_natPartitionEquivPartIdx {n : ℕ} (hnm : n ≤ m) (p : Nat.Partition n) :
+    (natPartitionEquivPartIdx hnm p : List ℕ) = p.partsList := rfl
+
+@[simp] lemma partsList_natPartitionEquivPartIdx_symm {n : ℕ} (hnm : n ≤ m) (q : PartIdx n m) :
+    ((natPartitionEquivPartIdx hnm).symm q).partsList = q.1 :=
+  sortDesc_coe q.2.1
+
+/-- The index of a partition of `n` among the bases in `n` variables: a partition of `n`
+has at most `n` parts. -/
+abbrev partIdxOf {n : ℕ} (μ : Nat.Partition n) : PartIdx n n :=
+  natPartitionEquivPartIdx (le_refl n) μ
+
+@[simp] lemma coe_partIdxOf {n : ℕ} (μ : Nat.Partition n) :
+    (partIdxOf μ : List ℕ) = μ.partsList := rfl
+
 /-- The submodule of the symmetric homogeneous polynomials of degree `n` in `m`
 variables. -/
 noncomputable def symHomogeneousSubmodule (m n : ℕ) (R : Type*) [CommSemiring R] :
@@ -57,10 +79,10 @@ lemma mem_symHomogeneousSubmodule [CommSemiring R] {n : ℕ} {p : MvPolynomial (
     p ∈ symHomogeneousSubmodule m n R ↔ p.IsHomogeneous n ∧ p.IsSymmetric := Iff.rfl
 
 /-- A Schur polynomial of a shape of size `n` is homogeneous of degree `n`. -/
-lemma isHomogeneous_schurPoly_of_sum [CommSemiring R] {n : ℕ} {η : List ℕ}
-    (hsum : η.sum = n) : (schurPoly (Fin m) R η).IsHomogeneous n := by
+lemma isHomogeneous_schurPoly_of_sum [CommSemiring R] {n : ℕ} {μ : List ℕ}
+    (hsum : μ.sum = n) : (schurPoly (Fin m) R μ).IsHomogeneous n := by
   rw [← hsum]
-  exact isHomogeneous_schurPoly η
+  exact isHomogeneous_schurPoly μ
 
 lemma schurPoly_mem_symHomogeneousSubmodule [CommSemiring R] {n : ℕ} (ν : PartIdx n m) :
     schurPoly (Fin m) R ν.1 ∈ symHomogeneousSubmodule m n R :=
@@ -83,21 +105,21 @@ lemma sum_eq_of_isHomogeneous [CommSemiring R] {n : ℕ} {p : MvPolynomial (Fin 
 /-- **Unitriangularity**: the monomial symmetric polynomial of a partition of `n` with at
 most `m` parts is a linear combination of the Schur polynomials of the partitions of `n`
 with at most `m` parts. -/
-theorem monomialSym_mem_span_schurPoly [CommRing R] (n : ℕ) {η : List ℕ}
-    (hη : IsPart η) (hsum : η.sum = n) (hlen : η.length ≤ m) :
-    monomialSym m R η ∈
+theorem monomialSym_mem_span_schurPoly [CommRing R] (n : ℕ) {μ : List ℕ}
+    (hμ : IsPart μ) (hsum : μ.sum = n) (hlen : μ.length ≤ m) :
+    monomialSym m R μ ∈
       Submodule.span R (Set.range fun ν : PartIdx n m => schurPoly (Fin m) R ν.1) := by
   classical
   set W := Submodule.span R (Set.range fun ν : PartIdx n m => schurPoly (Fin m) R ν.1) with hW
-  suffices H : ∀ w : ℕ, ∀ η : List ℕ, IsPart η → η.sum = n → η.length ≤ m →
-      domWeight n η = w → monomialSym m R η ∈ W from H _ η hη hsum hlen rfl
+  suffices H : ∀ w : ℕ, ∀ μ : List ℕ, IsPart μ → μ.sum = n → μ.length ≤ m →
+      domWeight n μ = w → monomialSym m R μ ∈ W from H _ μ hμ hsum hlen rfl
   intro w
   induction w using Nat.strong_induction_on with
   | _ w ih =>
-    intro η hη hsum hlen hw
-    set p := schurPoly (Fin m) R η with hp
-    have hsym : p.IsSymmetric := schurPoly_isSymmetric η
-    have hhom : p.IsHomogeneous n := hsum ▸ isHomogeneous_schurPoly (R := R) η
+    intro μ hμ hsum hlen hw
+    set p := schurPoly (Fin m) R μ with hp
+    have hsym : p.IsSymmetric := schurPoly_isSymmetric μ
+    have hhom : p.IsHomogeneous n := hsum ▸ isHomogeneous_schurPoly (R := R) μ
     set S := p.support.image degShape with hS
     have hmem : ∀ ν ∈ S, IsPart ν ∧ ν.sum = n ∧ ν.length ≤ m ∧
         coeff (shapeContent m ν) p ≠ 0 := by
@@ -108,44 +130,44 @@ theorem monomialSym_mem_span_schurPoly [CommRing R] (n : ℕ) {η : List ℕ}
         exact sum_eq_of_isHomogeneous hhom hd
       · rw [coeff_eq_of_degMultiset_eq hsym (degMultiset_shapeContent_degShape d)]
         exact mem_support_iff.1 hd
-    have hexp : p = ∑ ν ∈ insert η S, coeff (shapeContent m ν) p • monomialSym m R ν := by
+    have hexp : p = ∑ ν ∈ insert μ S, coeff (shapeContent m ν) p • monomialSym m R ν := by
       refine (eq_sum_monomialSym hsym).trans (Finset.sum_subset (Finset.subset_insert _ _)
         fun ν hνins hnotin => ?_)
-      have hνη : ν = η := by
+      have hνμ : ν = μ := by
         rcases Finset.mem_insert.1 hνins with h | h
         · exact h
         · exact absurd h hnotin
-      subst hνη
+      subst hνμ
       have hzero : coeff (shapeContent m ν) p = 0 := by
         by_contra hne
         exact hnotin (Finset.mem_image.2 ⟨shapeContent m ν, mem_support_iff.2 hne,
-          degShape_shapeContent hη hlen⟩)
+          degShape_shapeContent hμ hlen⟩)
       rw [hzero, zero_smul]
-    have hone : coeff (shapeContent m η) p = 1 := coeff_schurPoly_self hη hlen
-    have hsplit := Finset.add_sum_erase (insert η S)
+    have hone : coeff (shapeContent m μ) p = 1 := coeff_schurPoly_self hμ hlen
+    have hsplit := Finset.add_sum_erase (insert μ S)
       (fun ν => coeff (shapeContent m ν) p • monomialSym m R ν)
-      (Finset.mem_insert_self η S)
+      (Finset.mem_insert_self μ S)
     simp only [hone, one_smul] at hsplit
-    have hrest : ∀ ν ∈ (insert η S).erase η,
+    have hrest : ∀ ν ∈ (insert μ S).erase μ,
         coeff (shapeContent m ν) p • monomialSym m R ν ∈ W := by
       intro ν hν
-      have hne : ν ≠ η := Finset.ne_of_mem_erase hν
+      have hne : ν ≠ μ := Finset.ne_of_mem_erase hν
       have hνS : ν ∈ S := by
         rcases Finset.mem_insert.1 (Finset.mem_of_mem_erase hν) with h | h
         · exact absurd h hne
         · exact h
       obtain ⟨hνpart, hνsum, hνlen, hνcoeff⟩ := hmem ν hνS
-      have hdom : Partdom ν η := partdom_of_coeff_ne_zero hνlen hνcoeff
+      have hdom : Partdom ν μ := partdom_of_coeff_ne_zero hνlen hνcoeff
       have hlt : domWeight n ν < w := by
         rcases lt_or_eq_of_le (domWeight_le_domWeight (n := n) hdom) with h | h
         · omega
-        · exact absurd (eq_of_partdom_of_domWeight_eq hνpart hη hνsum hsum hdom
+        · exact absurd (eq_of_partdom_of_domWeight_eq hνpart hμ hνsum hsum hdom
             (le_of_eq h.symm)) hne
       exact Submodule.smul_mem _ _ (ih _ hlt ν hνpart hνsum hνlen rfl)
     have hpW : p ∈ W :=
-      Submodule.subset_span ⟨⟨η, hη, hsum, hlen⟩, rfl⟩
-    have hkey : monomialSym m R η
-        = p - ∑ ν ∈ (insert η S).erase η,
+      Submodule.subset_span ⟨⟨μ, hμ, hsum, hlen⟩, rfl⟩
+    have hkey : monomialSym m R μ
+        = p - ∑ ν ∈ (insert μ S).erase μ,
             coeff (shapeContent m ν) p • monomialSym m R ν :=
       eq_sub_of_add_eq (hsplit.trans hexp.symm)
     rw [hkey]
@@ -183,7 +205,7 @@ lemma partsFinset_eq_partFinset (n m : ℕ) (hnm : n ≤ m) : partsFinset n m = 
 
 /-- A sum over the partitions of `n` with at most `m` parts, as a sum over `PartIdx n m`. -/
 lemma sum_partFinset_eq_sum_partIdx {n : ℕ} {M : Type*} [AddCommMonoid M] (hnm : n ≤ m)
-    (f : List ℕ → M) : ∑ l ∈ partFinset n, f l = ∑ η : PartIdx n m, f η.1 := by
+    (f : List ℕ → M) : ∑ l ∈ partFinset n, f l = ∑ μ : PartIdx n m, f μ.1 := by
   rw [← partsFinset_eq_partFinset n m hnm, partsFinset,
     Finset.sum_image fun x _ y _ h => Subtype.ext h]
 
@@ -195,41 +217,41 @@ lemma finContent_shapeContent {μ : List ℕ} (hlen : μ.length ≤ m) :
   · rw [finContent, dite_eq_right hi, List.getD_eq_default _ _ (by omega)]
 
 /-- **The Schur polynomial is the sum of the Kostka numbers times the monomial symmetric
-polynomials**: `s_η = ∑_mu K_{η μ} m_μ`, the sum being over the partitions `μ` of
-the size of `η` with at most `m` parts. -/
-theorem schurPoly_eq_sum_kostkaNum_monomialSym [CommRing R] (η : List ℕ) :
-    schurPoly (Fin m) R η
-      = ∑ μ ∈ partsFinset η.sum m,
-          (kostkaNum m η (fun i => μ.getD i 0) : R) • monomialSym m R μ := by
+polynomials**: `s_μ = ∑_mu K_{μ ν} m_ν`, the sum being over the partitions `ν` of
+the size of `μ` with at most `m` parts. -/
+theorem schurPoly_eq_sum_kostkaNum_monomialSym [CommRing R] (μ : List ℕ) :
+    schurPoly (Fin m) R μ
+      = ∑ ν ∈ partsFinset μ.sum m,
+          (kostkaNum m μ (fun i => ν.getD i 0) : R) • monomialSym m R ν := by
   classical
-  set p := schurPoly (Fin m) R η with hp
-  have hsym : p.IsSymmetric := schurPoly_isSymmetric η
-  have hhom : p.IsHomogeneous η.sum := isHomogeneous_schurPoly η
-  have hcoeff : ∀ μ ∈ partsFinset η.sum m,
-      coeff (shapeContent m μ) p = (kostkaNum m η (fun i => μ.getD i 0) : R) := by
-    intro μ hμ
-    rw [hp, coeff_schurPoly_eq_kostkaNum, finContent_shapeContent (mem_partsFinset.1 hμ).2.2]
-  have hsub : p.support.image degShape ⊆ partsFinset η.sum m := by
+  set p := schurPoly (Fin m) R μ with hp
+  have hsym : p.IsSymmetric := schurPoly_isSymmetric μ
+  have hhom : p.IsHomogeneous μ.sum := isHomogeneous_schurPoly μ
+  have hcoeff : ∀ ν ∈ partsFinset μ.sum m,
+      coeff (shapeContent m ν) p = (kostkaNum m μ (fun i => ν.getD i 0) : R) := by
     intro ν hν
-    obtain ⟨d, hd, rfl⟩ := Finset.mem_image.1 hν
+    rw [hp, coeff_schurPoly_eq_kostkaNum, finContent_shapeContent (mem_partsFinset.1 hν).2.2]
+  have hsub : p.support.image degShape ⊆ partsFinset μ.sum m := by
+    intro ρ hρ
+    obtain ⟨d, hd, rfl⟩ := Finset.mem_image.1 hρ
     refine mem_partsFinset.2 ⟨isPart_degShape d, ?_, length_degShape_le d⟩
     rw [sum_degShape d]
     exact sum_eq_of_isHomogeneous hhom hd
-  have hzero : ∀ μ ∈ partsFinset η.sum m, μ ∉ p.support.image degShape →
-      coeff (shapeContent m μ) p • monomialSym m R μ = 0 := by
-    intro μ hμ hnotin
-    have : coeff (shapeContent m μ) p = 0 := by
+  have hzero : ∀ ν ∈ partsFinset μ.sum m, ν ∉ p.support.image degShape →
+      coeff (shapeContent m ν) p • monomialSym m R ν = 0 := by
+    intro ν hν hnotin
+    have : coeff (shapeContent m ν) p = 0 := by
       by_contra hne
-      exact hnotin (Finset.mem_image.2 ⟨shapeContent m μ, mem_support_iff.2 hne,
-        degShape_shapeContent (mem_partsFinset.1 hμ).1 (mem_partsFinset.1 hμ).2.2⟩)
+      exact hnotin (Finset.mem_image.2 ⟨shapeContent m ν, mem_support_iff.2 hne,
+        degShape_shapeContent (mem_partsFinset.1 hν).1 (mem_partsFinset.1 hν).2.2⟩)
     rw [this, zero_smul]
-  calc p = ∑ μ ∈ p.support.image degShape, coeff (shapeContent m μ) p • monomialSym m R μ :=
+  calc p = ∑ ν ∈ p.support.image degShape, coeff (shapeContent m ν) p • monomialSym m R ν :=
         eq_sum_monomialSym hsym
-    _ = ∑ μ ∈ partsFinset η.sum m, coeff (shapeContent m μ) p • monomialSym m R μ :=
+    _ = ∑ ν ∈ partsFinset μ.sum m, coeff (shapeContent m ν) p • monomialSym m R ν :=
         Finset.sum_subset hsub hzero
-    _ = ∑ μ ∈ partsFinset η.sum m,
-          (kostkaNum m η (fun i => μ.getD i 0) : R) • monomialSym m R μ :=
-        Finset.sum_congr rfl fun μ hμ => by rw [hcoeff μ hμ]
+    _ = ∑ ν ∈ partsFinset μ.sum m,
+          (kostkaNum m μ (fun i => ν.getD i 0) : R) • monomialSym m R ν :=
+        Finset.sum_congr rfl fun ν hν => by rw [hcoeff ν hν]
 
 /-! ### The Schur polynomials span, and form a basis -/
 
@@ -245,8 +267,8 @@ theorem span_schurPoly [CommRing R] (m n : ℕ) :
     exact schurPoly_mem_symHomogeneousSubmodule ν
   · obtain ⟨hhom, hsym⟩ := hp
     rw [eq_sum_monomialSym hsym]
-    refine Submodule.sum_mem _ fun η hη => ?_
-    obtain ⟨d, hd, rfl⟩ := Finset.mem_image.1 hη
+    refine Submodule.sum_mem _ fun μ hμ => ?_
+    obtain ⟨d, hd, rfl⟩ := Finset.mem_image.1 hμ
     refine Submodule.smul_mem _ _ (monomialSym_mem_span_schurPoly n (isPart_degShape d) ?_
       (length_degShape_le d))
     rw [sum_degShape d]

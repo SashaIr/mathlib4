@@ -101,36 +101,36 @@ theorem schurPoly_ne_zero [CommSemiring R] [Nontrivial R] {μ : List ℕ} (hμ :
 partitions of `n` with at most `m` parts are linearly independent over any commutative
 ring. -/
 theorem linearIndependent_schurPoly (m n : ℕ) (R : Type*) [CommRing R] :
-    LinearIndependent R fun η : {p : List ℕ // IsPart p ∧ p.sum = n ∧ p.length ≤ m} =>
-      schurPoly (Fin m) R η.1 := by
+    LinearIndependent R fun μ : {p : List ℕ // IsPart p ∧ p.sum = n ∧ p.length ≤ m} =>
+      schurPoly (Fin m) R μ.1 := by
   classical
   rw [linearIndependent_iff']
-  intro s g hg η hη
+  intro s g hg μ hμ
   by_contra hne
-  set t := s.filter (fun μ => g μ ≠ 0) with ht
-  have hηt : η ∈ t := Finset.mem_filter.2 ⟨hη, hne⟩
-  obtain ⟨ν, hνt, hmax⟩ :=
-    Finset.exists_max_image t (fun μ => domWeight n μ.1) ⟨η, hηt⟩
-  obtain ⟨hνs, hν0⟩ := Finset.mem_filter.1 hνt
-  have hcoeff := congrArg (coeff (shapeContent m ν.1)) hg
+  set t := s.filter (fun ν => g ν ≠ 0) with ht
+  have hμt : μ ∈ t := Finset.mem_filter.2 ⟨hμ, hne⟩
+  obtain ⟨ρ, hρt, hmax⟩ :=
+    Finset.exists_max_image t (fun ν => domWeight n ν.1) ⟨μ, hμt⟩
+  obtain ⟨hρs, hρ0⟩ := Finset.mem_filter.1 hρt
+  have hcoeff := congrArg (coeff (shapeContent m ρ.1)) hg
   rw [coeff_zero, coeff_sum] at hcoeff
-  have hsingle : ∀ μ ∈ s, μ ≠ ν →
-      coeff (shapeContent m ν.1) (g μ • schurPoly (Fin m) R μ.1) = 0 := by
-    intro μ hμs hμne
+  have hsingle : ∀ ν ∈ s, ν ≠ ρ →
+      coeff (shapeContent m ρ.1) (g ν • schurPoly (Fin m) R ν.1) = 0 := by
+    intro ν hνs hνne
     rw [coeff_smul, smul_eq_mul]
-    by_cases hμt : μ ∈ t
-    · have hzero : coeff (shapeContent m ν.1) (schurPoly (Fin m) R μ.1) = 0 := by
+    by_cases hνt : ν ∈ t
+    · have hzero : coeff (shapeContent m ρ.1) (schurPoly (Fin m) R ν.1) = 0 := by
         by_contra hc
-        have hdom : Partdom ν.1 μ.1 := partdom_of_coeff_ne_zero ν.2.2.2 hc
-        exact hμne (Subtype.ext (eq_of_partdom_of_domWeight_eq ν.2.1 μ.2.1 ν.2.2.1
-          μ.2.2.1 hdom (hmax μ hμt))).symm
+        have hdom : Partdom ρ.1 ν.1 := partdom_of_coeff_ne_zero ρ.2.2.2 hc
+        exact hνne (Subtype.ext (eq_of_partdom_of_domWeight_eq ρ.2.1 ν.2.1 ρ.2.2.1
+          ν.2.2.1 hdom (hmax ν hνt))).symm
       rw [hzero, mul_zero]
-    · have : g μ = 0 := by
+    · have : g ν = 0 := by
         by_contra hgc
-        exact hμt (Finset.mem_filter.2 ⟨hμs, hgc⟩)
+        exact hνt (Finset.mem_filter.2 ⟨hνs, hgc⟩)
       rw [this, zero_mul]
-  rw [Finset.sum_eq_single ν hsingle (fun h => absurd hνs h), coeff_smul, smul_eq_mul,
-    coeff_schurPoly_self ν.2.1 ν.2.2.2, mul_one] at hcoeff
-  exact hν0 hcoeff
+  rw [Finset.sum_eq_single ρ hsingle (fun h => absurd hρs h), coeff_smul, smul_eq_mul,
+    coeff_schurPoly_self ρ.2.1 ρ.2.2.2, mul_one] at hcoeff
+  exact hρ0 hcoeff
 
 end MvPolynomial

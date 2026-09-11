@@ -26,8 +26,8 @@ of the involution `omega` for the second.
 
 * `MvPolynomial.schurPoly_mul_eq_sum_partIdx` : the Littlewood–Richardson rule, indexed by the
   partitions of `n` with at most `m` parts.
-* `MvPolynomial.lrCoeff_comm` : `c^ν_{η, μ} = c^ν_{μ, η}`.
-* `MvPolynomial.lrCoeff_conjPart` : `c^{ν'}_{η', μ'} = c^ν_{η, μ}` (Coq
+* `MvPolynomial.lrCoeff_comm` : `c^ρ_{μ, ν} = c^ρ_{ν, μ}`.
+* `MvPolynomial.lrCoeff_conjPart` : `c^{ρ'}_{μ', ν'} = c^ρ_{μ, ν}` (Coq
   `LRtab_coeff_conj`).
 -/
 
@@ -46,7 +46,7 @@ variable {m n : ℕ} {R : Type*}
 /-- A sum over the partitions of `n` (as `Nat.Partition`) is a sum over `PartIdx n m`, as
 soon as `n ≤ m`. -/
 lemma sum_natPartition_eq_sum_partIdx {M : Type*} [AddCommMonoid M] (hnm : n ≤ m)
-    (f : List ℕ → M) : ∑ ν : Nat.Partition n, f ν.partsList = ∑ η : PartIdx n m, f η.1 := by
+    (f : List ℕ → M) : ∑ ν : Nat.Partition n, f ν.partsList = ∑ μ : PartIdx n m, f μ.1 := by
   classical
   rw [← sum_partFinset_eq_sum_partIdx hnm, ← Finset.sum_coe_sort (partFinset n) f]
   refine (Fintype.sum_equiv ((Equiv.subtypeEquivRight fun l => by
@@ -59,15 +59,15 @@ lemma sum_natPartition_eq_sum_partIdx {M : Type*} [AddCommMonoid M] (hnm : n ≤
   rw [Equiv.trans_apply, hp]
 
 /-- **The Littlewood–Richardson rule**, with the product expanded over the partitions of
-`n = |η| + |μ|` with at most `m` parts. -/
-theorem schurPoly_mul_eq_sum_partIdx [CommRing R] {η μ : List ℕ} (hn : η.sum + μ.sum = n)
+`n = |μ| + |ν|` with at most `m` parts. -/
+theorem schurPoly_mul_eq_sum_partIdx [CommRing R] {μ ν : List ℕ} (hn : μ.sum + ν.sum = n)
     (hnm : n ≤ m) :
-    schurPoly (Fin m) R η * schurPoly (Fin m) R μ
-      = ∑ ν : PartIdx n m, lrCoeff η μ ν.1 • schurPoly (Fin m) R ν.1 := by
+    schurPoly (Fin m) R μ * schurPoly (Fin m) R ν
+      = ∑ ρ : PartIdx n m, lrCoeff μ ν ρ.1 • schurPoly (Fin m) R ρ.1 := by
   subst hn
   rw [schurPoly_mul_schurPoly]
   exact sum_natPartition_eq_sum_partIdx hnm
-    (fun l => lrCoeff η μ l • schurPoly (Fin m) R l)
+    (fun l => lrCoeff μ ν l • schurPoly (Fin m) R l)
 
 /-- Two expansions of the same symmetric homogeneous polynomial in the Schur family have
 the same coefficients. -/
@@ -88,64 +88,64 @@ theorem eq_of_sum_nsmul_schurPoly_eq {c d : PartIdx n m → ℕ}
 /-! ### The two symmetries -/
 
 /-- The Littlewood–Richardson coefficients are symmetric in their two lower indices. -/
-theorem lrCoeff_comm {η μ ν : List ℕ} (hν : IsPart ν) (hsum : ν.sum = η.sum + μ.sum) :
-    lrCoeff η μ ν = lrCoeff μ η ν := by
-  set n := η.sum + μ.sum with hn
-  have hmul : ∑ ρ : PartIdx n n, lrCoeff η μ ρ.1 • schurPoly (Fin n) ℤ ρ.1
-      = ∑ ρ : PartIdx n n, lrCoeff μ η ρ.1 • schurPoly (Fin n) ℤ ρ.1 := by
+theorem lrCoeff_comm {μ ν ρ : List ℕ} (hρ : IsPart ρ) (hsum : ρ.sum = μ.sum + ν.sum) :
+    lrCoeff μ ν ρ = lrCoeff ν μ ρ := by
+  set n := μ.sum + ν.sum with hn
+  have hmul : ∑ κ : PartIdx n n, lrCoeff μ ν κ.1 • schurPoly (Fin n) ℤ κ.1
+      = ∑ κ : PartIdx n n, lrCoeff ν μ κ.1 • schurPoly (Fin n) ℤ κ.1 := by
     rw [← schurPoly_mul_eq_sum_partIdx (R := ℤ) hn.symm le_rfl,
       ← schurPoly_mul_eq_sum_partIdx (R := ℤ) (by omega) le_rfl, mul_comm]
   exact congrFun (eq_of_sum_nsmul_schurPoly_eq (m := n) hmul)
-    ⟨ν, hν, hsum, le_trans hν.length_le_sum (le_of_eq hsum)⟩
+    ⟨ρ, hρ, hsum, le_trans hρ.length_le_sum (le_of_eq hsum)⟩
 
 /-- **The Littlewood–Richardson coefficients are invariant under conjugation** of the
 three partitions (Coq `LRtab_coeff_conj`). -/
-theorem lrCoeff_conjPart {η μ ν : List ℕ} (hη : IsPart η) (hμ : IsPart μ)
-    (hν : IsPart ν) (hsum : ν.sum = η.sum + μ.sum) :
-    lrCoeff (conjPart η) (conjPart μ) (conjPart ν) = lrCoeff η μ ν := by
-  set n := η.sum + μ.sum with hn
-  have hab : η.sum + μ.sum = n := rfl
-  have hηlen : η.length ≤ n := le_trans hη.length_le_sum (by omega)
+theorem lrCoeff_conjPart {μ ν ρ : List ℕ} (hμ : IsPart μ) (hν : IsPart ν)
+    (hρ : IsPart ρ) (hsum : ρ.sum = μ.sum + ν.sum) :
+    lrCoeff (conjPart μ) (conjPart ν) (conjPart ρ) = lrCoeff μ ν ρ := by
+  set n := μ.sum + ν.sum with hn
+  have hab : μ.sum + ν.sum = n := rfl
   have hμlen : μ.length ≤ n := le_trans hμ.length_le_sum (by omega)
-  set ηIdx : PartIdx η.sum n := ⟨η, hη, rfl, hηlen⟩ with hηIdx
+  have hνlen : ν.length ≤ n := le_trans hν.length_le_sum (by omega)
   set μIdx : PartIdx μ.sum n := ⟨μ, hμ, rfl, hμlen⟩ with hμIdx
+  set νIdx : PartIdx ν.sum n := ⟨ν, hν, rfl, hνlen⟩ with hνIdx
   set F : symHomogeneousSubmodule n n ℤ :=
-    mulSub n ℤ hab (schurSub n η.sum ℤ ηIdx) (schurSub n μ.sum ℤ μIdx) with hF
-  have h1 : F = ∑ ρ : PartIdx n n, lrCoeff η μ ρ.1 • schurSub n n ℤ ρ := by
+    mulSub n ℤ hab (schurSub n μ.sum ℤ μIdx) (schurSub n ν.sum ℤ νIdx) with hF
+  have h1 : F = ∑ κ : PartIdx n n, lrCoeff μ ν κ.1 • schurSub n n ℤ κ := by
     refine Subtype.ext ?_
     rw [hF, coe_mulSub, coe_schurSub, coe_schurSub]
     rw [schurPoly_mul_eq_sum_partIdx (R := ℤ) hab le_rfl]
     rw [Submodule.coe_sum]
-    exact Finset.sum_congr rfl fun ρ _ => by simp
+    exact Finset.sum_congr rfl fun κ _ => by simp
   have h2 : (omegaSym n n ℤ le_rfl F : MvPolynomial (Fin n) ℤ)
-      = ∑ ρ : PartIdx n n, lrCoeff η μ ρ.1 • schurPoly (Fin n) ℤ (conjPart ρ.1) := by
+      = ∑ κ : PartIdx n n, lrCoeff μ ν κ.1 • schurPoly (Fin n) ℤ (conjPart κ.1) := by
     rw [h1, map_sum, Submodule.coe_sum]
-    refine Finset.sum_congr rfl fun ρ _ => ?_
+    refine Finset.sum_congr rfl fun κ _ => ?_
     rw [map_nsmul, omegaSym_schurSub]
     simp
   have h3 : (omegaSym n n ℤ le_rfl F : MvPolynomial (Fin n) ℤ)
-      = schurPoly (Fin n) ℤ (conjPart η) * schurPoly (Fin n) ℤ (conjPart μ) := by
+      = schurPoly (Fin n) ℤ (conjPart μ) * schurPoly (Fin n) ℤ (conjPart ν) := by
     rw [hF, omegaSym_mul hab le_rfl, omegaSym_schurSub, omegaSym_schurSub, coe_schurSub,
       coe_schurSub, conjIdx_val, conjIdx_val]
-  have hreindex : ∑ ρ : PartIdx n n,
-        lrCoeff η μ ρ.1 • schurPoly (Fin n) ℤ (conjPart ρ.1)
-      = ∑ ρ : PartIdx n n,
-        lrCoeff η μ (conjPart ρ.1) • schurPoly (Fin n) ℤ ρ.1 := by
-    refine Fintype.sum_equiv (conjPartIdx (le_refl n)) _ _ fun ρ => ?_
-    rw [conjPartIdx_apply, conjIdx_val, conjPart_conjPart ρ.2.1]
-  have hconj : (conjPart η).sum + (conjPart μ).sum = n := by
+  have hreindex : ∑ κ : PartIdx n n,
+        lrCoeff μ ν κ.1 • schurPoly (Fin n) ℤ (conjPart κ.1)
+      = ∑ κ : PartIdx n n,
+        lrCoeff μ ν (conjPart κ.1) • schurPoly (Fin n) ℤ κ.1 := by
+    refine Fintype.sum_equiv (conjPartIdx (le_refl n)) _ _ fun κ => ?_
+    rw [conjPartIdx_apply, conjIdx_val, conjPart_conjPart κ.2.1]
+  have hconj : (conjPart μ).sum + (conjPart ν).sum = n := by
     rw [sum_conjPart, sum_conjPart]
-  have hkey : ∑ ρ : PartIdx n n,
-        lrCoeff (conjPart η) (conjPart μ) ρ.1 • schurPoly (Fin n) ℤ ρ.1
-      = ∑ ρ : PartIdx n n,
-        lrCoeff η μ (conjPart ρ.1) • schurPoly (Fin n) ℤ ρ.1 := by
+  have hkey : ∑ κ : PartIdx n n,
+        lrCoeff (conjPart μ) (conjPart ν) κ.1 • schurPoly (Fin n) ℤ κ.1
+      = ∑ κ : PartIdx n n,
+        lrCoeff μ ν (conjPart κ.1) • schurPoly (Fin n) ℤ κ.1 := by
     rw [← schurPoly_mul_eq_sum_partIdx (R := ℤ) hconj le_rfl, ← hreindex, ← h2, h3]
-  have hνlen : (conjPart ν).length ≤ n := by
-    rw [length_conjPart hν]
-    exact le_trans (le_trans (headD_le_sum ν) (le_of_eq hsum)) le_rfl
-  have hνsum : (conjPart ν).sum = n := by rw [sum_conjPart, hsum]
+  have hρlen : (conjPart ρ).length ≤ n := by
+    rw [length_conjPart hρ]
+    exact le_trans (le_trans (headD_le_sum ρ) (le_of_eq hsum)) le_rfl
+  have hρsum : (conjPart ρ).sum = n := by rw [sum_conjPart, hsum]
   have := congrFun (eq_of_sum_nsmul_schurPoly_eq (m := n) hkey)
-    ⟨conjPart ν, isPart_conjPart hν, hνsum, hνlen⟩
-  rwa [conjPart_conjPart hν] at this
+    ⟨conjPart ρ, isPart_conjPart hρ, hρsum, hρlen⟩
+  rwa [conjPart_conjPart hρ] at this
 
 end MvPolynomial

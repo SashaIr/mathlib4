@@ -6,27 +6,27 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.GetD
-public import Mathlib.Combinatorics.Young.Shape.HorizontalStrip
-public import Mathlib.Combinatorics.Young.Shape.MinMax
+public import Mathlib.Combinatorics.Enumerative.Partition.List.HorizontalStrip
+public import Mathlib.Combinatorics.Enumerative.Partition.List.MinMax
 
 /-!
 # The diamond identity for horizontal strips
 
 Given two partitions `ρ` and `τ`, consider
 
-* the shapes `η` of a given size containing both `ρ` and `τ` by horizontal strips
+* the shapes `μ` of a given size containing both `ρ` and `τ` by horizontal strips
   (`Young.upDiamond`), and
 * the shapes `σ` contained in both `ρ` and `τ` by horizontal strips, of size at
   least `|τ| - r` (`Young.downDiamondLe`).
 
-The main result `Young.card_upDiamond_eq_card_downDiamondLe` is that, for `|η| = |ρ| + r`,
+The main result `Young.card_upDiamond_eq_card_downDiamondLe` is that, for `|μ| = |ρ| + r`,
 these two sets have the same cardinality.  This is the combinatorial heart of the Pieri
 rule: it is exactly what makes the induction on the number of variables work.
 
 The proof runs through the reflection of the box of the interpolating shapes already used
 for `Young.card_midSet_symm`: the shapes `σ` below both `ρ` and `τ` are the shapes
 interpolating between `partMax ρ.tail τ.tail` and `partMin ρ τ`, while the shapes
-`η` above both are obtained from those by adding a first part.
+`μ` above both are obtained from those by adding a first part.
 
 ## Main definitions
 
@@ -53,7 +53,7 @@ open List
 /-- The partitions of `N` obtained from both `ρ` and `τ` by adding a horizontal
 strip. -/
 def upDiamond (ρ τ : List ℕ) (N : ℕ) : Set (List ℕ) :=
-  {η | IsPart η ∧ HorizStrip η ρ ∧ HorizStrip η τ ∧ η.sum = N}
+  {μ | IsPart μ ∧ HorizStrip μ ρ ∧ HorizStrip μ τ ∧ μ.sum = N}
 
 /-- The partitions obtained from both `ρ` and `τ` by removing a horizontal strip, whose
 size is at least `|τ| - r`. -/
@@ -156,7 +156,7 @@ lemma sum_diamond (ρ τ : List ℕ) :
 lemma upDiamond_eq_empty_of_not_included (hρ : IsPart ρ) (hτ : IsPart τ)
     (h : ¬ Included (diamMin ρ τ) (diamMax ρ τ)) (N : ℕ) :
     upDiamond ρ τ N = ∅ := by
-  ext η
+  ext μ
   simp only [Set.mem_empty_iff_false, iff_false]
   rintro ⟨hpart, hs1, hs2, -⟩
   refine h ((isPart_diamMin hρ hτ).included_iff_getD.2 fun i => ?_)
@@ -181,30 +181,30 @@ lemma downDiamondLe_eq_empty_of_not_included (hρ : IsPart ρ) (hτ : IsPart τ)
 
 lemma upDiamond_nil_nil (N : ℕ) :
     upDiamond [] [] N = {if N = 0 then [] else [N]} := by
-  ext η
+  ext μ
   simp only [Set.mem_singleton_iff]
   constructor
   · rintro ⟨hpart, hs1, -, hsum⟩
-    have hlen : η.length ≤ 1 := by
+    have hlen : μ.length ≤ 1 := by
       by_contra hlen
-      have h1 : 0 < η.getD 1 0 := hpart.getD_pos (by omega)
-      have h2 : η.getD 1 0 ≤ 0 := hs1.getD_succ_le 0
+      have h1 : 0 < μ.getD 1 0 := hpart.getD_pos (by omega)
+      have h2 : μ.getD 1 0 ≤ 0 := hs1.getD_succ_le 0
       omega
-    match η, hlen with
+    match μ, hlen with
     | [], _ => simp only [List.sum_nil] at hsum; simp [← hsum]
     | [a], _ =>
         simp only [List.sum_cons, List.sum_nil, Nat.add_zero] at hsum
         subst hsum
         have ha : 0 < a := hpart.headD_pos (by simp)
         rw [ite_eq_right (by omega)]
-  · intro hη
-    subst hη
+  · intro hμ
+    subst hμ
     by_cases hN : N = 0
     · subst hN
       exact ⟨isPart_nil, ⟨Included.refl _, fun i => by simp⟩, ⟨Included.refl _, fun i => by simp⟩,
         rfl⟩
     · rw [ite_eq_right hN]
-      refine ⟨⟨by simpa using Nat.one_le_iff_ne_zero.2 hN, isPart_nil⟩,
+      refine ⟨isPart_cons.2 ⟨by simpa using Nat.one_le_iff_ne_zero.2 hN, isPart_nil⟩,
         ⟨included_nil _, fun i => ?_⟩, ⟨included_nil _, fun i => ?_⟩, by simp⟩
       · simp
       · simp
@@ -246,12 +246,12 @@ lemma eq_of_tail_eq_of_sum_eq : ∀ {l l' : List ℕ}, IsPart l → IsPart l' �
       simp only [List.sum_cons] at hsum
       rw [show a = a' by omega]
 
-lemma tail_mem_midSet_diamond (hρ : IsPart ρ) (hτ : IsPart τ) {η : List ℕ} {N : ℕ}
-    (hη : η ∈ upDiamond ρ τ N) :
-    η.tail ∈ midSet (diamMax ρ τ) (diamMin ρ τ) (N - η.getD 0 0) := by
-  obtain ⟨hpart, hs1, hs2, hsum⟩ := hη
-  have htailsum : η.tail.sum = N - η.getD 0 0 := by
-    have := sum_tail_add_getD_zero η
+lemma tail_mem_midSet_diamond (hρ : IsPart ρ) (hτ : IsPart τ) {μ : List ℕ} {N : ℕ}
+    (hμ : μ ∈ upDiamond ρ τ N) :
+    μ.tail ∈ midSet (diamMax ρ τ) (diamMin ρ τ) (N - μ.getD 0 0) := by
+  obtain ⟨hpart, hs1, hs2, hsum⟩ := hμ
+  have htailsum : μ.tail.sum = N - μ.getD 0 0 := by
+    have := sum_tail_add_getD_zero μ
     omega
   rw [midSet_diamond hρ hτ]
   refine ⟨hpart.tail, ⟨(hpart.tail.included_iff_getD).2 fun i => ?_, fun i => ?_⟩,
@@ -261,9 +261,9 @@ lemma tail_mem_midSet_diamond (hρ : IsPart ρ) (hτ : IsPart τ) {η : List ℕ
   · rw [getD_tail]; exact hs2.getD_succ_le i
   · rw [getD_tail]; exact hs2.included.getD_le (i + 1)
 
-lemma diamHead_le_getD_zero {η : List ℕ} {N : ℕ} (hη : η ∈ upDiamond ρ τ N) :
-    diamHead ρ τ ≤ η.getD 0 0 := by
-  obtain ⟨-, hs1, hs2, -⟩ := hη
+lemma diamHead_le_getD_zero {μ : List ℕ} {N : ℕ} (hμ : μ ∈ upDiamond ρ τ N) :
+    diamHead ρ τ ≤ μ.getD 0 0 := by
+  obtain ⟨-, hs1, hs2, -⟩ := hμ
   have e1 := hs1.included.getD_le 0
   have e2 := hs2.included.getD_le 0
   rw [diamHead]
@@ -306,32 +306,32 @@ theorem card_upDiamond_eq_card_downDiamondLe (hρ : IsPart ρ) (hτ : IsPart τ)
   have hρ0 : ρ.getD 0 0 ≤ diamHead ρ τ := by rw [diamHead]; omega
   have hτ0 : τ.getD 0 0 ≤ diamHead ρ τ := by rw [diamHead]; omega
   -- the image of the map is in the right set
-  have hmem : ∀ η ∈ upDiamond ρ τ (ρ.sum + r),
-      pieriFlip (diamMax ρ τ) (diamMin ρ τ) η.tail ∈ downDiamondLe ρ τ r := by
-    intro η hη
-    have hmid := tail_mem_midSet_diamond hρ hτ hη
-    have hle : η.tail.sum ≤ (diamMax ρ τ).sum := hmid.2.1.sum_le
-    have hch := diamHead_le_getD_zero hη
+  have hmem : ∀ μ ∈ upDiamond ρ τ (ρ.sum + r),
+      pieriFlip (diamMax ρ τ) (diamMin ρ τ) μ.tail ∈ downDiamondLe ρ τ r := by
+    intro μ hμ
+    have hmid := tail_mem_midSet_diamond hρ hτ hμ
+    have hle : μ.tail.sum ≤ (diamMax ρ τ).sum := hmid.2.1.sum_le
+    have hch := diamHead_le_getD_zero hμ
     have hflip := pieriFlip_mem hBpart hsub hmid
     rw [midSet_diamond hρ hτ] at hflip
     obtain ⟨hp, hf1, hf2, hfsum⟩ := hflip
     refine ⟨hp, hf1, hf2, ?_⟩
-    obtain ⟨-, -, -, hsum⟩ := hη
-    have htails := sum_tail_add_getD_zero η
+    obtain ⟨-, -, -, hsum⟩ := hμ
+    have htails := sum_tail_add_getD_zero μ
     omega
   refine Nat.card_congr (Equiv.ofBijective
-    (fun η : upDiamond ρ τ (ρ.sum + r) =>
-      (⟨pieriFlip (diamMax ρ τ) (diamMin ρ τ) η.1.tail, hmem η.1 η.2⟩ :
+    (fun μ : upDiamond ρ τ (ρ.sum + r) =>
+      (⟨pieriFlip (diamMax ρ τ) (diamMin ρ τ) μ.1.tail, hmem μ.1 μ.2⟩ :
         downDiamondLe ρ τ r)) ⟨?_, ?_⟩)
   · -- injectivity
-    rintro ⟨η, hη⟩ ⟨η', hη'⟩ heq
-    have h1 : pieriFlip (diamMax ρ τ) (diamMin ρ τ) η.tail
-        = pieriFlip (diamMax ρ τ) (diamMin ρ τ) η'.tail := congrArg Subtype.val heq
-    have e1 := pieriFlip_pieriFlip hBpart hsub (tail_mem_midSet_diamond hρ hτ hη)
-    have e2 := pieriFlip_pieriFlip hBpart hsub (tail_mem_midSet_diamond hρ hτ hη')
+    rintro ⟨μ, hμ⟩ ⟨μ', hμ'⟩ heq
+    have h1 : pieriFlip (diamMax ρ τ) (diamMin ρ τ) μ.tail
+        = pieriFlip (diamMax ρ τ) (diamMin ρ τ) μ'.tail := congrArg Subtype.val heq
+    have e1 := pieriFlip_pieriFlip hBpart hsub (tail_mem_midSet_diamond hρ hτ hμ)
+    have e2 := pieriFlip_pieriFlip hBpart hsub (tail_mem_midSet_diamond hρ hτ hμ')
     rw [h1, e2] at e1
-    have hs : η.sum = η'.sum := by rw [hη.2.2.2, hη'.2.2.2]
-    exact Subtype.ext (eq_of_tail_eq_of_sum_eq hη.1 hη'.1 e1.symm hs)
+    have hs : μ.sum = μ'.sum := by rw [hμ.2.2.2, hμ'.2.2.2]
+    exact Subtype.ext (eq_of_tail_eq_of_sum_eq hμ.1 hμ'.1 e1.symm hs)
   · -- surjectivity
     rintro ⟨σ, hσ⟩
     obtain ⟨hsp, hs1, hs2, hcond⟩ := hσ
@@ -350,8 +350,8 @@ theorem card_upDiamond_eq_card_downDiamondLe (hρ : IsPart ρ) (hτ : IsPart τ)
     have hνN : ν.sum + diamHead ρ τ ≤ ρ.sum + r := by omega
     have hhc : diamHead ρ τ ≤ h := by omega
     have hν0 : ν.getD 0 0 ≤ (diamMax ρ τ).getD 0 0 := hνmem.2.1.included.getD_le 0
-    have hηPart : IsPart (h :: ν) := by
-      refine ⟨?_, hνp⟩
+    have hμPart : IsPart (h :: ν) := by
+      refine isPart_cons.2 ⟨?_, hνp⟩
       have key : ∀ l : List ℕ, l = ν → l.headD 1 ≤ h := by
         rintro (_ | ⟨x, t⟩) hcase
         · simp only [List.headD_nil]
@@ -360,8 +360,8 @@ theorem card_upDiamond_eq_card_downDiamondLe (hρ : IsPart ρ) (hτ : IsPart τ)
           simp only [List.headD_cons]
           omega
       exact key ν rfl
-    have hηup : (h :: ν) ∈ upDiamond ρ τ (ρ.sum + r) := by
-      refine ⟨hηPart, ⟨hρ.included_iff_getD.2 fun i => ?_, fun i => ?_⟩,
+    have hμup : (h :: ν) ∈ upDiamond ρ τ (ρ.sum + r) := by
+      refine ⟨hμPart, ⟨hρ.included_iff_getD.2 fun i => ?_, fun i => ?_⟩,
         ⟨hτ.included_iff_getD.2 fun i => ?_, fun i => ?_⟩, ?_⟩
       · cases i with
         | zero => simpa using le_trans hρ0 hhc
@@ -373,7 +373,7 @@ theorem card_upDiamond_eq_card_downDiamondLe (hρ : IsPart ρ) (hτ : IsPart τ)
       · simpa using hnt.included.getD_le i
       · simp only [List.sum_cons]
         omega
-    exact ⟨⟨h :: ν, hηup⟩, Subtype.ext (by
+    exact ⟨⟨h :: ν, hμup⟩, Subtype.ext (by
       simp only [List.tail_cons]
       exact pieriFlip_pieriFlip hBpart hsub hmid)⟩
 

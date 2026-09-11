@@ -18,28 +18,28 @@ Following `theories/MPoly/permcent.v` and `theories/MPoly/sympoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove the expansion of the complete
 homogeneous symmetric polynomial in the power sums,
 
-`h_n = ∑_{η ⊢ n} p_η / z_η`,
+`h_n = ∑_{μ ⊢ n} p_μ / z_μ`,
 
-where `z_η` is the integer of `Mathlib/GroupTheory/Perm/SymmetricGroup/CycleType.lean`,
-that is, the order of the centralizer of a permutation of cycle type `η`.  Equivalently, `n ! ·
+where `z_μ` is the integer of `Mathlib/GroupTheory/Perm/SymmetricGroup/CycleType.lean`,
+that is, the order of the centralizer of a permutation of cycle type `μ`.  Equivalently, `n ! ·
 h_n` is the sum over the permutations of `Fin n` of the power sums attached to their cycle types.
 
 The proof goes through the recursion `n · h_n = ∑_{r = 1}^{n} p_r · h_{n - r}`, obtained by
-comparing coefficients, and the matching recursion for `∑_lam p_η / z_η`, which comes
-from the fact that removing one part `r` from `η` divides `z_η` by `r · m_r(η)`.
+comparing coefficients, and the matching recursion for `∑_lam p_μ / z_μ`, which comes
+from the fact that removing one part `r` from `μ` divides `z_μ` by `r · m_r(μ)`.
 
 ## Main results
 
 * `MvPolynomial.nsmul_hsymm_eq_sum_psum_mul_hsymm` : the recursion `n · h_n = ∑_r p_r · h_{n-r}`.
-* `Young.zcard_dropPart` : `z_η = r · m_r(η) · z_{η ∖ r}`.
-* `MvPolynomial.cycleIndexSum` : the sum `∑_{η ⊢ n} p_η / z_η`.
-* `MvPolynomial.hsymm_eq_cycleIndexSum` : the cycle index formula `h_n = ∑_{η ⊢ n} p_η / z_η`.
+* `Young.zcard_dropPart` : `z_μ = r · m_r(μ) · z_{μ ∖ r}`.
+* `MvPolynomial.cycleIndexSum` : the sum `∑_{μ ⊢ n} p_μ / z_μ`.
+* `MvPolynomial.hsymm_eq_cycleIndexSum` : the cycle index formula `h_n = ∑_{μ ⊢ n} p_μ / z_μ`.
 * `MvPolynomial.factorial_nsmul_hsymm_eq_sum_perm` : `n ! · h_n = ∑_{σ ∈ S_n} p_{cycleType σ}`.
 * `MvPolynomial.nsmul_esymm_eq_sum_psum_mul_esymm` : Newton's identity in the recursive form
   `n · e_n = ∑_{r=1}^{n} (-1)^{r+1} p_r · e_{n-r}`, deduced from Mathlib's Newton identities.
 * `MvPolynomial.esymm_eq_signedCycleIndexSum` : the signed cycle index formula
-  `e_n = ∑_{η ⊢ n} (-1)^{n - ℓ(η)} p_η / z_η`.
-* `MvPolynomial.sum_signed_inv_zcard` : `∑_{η ⊢ n} (-1)^{n - ℓ(η)} / z_η = 0` for `n ≥ 2`.
+  `e_n = ∑_{μ ⊢ n} (-1)^{n - ℓ(μ)} p_μ / z_μ`.
+* `MvPolynomial.sum_signed_inv_zcard` : `∑_{μ ⊢ n} (-1)^{n - ℓ(μ)} / z_μ = 0` for `n ≥ 2`.
 -/
 
 @[expose] public section
@@ -160,7 +160,7 @@ namespace Young
 
 /-! ### Removing one part from a partition -/
 
-/-- `z_η` may be computed over any finite set of values containing the parts. -/
+/-- `z_μ` may be computed over any finite set of values containing the parts. -/
 lemma zcard_eq_prod_of_subset {l : List ℕ} {s : Finset ℕ} (h : l.toFinset ⊆ s) :
     zcard l = ∏ i ∈ s, i ^ l.count i * Nat.factorial (l.count i) := by
   classical
@@ -170,20 +170,20 @@ lemma zcard_eq_prod_of_subset {l : List ℕ} {s : Finset ℕ} (h : l.toFinset �
   rw [hc]
   simp
 
-/-- The partition obtained by removing one part equal to `r` from `η`. -/
-noncomputable def dropPart (η : List ℕ) (r : ℕ) : List ℕ := sortDesc ((η : Multiset ℕ).erase r)
+/-- The partition obtained by removing one part equal to `r` from `μ`. -/
+noncomputable def dropPart (μ : List ℕ) (r : ℕ) : List ℕ := sortDesc ((μ : Multiset ℕ).erase r)
 
-@[simp] lemma coe_dropPart (η : List ℕ) (r : ℕ) :
-    (dropPart η r : Multiset ℕ) = (η : Multiset ℕ).erase r := coe_sortDesc _
+@[simp] lemma coe_dropPart (μ : List ℕ) (r : ℕ) :
+    (dropPart μ r : Multiset ℕ) = (μ : Multiset ℕ).erase r := coe_sortDesc _
 
-lemma isPart_dropPart {η : List ℕ} (hη : IsPart η) (r : ℕ) : IsPart (dropPart η r) := by
-  refine isPart_sortDesc fun i hi => hη.pos_of_mem ?_
+lemma isPart_dropPart {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) : IsPart (dropPart μ r) := by
+  refine isPart_sortDesc fun i hi => hμ.pos_of_mem ?_
   have := Multiset.mem_of_mem_erase hi
   simpa using this
 
-lemma count_dropPart (η : List ℕ) (r i : ℕ) :
-    (dropPart η r).count i = if i = r then η.count i - 1 else η.count i := by
-  have h := congrArg (Multiset.count i) (coe_dropPart η r)
+lemma count_dropPart (μ : List ℕ) (r i : ℕ) :
+    (dropPart μ r).count i = if i = r then μ.count i - 1 else μ.count i := by
+  have h := congrArg (Multiset.count i) (coe_dropPart μ r)
   rw [Multiset.coe_count] at h
   rw [h]
   by_cases hi : i = r
@@ -191,45 +191,45 @@ lemma count_dropPart (η : List ℕ) (r i : ℕ) :
     rw [ite_eq_left rfl, Multiset.count_erase_self, Multiset.coe_count]
   · rw [ite_eq_right hi, Multiset.count_erase_of_ne hi, Multiset.coe_count]
 
-lemma sum_dropPart {η : List ℕ} {r : ℕ} (hr : r ∈ η) : (dropPart η r).sum + r = η.sum := by
-  have hmem : r ∈ (η : Multiset ℕ) := by simpa using hr
-  have h : (r ::ₘ ((η : Multiset ℕ).erase r)) = (η : Multiset ℕ) := Multiset.cons_erase hmem
+lemma sum_dropPart {μ : List ℕ} {r : ℕ} (hr : r ∈ μ) : (dropPart μ r).sum + r = μ.sum := by
+  have hmem : r ∈ (μ : Multiset ℕ) := by simpa using hr
+  have h : (r ::ₘ ((μ : Multiset ℕ).erase r)) = (μ : Multiset ℕ) := Multiset.cons_erase hmem
   have hsum := congrArg Multiset.sum h
   rw [Multiset.sum_cons] at hsum
-  have hd : (dropPart η r).sum = ((η : Multiset ℕ).erase r).sum := by
+  have hd : (dropPart μ r).sum = ((μ : Multiset ℕ).erase r).sum := by
     rw [← Multiset.sum_coe, coe_dropPart]
-  rw [hd, ← Multiset.sum_coe η]
+  rw [hd, ← Multiset.sum_coe μ]
   omega
 
-lemma toFinset_dropPart_subset (η : List ℕ) (r : ℕ) :
-    (dropPart η r).toFinset ⊆ η.toFinset := by
+lemma toFinset_dropPart_subset (μ : List ℕ) (r : ℕ) :
+    (dropPart μ r).toFinset ⊆ μ.toFinset := by
   intro i hi
   rw [List.mem_toFinset] at hi ⊢
-  have hi' : i ∈ (dropPart η r : Multiset ℕ) := by
+  have hi' : i ∈ (dropPart μ r : Multiset ℕ) := by
     exact (Multiset.mem_coe).2 hi
   rw [coe_dropPart] at hi'
   exact (Multiset.mem_coe).1 (Multiset.mem_of_mem_erase hi')
 
-/-- **Removing one part `r` divides `z_η` by `r · m_r(η)`.** -/
-lemma zcard_dropPart {η : List ℕ} {r : ℕ} (hr : r ∈ η) :
-    zcard η = r * η.count r * zcard (dropPart η r) := by
+/-- **Removing one part `r` divides `z_μ` by `r · m_r(μ)`.** -/
+lemma zcard_dropPart {μ : List ℕ} {r : ℕ} (hr : r ∈ μ) :
+    zcard μ = r * μ.count r * zcard (dropPart μ r) := by
   classical
-  have hrs : r ∈ η.toFinset := List.mem_toFinset.2 hr
-  have h1 : zcard η = ∏ i ∈ η.toFinset, i ^ η.count i * Nat.factorial (η.count i) :=
+  have hrs : r ∈ μ.toFinset := List.mem_toFinset.2 hr
+  have h1 : zcard μ = ∏ i ∈ μ.toFinset, i ^ μ.count i * Nat.factorial (μ.count i) :=
     zcard_eq_prod_of_subset (Finset.Subset.refl _)
-  have h2 : zcard (dropPart η r)
-      = ∏ i ∈ η.toFinset,
-          i ^ (dropPart η r).count i * Nat.factorial ((dropPart η r).count i) :=
-    zcard_eq_prod_of_subset (toFinset_dropPart_subset η r)
-  have htail : ∏ i ∈ η.toFinset.erase r,
-        i ^ (dropPart η r).count i * Nat.factorial ((dropPart η r).count i)
-      = ∏ i ∈ η.toFinset.erase r, i ^ η.count i * Nat.factorial (η.count i) :=
+  have h2 : zcard (dropPart μ r)
+      = ∏ i ∈ μ.toFinset,
+          i ^ (dropPart μ r).count i * Nat.factorial ((dropPart μ r).count i) :=
+    zcard_eq_prod_of_subset (toFinset_dropPart_subset μ r)
+  have htail : ∏ i ∈ μ.toFinset.erase r,
+        i ^ (dropPart μ r).count i * Nat.factorial ((dropPart μ r).count i)
+      = ∏ i ∈ μ.toFinset.erase r, i ^ μ.count i * Nat.factorial (μ.count i) :=
     Finset.prod_congr rfl fun i hi => by
       rw [count_dropPart, ite_eq_right (Finset.mem_erase.1 hi).1]
-  have hc : η.count r ≠ 0 := by
+  have hc : μ.count r ≠ 0 := by
     rw [ne_eq, List.count_eq_zero, not_not]
     exact hr
-  obtain ⟨k, hk⟩ : ∃ k, η.count r = k + 1 := ⟨η.count r - 1, by omega⟩
+  obtain ⟨k, hk⟩ : ∃ k, μ.count r = k + 1 := ⟨μ.count r - 1, by omega⟩
   rw [h1, h2, ← Finset.mul_prod_erase _ _ hrs, ← Finset.mul_prod_erase _ _ hrs, htail,
     count_dropPart, ite_eq_left rfl, hk]
   simp only [Nat.add_sub_cancel]
@@ -237,52 +237,52 @@ lemma zcard_dropPart {η : List ℕ} {r : ℕ} (hr : r ∈ η) :
   ring
 
 /-- The total size of a partition, counted by distinct parts. -/
-lemma sum_count_mul_self (η : List ℕ) : ∑ i ∈ η.toFinset, η.count i * i = η.sum := by
+lemma sum_count_mul_self (μ : List ℕ) : ∑ i ∈ μ.toFinset, μ.count i * i = μ.sum := by
   classical
-  have h := Finset.sum_multiset_map_count (η : Multiset ℕ) (fun i : ℕ => i)
+  have h := Finset.sum_multiset_map_count (μ : Multiset ℕ) (fun i : ℕ => i)
   rw [Multiset.map_id'] at h
-  rw [← Multiset.sum_coe η, h]
+  rw [← Multiset.sum_coe μ, h]
   refine Finset.sum_congr ?_ fun i _ => ?_
   · simp
   · rw [smul_eq_mul, Multiset.coe_count]
 
-/-- `z_η` only depends on the multiset of parts. -/
+/-- `z_μ` only depends on the multiset of parts. -/
 lemma zcard_of_perm {l l' : List ℕ} (h : l.Perm l') : zcard l = zcard l' := by
   classical
   rw [zcard, zcard, List.toFinset_eq_of_perm l l' h]
   exact Finset.prod_congr rfl fun i _ => by rw [h.count_eq]
 
-/-- Adding one part `r` to the partition `η`. -/
-noncomputable def insPart (η : List ℕ) (r : ℕ) : List ℕ :=
-  sortDesc (r ::ₘ (η : Multiset ℕ))
+/-- Adding one part `r` to the partition `μ`. -/
+noncomputable def insPart (μ : List ℕ) (r : ℕ) : List ℕ :=
+  sortDesc (r ::ₘ (μ : Multiset ℕ))
 
-@[simp] lemma coe_insPart (η : List ℕ) (r : ℕ) :
-    (insPart η r : Multiset ℕ) = r ::ₘ (η : Multiset ℕ) := coe_sortDesc _
+@[simp] lemma coe_insPart (μ : List ℕ) (r : ℕ) :
+    (insPart μ r : Multiset ℕ) = r ::ₘ (μ : Multiset ℕ) := coe_sortDesc _
 
-lemma insPart_perm (η : List ℕ) (r : ℕ) : (insPart η r).Perm (r :: η) :=
-  Quotient.exact (coe_insPart η r)
+lemma insPart_perm (μ : List ℕ) (r : ℕ) : (insPart μ r).Perm (r :: μ) :=
+  Quotient.exact (coe_insPart μ r)
 
-lemma isPart_insPart {η : List ℕ} (hη : IsPart η) {r : ℕ} (hr : 0 < r) :
-    IsPart (insPart η r) := by
+lemma isPart_insPart {μ : List ℕ} (hμ : IsPart μ) {r : ℕ} (hr : 0 < r) :
+    IsPart (insPart μ r) := by
   refine isPart_sortDesc fun i hi => ?_
   rcases Multiset.mem_cons.1 hi with rfl | hi
   · exact hr
-  · exact hη.pos_of_mem (by simpa using hi)
+  · exact hμ.pos_of_mem (by simpa using hi)
 
-@[simp] lemma sum_insPart (η : List ℕ) (r : ℕ) : (insPart η r).sum = r + η.sum := by
+@[simp] lemma sum_insPart (μ : List ℕ) (r : ℕ) : (insPart μ r).sum = r + μ.sum := by
   rw [insPart, sum_sortDesc, Multiset.sum_cons, Multiset.sum_coe]
 
-lemma mem_insPart_self (η : List ℕ) (r : ℕ) : r ∈ insPart η r := by
+lemma mem_insPart_self (μ : List ℕ) (r : ℕ) : r ∈ insPart μ r := by
   rw [insPart, mem_sortDesc]
   exact Multiset.mem_cons_self _ _
 
-lemma dropPart_insPart {η : List ℕ} (hη : IsPart η) (r : ℕ) :
-    dropPart (insPart η r) r = η := by
-  rw [dropPart, coe_insPart, Multiset.erase_cons_head, sortDesc_coe hη]
+lemma dropPart_insPart {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) :
+    dropPart (insPart μ r) r = μ := by
+  rw [dropPart, coe_insPart, Multiset.erase_cons_head, sortDesc_coe hμ]
 
-lemma insPart_dropPart {η : List ℕ} (hη : IsPart η) {r : ℕ} (hr : r ∈ η) :
-    insPart (dropPart η r) r = η := by
-  rw [insPart, coe_dropPart, Multiset.cons_erase (by simpa using hr), sortDesc_coe hη]
+lemma insPart_dropPart {μ : List ℕ} (hμ : IsPart μ) {r : ℕ} (hr : r ∈ μ) :
+    insPart (dropPart μ r) r = μ := by
+  rw [insPart, coe_dropPart, Multiset.cons_erase (by simpa using hr), sortDesc_coe hμ]
 end Young
 
 namespace MvPolynomial
@@ -290,47 +290,47 @@ namespace MvPolynomial
 
 /-! ### The product of power sums, and adding a part -/
 
-lemma pProd_cons (m : ℕ) (R : Type*) [CommRing R] (r : ℕ) (η : List ℕ) :
-    pProd m R (r :: η) = psum (Fin m) R r * pProd m R η := by
+lemma pProd_cons (m : ℕ) (R : Type*) [CommRing R] (r : ℕ) (μ : List ℕ) :
+    pProd m R (r :: μ) = psum (Fin m) R r * pProd m R μ := by
   rw [pProd, pProd, List.map_cons, List.prod_cons]
 
 lemma pProd_of_perm (m : ℕ) (R : Type*) [CommRing R] {l l' : List ℕ} (h : l.Perm l') :
     pProd m R l = pProd m R l' :=
   List.Perm.prod_eq (h.map _)
 
-lemma pProd_insPart (m : ℕ) (R : Type*) [CommRing R] (η : List ℕ) (r : ℕ) :
-    pProd m R (insPart η r) = psum (Fin m) R r * pProd m R η := by
-  rw [pProd_of_perm m R (insPart_perm η r), pProd_cons]
+lemma pProd_insPart (m : ℕ) (R : Type*) [CommRing R] (μ : List ℕ) (r : ℕ) :
+    pProd m R (insPart μ r) = psum (Fin m) R r * pProd m R μ := by
+  rw [pProd_of_perm m R (insPart_perm μ r), pProd_cons]
 
 /-! ### The cycle index formula -/
 
-/-- The sum `∑_{η ⊢ n} p_η / z_η`. -/
+/-- The sum `∑_{μ ⊢ n} p_μ / z_μ`. -/
 noncomputable def cycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     MvPolynomial (Fin m) R :=
-  ∑ η ∈ partFinset n, ((zcard η : ℚ))⁻¹ • pProd m R η
+  ∑ μ ∈ partFinset n, ((zcard μ : ℚ))⁻¹ • pProd m R μ
 
 end MvPolynomial
 
 namespace Young
 
 /-- The scalar identity behind the recursion: the reciprocals of the `z`'s of the partitions
-obtained by removing one part sum up to `n / z_η`. -/
-lemma sum_inv_zcard_dropPart {η : List ℕ} (hη : IsPart η) :
-    ∑ r ∈ η.toFinset, ((zcard (dropPart η r) : ℚ))⁻¹
-      = (η.sum : ℚ) * ((zcard η : ℚ))⁻¹ := by
+obtained by removing one part sum up to `n / z_μ`. -/
+lemma sum_inv_zcard_dropPart {μ : List ℕ} (hμ : IsPart μ) :
+    ∑ r ∈ μ.toFinset, ((zcard (dropPart μ r) : ℚ))⁻¹
+      = (μ.sum : ℚ) * ((zcard μ : ℚ))⁻¹ := by
   classical
-  have hterm : ∀ r ∈ η.toFinset,
-      ((zcard (dropPart η r) : ℚ))⁻¹ = (η.count r * r : ℕ) * ((zcard η : ℚ))⁻¹ := by
+  have hterm : ∀ r ∈ μ.toFinset,
+      ((zcard (dropPart μ r) : ℚ))⁻¹ = (μ.count r * r : ℕ) * ((zcard μ : ℚ))⁻¹ := by
     intro r hr
-    have hrm : r ∈ η := List.mem_toFinset.1 hr
-    have hd : (zcard η : ℚ) = ((r * η.count r : ℕ) : ℚ) * (zcard (dropPart η r) : ℚ) := by
+    have hrm : r ∈ μ := List.mem_toFinset.1 hr
+    have hd : (zcard μ : ℚ) = ((r * μ.count r : ℕ) : ℚ) * (zcard (dropPart μ r) : ℚ) := by
       rw [← Nat.cast_mul]
       exact_mod_cast congrArg (fun k : ℕ => (k : ℚ)) (zcard_dropPart hrm)
-    have hdz : (zcard (dropPart η r) : ℚ) ≠ 0 :=
-      Nat.cast_ne_zero.2 (zcard_pos (isPart_dropPart hη r)).ne'
-    have hrz : ((r * η.count r : ℕ) : ℚ) ≠ 0 := by
-      have hpos : 0 < r := hη.pos_of_mem hrm
-      have hc : η.count r ≠ 0 := by
+    have hdz : (zcard (dropPart μ r) : ℚ) ≠ 0 :=
+      Nat.cast_ne_zero.2 (zcard_pos (isPart_dropPart hμ r)).ne'
+    have hrz : ((r * μ.count r : ℕ) : ℚ) ≠ 0 := by
+      have hpos : 0 < r := hμ.pos_of_mem hrm
+      have hc : μ.count r ≠ 0 := by
         rw [ne_eq, List.count_eq_zero, not_not]; exact hrm
       exact Nat.cast_ne_zero.2 (by positivity)
     rw [hd, mul_inv]
@@ -343,7 +343,7 @@ end Young
 
 namespace MvPolynomial
 
-/-- **The recursion for `∑_lam p_η / z_η`**. -/
+/-- **The recursion for `∑_lam p_μ / z_μ`**. -/
 lemma sum_psum_mul_cycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     ∑ r ∈ Finset.Icc 1 n, psum (Fin m) R r * cycleIndexSum m R (n - r)
       = (n : ℚ) • cycleIndexSum m R n := by
@@ -352,54 +352,54 @@ lemma sum_psum_mul_cycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ
       = ∑ x ∈ (Finset.Icc 1 n).sigma (fun r => partFinset (n - r)),
           ((zcard x.2 : ℚ))⁻¹ • pProd m R (insPart x.2 x.1) := by
     rw [← Finset.sum_sigma' (Finset.Icc 1 n) (fun r => partFinset (n - r))
-      (fun r μ => ((zcard μ : ℚ))⁻¹ • pProd m R (insPart μ r))]
+      (fun r ν => ((zcard ν : ℚ))⁻¹ • pProd m R (insPart ν r))]
     refine Finset.sum_congr rfl fun r _ => ?_
     rw [cycleIndexSum, Finset.mul_sum]
-    exact Finset.sum_congr rfl fun μ _ => by rw [pProd_insPart, mul_smul_comm]
+    exact Finset.sum_congr rfl fun ν _ => by rw [pProd_insPart, mul_smul_comm]
   have hR : (n : ℚ) • cycleIndexSum m R n
-      = ∑ y ∈ (partFinset n).sigma (fun η => η.toFinset),
+      = ∑ y ∈ (partFinset n).sigma (fun μ => μ.toFinset),
           ((zcard (dropPart y.1 y.2) : ℚ))⁻¹ • pProd m R y.1 := by
-    rw [← Finset.sum_sigma' (partFinset n) (fun η => η.toFinset)
-      (fun η r => ((zcard (dropPart η r) : ℚ))⁻¹ • pProd m R η),
+    rw [← Finset.sum_sigma' (partFinset n) (fun μ => μ.toFinset)
+      (fun μ r => ((zcard (dropPart μ r) : ℚ))⁻¹ • pProd m R μ),
       cycleIndexSum, Finset.smul_sum]
-    refine Finset.sum_congr rfl fun η hη => ?_
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
+    refine Finset.sum_congr rfl fun μ hμ => ?_
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
     rw [← Finset.sum_smul, sum_inv_zcard_dropPart hpart, hsum, smul_smul]
   rw [hL, hR]
   refine Finset.sum_nbij' (i := fun x => (⟨insPart x.2 x.1, x.1⟩ : (_ : List ℕ) × ℕ))
     (j := fun y => (⟨y.2, dropPart y.1 y.2⟩ : (_ : ℕ) × List ℕ)) ?_ ?_ ?_ ?_ ?_
-  · rintro ⟨r, μ⟩ hx
+  · rintro ⟨r, ν⟩ hx
     simp only [Finset.mem_sigma] at hx ⊢
-    obtain ⟨hr, hμ⟩ := hx
-    obtain ⟨hμpart, hμsum⟩ := mem_partFinset.1 hμ
+    obtain ⟨hr, hν⟩ := hx
+    obtain ⟨hνpart, hνsum⟩ := mem_partFinset.1 hν
     rw [Finset.mem_Icc] at hr
-    refine ⟨mem_partFinset.2 ⟨isPart_insPart hμpart hr.1, ?_⟩, ?_⟩
-    · rw [sum_insPart, hμsum]; omega
-    · exact List.mem_toFinset.2 (mem_insPart_self μ r)
-  · rintro ⟨η, r⟩ hy
+    refine ⟨mem_partFinset.2 ⟨isPart_insPart hνpart hr.1, ?_⟩, ?_⟩
+    · rw [sum_insPart, hνsum]; omega
+    · exact List.mem_toFinset.2 (mem_insPart_self ν r)
+  · rintro ⟨μ, r⟩ hy
     simp only [Finset.mem_sigma] at hy ⊢
-    obtain ⟨hη, hr⟩ := hy
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
-    have hrm : r ∈ η := List.mem_toFinset.1 hr
+    obtain ⟨hμ, hr⟩ := hy
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
+    have hrm : r ∈ μ := List.mem_toFinset.1 hr
     have hpos : 0 < r := hpart.pos_of_mem hrm
     have hsd := sum_dropPart hrm
     refine ⟨Finset.mem_Icc.2 ⟨hpos, by omega⟩, mem_partFinset.2 ⟨isPart_dropPart hpart r, ?_⟩⟩
     omega
-  · rintro ⟨r, μ⟩ hx
+  · rintro ⟨r, ν⟩ hx
     rw [Finset.mem_sigma] at hx
-    obtain ⟨hμpart, -⟩ := mem_partFinset.1 hx.2
-    simp only [dropPart_insPart hμpart]
-  · rintro ⟨η, r⟩ hy
+    obtain ⟨hνpart, -⟩ := mem_partFinset.1 hx.2
+    simp only [dropPart_insPart hνpart]
+  · rintro ⟨μ, r⟩ hy
     rw [Finset.mem_sigma] at hy
     obtain ⟨hpart, -⟩ := mem_partFinset.1 hy.1
-    have hrm : r ∈ η := List.mem_toFinset.1 hy.2
+    have hrm : r ∈ μ := List.mem_toFinset.1 hy.2
     simp only [insPart_dropPart hpart hrm]
-  · rintro ⟨r, μ⟩ hx
+  · rintro ⟨r, ν⟩ hx
     rw [Finset.mem_sigma] at hx
-    obtain ⟨hμpart, -⟩ := mem_partFinset.1 hx.2
-    rw [dropPart_insPart hμpart]
+    obtain ⟨hνpart, -⟩ := mem_partFinset.1 hx.2
+    rw [dropPart_insPart hνpart]
 
-/-- **The cycle index formula** : `h_n = ∑_{η ⊢ n} p_η / z_η`. -/
+/-- **The cycle index formula** : `h_n = ∑_{μ ⊢ n} p_μ / z_μ`. -/
 theorem hsymm_eq_cycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     hsymm (Fin m) R n = cycleIndexSum m R n := by
   induction n using Nat.strong_induction_on with
@@ -426,22 +426,22 @@ theorem factorial_nsmul_hsymm_eq_sum_perm (m n : ℕ) (R : Type*) [CommRing R] [
       = ∑ σ : Equiv.Perm (Fin n), pProd m R (Equiv.Perm.cycleTypeList σ) := by
   classical
   have hfib : ∑ σ : Equiv.Perm (Fin n), pProd m R (Equiv.Perm.cycleTypeList σ)
-      = ∑ η ∈ partFinset n,
+      = ∑ μ ∈ partFinset n,
           (Finset.univ.filter fun σ : Equiv.Perm (Fin n) =>
-            Equiv.Perm.cycleTypeList σ = η).card • pProd m R η := by
+            Equiv.Perm.cycleTypeList σ = μ).card • pProd m R μ := by
     rw [← Finset.sum_fiberwise_of_maps_to
       (fun σ _ => Equiv.Perm.cycleTypeList_mem_partFinset σ)
       (fun σ => pProd m R (Equiv.Perm.cycleTypeList σ))]
-    refine Finset.sum_congr rfl fun η _ => ?_
+    refine Finset.sum_congr rfl fun μ _ => ?_
     rw [Finset.sum_congr rfl fun σ hσ => by
       rw [(Finset.mem_filter.1 hσ).2], Finset.sum_const]
   rw [hfib, hsymm_eq_cycleIndexSum, cycleIndexSum, Finset.smul_sum]
-  refine Finset.sum_congr rfl fun η hη => ?_
-  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
-  have hz : (zcard η : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
+  refine Finset.sum_congr rfl fun μ hμ => ?_
+  obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
+  have hz : (zcard μ : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos hpart).ne'
   have hcard : ((Finset.univ.filter fun σ : Equiv.Perm (Fin n) =>
-      Equiv.Perm.cycleTypeList σ = η).card : ℚ)
-      = (Nat.factorial n : ℚ) * ((zcard η : ℚ))⁻¹ := by
+      Equiv.Perm.cycleTypeList σ = μ).card : ℚ)
+      = (Nat.factorial n : ℚ) * ((zcard μ : ℚ))⁻¹ := by
     field_simp
     exact_mod_cast Equiv.Perm.card_cycleTypeList_mul_zcard hpart hsum
   rw [smul_comm, ← Nat.cast_smul_eq_nsmul ℚ, ← Nat.cast_smul_eq_nsmul ℚ, hcard, smul_smul,
@@ -491,13 +491,13 @@ lemma rat_neg_one_pow_smul (m k : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R]
   · rw [h.neg_one_pow, h.neg_one_pow, one_smul, one_mul]
   · rw [h.neg_one_pow, h.neg_one_pow, neg_one_smul, neg_one_mul]
 
-/-- The signed sum `∑_{η ⊢ n} (-1)^{n - ℓ(η)} p_η / z_η`.  The sign is written as
-`(-1)^{n + ℓ(η)}`, which avoids a truncated subtraction and has the same parity. -/
+/-- The signed sum `∑_{μ ⊢ n} (-1)^{n - ℓ(μ)} p_μ / z_μ`.  The sign is written as
+`(-1)^{n + ℓ(μ)}`, which avoids a truncated subtraction and has the same parity. -/
 noncomputable def signedCycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     MvPolynomial (Fin m) R :=
-  ∑ η ∈ partFinset n, (((-1 : ℚ) ^ (n + η.length)) * ((zcard η : ℚ))⁻¹) • pProd m R η
+  ∑ μ ∈ partFinset n, (((-1 : ℚ) ^ (n + μ.length)) * ((zcard μ : ℚ))⁻¹) • pProd m R μ
 
-/-- **The recursion for `∑_lam ± p_η / z_η`**. -/
+/-- **The recursion for `∑_lam ± p_μ / z_μ`**. -/
 lemma sum_psum_mul_signedCycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     ∑ r ∈ Finset.Icc 1 n,
         ((-1 : ℚ) ^ (r + 1)) • (psum (Fin m) R r * signedCycleIndexSum m R (n - r))
@@ -509,71 +509,71 @@ lemma sum_psum_mul_signedCycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algeb
           (((-1 : ℚ) ^ (x.1 + 1)) * (((-1 : ℚ) ^ ((n - x.1) + x.2.length))
             * ((zcard x.2 : ℚ))⁻¹)) • pProd m R (insPart x.2 x.1) := by
     rw [← Finset.sum_sigma' (Finset.Icc 1 n) (fun r => partFinset (n - r))
-      (fun r μ => (((-1 : ℚ) ^ (r + 1)) * (((-1 : ℚ) ^ ((n - r) + μ.length))
-        * ((zcard μ : ℚ))⁻¹)) • pProd m R (insPart μ r))]
+      (fun r ν => (((-1 : ℚ) ^ (r + 1)) * (((-1 : ℚ) ^ ((n - r) + ν.length))
+        * ((zcard ν : ℚ))⁻¹)) • pProd m R (insPart ν r))]
     refine Finset.sum_congr rfl fun r _ => ?_
     rw [signedCycleIndexSum, Finset.mul_sum, Finset.smul_sum]
-    exact Finset.sum_congr rfl fun μ _ => by
+    exact Finset.sum_congr rfl fun ν _ => by
       rw [pProd_insPart, mul_smul_comm, smul_smul]
   have hR : (n : ℚ) • signedCycleIndexSum m R n
-      = ∑ y ∈ (partFinset n).sigma (fun η => η.toFinset),
+      = ∑ y ∈ (partFinset n).sigma (fun μ => μ.toFinset),
           (((-1 : ℚ) ^ (n + y.1.length)) * ((zcard (dropPart y.1 y.2) : ℚ))⁻¹)
             • pProd m R y.1 := by
-    rw [← Finset.sum_sigma' (partFinset n) (fun η => η.toFinset)
-      (fun η r => (((-1 : ℚ) ^ (n + η.length)) * ((zcard (dropPart η r) : ℚ))⁻¹)
-        • pProd m R η),
+    rw [← Finset.sum_sigma' (partFinset n) (fun μ => μ.toFinset)
+      (fun μ r => (((-1 : ℚ) ^ (n + μ.length)) * ((zcard (dropPart μ r) : ℚ))⁻¹)
+        • pProd m R μ),
       signedCycleIndexSum, Finset.smul_sum]
-    refine Finset.sum_congr rfl fun η hη => ?_
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
+    refine Finset.sum_congr rfl fun μ hμ => ?_
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
     rw [← Finset.sum_smul, ← Finset.mul_sum, sum_inv_zcard_dropPart hpart, hsum, smul_smul]
     ring_nf
   rw [hL, hR]
   refine Finset.sum_nbij' (i := fun x => (⟨insPart x.2 x.1, x.1⟩ : (_ : List ℕ) × ℕ))
     (j := fun y => (⟨y.2, dropPart y.1 y.2⟩ : (_ : ℕ) × List ℕ)) ?_ ?_ ?_ ?_ ?_
-  · rintro ⟨r, μ⟩ hx
+  · rintro ⟨r, ν⟩ hx
     simp only [Finset.mem_sigma] at hx ⊢
-    obtain ⟨hr, hμ⟩ := hx
-    obtain ⟨hμpart, hμsum⟩ := mem_partFinset.1 hμ
+    obtain ⟨hr, hν⟩ := hx
+    obtain ⟨hνpart, hνsum⟩ := mem_partFinset.1 hν
     rw [Finset.mem_Icc] at hr
-    refine ⟨mem_partFinset.2 ⟨isPart_insPart hμpart hr.1, ?_⟩, ?_⟩
-    · rw [sum_insPart, hμsum]; omega
-    · exact List.mem_toFinset.2 (mem_insPart_self μ r)
-  · rintro ⟨η, r⟩ hy
+    refine ⟨mem_partFinset.2 ⟨isPart_insPart hνpart hr.1, ?_⟩, ?_⟩
+    · rw [sum_insPart, hνsum]; omega
+    · exact List.mem_toFinset.2 (mem_insPart_self ν r)
+  · rintro ⟨μ, r⟩ hy
     simp only [Finset.mem_sigma] at hy ⊢
-    obtain ⟨hη, hr⟩ := hy
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη
-    have hrm : r ∈ η := List.mem_toFinset.1 hr
+    obtain ⟨hμ, hr⟩ := hy
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ
+    have hrm : r ∈ μ := List.mem_toFinset.1 hr
     have hpos : 0 < r := hpart.pos_of_mem hrm
     have hsd := sum_dropPart hrm
     refine ⟨Finset.mem_Icc.2 ⟨hpos, by omega⟩, mem_partFinset.2 ⟨isPart_dropPart hpart r, ?_⟩⟩
     omega
-  · rintro ⟨r, μ⟩ hx
+  · rintro ⟨r, ν⟩ hx
     rw [Finset.mem_sigma] at hx
-    obtain ⟨hμpart, -⟩ := mem_partFinset.1 hx.2
-    simp only [dropPart_insPart hμpart]
-  · rintro ⟨η, r⟩ hy
+    obtain ⟨hνpart, -⟩ := mem_partFinset.1 hx.2
+    simp only [dropPart_insPart hνpart]
+  · rintro ⟨μ, r⟩ hy
     rw [Finset.mem_sigma] at hy
     obtain ⟨hpart, -⟩ := mem_partFinset.1 hy.1
-    have hrm : r ∈ η := List.mem_toFinset.1 hy.2
+    have hrm : r ∈ μ := List.mem_toFinset.1 hy.2
     simp only [insPart_dropPart hpart hrm]
-  · rintro ⟨r, μ⟩ hx
+  · rintro ⟨r, ν⟩ hx
     simp only [Finset.mem_sigma, Finset.mem_Icc] at hx
-    obtain ⟨hr, hμ⟩ := hx
-    obtain ⟨hμpart, -⟩ := mem_partFinset.1 hμ
-    have hlen : (insPart μ r).length = μ.length + 1 := by
-      have hcard : ((insPart μ r : List ℕ) : Multiset ℕ).card = (insPart μ r).length :=
+    obtain ⟨hr, hν⟩ := hx
+    obtain ⟨hνpart, -⟩ := mem_partFinset.1 hν
+    have hlen : (insPart ν r).length = ν.length + 1 := by
+      have hcard : ((insPart ν r : List ℕ) : Multiset ℕ).card = (insPart ν r).length :=
         Multiset.coe_card _
       rw [coe_insPart, Multiset.card_cons] at hcard
       simp only [Multiset.coe_card] at hcard
       omega
-    have hsign : ((-1 : ℚ) ^ (r + 1)) * ((-1 : ℚ) ^ ((n - r) + μ.length))
-        = (-1 : ℚ) ^ (n + (insPart μ r).length) := by
+    have hsign : ((-1 : ℚ) ^ (r + 1)) * ((-1 : ℚ) ^ ((n - r) + ν.length))
+        = (-1 : ℚ) ^ (n + (insPart ν r).length) := by
       rw [← pow_add, hlen, neg_one_pow_eq_pow_mod_two]
-      have hmod : (r + 1 + (n - r + μ.length)) % 2 = (n + (μ.length + 1)) % 2 := by omega
+      have hmod : (r + 1 + (n - r + ν.length)) % 2 = (n + (ν.length + 1)) % 2 := by omega
       rw [hmod, ← neg_one_pow_eq_pow_mod_two]
-    rw [dropPart_insPart hμpart, ← mul_assoc, hsign]
+    rw [dropPart_insPart hνpart, ← mul_assoc, hsign]
 
-/-- **The signed cycle index formula** : `e_n = ∑_{η ⊢ n} (-1)^{n - ℓ(η)} p_η / z_η`. -/
+/-- **The signed cycle index formula** : `e_n = ∑_{μ ⊢ n} (-1)^{n - ℓ(μ)} p_μ / z_μ`. -/
 theorem esymm_eq_signedCycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     esymm (Fin m) R n = signedCycleIndexSum m R n := by
   induction n using Nat.strong_induction_on with
@@ -593,14 +593,14 @@ theorem esymm_eq_signedCycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra
         rw [← hrec, ← Nat.cast_smul_eq_nsmul ℚ]
       exact smul_right_injective _ (Nat.cast_ne_zero.2 hn.ne' : (n : ℚ) ≠ 0) hq
 
-/-! ### A numerical consequence: the signed sum of the `1 / z_η` -/
+/-! ### A numerical consequence: the signed sum of the `1 / z_μ` -/
 
 lemma psum_one_var (R : Type*) [CommRing R] (r : ℕ) : psum (Fin 1) R r = X 0 ^ r := by
   simp [psum]
 
-lemma pProd_one_var (R : Type*) [CommRing R] (η : List ℕ) :
-    pProd 1 R η = X 0 ^ η.sum := by
-  induction η with
+lemma pProd_one_var (R : Type*) [CommRing R] (μ : List ℕ) :
+    pProd 1 R μ = X 0 ^ μ.sum := by
+  induction μ with
   | nil => simp
   | cons r t ih => rw [pProd_cons, ih, psum_one_var, List.sum_cons, pow_add]
 
@@ -608,18 +608,18 @@ lemma esymm_fin_one_eq_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
     esymm (Fin 1) R n = 0 := by
   rw [esymm, Finset.powersetCard_eq_empty.2 (by simpa using hn), Finset.sum_empty]
 
-/-- The signed version of `∑_{η ⊢ n} 1 / z_η = 1`: for `n ≥ 2` the partitions of `n`
+/-- The signed version of `∑_{μ ⊢ n} 1 / z_μ = 1`: for `n ≥ 2` the partitions of `n`
 with an even number of parts and those with an odd number of parts balance out. -/
 theorem sum_signed_inv_zcard {n : ℕ} (hn : 1 < n) :
-    ∑ η ∈ partFinset n, ((-1 : ℚ) ^ (n + η.length)) * ((zcard η : ℚ))⁻¹ = 0 := by
+    ∑ μ ∈ partFinset n, ((-1 : ℚ) ^ (n + μ.length)) * ((zcard μ : ℚ))⁻¹ = 0 := by
   have hzero : signedCycleIndexSum 1 ℚ n = 0 :=
     (esymm_eq_signedCycleIndexSum 1 ℚ n).symm.trans (esymm_fin_one_eq_zero ℚ hn)
   have hs : signedCycleIndexSum 1 ℚ n
-      = (∑ η ∈ partFinset n, ((-1 : ℚ) ^ (n + η.length)) * ((zcard η : ℚ))⁻¹)
+      = (∑ μ ∈ partFinset n, ((-1 : ℚ) ^ (n + μ.length)) * ((zcard μ : ℚ))⁻¹)
         • (X 0 ^ n : MvPolynomial (Fin 1) ℚ) := by
     rw [signedCycleIndexSum, Finset.sum_smul]
-    refine Finset.sum_congr rfl fun η hη => ?_
-    obtain ⟨-, hsum⟩ := mem_partFinset.1 hη
+    refine Finset.sum_congr rfl fun μ hμ => ?_
+    obtain ⟨-, hsum⟩ := mem_partFinset.1 hμ
     rw [pProd_one_var, hsum]
   rw [hs] at hzero
   have hcoeff := congrArg (coeff (Finsupp.single (0 : Fin 1) n)) hzero

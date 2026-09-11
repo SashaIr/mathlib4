@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Included
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Included
 
 /-!
 # Adding and removing a corner box of a partition
@@ -190,8 +190,9 @@ lemma decrNth_incrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsPart (inc
       obtain ⟨b, rfl⟩ : ∃ b, a = b + 1 := ⟨a - 1, by omega⟩
       simp
   | (a :: s), (i + 1), h, hi => by
+      rw [incrNth_cons_succ] at hi
       simp only [incrNth_cons_succ, decrNth_cons_succ]
-      rw [decrNth_incrNth h.2 hi.2]
+      rw [decrNth_incrNth h.of_cons hi.of_cons]
 
 /-! ### Removing a box -/
 
@@ -231,7 +232,7 @@ lemma isPart_decrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsRemCorner 
   | (1 :: s), 0, h, hc => by simp
   | ((n + 2) :: s), 0, h, hc => by
       simp only [decrNth_succ_succ_cons_zero, isPart_cons]
-      refine ⟨?_, h.2⟩
+      refine ⟨?_, h.of_cons⟩
       simp only [IsRemCorner, List.getD_cons_succ, List.getD_cons_zero] at hc
       cases s with
       | nil => simp
@@ -242,7 +243,7 @@ lemma isPart_decrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsRemCorner 
   | (a :: s), (i + 1), h, hc => by
       have hcs : IsRemCorner s i := by
         simpa [IsRemCorner] using hc
-      have hrec := isPart_decrNth h.2 hcs
+      have hrec := isPart_decrNth h.of_cons hcs
       simp only [decrNth_cons_succ, isPart_cons]
       refine ⟨?_, hrec⟩
       have ha : 1 ≤ a := by
@@ -261,7 +262,7 @@ lemma isPart_decrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsRemCorner 
           | nil => simp
           | cons c u =>
             simp only [List.getD_cons_zero]
-            simpa using h.1
+            simpa using h.headD_le_of_cons
         simpa using le_trans hb hs
 
 /-- Coq `decr_nthK`. -/
@@ -271,7 +272,7 @@ lemma incrNth_decrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsRemCorner
   | (0 :: s), 0, h, hc => by simp [IsRemCorner] at hc
   | (1 :: s), 0, h, hc => by
       have hs : s = [] := by
-        refine h.2.eq_nil_of_headD_eq_zero ?_
+        refine h.of_cons.eq_nil_of_headD_eq_zero ?_
         simp only [IsRemCorner, List.getD_cons_succ, List.getD_cons_zero] at hc
         cases s with
         | nil => simp
@@ -284,7 +285,7 @@ lemma incrNth_decrNth : ∀ {μ : List ℕ} {i : ℕ}, IsPart μ → IsRemCorner
   | (a :: s), (i + 1), h, hc => by
       have hcs : IsRemCorner s i := by simpa [IsRemCorner] using hc
       simp only [decrNth_cons_succ, incrNth_cons_succ]
-      rw [incrNth_decrNth h.2 hcs]
+      rw [incrNth_decrNth h.of_cons hcs]
 
 /-- Coq `sumn_decr_nth`. -/
 lemma sum_decrNth {μ : List ℕ} {i : ℕ} (h : IsPart μ) (hc : IsRemCorner μ i) :

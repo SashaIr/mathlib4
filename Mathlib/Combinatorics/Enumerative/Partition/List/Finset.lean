@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.NatPartition
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Multiset
 
 /-!
 # Partitions as a finite set of lists

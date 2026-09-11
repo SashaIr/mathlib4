@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Basic
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Basic
 
 /-!
 # The conjugate of a partition
@@ -93,7 +93,7 @@ lemma isPart_replicate_one (n : ℕ) : IsPart (List.replicate n 1) := by
   induction n with
   | zero => simp
   | succ m ih =>
-    refine ⟨?_, ih⟩
+    refine isPart_cons.2 ⟨?_, ih⟩
     cases m with
     | zero => simp
     | succ k => simp [List.replicate_succ]
@@ -128,7 +128,7 @@ def conjPart : List ℕ → List ℕ
 lemma isPart_conjPart {μ : List ℕ} (h : IsPart μ) : IsPart (conjPart μ) := by
   induction μ with
   | nil => simp
-  | cons a s ih => exact (ih h.2).incrFirstN a
+  | cons a s ih => exact (ih h.of_cons).incrFirstN a
 
 /-- Coq `sumn_conj_part`: conjugation preserves the size. -/
 @[simp] lemma sum_conjPart (μ : List ℕ) : (conjPart μ).sum = μ.sum := by
@@ -144,7 +144,7 @@ lemma length_conjPart {μ : List ℕ} (h : IsPart μ) : (conjPart μ).length = �
     have hhead : s.headD 0 ≤ a := by
       cases s with
       | nil => simp
-      | cons b t => simpa using h.1
+      | cons b t => simpa using h.headD_le_of_cons
     aesop
 
 /-- Coq `conj_nseq`. -/
@@ -164,11 +164,11 @@ lemma inShape_conjPart {μ : List ℕ} (h : IsPart μ) (r c : ℕ) :
   induction μ generalizing r c with
   | nil => simp [InShape]
   | cons a s ih =>
-    have hs : IsPart s := h.2
+    have hs : IsPart s := h.of_cons
     have hhead : s.headD 0 ≤ a := by
       cases s with
       | nil => simp
-      | cons b t => simpa using h.1
+      | cons b t => simpa using h.headD_le_of_cons
     -- the value of the conjugate in column `c`
     have hval : (conjPart (a :: s)).getD c 0
         = (conjPart s).getD c 0 + (if c < a then 1 else 0) := by

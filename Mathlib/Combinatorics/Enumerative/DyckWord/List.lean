@@ -22,7 +22,7 @@ constructors `DyckStep.U` and `DyckStep.D`.
 As in the Coq development, Dyck words are handled here as plain lists satisfying
 a predicate (Coq's `Dyck_word`), the counting function being the *height*
 `dyckHeight w`, the number of `U`s minus the number of `D`s.  The bundled
-structure `DyckWord` of Mathlib plays the role of Coq's sigma type `Dyck`, and
+structure `DyckWord` of Mathlib plays the role of Coq's σ type `Dyck`, and
 `List.isDyckWord_iff_exists_dyckWord` is the dictionary between the two.
 
 ## Main definitions

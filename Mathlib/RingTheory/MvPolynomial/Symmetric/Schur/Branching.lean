@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Symmetric
 
 Following `theories/MPoly/Schur_mpoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove the branching rule: a Schur
-polynomial in `m + 1` variables is the sum, over the shapes `ν` obtained from `η` by
+polynomial in `m + 1` variables is the sum, over the shapes `ν` obtained from `μ` by
 removing a horizontal strip, of the Schur polynomial of shape `ν` in the first `m`
 variables times the appropriate power of the last variable.
 
@@ -107,57 +107,57 @@ lemma finContent_last (d : Fin (m + 1) →₀ ℕ) :
 
 open Classical in
 /-- **The branching rule**: a Schur polynomial in `m + 1` variables is the sum, over the
-shapes `ν` such that `η / ν` is a horizontal strip, of the Schur polynomial of shape
+shapes `ν` such that `μ / ν` is a horizontal strip, of the Schur polynomial of shape
 `ν` in the first `m` variables times the power of the last variable filling up the
 strip. -/
-theorem schurPoly_branching (η : List ℕ) (hη : IsPart η) :
-    schurPoly (Fin (m + 1)) R η
-      = ∑ k ∈ Finset.range (η.sum + 1),
+theorem schurPoly_branching (μ : List ℕ) (hμ : IsPart μ) :
+    schurPoly (Fin (m + 1)) R μ
+      = ∑ k ∈ Finset.range (μ.sum + 1),
           ∑ ν : {p : List ℕ // IsPart p ∧ p.sum = k},
-            if HorizStrip η ν.1 then
-              rename Fin.castSucc (schurPoly (Fin m) R ν.1) * X (Fin.last m) ^ (η.sum - k)
+            if HorizStrip μ ν.1 then
+              rename Fin.castSucc (schurPoly (Fin m) R ν.1) * X (Fin.last m) ^ (μ.sum - k)
             else 0 := by
   classical
   refine MvPolynomial.ext _ _ fun d => ?_
   rw [coeff_schurPoly_eq_kostkaNum, coeff_sum]
-  have hterm : ∀ k ∈ Finset.range (η.sum + 1),
+  have hterm : ∀ k ∈ Finset.range (μ.sum + 1),
       coeff d (∑ ν : {p : List ℕ // IsPart p ∧ p.sum = k},
-        if HorizStrip η ν.1 then
-          rename Fin.castSucc (schurPoly (Fin m) R ν.1) * X (Fin.last m) ^ (η.sum - k)
+        if HorizStrip μ ν.1 then
+          rename Fin.castSucc (schurPoly (Fin m) R ν.1) * X (Fin.last m) ^ (μ.sum - k)
         else 0)
-      = if d (Fin.last m) = η.sum - k then
+      = if d (Fin.last m) = μ.sum - k then
           ((∑ ν : {p : List ℕ // IsPart p ∧ p.sum = k},
-            if HorizStrip η ν.1 then
+            if HorizStrip μ ν.1 then
               kostkaNum m ν.1 (finContent (m + 1) d) else 0 : ℕ) : R)
         else 0 := by
     intro k _
     rw [coeff_sum]
-    by_cases hlast : d (Fin.last m) = η.sum - k
+    by_cases hlast : d (Fin.last m) = μ.sum - k
     · rw [ite_eq_left hlast, Nat.cast_sum]
       refine Finset.sum_congr rfl fun ν _ => ?_
-      by_cases hstrip : HorizStrip η ν.1
+      by_cases hstrip : HorizStrip μ ν.1
       · rw [ite_eq_left hstrip, ite_eq_left hstrip, coeff_rename_castSucc_mul_pow,
           ite_eq_left hlast, coeff_schurPoly_eq_kostkaNum]
         exact congrArg _ (kostkaNum_congr m ν.1
           fun i hi => (finContent_castSucc d i hi).symm)
       · rw [ite_eq_right hstrip, ite_eq_right hstrip, coeff_zero, Nat.cast_zero]
     · rw [ite_eq_right hlast, Finset.sum_eq_zero fun ν _ => ?_]
-      by_cases hstrip : HorizStrip η ν.1
+      by_cases hstrip : HorizStrip μ ν.1
       · rw [ite_eq_left hstrip, coeff_rename_castSucc_mul_pow, ite_eq_right hlast]
       · rw [ite_eq_right hstrip, coeff_zero]
   rw [Finset.sum_congr rfl hterm]
-  by_cases hle : d (Fin.last m) ≤ η.sum
-  · have hk : η.sum - d (Fin.last m) ∈ Finset.range (η.sum + 1) :=
+  by_cases hle : d (Fin.last m) ≤ μ.sum
+  · have hk : μ.sum - d (Fin.last m) ∈ Finset.range (μ.sum + 1) :=
       Finset.mem_range.2 (by omega)
-    rw [Finset.sum_eq_single (η.sum - d (Fin.last m)) ?_ (fun h => absurd hk h)]
+    rw [Finset.sum_eq_single (μ.sum - d (Fin.last m)) ?_ (fun h => absurd hk h)]
     · rw [ite_eq_left (by omega)]
-      refine congrArg _ (kostkaNum_succ hη ?_)
+      refine congrArg _ (kostkaNum_succ hμ ?_)
       rw [finContent_last]
       omega
     · intro k hk hne
       have hkk := Finset.mem_range.1 hk
       exact ite_eq_right (by omega)
-  · have hzero : kostkaNum (m + 1) η (finContent (m + 1) d) = 0 := by
+  · have hzero : kostkaNum (m + 1) μ (finContent (m + 1) d) = 0 := by
       refine kostkaNum_eq_zero_of_sum_ne _ _ _ fun hsum => hle ?_
       have hle' : finContent (m + 1) d m ≤ ∑ i ∈ Finset.range (m + 1), finContent (m + 1) d i :=
         Finset.single_le_sum (f := finContent (m + 1) d) (fun i _ => Nat.zero_le _)

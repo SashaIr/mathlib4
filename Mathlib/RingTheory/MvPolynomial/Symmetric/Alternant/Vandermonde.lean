@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Bialternant
 The alternant `alt m R a` is the determinant of the matrix `(X i ^ a j)`.  For the
 staircase exponent vector `delta = (m-1, ..., 1, 0)` this determinant is the Vandermonde
 product `∏_{i < j} (X i - X j)`, which turns Jacobi's bialternant formula into the
-classical statement `s_η = a_{η + delta} / a_delta`.
+classical statement `s_μ = a_{μ + delta} / a_delta`.
 
 ## Main results
 
@@ -84,13 +84,13 @@ theorem alt_staircase (m : ℕ) (R : Type*) [CommRing R] :
   · rintro ⟨i, j⟩ -
     simp
 
-/-- **Jacobi's bialternant formula**: `s_η` is the quotient of the alternant of
-`η + delta` by the Vandermonde product. -/
-theorem alt_partVec_eq_schurPoly_mul_vandermonde {η : List ℕ} (hη : IsPart η)
-    (hlen : η.length ≤ m) :
-    alt m R (partVec m η)
-      = schurPoly (Fin m) R η
+/-- **Jacobi's bialternant formula**: `s_μ` is the quotient of the alternant of
+`μ + delta` by the Vandermonde product. -/
+theorem alt_partVec_eq_schurPoly_mul_vandermonde {μ : List ℕ} (hμ : IsPart μ)
+    (hlen : μ.length ≤ m) :
+    alt m R (partVec m μ)
+      = schurPoly (Fin m) R μ
           * ∏ i : Fin m, ∏ j ∈ Finset.Ioi i, (X i - X j : MvPolynomial (Fin m) R) := by
-  rw [alt_partVec_eq_schurPoly_mul hη hlen, alt_staircase]
+  rw [alt_partVec_eq_schurPoly_mul hμ hlen, alt_staircase]
 
 end MvPolynomial

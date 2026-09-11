@@ -5,16 +5,17 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.YoungDiagram
+public import Mathlib.Combinatorics.Young.BigOperators
 public import Mathlib.Combinatorics.Young.HookLength.Formula
-public import Mathlib.Combinatorics.Young.Shape.ToYoungDiagram
+public import Mathlib.Combinatorics.Enumerative.Partition.List.YoungDiagram
 
 /-!
 # Hook lengths and the hook length formula for Mathlib's Young diagrams
 
 The hook lengths of `Mathlib.Combinatorics.Young.HookLength.Basic` are defined for a shape
 given as a weakly decreasing list.  Through the dictionary of
-`Mathlib.Combinatorics.Young.Shape.ToYoungDiagram`, they are transported here to Mathlib's
+`Mathlib.Combinatorics.Enumerative.Partition.List.YoungDiagram`, they are transported here to
+Mathlib's
 `YoungDiagram`, where the hook length of a box is expressed by `YoungDiagram.rowLen` and
 `YoungDiagram.colLen`, and the hook product is a product over the boxes of the diagram.
 

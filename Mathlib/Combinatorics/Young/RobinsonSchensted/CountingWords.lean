@@ -99,14 +99,14 @@ lemma partsList_tabPairShape (m n : ℕ) (p : tabPair m n) :
     (tabPairShape m n p).partsList = shape p.1.1 :=
   sortDesc_coe (isPart_shape p.2.1)
 
-/-- The pairs with prescribed shape `η` are the pairs of a tableau over `Fin m` of shape
-`η` and a standard tableau of shape `η`. -/
-def tabPairFiberEquiv (m n : ℕ) (η : Nat.Partition n) :
-    {p : tabPair m n // tabPairShape m n p = η} ≃
-      {P : List (List (Fin m)) // IsTableau P ∧ shape P = η.partsList} ×
-        {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList} where
+/-- The pairs with prescribed shape `μ` are the pairs of a tableau over `Fin m` of shape
+`μ` and a standard tableau of shape `μ`. -/
+def tabPairFiberEquiv (m n : ℕ) (μ : Nat.Partition n) :
+    {p : tabPair m n // tabPairShape m n p = μ} ≃
+      {P : List (List (Fin m)) // IsTableau P ∧ shape P = μ.partsList} ×
+        {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ.partsList} where
   toFun p :=
-    have h1 : shape p.1.1.1 = η.partsList := by
+    have h1 : shape p.1.1.1 = μ.partsList := by
       rw [← partsList_tabPairShape m n p.1, p.2]
     (⟨p.1.1.1, p.1.2.1, h1⟩, ⟨p.1.1.2, p.1.2.2.1, by rw [p.1.2.2.2.1, h1]⟩)
   invFun q :=
@@ -114,7 +114,7 @@ def tabPairFiberEquiv (m n : ℕ) (η : Nat.Partition n) :
         change (shape q.1.1).sum = n
         rw [q.1.2.2, Nat.Partition.sum_partsList]⟩,
       Nat.Partition.ext (by
-        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = η.parts
+        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = μ.parts
         rw [q.1.2.2, Nat.Partition.coe_partsList])⟩
   left_inv p := rfl
   right_inv q := rfl
@@ -122,13 +122,13 @@ def tabPairFiberEquiv (m n : ℕ) (η : Nat.Partition n) :
 /-- The Robinson–Schensted identity `∑_λ K_λ(m) · f^λ = m ^ n`, the sum being over the
 partitions `λ` of `n`. -/
 theorem sum_numTab_mul_numStdTab (m n : ℕ) :
-    ∑ η : Nat.Partition n, numTab m η.partsList * numStdTab η.partsList = m ^ n := by
-  have h1 : Nat.card (tabPair m n) = ∑ η : Nat.Partition n,
-      Nat.card {p : tabPair m n // tabPairShape m n p = η} := by
+    ∑ μ : Nat.Partition n, numTab m μ.partsList * numStdTab μ.partsList = m ^ n := by
+  have h1 : Nat.card (tabPair m n) = ∑ μ : Nat.Partition n,
+      Nat.card {p : tabPair m n // tabPairShape m n p = μ} := by
     rw [← Nat.card_sigma]
     exact (Nat.card_congr (Equiv.sigmaFiberEquiv (tabPairShape m n))).symm
   rw [← card_tabPair m n, h1]
-  refine Finset.sum_congr rfl fun η _ => ?_
-  rw [Nat.card_congr (tabPairFiberEquiv m n η), Nat.card_prod, numTab, numStdTab]
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  rw [Nat.card_congr (tabPairFiberEquiv m n μ), Nat.card_prod, numTab, numStdTab]
 
 end Young

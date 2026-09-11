@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Combinatorics.Young.Shape.Conjugate
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Conjugate
 
 /-!
 # The dominance order on partitions

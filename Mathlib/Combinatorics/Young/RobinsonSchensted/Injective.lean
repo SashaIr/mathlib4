@@ -6,7 +6,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
-public import Mathlib.Combinatorics.Young.Shape.Corners
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Corners
 
 /-!
 # Reverse insertion and injectivity of the Robinson–Schensted map

@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Basic
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Basic
 
 /-!
 # Young tableaux
@@ -238,7 +238,7 @@ lemma isPart_shape {t : List (List T)} (h : IsTableau t) : IsPart (shape t) := b
   | nil => simp
   | cons t0 t ih =>
     obtain ⟨hne, _, hdom, htab⟩ := h
-    refine ⟨?_, ih htab⟩
+    refine isPart_cons.2 ⟨?_, ih htab⟩
     cases t with
     | nil => simp [Nat.one_le_of_lt (List.length_pos_iff.2 hne)]
     | cons t1 t => simpa using hdom.length_le

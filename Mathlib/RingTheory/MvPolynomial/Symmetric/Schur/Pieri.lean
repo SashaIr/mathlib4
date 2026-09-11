@@ -5,8 +5,8 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.Finset
-public import Mathlib.Combinatorics.Young.Shape.HorizontalDiamond
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Finset
+public import Mathlib.Combinatorics.Enumerative.Partition.List.HorizontalDiamond
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Branching
 
 /-!
@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Branching
 The Pieri rule expresses the product of a Schur polynomial by a complete homogeneous
 symmetric polynomial as a sum of Schur polynomials, over the shapes obtained by adding a
 horizontal strip:
-`s_ρ * h_r = ∑_{η / ρ a horizontal strip of size r} s_η`.
+`s_ρ * h_r = ∑_{μ / ρ a horizontal strip of size r} s_μ`.
 
 The proof is by induction on the number of variables.  The branching rule
 `MvPolynomial.schurPoly_branching` splits off the last variable on both sides, and the
@@ -45,7 +45,7 @@ lemma isPart_rowShape (k : ℕ) : IsPart (rowShape k) := by
   rw [rowShape]
   split_ifs with h
   · exact isPart_nil
-  · exact ⟨by simpa using Nat.one_le_iff_ne_zero.2 h, isPart_nil⟩
+  · exact isPart_cons.2 ⟨by simpa using Nat.one_le_iff_ne_zero.2 h, isPart_nil⟩
 
 @[simp] lemma sum_rowShape (k : ℕ) : (rowShape k).sum = k := by
   rw [rowShape]
@@ -93,15 +93,15 @@ lemma eq_rowShape_of_included {ν : List ℕ} {r : ℕ} (hν : IsPart ν)
 
 /-! ### The branching rule in the finite-set formulation -/
 
-lemma schurPoly_branching' (m : ℕ) {η : List ℕ} (hη : IsPart η) :
-    schurPoly (Fin (m + 1)) R η
-      = ∑ ν ∈ partFinsetLe η.sum, if HorizStrip η ν then
-          rename Fin.castSucc (schurPoly (Fin m) R ν) * X (Fin.last m) ^ (η.sum - ν.sum)
+lemma schurPoly_branching' (m : ℕ) {μ : List ℕ} (hμ : IsPart μ) :
+    schurPoly (Fin (m + 1)) R μ
+      = ∑ ν ∈ partFinsetLe μ.sum, if HorizStrip μ ν then
+          rename Fin.castSucc (schurPoly (Fin m) R ν) * X (Fin.last m) ^ (μ.sum - ν.sum)
         else 0 := by
-  rw [schurPoly_branching η hη, sum_partFinsetLe_eq]
+  rw [schurPoly_branching μ hμ, sum_partFinsetLe_eq]
   refine Finset.sum_congr rfl fun k _ => ?_
-  rw [sum_subtype_eq_sum_partFinset k (fun ν => if HorizStrip η ν then
-    rename Fin.castSucc (schurPoly (Fin m) R ν) * X (Fin.last m) ^ (η.sum - k) else 0)]
+  rw [sum_subtype_eq_sum_partFinset k (fun ν => if HorizStrip μ ν then
+    rename Fin.castSucc (schurPoly (Fin m) R ν) * X (Fin.last m) ^ (μ.sum - k) else 0)]
   exact Finset.sum_congr rfl fun ν hν => by rw [(mem_partFinset.1 hν).2]
 
 /-- The branching rule for the complete homogeneous symmetric polynomials. -/
@@ -238,26 +238,26 @@ lemma pieri_lhs (m : ℕ)
     exact ⟨h1, h2, h3, h4⟩
 
 lemma pieri_rhs (m : ℕ) {ρ : List ℕ} (r : ℕ) :
-    (∑ η ∈ partFinset (ρ.sum + r),
-        if HorizStrip η ρ then schurPoly (Fin (m + 1)) R η else 0)
+    (∑ μ ∈ partFinset (ρ.sum + r),
+        if HorizStrip μ ρ then schurPoly (Fin (m + 1)) R μ else 0)
       = ∑ τ ∈ partFinsetLe (ρ.sum + r),
           Nat.card (upDiamond ρ τ (ρ.sum + r)) •
             (rename Fin.castSucc (schurPoly (Fin m) R τ)
               * X (Fin.last m) ^ (ρ.sum + r - τ.sum)) := by
   classical
-  have step : ∀ η ∈ partFinset (ρ.sum + r),
-      (if HorizStrip η ρ then schurPoly (Fin (m + 1)) R η else 0)
+  have step : ∀ μ ∈ partFinset (ρ.sum + r),
+      (if HorizStrip μ ρ then schurPoly (Fin (m + 1)) R μ else 0)
         = ∑ τ ∈ partFinsetLe (ρ.sum + r),
-            if HorizStrip η ρ ∧ HorizStrip η τ then
+            if HorizStrip μ ρ ∧ HorizStrip μ τ then
               rename Fin.castSucc (schurPoly (Fin m) R τ)
                 * X (Fin.last m) ^ (ρ.sum + r - τ.sum)
             else 0 := by
-    intro η hη
-    obtain ⟨hp, hsum⟩ := mem_partFinset.1 hη
-    by_cases hstrip : HorizStrip η ρ
+    intro μ hμ
+    obtain ⟨hp, hsum⟩ := mem_partFinset.1 hμ
+    by_cases hstrip : HorizStrip μ ρ
     · rw [ite_eq_left hstrip, schurPoly_branching' m hp, hsum]
       refine Finset.sum_congr rfl fun τ _ => ?_
-      by_cases hts : HorizStrip η τ
+      by_cases hts : HorizStrip μ τ
       · rw [ite_eq_left hts, ite_eq_left ⟨hstrip, hts⟩]
       · rw [ite_eq_right hts, ite_eq_right (fun h => hts h.2)]
     · rw [ite_eq_right hstrip, Finset.sum_eq_zero]
@@ -268,7 +268,7 @@ lemma pieri_rhs (m : ℕ) {ρ : List ℕ} (r : ℕ) :
   rw [Finset.sum_ite, Finset.sum_const_zero, add_zero, Finset.sum_const]
   congr 1
   refine (card_set_eq_card_finset ?_).symm
-  ext η
+  ext μ
   simp only [upDiamond, Set.mem_ofPred_eq, Finset.coe_filter, mem_partFinset]
   constructor
   · rintro ⟨h1, h2, h3, h4⟩
@@ -283,8 +283,8 @@ homogeneous symmetric polynomial of degree `r` is the sum of the Schur polynomia
 shapes obtained from `ρ` by adding a horizontal strip with `r` boxes. -/
 theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {ρ : List ℕ}, IsPart ρ → ∀ r : ℕ,
     schurPoly (Fin m) R ρ * hsymm (Fin m) R r
-      = ∑ η ∈ partFinset (ρ.sum + r),
-          if HorizStrip η ρ then schurPoly (Fin m) R η else 0 := by
+      = ∑ μ ∈ partFinset (ρ.sum + r),
+          if HorizStrip μ ρ then schurPoly (Fin m) R μ else 0 := by
   intro m
   induction m with
   | zero =>
@@ -298,18 +298,18 @@ theorem schurPoly_mul_hsymm : ∀ (m : ℕ) {ρ : List ℕ}, IsPart ρ → ∀ r
             rw [← schurPoly_row (σ := Fin 0) (R := R) hr]
             exact schurPoly_eq_zero_of_lt_length (by simp)
           rw [h1, Finset.sum_eq_zero]
-          intro η hη
-          obtain ⟨hp, hsum⟩ := mem_partFinset.1 hη
-          have hlen : 0 < η.length := by
-            rcases η with _ | ⟨a, l⟩
+          intro μ hμ
+          obtain ⟨hp, hsum⟩ := mem_partFinset.1 hμ
+          have hlen : 0 < μ.length := by
+            rcases μ with _ | ⟨a, l⟩
             · simp only [List.sum_nil] at hsum; omega
             · simp
           rw [schurPoly_eq_zero_of_lt_length hlen, ite_self]
       · have h0 : schurPoly (Fin 0) R ρ = 0 :=
           schurPoly_eq_zero_of_lt_length (List.length_pos_iff.2 hne)
         rw [h0, zero_mul, Finset.sum_eq_zero]
-        intro η hη
-        by_cases hstrip : HorizStrip η ρ
+        intro μ hμ
+        by_cases hstrip : HorizStrip μ ρ
         · rw [ite_eq_left hstrip]
           refine schurPoly_eq_zero_of_lt_length ?_
           have h1 := hstrip.included.length_le

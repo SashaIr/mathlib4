@@ -6,7 +6,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Combinatorics.Young.Shape.Corners
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Corners
 
 /-!
 # Yamanouchi words

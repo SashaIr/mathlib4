@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Combinatorics.Young.Shape.Included
-public import Mathlib.Combinatorics.Young.Shape.TrimZeros
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Included
+public import Mathlib.Combinatorics.Enumerative.Partition.List.TrimZeros
 
 /-!
 # Ribbon border strips

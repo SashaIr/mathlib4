@@ -36,12 +36,12 @@ namespace Young
 
 open List
 
-variable {N : ℕ} {μ : List ℕ} {c d : ℕ → ℕ} {m : ℕ}
+variable {N : ℕ} {ν : List ℕ} {c d : ℕ → ℕ} {m : ℕ}
 
-/-- The Kostka number `kostkaNum N μ c` only depends on the values `c i` for `i < N`. -/
-lemma kostkaNum_congr (N : ℕ) (μ : List ℕ) {c d : ℕ → ℕ} (h : ∀ i < N, c i = d i) :
-    kostkaNum N μ c = kostkaNum N μ d := by
-  have : tabSet N μ c = tabSet N μ d := by
+/-- The Kostka number `kostkaNum N ν c` only depends on the values `c i` for `i < N`. -/
+lemma kostkaNum_congr (N : ℕ) (ν : List ℕ) {c d : ℕ → ℕ} (h : ∀ i < N, c i = d i) :
+    kostkaNum N ν c = kostkaNum N ν d := by
+  have : tabSet N ν c = tabSet N ν d := by
     ext P
     simp only [tabSet, Set.mem_ofPred_eq]
     constructor
@@ -51,130 +51,130 @@ lemma kostkaNum_congr (N : ℕ) (μ : List ℕ) {c d : ℕ → ℕ} (h : ∀ i <
       exact ⟨h1, h2, h3, fun i hi => (h4 i hi).trans (h i hi).symm⟩
   rw [kostkaNum, kostkaNum, this]
 
-/-- A tableau of shape `μ` with letters `< N` has `μ.sum` boxes, so there is none unless
-the content adds up to `μ.sum`. -/
-lemma kostkaNum_eq_zero_of_sum_ne (N : ℕ) (μ : List ℕ) (c : ℕ → ℕ)
-    (h : ∑ i ∈ Finset.range N, c i ≠ μ.sum) : kostkaNum N μ c = 0 := by
-  have hempty : IsEmpty (tabSet N μ c) := by
+/-- A tableau of shape `ν` with letters `< N` has `ν.sum` boxes, so there is none unless
+the content adds up to `ν.sum`. -/
+lemma kostkaNum_eq_zero_of_sum_ne (N : ℕ) (ν : List ℕ) (c : ℕ → ℕ)
+    (h : ∑ i ∈ Finset.range N, c i ≠ ν.sum) : kostkaNum N ν c = 0 := by
+  have hempty : IsEmpty (tabSet N ν c) := by
     refine ⟨fun P => h ?_⟩
-    obtain ⟨-, hμ, hlt, hcount⟩ := P.2
-    rw [← hμ, ← length_flatten_eq_sum_shape, length_eq_sum_count hlt]
+    obtain ⟨-, hν, hlt, hcount⟩ := P.2
+    rw [← hν, ← length_flatten_eq_sum_shape, length_eq_sum_count hlt]
     exact Finset.sum_congr rfl fun i hi => (hcount i (Finset.mem_range.1 hi)).symm
   rw [kostkaNum, Nat.card_of_isEmpty]
 
-/-- If there is an intermediate shape between `ρ` and `η`, then `ρ ⊆ η`. -/
-lemma included_of_midSet_nonempty {η ρ : List ℕ} {s : ℕ}
-    (h : (midSet η ρ s).Nonempty) : Included ρ η := by
-  obtain ⟨ν, -, h1, h2, -⟩ := h
+/-- If there is an intermediate shape between `κ` and `μ`, then `κ ⊆ μ`. -/
+lemma included_of_midSet_nonempty {μ κ : List ℕ} {s : ℕ}
+    (h : (midSet μ κ s).Nonempty) : Included κ μ := by
+  obtain ⟨ρ, -, h1, h2, -⟩ := h
   exact h2.included.trans h1.included
 
 open Classical in
 /-- The cardinality of `midSet` as a sum over all partitions of `s`. -/
-lemma card_midSet_eq_sum (η ρ : List ℕ) (s : ℕ) :
-    Nat.card (midSet η ρ s) = ∑ ν : {p : List ℕ // IsPart p ∧ p.sum = s},
-      if HorizStrip η ν.1 ∧ HorizStrip ν.1 ρ then 1 else 0 := by
+lemma card_midSet_eq_sum (μ κ : List ℕ) (s : ℕ) :
+    Nat.card (midSet μ κ s) = ∑ ρ : {p : List ℕ // IsPart p ∧ p.sum = s},
+      if HorizStrip μ ρ.1 ∧ HorizStrip ρ.1 κ then 1 else 0 := by
   classical
-  have hcard : Nat.card (midSet η ρ s)
-      = Nat.card {ν : {p : List ℕ // IsPart p ∧ p.sum = s} //
-          HorizStrip η ν.1 ∧ HorizStrip ν.1 ρ} := by
-    refine Nat.card_congr ⟨fun ν => ⟨⟨ν.1, ν.2.1, ν.2.2.2.2⟩, ν.2.2.1, ν.2.2.2.1⟩,
-      fun ν => ⟨ν.1.1, ν.1.2.1, ν.2.1, ν.2.2, ν.1.2.2⟩, ?_, ?_⟩
-    · rintro ⟨ν, hν⟩; rfl
-    · rintro ⟨⟨ν, hν⟩, h⟩; rfl
+  have hcard : Nat.card (midSet μ κ s)
+      = Nat.card {ρ : {p : List ℕ // IsPart p ∧ p.sum = s} //
+          HorizStrip μ ρ.1 ∧ HorizStrip ρ.1 κ} := by
+    refine Nat.card_congr ⟨fun ρ => ⟨⟨ρ.1, ρ.2.1, ρ.2.2.2.2⟩, ρ.2.2.1, ρ.2.2.2.1⟩,
+      fun ρ => ⟨ρ.1.1, ρ.1.2.1, ρ.2.1, ρ.2.2, ρ.1.2.2⟩, ?_, ?_⟩
+    · rintro ⟨ρ, hρ⟩; rfl
+    · rintro ⟨⟨ρ, hρ⟩, h⟩; rfl
   rw [hcard, Nat.card_eq_fintype_card, Fintype.card_subtype, Finset.card_filter]
 
 /-- Peeling off the two largest letters of a tableau. -/
-theorem kostkaNum_two_step (hμ : IsPart μ) (h2 : m + c N + c (N + 1) = μ.sum) :
-    kostkaNum (N + 2) μ c
-      = ∑ ρ : {p : List ℕ // IsPart p ∧ p.sum = m},
-          Nat.card (midSet μ ρ.1 (m + c N)) * kostkaNum N ρ.1 c := by
+theorem kostkaNum_two_step (hν : IsPart ν) (h2 : m + c N + c (N + 1) = ν.sum) :
+    kostkaNum (N + 2) ν c
+      = ∑ κ : {p : List ℕ // IsPart p ∧ p.sum = m},
+          Nat.card (midSet ν κ.1 (m + c N)) * kostkaNum N κ.1 c := by
   classical
-  rw [kostkaNum_succ (N := N + 1) (m := m + c N) hμ (by omega)]
-  have step : ∀ ν : {p : List ℕ // IsPart p ∧ p.sum = m + c N},
-      (if HorizStrip μ ν.1 then kostkaNum (N + 1) ν.1 c else 0)
-        = ∑ ρ : {p : List ℕ // IsPart p ∧ p.sum = m},
-            if HorizStrip μ ν.1 ∧ HorizStrip ν.1 ρ.1 then kostkaNum N ρ.1 c else 0 := by
-    intro ν
-    by_cases hstrip : HorizStrip μ ν.1
-    · rw [ite_eq_left hstrip, kostkaNum_succ ν.2.1 (by rw [ν.2.2])]
-      refine Finset.sum_congr rfl fun ρ _ => ?_
-      by_cases h : HorizStrip ν.1 ρ.1
+  rw [kostkaNum_succ (N := N + 1) (m := m + c N) hν (by omega)]
+  have step : ∀ ρ : {p : List ℕ // IsPart p ∧ p.sum = m + c N},
+      (if HorizStrip ν ρ.1 then kostkaNum (N + 1) ρ.1 c else 0)
+        = ∑ κ : {p : List ℕ // IsPart p ∧ p.sum = m},
+            if HorizStrip ν ρ.1 ∧ HorizStrip ρ.1 κ.1 then kostkaNum N κ.1 c else 0 := by
+    intro ρ
+    by_cases hstrip : HorizStrip ν ρ.1
+    · rw [ite_eq_left hstrip, kostkaNum_succ ρ.2.1 (by rw [ρ.2.2])]
+      refine Finset.sum_congr rfl fun κ _ => ?_
+      by_cases h : HorizStrip ρ.1 κ.1
       · rw [ite_eq_left h, ite_eq_left ⟨hstrip, h⟩]
-      · rw [ite_eq_right h, ite_eq_right (show ¬ (HorizStrip μ ν.1 ∧ HorizStrip ν.1 ρ.1) from
+      · rw [ite_eq_right h, ite_eq_right (show ¬ (HorizStrip ν ρ.1 ∧ HorizStrip ρ.1 κ.1) from
           fun hc => h hc.2)]
     · rw [ite_eq_right hstrip]
-      exact (Finset.sum_eq_zero fun ρ _ => ite_eq_right fun hc => hstrip hc.1).symm
-  rw [Finset.sum_congr rfl fun ν _ => step ν, Finset.sum_comm]
-  refine Finset.sum_congr rfl fun ρ _ => ?_
+      exact (Finset.sum_eq_zero fun κ _ => ite_eq_right fun hc => hstrip hc.1).symm
+  rw [Finset.sum_congr rfl fun ρ _ => step ρ, Finset.sum_comm]
+  refine Finset.sum_congr rfl fun κ _ => ?_
   rw [card_midSet_eq_sum, Finset.sum_mul]
-  refine Finset.sum_congr rfl fun ν _ => ?_
-  by_cases h : HorizStrip μ ν.1 ∧ HorizStrip ν.1 ρ.1
+  refine Finset.sum_congr rfl fun ρ _ => ?_
+  by_cases h : HorizStrip ν ρ.1 ∧ HorizStrip ρ.1 κ.1
   · rw [ite_eq_left h, ite_eq_left h, one_mul]
   · rw [ite_eq_right h, ite_eq_right h, zero_mul]
 
 /-- Exchanging the multiplicities of the two largest letters does not change the Kostka
 number. -/
-theorem kostkaNum_swap_top (hμ : IsPart μ) {c d : ℕ → ℕ} (hlt : ∀ i < N, c i = d i)
+theorem kostkaNum_swap_top (hν : IsPart ν) {c d : ℕ → ℕ} (hlt : ∀ i < N, c i = d i)
     (hN : c N = d (N + 1)) (hN' : c (N + 1) = d N)
-    (hsum : ∑ i ∈ Finset.range (N + 2), c i = μ.sum) :
-    kostkaNum (N + 2) μ c = kostkaNum (N + 2) μ d := by
+    (hsum : ∑ i ∈ Finset.range (N + 2), c i = ν.sum) :
+    kostkaNum (N + 2) ν c = kostkaNum (N + 2) ν d := by
   classical
   set m := ∑ i ∈ Finset.range N, c i with hm
-  have hcsum : m + c N + c (N + 1) = μ.sum := by
+  have hcsum : m + c N + c (N + 1) = ν.sum := by
     rw [hm, ← hsum, Finset.sum_range_succ, Finset.sum_range_succ]
-  have hdsum : m + d N + d (N + 1) = μ.sum := by omega
-  rw [kostkaNum_two_step hμ hcsum, kostkaNum_two_step hμ hdsum]
-  refine Finset.sum_congr rfl fun ρ _ => ?_
-  have hkos : kostkaNum N ρ.1 c = kostkaNum N ρ.1 d := kostkaNum_congr N ρ.1 hlt
+  have hdsum : m + d N + d (N + 1) = ν.sum := by omega
+  rw [kostkaNum_two_step hν hcsum, kostkaNum_two_step hν hdsum]
+  refine Finset.sum_congr rfl fun κ _ => ?_
+  have hkos : kostkaNum N κ.1 c = kostkaNum N κ.1 d := kostkaNum_congr N κ.1 hlt
   rw [hkos]
-  rcases Nat.eq_zero_or_pos (kostkaNum N ρ.1 d) with h0 | -
+  rcases Nat.eq_zero_or_pos (kostkaNum N κ.1 d) with h0 | -
   · rw [h0, mul_zero, mul_zero]
   congr 1
-  rcases eq_or_ne (Nat.card (midSet μ ρ.1 (m + c N))) 0 with hz | hz
-  · rcases Set.eq_empty_or_nonempty (midSet μ ρ.1 (m + d N)) with he | hne
+  rcases eq_or_ne (Nat.card (midSet ν κ.1 (m + c N))) 0 with hz | hz
+  · rcases Set.eq_empty_or_nonempty (midSet ν κ.1 (m + d N)) with he | hne
     · rw [hz, he]; simp
-    · have hsub : Included ρ.1 μ := included_of_midSet_nonempty hne
-      have := card_midSet_add_comm μ ρ.1 ρ.2.1 hsub (a := d N) (b := c N)
-        (by rw [ρ.2.2]; omega)
-      rw [ρ.2.2] at this
+    · have hsub : Included κ.1 ν := included_of_midSet_nonempty hne
+      have := card_midSet_add_comm ν κ.1 κ.2.1 hsub (a := d N) (b := c N)
+        (by rw [κ.2.2]; omega)
+      rw [κ.2.2] at this
       rw [this, hz]
-  · have hne : (midSet μ ρ.1 (m + c N)).Nonempty := by
+  · have hne : (midSet ν κ.1 (m + c N)).Nonempty := by
       rw [Nat.card_ne_zero] at hz
       obtain ⟨x⟩ := hz.1
       exact ⟨x.1, x.2⟩
-    have hsub : Included ρ.1 μ := included_of_midSet_nonempty hne
-    have := card_midSet_add_comm μ ρ.1 ρ.2.1 hsub (a := c N) (b := d N)
-      (by rw [ρ.2.2]; omega)
-    rw [ρ.2.2] at this
+    have hsub : Included κ.1 ν := included_of_midSet_nonempty hne
+    have := card_midSet_add_comm ν κ.1 κ.2.1 hsub (a := c N) (b := d N)
+      (by rw [κ.2.2]; omega)
+    rw [κ.2.2] at this
     exact this
 
 /-- Exchanging the multiplicities of two adjacent letters `k` and `k + 1` (both smaller
 than `N`) does not change the Kostka number. -/
 theorem kostkaNum_swap :
-    ∀ (N : ℕ) (μ : List ℕ) (c d : ℕ → ℕ) (k : ℕ), IsPart μ → k + 1 < N →
+    ∀ (N : ℕ) (ν : List ℕ) (c d : ℕ → ℕ) (k : ℕ), IsPart ν → k + 1 < N →
       (∀ i, i ≠ k → i ≠ k + 1 → c i = d i) → c k = d (k + 1) → c (k + 1) = d k →
-      ∑ i ∈ Finset.range N, c i = μ.sum →
-      kostkaNum N μ c = kostkaNum N μ d := by
+      ∑ i ∈ Finset.range N, c i = ν.sum →
+      kostkaNum N ν c = kostkaNum N ν d := by
   intro N
   induction N using Nat.strong_induction_on with
   | _ N ih =>
-    intro μ c d k hμ hk hne h1 h2 hsum
+    intro ν c d k hν hk hne h1 h2 hsum
     rcases eq_or_lt_of_le (Nat.succ_le_of_lt hk) with heq | hlt
     · -- `k + 1 = N - 1`: the two largest letters
       obtain rfl : N = k + 2 := heq.symm
-      exact kostkaNum_swap_top hμ (fun i hi => hne i (by omega) (by omega)) h1 h2 hsum
+      exact kostkaNum_swap_top hν (fun i hi => hne i (by omega) (by omega)) h1 h2 hsum
     · -- `k + 1 < N - 1`: peel off the largest letter and use the induction hypothesis
       obtain ⟨M, rfl⟩ : ∃ M, N = M + 1 := ⟨N - 1, by omega⟩
       have hkM : k + 1 < M := by omega
       have hcM : c M = d M := hne M (by omega) (by omega)
       set m := ∑ i ∈ Finset.range M, c i with hm
-      have hcsum : m + c M = μ.sum := by rw [hm, ← hsum, Finset.sum_range_succ]
-      have hdsum : m + d M = μ.sum := by omega
-      rw [kostkaNum_succ (N := M) (m := m) hμ hcsum, kostkaNum_succ (N := M) (m := m) hμ hdsum]
-      refine Finset.sum_congr rfl fun ν _ => ?_
-      by_cases hstrip : HorizStrip μ ν.1
+      have hcsum : m + c M = ν.sum := by rw [hm, ← hsum, Finset.sum_range_succ]
+      have hdsum : m + d M = ν.sum := by omega
+      rw [kostkaNum_succ (N := M) (m := m) hν hcsum, kostkaNum_succ (N := M) (m := m) hν hdsum]
+      refine Finset.sum_congr rfl fun ρ _ => ?_
+      by_cases hstrip : HorizStrip ν ρ.1
       · rw [ite_eq_left hstrip, ite_eq_left hstrip]
-        exact ih M (by omega) ν.1 c d k ν.2.1 hkM hne h1 h2 (by rw [ν.2.2])
+        exact ih M (by omega) ρ.1 c d k ρ.2.1 hkM hne h1 h2 (by rw [ρ.2.2])
       · rw [ite_eq_right hstrip, ite_eq_right hstrip]
 
 /-! ### Invariance under an arbitrary permutation of the letters -/
@@ -208,11 +208,11 @@ lemma sum_permContent (N : ℕ) (c : ℕ → ℕ) (σ : Equiv.Perm (Fin N)) :
 /-- **The Kostka numbers are symmetric**: permuting the letters does not change the number
 of tableaux of a given shape and content. -/
 theorem kostkaNum_permContent (N : ℕ) (σ : Equiv.Perm (Fin N)) :
-    ∀ (μ : List ℕ) (c : ℕ → ℕ), IsPart μ → ∑ i ∈ Finset.range N, c i = μ.sum →
-      kostkaNum N μ (permContent N c σ) = kostkaNum N μ c := by
+    ∀ (ν : List ℕ) (c : ℕ → ℕ), IsPart ν → ∑ i ∈ Finset.range N, c i = ν.sum →
+      kostkaNum N ν (permContent N c σ) = kostkaNum N ν c := by
   cases N with
   | zero =>
-    intro μ c _ _
+    intro ν c _ _
     have : permContent 0 c σ = c := by
       funext i
       simp [permContent]
@@ -225,8 +225,8 @@ theorem kostkaNum_permContent (N : ℕ) (σ : Equiv.Perm (Fin N)) :
     induction hmem using Submonoid.closure_induction with
     | mem x hx =>
       obtain ⟨i, rfl⟩ := hx
-      intro μ c hμ hsum
-      refine kostkaNum_swap (n + 1) μ _ c i.1 hμ (by omega) ?_ ?_ ?_ ?_
+      intro ν c hν hsum
+      refine kostkaNum_swap (n + 1) ν _ c i.1 hν (by omega) ?_ ?_ ?_ ?_
       · intro j hj hj'
         simp only [permContent]
         split
@@ -244,11 +244,11 @@ theorem kostkaNum_permContent (N : ℕ) (σ : Equiv.Perm (Fin N)) :
         rfl
       · rw [sum_permContent, hsum]
     | one =>
-      intro μ c _ _
+      intro ν c _ _
       rw [permContent_one]
     | mul x y _ _ hx hy =>
-      intro μ c hμ hsum
-      rw [permContent_mul, hy μ _ hμ (by rw [sum_permContent, hsum]), hx μ c hμ hsum]
+      intro ν c hν hsum
+      rw [permContent_mul, hy ν _ hν (by rw [sum_permContent, hsum]), hx ν c hν hsum]
 
 /-! ### Dependence only on the multiset of the content -/
 
@@ -274,14 +274,14 @@ lemma exists_perm_comp_eq {N : ℕ} {c d : Fin N → ℕ}
 
 /-- **The Kostka number only depends on the multiset of the content**: two contents with
 the same multiset of multiplicities give the same number of tableaux. -/
-theorem kostkaNum_eq_of_multiset_eq (N : ℕ) (μ : List ℕ) (c d : ℕ → ℕ) (hμ : IsPart μ)
-    (hsum : ∑ i ∈ Finset.range N, c i = μ.sum)
+theorem kostkaNum_eq_of_multiset_eq (N : ℕ) (ν : List ℕ) (c d : ℕ → ℕ) (hν : IsPart ν)
+    (hsum : ∑ i ∈ Finset.range N, c i = ν.sum)
     (h : (Finset.univ.val.map fun i : Fin N => c i)
       = (Finset.univ.val.map fun i : Fin N => d i)) :
-    kostkaNum N μ c = kostkaNum N μ d := by
+    kostkaNum N ν c = kostkaNum N ν d := by
   obtain ⟨σ, hσ⟩ := exists_perm_comp_eq h
-  rw [← kostkaNum_permContent N σ μ c hμ hsum]
-  refine kostkaNum_congr N μ fun i hi => ?_
+  rw [← kostkaNum_permContent N σ ν c hν hsum]
+  refine kostkaNum_congr N ν fun i hi => ?_
   simpa [permContent, dite_eq_left hi] using hσ ⟨i, hi⟩
 
 end Young

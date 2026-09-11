@@ -6,7 +6,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 module
 
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
-public import Mathlib.Combinatorics.Young.Shape.NatPartitionConj
+public import Mathlib.Combinatorics.Enumerative.Partition.Conj
 public import Mathlib.Data.List.Permutation
 public import Mathlib.Data.Set.Card
 
@@ -116,13 +116,13 @@ lemma partsList_shapePartition (n : ℕ) (p : stdTabPair n) :
   sortDesc_coe (isPart_shape p.2.1.1)
 
 /-- The pairs of standard tableaux of the same shape with `n` boxes and prescribed shape
-`η` are the pairs of standard tableaux of shape `η`. -/
-def stdTabPairFiberEquiv (n : ℕ) (η : Nat.Partition n) :
-    {p : stdTabPair n // shapePartition n p = η} ≃
-      {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList} ×
-        {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = η.partsList} where
+`μ` are the pairs of standard tableaux of shape `μ`. -/
+def stdTabPairFiberEquiv (n : ℕ) (μ : Nat.Partition n) :
+    {p : stdTabPair n // shapePartition n p = μ} ≃
+      {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ.partsList} ×
+        {Q : List (List ℕ) // IsStdTab Q ∧ shape Q = μ.partsList} where
   toFun p :=
-    have h1 : shape p.1.1.1 = η.partsList := by
+    have h1 : shape p.1.1.1 = μ.partsList := by
       rw [← partsList_shapePartition n p.1, p.2]
     (⟨p.1.1.1, p.1.2.1, h1⟩, ⟨p.1.1.2, p.1.2.2.1, by rw [← p.1.2.2.2.1, h1]⟩)
   invFun q :=
@@ -130,21 +130,21 @@ def stdTabPairFiberEquiv (n : ℕ) (η : Nat.Partition n) :
         change (shape q.1.1).sum = n
         rw [q.1.2.2, Nat.Partition.sum_partsList]⟩,
       Nat.Partition.ext (by
-        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = η.parts
+        change ((shape q.1.1 : List ℕ) : Multiset ℕ) = μ.parts
         rw [q.1.2.2, Nat.Partition.coe_partsList])⟩
   left_inv p := rfl
   right_inv q := rfl
 
-/-- The number of standard tableaux of shape `μ` squared, summed over all partitions of
+/-- The number of standard tableaux of shape `ν` squared, summed over all partitions of
 `n`, is `n!`. -/
 theorem sum_sq_numStdTab (n : ℕ) :
-    ∑ η : Nat.Partition n, (numStdTab η.partsList) ^ 2 = Nat.factorial n := by
-  have h1 : Nat.card (stdTabPair n) = ∑ η : Nat.Partition n,
-      Nat.card {p : stdTabPair n // shapePartition n p = η} := by
+    ∑ μ : Nat.Partition n, (numStdTab μ.partsList) ^ 2 = Nat.factorial n := by
+  have h1 : Nat.card (stdTabPair n) = ∑ μ : Nat.Partition n,
+      Nat.card {p : stdTabPair n // shapePartition n p = μ} := by
     rw [← Nat.card_sigma]
     exact (Nat.card_congr (Equiv.sigmaFiberEquiv (shapePartition n))).symm
   rw [← card_stdTabPair n, h1]
-  refine Finset.sum_congr rfl fun η _ => ?_
-  rw [Nat.card_congr (stdTabPairFiberEquiv n η), Nat.card_prod, numStdTab, sq]
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  rw [Nat.card_congr (stdTabPairFiberEquiv n μ), Nat.card_prod, numStdTab, sq]
 
 end Young

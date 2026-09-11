@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Young.Shape.VerticalStrip
+public import Mathlib.Combinatorics.Enumerative.Partition.List.VerticalStrip
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Alternant.Bialternant
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.ElementaryHomogeneous
 
@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.ElementaryHomogene
 Following `theories/MPoly/Schur_altdef.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove the dual Pieri rule:
 
-`s_μ * e_r = ∑_{η / μ a vertical strip of size r} s_η`.
+`s_ν * e_r = ∑_{μ / ν a vertical strip of size r} s_μ`.
 
 The proof is the alternant one: multiplying an alternant by `e_r` adds all the `0-1`
 exponent vectors of weight `r`, and the terms which do not correspond to a partition have
@@ -178,60 +178,60 @@ lemma isPart_vecPart_of_strict {c : Fin m → ℕ} (hge : ∀ i : Fin m, m - 1 -
   · simp [dite_eq_right hi]
 
 /-- **The dual Pieri rule for alternants**, in terms of partitions. -/
-theorem altPart_mul_esymm {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) :
-    altPart m R μ * esymm (Fin m) R r
-      = ∑ η ∈ partFinset (μ.sum + r), if VertStrip η μ then altPart m R η else 0 := by
+theorem altPart_mul_esymm {ν : List ℕ} (hν : IsPart ν) (r : ℕ) :
+    altPart m R ν * esymm (Fin m) R r
+      = ∑ μ ∈ partFinset (ν.sum + r), if VertStrip μ ν then altPart m R μ else 0 := by
   classical
-  by_cases hμlen : μ.length ≤ m
+  by_cases hνlen : ν.length ≤ m
   swap
   · rw [altPart_of_lt (by omega), zero_mul]
-    refine (Finset.sum_eq_zero fun η _ => ?_).symm
+    refine (Finset.sum_eq_zero fun μ _ => ?_).symm
     split_ifs with hstrip
     · exact altPart_of_lt (lt_of_lt_of_le (by omega) hstrip.1.length_le)
     · rfl
-  rw [altPart_of_le hμlen, mul_comm, esymm_mul_alt, ← Finset.sum_filter]
+  rw [altPart_of_le hνlen, mul_comm, esymm_mul_alt, ← Finset.sum_filter]
   -- discard the shapes with more than `m` rows
-  have hsub : ∑ η ∈ ((partFinset (μ.sum + r)).filter fun η => VertStrip η μ).filter
-        (fun η => η.length ≤ m), altPart m R η
-      = ∑ η ∈ (partFinset (μ.sum + r)).filter fun η => VertStrip η μ,
-          altPart m R η := by
-    refine Finset.sum_subset (Finset.filter_subset _ _) fun η hη hnot => ?_
+  have hsub : ∑ μ ∈ ((partFinset (ν.sum + r)).filter fun μ => VertStrip μ ν).filter
+        (fun μ => μ.length ≤ m), altPart m R μ
+      = ∑ μ ∈ (partFinset (ν.sum + r)).filter fun μ => VertStrip μ ν,
+          altPart m R μ := by
+    refine Finset.sum_subset (Finset.filter_subset _ _) fun μ hμ hnot => ?_
     exact altPart_of_lt (by
       by_contra hle
-      exact hnot (Finset.mem_filter.2 ⟨hη, by omega⟩))
+      exact hnot (Finset.mem_filter.2 ⟨hμ, by omega⟩))
   -- discard the vectors which are not strictly decreasing
   have hstrict : ∑ d ∈ (zeroOneAntidiag m r).filter
         (fun d : Fin m →₀ ℕ => ∀ i j : Fin m, (j : ℕ) = (i : ℕ) + 1 →
-          (partVec m μ + ⇑d) j < (partVec m μ + ⇑d) i), alt m R (partVec m μ + ⇑d)
-      = ∑ d ∈ zeroOneAntidiag m r, alt m R (partVec m μ + ⇑d) := by
+          (partVec m ν + ⇑d) j < (partVec m ν + ⇑d) i), alt m R (partVec m ν + ⇑d)
+      = ∑ d ∈ zeroOneAntidiag m r, alt m R (partVec m ν + ⇑d) := by
     refine Finset.sum_subset (Finset.filter_subset _ _) fun d hd hnot => ?_
     obtain ⟨-, hone⟩ := mem_zeroOneAntidiag.1 hd
     have : ¬ ∀ i j : Fin m, (j : ℕ) = (i : ℕ) + 1 →
-        (partVec m μ + ⇑d) j < (partVec m μ + ⇑d) i := fun h =>
+        (partVec m ν + ⇑d) j < (partVec m ν + ⇑d) i := fun h =>
       hnot (Finset.mem_filter.2 ⟨hd, h⟩)
     push Not at this
     obtain ⟨i, j, hij, hnotlt⟩ := this
-    exact alt_eq_zero_of_not_strict hμ hone hij (by omega)
+    exact alt_eq_zero_of_not_strict hν hone hij (by omega)
   rw [← hsub, ← hstrict]
-  refine Finset.sum_nbij' (fun d => vecPart m (partVec m μ + ⇑d)) (stripFinsupp m μ)
+  refine Finset.sum_nbij' (fun d => vecPart m (partVec m ν + ⇑d)) (stripFinsupp m ν)
     ?_ ?_ ?_ ?_ ?_
   · intro d hd
     obtain ⟨hd0, hs⟩ := Finset.mem_filter.1 hd
     obtain ⟨hdsum, hone⟩ := mem_zeroOneAntidiag.1 hd0
-    have hge : ∀ i : Fin m, m - 1 - (i : ℕ) ≤ (partVec m μ + ⇑d) i := fun i =>
-      le_trans (le_partVec μ i) (Nat.le_add_right _ _)
-    have hpv : partVec m (vecPart m (partVec m μ + ⇑d)) = partVec m μ + ⇑d :=
+    have hge : ∀ i : Fin m, m - 1 - (i : ℕ) ≤ (partVec m ν + ⇑d) i := fun i =>
+      le_trans (le_partVec ν i) (Nat.le_add_right _ _)
+    have hpv : partVec m (vecPart m (partVec m ν + ⇑d)) = partVec m ν + ⇑d :=
       partVec_vecPart hge
-    have hpart : IsPart (vecPart m (partVec m μ + ⇑d)) := isPart_vecPart_of_strict hge hs
-    have hgetD : ∀ k : Fin m, (vecPart m (partVec m μ + ⇑d)).getD (k : ℕ) 0
-        = μ.getD (k : ℕ) 0 + d k := by
+    have hpart : IsPart (vecPart m (partVec m ν + ⇑d)) := isPart_vecPart_of_strict hge hs
+    have hgetD : ∀ k : Fin m, (vecPart m (partVec m ν + ⇑d)).getD (k : ℕ) 0
+        = ν.getD (k : ℕ) 0 + d k := by
       intro k
       have := congrFun hpv k
       simp only [partVec_apply, Pi.add_apply] at this ⊢
       omega
     refine Finset.mem_filter.2 ⟨Finset.mem_filter.2 ⟨mem_partFinset.2 ⟨hpart,
-      sum_vecPart hμlen hdsum⟩, ?_⟩, length_vecPart_le _⟩
-    refine ⟨(hμ.included_iff_getD).2 fun k => ?_, fun k => ?_⟩
+      sum_vecPart hνlen hdsum⟩, ?_⟩, length_vecPart_le _⟩
+    refine ⟨(hν.included_iff_getD).2 fun k => ?_, fun k => ?_⟩
     · by_cases hk : k < m
       · rw [hgetD ⟨k, hk⟩]
         exact Nat.le_add_right _ _
@@ -244,14 +244,14 @@ theorem altPart_mul_esymm {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) :
         omega
       · rw [getD_vecPart_of_le (by omega)]
         exact Nat.zero_le _
-  · intro η hη
-    obtain ⟨hη', hlen⟩ := Finset.mem_filter.1 hη
-    obtain ⟨hη'', hstrip⟩ := Finset.mem_filter.1 hη'
-    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hη''
-    have hadd : partVec m μ + ⇑(stripFinsupp m μ η) = partVec m η :=
+  · intro μ hμ
+    obtain ⟨hμ', hlen⟩ := Finset.mem_filter.1 hμ
+    obtain ⟨hμ'', hstrip⟩ := Finset.mem_filter.1 hμ'
+    obtain ⟨hpart, hsum⟩ := mem_partFinset.1 hμ''
+    have hadd : partVec m ν + ⇑(stripFinsupp m ν μ) = partVec m μ :=
       add_stripFinsupp hstrip.1
     refine Finset.mem_filter.2 ⟨mem_zeroOneAntidiag.2 ⟨?_, fun k => ?_⟩, ?_⟩
-    · rw [sum_stripFinsupp hstrip.1 hμlen hlen, hsum]
+    · rw [sum_stripFinsupp hstrip.1 hνlen hlen, hsum]
       omega
     · have h1 := hstrip.2 (k : ℕ)
       have h2 := hstrip.1.getD_le (k : ℕ)
@@ -259,29 +259,29 @@ theorem altPart_mul_esymm {μ : List ℕ} (hμ : IsPart μ) (r : ℕ) :
       omega
     · intro i j hij
       rw [hadd]
-      have hji : η.getD (j : ℕ) 0 ≤ η.getD (i : ℕ) 0 := hpart.getD_antitone (by omega)
+      have hji : μ.getD (j : ℕ) 0 ≤ μ.getD (i : ℕ) 0 := hpart.getD_antitone (by omega)
       have hjm : (j : ℕ) < m := j.isLt
       simp only [partVec_apply]
       omega
   · intro d hd
     obtain ⟨hd0, -⟩ := Finset.mem_filter.1 hd
-    have hge : ∀ i : Fin m, m - 1 - (i : ℕ) ≤ (partVec m μ + ⇑d) i := fun i =>
-      le_trans (le_partVec μ i) (Nat.le_add_right _ _)
-    have hpv : partVec m (vecPart m (partVec m μ + ⇑d)) = partVec m μ + ⇑d :=
+    have hge : ∀ i : Fin m, m - 1 - (i : ℕ) ≤ (partVec m ν + ⇑d) i := fun i =>
+      le_trans (le_partVec ν i) (Nat.le_add_right _ _)
+    have hpv : partVec m (vecPart m (partVec m ν + ⇑d)) = partVec m ν + ⇑d :=
       partVec_vecPart hge
     refine Finsupp.ext fun k => ?_
     have := congrFun hpv k
     simp only [coe_stripFinsupp, Pi.add_apply] at this ⊢
     omega
-  · intro η hη
-    obtain ⟨hη', hlen⟩ := Finset.mem_filter.1 hη
-    obtain ⟨hη'', hstrip⟩ := Finset.mem_filter.1 hη'
-    obtain ⟨hpart, -⟩ := mem_partFinset.1 hη''
+  · intro μ hμ
+    obtain ⟨hμ', hlen⟩ := Finset.mem_filter.1 hμ
+    obtain ⟨hμ'', hstrip⟩ := Finset.mem_filter.1 hμ'
+    obtain ⟨hpart, -⟩ := mem_partFinset.1 hμ''
     rw [add_stripFinsupp hstrip.1, vecPart_partVec hpart hlen]
   · intro d hd
     obtain ⟨hd0, -⟩ := Finset.mem_filter.1 hd
-    have hge : ∀ i : Fin m, m - 1 - (i : ℕ) ≤ (partVec m μ + ⇑d) i := fun i =>
-      le_trans (le_partVec μ i) (Nat.le_add_right _ _)
+    have hge : ∀ i : Fin m, m - 1 - (i : ℕ) ≤ (partVec m ν + ⇑d) i := fun i =>
+      le_trans (le_partVec ν i) (Nat.le_add_right _ _)
     rw [altPart_of_le (length_vecPart_le _), partVec_vecPart hge]
 
 end MvPolynomial

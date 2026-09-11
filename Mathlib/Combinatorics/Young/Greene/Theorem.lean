@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Young.Greene.Invariance
 public import Mathlib.Combinatorics.Young.Greene.Tableau
-public import Mathlib.Combinatorics.Young.Shape.Dominance
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Dominance
 
 /-!
 # Greene's theorem for rows

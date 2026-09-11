@@ -14,7 +14,7 @@ public import Mathlib.RepresentationTheory.SymmetricGroup.FrobeniusIsometry
 This file finishes the port of Coq-Combi's `SymGroup/Frobenius_char.v`.  Since the
 Frobenius characteristic is an isometric isomorphism from the class functions of `S_n`
 onto the symmetric homogeneous polynomials of degree `n`, one can *define* a family of
-class functions `schurChar η`, indexed by the partitions `η` of `n`, by pulling back
+class functions `schurChar μ`, indexed by the partitions `μ` of `n`, by pulling back
 the Schur polynomials.  Over `ℂ` these are exactly the irreducible characters of `S_n`;
 irreducibility (which needs representation theory) is not proved here, but all the
 combinatorial consequences are:
@@ -22,24 +22,24 @@ combinatorial consequences are:
 * they are orthonormal for the scalar product of class functions;
 * the power sum `p_{cycleType σ}` expands over the Schur polynomials with the values of
   the `schurChar` as coefficients (the **Frobenius character formula**);
-* the "dimension" `schurChar η 1` is the number of standard Young tableaux of shape
-  `η`, hence is given by the hook length formula.
+* the "dimension" `schurChar μ 1` is the number of standard Young tableaux of shape
+  `μ`, hence is given by the hook length formula.
 
 ## Main definitions
 
-* `Equiv.Perm.schurChar η` : the class function of `S_n` whose Frobenius characteristic is
-  the Schur polynomial `s_η`.
+* `Equiv.Perm.schurChar μ` : the class function of `S_n` whose Frobenius characteristic is
+  the Schur polynomial `s_μ`.
 
 ## Main results
 
-* `Equiv.Perm.frobChar_schurChar` : `ch (schurChar η) = s_η`.
+* `Equiv.Perm.frobChar_schurChar` : `ch (schurChar μ) = s_μ`.
 * `Equiv.Perm.classInner_schurChar` : the family `schurChar` is orthonormal.
-* `Equiv.Perm.hallInner_pSub_cycleTypeIdx_schurSub` : `⟨p_{cycleType σ}, s_η⟩ = schurChar η σ`.
+* `Equiv.Perm.hallInner_pSub_cycleTypeIdx_schurSub` : `⟨p_{cycleType σ}, s_μ⟩ = schurChar μ σ`.
 * `Equiv.Perm.pSub_cycleTypeIdx_eq_sum`, `Equiv.Perm.pProd_cycleTypeList_eq_sum` : the **Frobenius
-  character formula** `p_{cycleType σ} = ∑_lam schurChar η σ · s_η`.
+  character formula** `p_{cycleType σ} = ∑_lam schurChar μ σ · s_μ`.
 * `Equiv.Perm.eq_of_frobChar_eq` : a class function is determined by its characteristic.
-* `Equiv.Perm.schurChar_one` : `schurChar η 1 = f^η`, the number of standard tableaux.
-* `Equiv.Perm.schurChar_one_mul_hookProd` : the hook length formula for `schurChar η 1`.
+* `Equiv.Perm.schurChar_one` : `schurChar μ 1 = f^μ`, the number of standard tableaux.
+* `Equiv.Perm.schurChar_one_mul_hookProd` : the hook length formula for `schurChar μ 1`.
 * `Equiv.Perm.schurChar_row`, `Equiv.Perm.schurChar_column` : the class functions of the row and
   column shapes are the trivial and the signature characters.
 -/
@@ -58,30 +58,32 @@ variable {n : ℕ}
 /-! ### The Schur class functions -/
 
 /-- The class function of `S_n` whose Frobenius characteristic is the Schur polynomial
-`s_η`.  Over `ℂ` this is the irreducible character of `S_n` attached to `η`. -/
-noncomputable def schurChar (η : PartIdx n n) : Perm (Fin n) → ℚ :=
-  (exists_isClassFun_frobCharSub_eq (le_refl n) (schurSub n n ℚ η)).choose
+`s_μ`.  Over `ℂ` this is the irreducible character of `S_n` attached to `μ`. -/
+noncomputable def schurChar (μ : Nat.Partition n) : Perm (Fin n) → ℚ :=
+  (exists_isClassFun_frobCharSub_eq (le_refl n) (schurSub n n ℚ (partIdxOf μ))).choose
 
 /-- The Schur class functions are class functions. -/
-lemma isClassFun_schurChar (η : PartIdx n n) : IsClassFun (schurChar η) :=
-  (exists_isClassFun_frobCharSub_eq (le_refl n) (schurSub n n ℚ η)).choose_spec.1
+lemma isClassFun_schurChar (μ : Nat.Partition n) : IsClassFun (schurChar μ) :=
+  (exists_isClassFun_frobCharSub_eq (le_refl n) (schurSub n n ℚ (partIdxOf μ))).choose_spec.1
 
-/-- The Frobenius characteristic of `schurChar η` is the Schur polynomial `s_η`. -/
-@[simp] lemma frobCharSub_schurChar (η : PartIdx n n) :
-    frobCharSub (le_refl n) (schurChar η) = schurSub n n ℚ η :=
-  (exists_isClassFun_frobCharSub_eq (le_refl n) (schurSub n n ℚ η)).choose_spec.2
+/-- The Frobenius characteristic of `schurChar μ` is the Schur polynomial `s_μ`. -/
+@[simp] lemma frobCharSub_schurChar (μ : Nat.Partition n) :
+    frobCharSub (le_refl n) (schurChar μ) = schurSub n n ℚ (partIdxOf μ) :=
+  (exists_isClassFun_frobCharSub_eq (le_refl n) (schurSub n n ℚ (partIdxOf μ))).choose_spec.2
 
-/-- The Frobenius characteristic of `schurChar η` is the Schur polynomial `s_η`. -/
-theorem frobChar_schurChar (η : PartIdx n n) :
-    frobChar n (schurChar η) = schurPoly (Fin n) ℚ η.1 := by
-  rw [← coe_frobCharSub (le_refl n) (schurChar η), frobCharSub_schurChar, coe_schurSub]
+/-- The Frobenius characteristic of `schurChar μ` is the Schur polynomial `s_μ`. -/
+theorem frobChar_schurChar (μ : Nat.Partition n) :
+    frobChar n (schurChar μ) = schurPoly (Fin n) ℚ μ.partsList := by
+  rw [← coe_frobCharSub (le_refl n) (schurChar μ), frobCharSub_schurChar, coe_schurSub,
+    coe_partIdxOf]
 
 /-- **The Schur class functions are orthonormal** for the scalar product of class
 functions. -/
-theorem classInner_schurChar (η μ : PartIdx n n) :
-    classInner (schurChar η) (schurChar μ) = if η = μ then 1 else 0 := by
-  rw [← hallInner_frobCharSub (le_refl n) (isClassFun_schurChar η) (isClassFun_schurChar μ),
-    frobCharSub_schurChar, frobCharSub_schurChar, hallInner_schurSub]
+theorem classInner_schurChar (μ ν : Nat.Partition n) :
+    classInner (schurChar μ) (schurChar ν) = if μ = ν then 1 else 0 := by
+  rw [← hallInner_frobCharSub (le_refl n) (isClassFun_schurChar μ) (isClassFun_schurChar ν),
+    frobCharSub_schurChar, frobCharSub_schurChar]
+  simpa only [Equiv.apply_eq_iff_eq] using hallInner_schurSub (partIdxOf μ) (partIdxOf ν)
 
 /-- A class function is determined by its Frobenius characteristic. -/
 theorem eq_of_frobChar_eq {f g : Perm (Fin n) → ℚ} (hf : IsClassFun f) (hg : IsClassFun g)
@@ -142,11 +144,11 @@ lemma frobCharSub_classIndicator (σ : Perm (Fin n)) :
   rfl
 
 /-- **The value of a Schur class function is a Hall scalar product**: pairing the power
-sum attached to the cycle type of `σ` with the Schur polynomial `s_η` gives the value
-`schurChar η σ`. -/
-theorem hallInner_pSub_cycleTypeIdx_schurSub (σ : Perm (Fin n)) (η : PartIdx n n) :
-    hallInner n n ℚ (pSub n n ℚ (cycleTypeIdx (le_refl n) σ)) (schurSub n n ℚ η)
-      = schurChar η σ := by
+sum attached to the cycle type of `σ` with the Schur polynomial `s_μ` gives the value
+`schurChar μ σ`. -/
+theorem hallInner_pSub_cycleTypeIdx_schurSub (σ : Perm (Fin n)) (μ : Nat.Partition n) :
+    hallInner n n ℚ (pSub n n ℚ (cycleTypeIdx (le_refl n) σ)) (schurSub n n ℚ (partIdxOf μ))
+      = schurChar μ σ := by
   classical
   set f : Perm (Fin n) → ℚ := fun τ =>
     if cycleTypeList τ = cycleTypeList σ then (1 : ℚ) else 0 with hf
@@ -155,10 +157,10 @@ theorem hallInner_pSub_cycleTypeIdx_schurSub (σ : Perm (Fin n)) (η : PartIdx n
     simp only [hf, cycleTypeList_conj]
   have hz : (zcard (cycleTypeList σ) : ℚ) ≠ 0 :=
     Nat.cast_ne_zero.2 (zcard_pos (isPart_cycleTypeList σ)).ne'
-  have hiso := hallInner_frobCharSub (le_refl n) hfclass (isClassFun_schurChar η)
+  have hiso := hallInner_frobCharSub (le_refl n) hfclass (isClassFun_schurChar μ)
   rw [frobCharSub_classIndicator σ, frobCharSub_schurChar, map_smul,
     LinearMap.smul_apply, smul_eq_mul,
-    classInner_classIndicator (isClassFun_schurChar η) σ] at hiso
+    classInner_classIndicator (isClassFun_schurChar μ) σ] at hiso
   exact mul_left_cancel₀ (inv_ne_zero hz) hiso
 
 /-- **The Frobenius character formula**: the power sum attached to the cycle type of a
@@ -166,26 +168,26 @@ permutation `σ` expands over the Schur polynomials with the values of the Schur
 functions at `σ` as coefficients. -/
 theorem pSub_cycleTypeIdx_eq_sum (σ : Perm (Fin n)) :
     pSub n n ℚ (cycleTypeIdx (le_refl n) σ)
-      = ∑ η : PartIdx n n, schurChar η σ • schurSub n n ℚ η := by
-  have hdual : ∀ η μ : PartIdx n n,
-      hallInner n n ℚ (schurSub n n ℚ η) (schurSub n n ℚ μ) = if η = μ then 1 else 0 :=
-    fun η μ => hallInner_schurSub η μ
+      = ∑ μ : Nat.Partition n, schurChar μ σ • schurSub n n ℚ (partIdxOf μ) := by
+  have hdual : ∀ μ ν : PartIdx n n,
+      hallInner n n ℚ (schurSub n n ℚ μ) (schurSub n n ℚ ν) = if μ = ν then 1 else 0 :=
+    fun μ ν => hallInner_schurSub μ ν
   have := eq_sum_hallInner_smul_of_dual (schurSub n n ℚ) (schurSub n n ℚ) hdual
     (pSub n n ℚ (cycleTypeIdx (le_refl n) σ))
   rw [this]
-  exact Finset.sum_congr rfl fun η _ => by
-    rw [hallInner_pSub_cycleTypeIdx_schurSub]
+  exact (Fintype.sum_equiv (natPartitionEquivPartIdx (le_refl n)) _ _ fun μ => by
+    rw [hallInner_pSub_cycleTypeIdx_schurSub]).symm
 
 /-- **The Frobenius character formula**, at the level of polynomials: the power sum
 `p_{cycleType σ}` is the combination of the Schur polynomials with the values of the Schur
 class functions at `σ` as coefficients. -/
 theorem pProd_cycleTypeList_eq_sum (σ : Perm (Fin n)) :
     pProd n ℚ (cycleTypeList σ)
-      = ∑ η : PartIdx n n, schurChar η σ • schurPoly (Fin n) ℚ η.1 := by
+      = ∑ μ : Nat.Partition n, schurChar μ σ • schurPoly (Fin n) ℚ μ.partsList := by
   have hval := congrArg (Subtype.val) (pSub_cycleTypeIdx_eq_sum σ)
   rw [coe_pSub, Submodule.coe_sum] at hval
-  refine hval.trans (Finset.sum_congr rfl fun η _ => ?_)
-  rw [SetLike.val_smul, coe_schurSub]
+  refine hval.trans (Finset.sum_congr rfl fun μ _ => ?_)
+  rw [SetLike.val_smul, coe_schurSub, coe_partIdxOf]
 
 /-! ### The dimension: the number of standard Young tableaux -/
 
@@ -221,8 +223,8 @@ lemma pProd_replicate_one (m : ℕ) :
   simp [pow_one]
 
 /-- **The dimension of the Schur class function**: its value at the identity is the number
-of standard Young tableaux of shape `η`. -/
-theorem schurChar_one (η : PartIdx n n) : schurChar η 1 = numStdTab η.1 := by
+of standard Young tableaux of shape `μ`. -/
+theorem schurChar_one (μ : Nat.Partition n) : schurChar μ 1 = numStdTab μ.partsList := by
   have hp : IsPart (List.replicate n 1) ∧ (List.replicate n 1).sum = n ∧
       (List.replicate n 1).length ≤ n := ⟨isPart_replicate_one n, by simp, by simp⟩
   have hct : cycleTypeIdx (le_refl n) (1 : Perm (Fin n)) = ⟨List.replicate n 1, hp⟩ :=
@@ -231,29 +233,29 @@ theorem schurChar_one (η : PartIdx n n) : schurChar η 1 = numStdTab η.1 := by
       exact cycleTypeList_one)
   have hph : pSub n n ℚ ⟨List.replicate n 1, hp⟩ = hSub n n ℚ ⟨List.replicate n 1, hp⟩ :=
     Subtype.ext (by rw [coe_pSub, coe_hSub]; exact pProd_replicate_one n)
-  rw [← hallInner_pSub_cycleTypeIdx_schurSub (1 : Perm (Fin n)) η, hct, hph,
-    hallInner_hSub_schurSub, kostka_replicate_one η.2.2.1]
+  rw [← hallInner_pSub_cycleTypeIdx_schurSub (1 : Perm (Fin n)) μ, hct, hph,
+    hallInner_hSub_schurSub, coe_partIdxOf, kostka_replicate_one (Nat.Partition.sum_partsList μ)]
 
 /-- **The hook length formula** for the dimension of a Schur class function. -/
-theorem schurChar_one_mul_hookProd (η : PartIdx n n) :
-    schurChar η 1 * (hookProd η.1 : ℚ) = (Nat.factorial n : ℚ) := by
+theorem schurChar_one_mul_hookProd (μ : Nat.Partition n) :
+    schurChar μ 1 * (hookProd μ.partsList : ℚ) = (Nat.factorial n : ℚ) := by
   rw [schurChar_one]
-  have := numStdTab_mul_hookProd η.2.1
-  rw [η.2.2.1] at this
+  have := numStdTab_mul_hookProd (Nat.Partition.isPart_partsList μ)
+  rw [Nat.Partition.sum_partsList] at this
   exact_mod_cast congrArg (Nat.cast : ℕ → ℚ) this
 
 /-! ### The row and column shapes -/
 
 /-- The class function of `S_n` attached to the row shape `(n)` is the trivial
 character. -/
-theorem schurChar_row (hn : 0 < n) (μ : PartIdx n n) (hμ : μ.1 = [n]) :
+theorem schurChar_row (hn : 0 < n) (μ : Nat.Partition n) (hμ : μ.partsList = [n]) :
     schurChar μ = fun _ : Perm (Fin n) => (1 : ℚ) := by
   refine eq_of_frobChar_eq (isClassFun_schurChar μ) (fun _ _ => rfl) ?_
   rw [frobChar_schurChar, hμ, schurPoly_row hn, frobChar_one]
 
 /-- The class function of `S_n` attached to the column shape `(1^n)` is the signature
 character. -/
-theorem schurChar_column (μ : PartIdx n n) (hμ : μ.1 = List.replicate n 1) :
+theorem schurChar_column (μ : Nat.Partition n) (hμ : μ.partsList = List.replicate n 1) :
     schurChar μ = fun σ : Perm (Fin n) => ((Equiv.Perm.sign σ : ℤ) : ℚ) := by
   refine eq_of_frobChar_eq (isClassFun_schurChar μ) (fun σ τ => ?_) ?_
   · rw [map_mul, map_mul, Equiv.Perm.sign_inv]
