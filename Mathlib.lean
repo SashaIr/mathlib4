@@ -3874,6 +3874,10 @@ public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
 public import Mathlib.Combinatorics.Tiling.Tile
 public import Mathlib.Combinatorics.Young.BigOperators
+public import Mathlib.Combinatorics.Young.Crystal.Basic
+public import Mathlib.Combinatorics.Young.Crystal.Plactic
+public import Mathlib.Combinatorics.Young.Crystal.RobinsonSchensted
+public import Mathlib.Combinatorics.Young.Crystal.Tableau
 public import Mathlib.Combinatorics.Young.Greene.ColumnDefs
 public import Mathlib.Combinatorics.Young.Greene.ColumnInvariance
 public import Mathlib.Combinatorics.Young.Greene.ColumnTableau
@@ -3884,6 +3888,9 @@ public import Mathlib.Combinatorics.Young.Greene.Reverse
 public import Mathlib.Combinatorics.Young.Greene.Tableau
 public import Mathlib.Combinatorics.Young.Greene.Theorem
 public import Mathlib.Combinatorics.Young.Greene.YoungDiagram
+public import Mathlib.Combinatorics.Young.LittlewoodRichardson.Language
+public import Mathlib.Combinatorics.Young.LittlewoodRichardson.Rule
+public import Mathlib.Combinatorics.Young.LittlewoodRichardson.YoungDiagram
 public import Mathlib.Combinatorics.Young.Plactic.Basic
 public import Mathlib.Combinatorics.Young.Plactic.Map
 public import Mathlib.Combinatorics.Young.Plactic.Monoid
