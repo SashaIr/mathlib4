@@ -3888,6 +3888,15 @@ public import Mathlib.Combinatorics.Young.Greene.Reverse
 public import Mathlib.Combinatorics.Young.Greene.Tableau
 public import Mathlib.Combinatorics.Young.Greene.Theorem
 public import Mathlib.Combinatorics.Young.Greene.YoungDiagram
+public import Mathlib.Combinatorics.Young.HookLength.Basic
+public import Mathlib.Combinatorics.Young.HookLength.Branching
+public import Mathlib.Combinatorics.Young.HookLength.Formula
+public import Mathlib.Combinatorics.Young.HookLength.Frobenius
+public import Mathlib.Combinatorics.Young.HookLength.FrobeniusIdentity
+public import Mathlib.Combinatorics.Young.HookLength.HookWalk
+public import Mathlib.Combinatorics.Young.HookLength.HookWalkFormula
+public import Mathlib.Combinatorics.Young.HookLength.HookYoungDiagram
+public import Mathlib.Combinatorics.Young.HookLength.Vandermonde
 public import Mathlib.Combinatorics.Young.LittlewoodRichardson.Language
 public import Mathlib.Combinatorics.Young.LittlewoodRichardson.Rule
 public import Mathlib.Combinatorics.Young.LittlewoodRichardson.YoungDiagram
@@ -3904,6 +3913,7 @@ public import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.ColumnInsertion
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.CountingWords
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.CountingYoungDiagram
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
