@@ -35,7 +35,7 @@ product of class functions (induction from `S_m × S_n`, embedded in `S_{m+n}` b
 * `Equiv.Perm.indProd_isClassFun` : the induction product is again a class function.
 * `Equiv.Perm.frobChar_indProd` : `ch(f ⊗ g) = ch(f) · ch(g)` (Coq: `Frobenius_char_ind_morph`).
 * `Equiv.Perm.frobChar_classIndicator` : the characteristic of the indicator function of the
-  class of cycle type `λ` is `p_λ / z_λ`.
+  class of cycle type `μ` is `p_μ / z_μ`.
 * `Equiv.Perm.frobChar_comp_cycleTypeList` : the characteristic of a function of the cycle type
   is `∑_{μ ⊢ n} c(μ) · p_μ / z_μ`.
 * `Equiv.Perm.frobChar_indTrivYoung` : the characteristic of the trivial character induced from
@@ -130,7 +130,7 @@ lemma frobChar_smul (m : ℕ) {n : ℕ} (c : ℚ) (f : Perm (Fin n) → ℚ) :
 
 
 /-- The Frobenius characteristic of the indicator function of the conjugacy class of cycle
-type `λ` is `p_λ / z_λ`. -/
+type `μ` is `p_μ / z_μ`. -/
 theorem frobChar_classIndicator (m : ℕ) {n : ℕ} {μ : List ℕ} (hμ : IsPart μ)
     (hsum : μ.sum = n) :
     frobChar m (fun σ : Perm (Fin n) => if cycleTypeList σ = μ then 1 else 0)
@@ -231,7 +231,7 @@ theorem frobChar_indProd (k : ℕ) {m n : ℕ} (f : Perm (Fin m) → ℚ) (g : P
 /-! ### Characteristic of a function of the cycle type -/
 
 /-- The Frobenius characteristic of a class function given by a function of the cycle type:
-each conjugacy class contributes `p_λ / z_λ`. -/
+each conjugacy class contributes `p_μ / z_μ`. -/
 theorem frobChar_comp_cycleTypeList (m : ℕ) {n : ℕ} (c : List ℕ → ℚ) :
     frobChar m (fun σ : Perm (Fin n) => c (cycleTypeList σ))
       = ∑ μ ∈ partFinset n, (c μ * ((zcard μ : ℚ))⁻¹) • pProd m ℚ μ := by

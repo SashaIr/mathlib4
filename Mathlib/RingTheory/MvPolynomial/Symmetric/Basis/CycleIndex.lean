@@ -25,7 +25,7 @@ that is, the order of the centralizer of a permutation of cycle type `μ`.  Equi
 h_n` is the sum over the permutations of `Fin n` of the power sums attached to their cycle types.
 
 The proof goes through the recursion `n · h_n = ∑_{r = 1}^{n} p_r · h_{n - r}`, obtained by
-comparing coefficients, and the matching recursion for `∑_lam p_μ / z_μ`, which comes
+comparing coefficients, and the matching recursion for `∑_μ p_μ / z_μ`, which comes
 from the fact that removing one part `r` from `μ` divides `z_μ` by `r · m_r(μ)`.
 
 ## Main results
@@ -343,7 +343,7 @@ end Young
 
 namespace MvPolynomial
 
-/-- **The recursion for `∑_lam p_μ / z_μ`**. -/
+/-- **The recursion for `∑_μ p_μ / z_μ`**. -/
 lemma sum_psum_mul_cycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     ∑ r ∈ Finset.Icc 1 n, psum (Fin m) R r * cycleIndexSum m R (n - r)
       = (n : ℚ) • cycleIndexSum m R n := by
@@ -497,7 +497,7 @@ noncomputable def signedCycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebr
     MvPolynomial (Fin m) R :=
   ∑ μ ∈ partFinset n, (((-1 : ℚ) ^ (n + μ.length)) * ((zcard μ : ℚ))⁻¹) • pProd m R μ
 
-/-- **The recursion for `∑_lam ± p_μ / z_μ`**. -/
+/-- **The recursion for `∑_μ ± p_μ / z_μ`**. -/
 lemma sum_psum_mul_signedCycleIndexSum (m : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] (n : ℕ) :
     ∑ r ∈ Finset.Icc 1 n,
         ((-1 : ℚ) ^ (r + 1)) • (psum (Fin m) R r * signedCycleIndexSum m R (n - r))

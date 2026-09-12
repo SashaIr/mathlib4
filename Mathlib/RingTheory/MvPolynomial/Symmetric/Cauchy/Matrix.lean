@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 Following `theories/MPoly/homogsym.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we study the Cauchy kernels
 
-`K(u, v) = ∑_lam u_μ(x) v_μ(y)`
+`K(u, v) = ∑_μ u_μ(x) v_μ(y)`
 
 attached to two families `u` and `v` of symmetric homogeneous polynomials of degree `n` in
 `m` variables, indexed by the partitions of `n` with at most `m` parts.  Expanding `u` and
@@ -37,7 +37,7 @@ between the Cauchy identity and the Hall scalar product.
 
 namespace MvPolynomial
 
-open List MvPolynomial
+open List MvPolynomial Young
 
 variable {m n : ℕ} {R : Type*}
 
@@ -46,7 +46,7 @@ variable {m n : ℕ} {R : Type*}
 /-- The expansion of an element of the homogeneous component in the Schur basis. -/
 lemma coe_eq_sum_repr_schurBasis [CommRing R] (f : symHomogeneousSubmodule m n R) :
     (f : MvPolynomial (Fin m) R)
-      = ∑ ν : PartIdx n m, (schurBasis m n R).repr f ν • schurPoly (Fin m) R ν.1 := by
+      = ∑ ν : PartLengthLe n m, (schurBasis m n R).repr f ν • schurPoly (Fin m) R ν.1 := by
   conv_lhs => rw [← (schurBasis m n R).sum_repr f]
   push_cast [Submodule.coe_sum]
   exact Finset.sum_congr rfl fun ν _ => by rw [schurBasis_apply, coe_schurSub]
@@ -59,7 +59,7 @@ lemma map_C_smul [CommRing R] (a : R) (s : MvPolynomial (Fin m) R) :
 
 /-- The products `s_ν(x) s_ρ(y)`. -/
 noncomputable def schurPairProd (m n : ℕ) (R : Type*) [CommRing R]
-    (q : PartIdx n m × PartIdx n m) : MvPolynomial (Fin m) (MvPolynomial (Fin m) R) :=
+    (q : PartLengthLe n m × PartLengthLe n m) : MvPolynomial (Fin m) (MvPolynomial (Fin m) R) :=
   C (schurPoly (Fin m) R q.1.1)
     * MvPolynomial.map (C : R →+* MvPolynomial (Fin m) R) (schurPoly (Fin m) R q.2.1)
 
@@ -69,7 +69,7 @@ lemma linearIndependent_schurPairProd (m n : ℕ) (R : Type*) [CommRing R] :
   classical
   rw [Fintype.linearIndependent_iff]
   intro g hg p
-  have hterm : ∀ ν ρ : PartIdx n m,
+  have hterm : ∀ ν ρ : PartLengthLe n m,
       g (ν, ρ) • schurPairProd m n R (ν, ρ)
       = (g (ν, ρ) • schurPoly (Fin m) R ν.1)
           • schurPoly (Fin m) (MvPolynomial (Fin m) R) ρ.1 := by
@@ -77,8 +77,8 @@ lemma linearIndependent_schurPairProd (m n : ℕ) (R : Type*) [CommRing R] :
     rw [schurPairProd, ← map_schurPoly (C : R →+* MvPolynomial (Fin m) R) ρ.1]
     simp [Algebra.smul_def, MvPolynomial.algebraMap_eq]
     ring
-  have hsum : ∑ ρ : PartIdx n m,
-      (∑ ν : PartIdx n m, g (ν, ρ) • schurPoly (Fin m) R ν.1)
+  have hsum : ∑ ρ : PartLengthLe n m,
+      (∑ ν : PartLengthLe n m, g (ν, ρ) • schurPoly (Fin m) R ν.1)
         • schurPoly (Fin m) (MvPolynomial (Fin m) R) ρ.1 = 0 := by
     rw [← hg, Fintype.sum_prod_type_right]
     exact Finset.sum_congr rfl fun ρ _ => by
@@ -92,12 +92,12 @@ lemma linearIndependent_schurPairProd (m n : ℕ) (R : Type*) [CommRing R] :
 
 /-- The matrix of the coordinates of a family in the Schur basis. -/
 noncomputable def schurReprMat (m n : ℕ) (R : Type*) [CommRing R]
-    (u : PartIdx n m → symHomogeneousSubmodule m n R) :
-    Matrix (PartIdx n m) (PartIdx n m) R :=
+    (u : PartLengthLe n m → symHomogeneousSubmodule m n R) :
+    Matrix (PartLengthLe n m) (PartLengthLe n m) R :=
   Matrix.of fun μ ν => (schurBasis m n R).repr (u μ) ν
 
 @[simp] lemma schurReprMat_apply [CommRing R]
-    (u : PartIdx n m → symHomogeneousSubmodule m n R) (μ ν : PartIdx n m) :
+    (u : PartLengthLe n m → symHomogeneousSubmodule m n R) (μ ν : PartLengthLe n m) :
     schurReprMat m n R u μ ν = (schurBasis m n R).repr (u μ) ν := rfl
 
 @[simp] lemma schurReprMat_schurSub (m n : ℕ) (R : Type*) [CommRing R] :
@@ -110,14 +110,14 @@ noncomputable def schurReprMat (m n : ℕ) (R : Type*) [CommRing R]
 /-- The coordinate matrix of the image of a family under a linear map. -/
 lemma schurReprMat_comp [CommRing R]
     (phi : symHomogeneousSubmodule m n R →ₗ[R] symHomogeneousSubmodule m n R)
-    (v : PartIdx n m → symHomogeneousSubmodule m n R) :
+    (v : PartLengthLe n m → symHomogeneousSubmodule m n R) :
     schurReprMat m n R (fun μ => phi (v μ))
       = schurReprMat m n R v * schurReprMat m n R (fun ρ => phi (schurSub m n R ρ)) := by
   classical
   ext μ ν
   rw [Matrix.mul_apply, schurReprMat_apply]
   have hv : v μ
-      = ∑ ρ : PartIdx n m, (schurBasis m n R).repr (v μ) ρ • schurSub m n R ρ := by
+      = ∑ ρ : PartLengthLe n m, (schurBasis m n R).repr (v μ) ρ • schurSub m n R ρ := by
     conv_lhs => rw [← (schurBasis m n R).sum_repr (v μ)]
     exact Finset.sum_congr rfl fun ρ _ => by rw [schurBasis_apply]
   rw [hv, map_sum, map_sum]
@@ -126,75 +126,75 @@ lemma schurReprMat_comp [CommRing R]
 
 /-! ### Cauchy kernels -/
 
-/-- The Cauchy kernel `∑_lam u_μ(x) v_μ(y)` attached to two families. -/
+/-- The Cauchy kernel `∑_μ u_μ(x) v_μ(y)` attached to two families. -/
 noncomputable def cauchyKernelSum (m n : ℕ) (R : Type*) [CommRing R]
-    (u v : PartIdx n m → symHomogeneousSubmodule m n R) :
+    (u v : PartLengthLe n m → symHomogeneousSubmodule m n R) :
     MvPolynomial (Fin m) (MvPolynomial (Fin m) R) :=
-  ∑ μ : PartIdx n m,
+  ∑ μ : PartLengthLe n m,
     C ((u μ : MvPolynomial (Fin m) R))
       * MvPolynomial.map (C : R →+* MvPolynomial (Fin m) R) ((v μ : MvPolynomial (Fin m) R))
 
 /-- The expansion of a Cauchy kernel in the products `s_ν(x) s_ρ(y)`. -/
 theorem cauchyKernelSum_eq_sum_smul [CommRing R]
-    (u v : PartIdx n m → symHomogeneousSubmodule m n R) :
+    (u v : PartLengthLe n m → symHomogeneousSubmodule m n R) :
     cauchyKernelSum m n R u v
-      = ∑ q : PartIdx n m × PartIdx n m,
+      = ∑ q : PartLengthLe n m × PartLengthLe n m,
           (((schurReprMat m n R u).transpose * schurReprMat m n R v) q.1 q.2)
             • schurPairProd m n R q := by
   classical
   set A := schurReprMat m n R u with hAdef
   set B := schurReprMat m n R v with hBdef
-  have hu : ∀ μ : PartIdx n m,
+  have hu : ∀ μ : PartLengthLe n m,
       (C ((u μ : MvPolynomial (Fin m) R)) : MvPolynomial (Fin m) (MvPolynomial (Fin m) R))
-        = ∑ ν : PartIdx n m, A μ ν • C (schurPoly (Fin m) R ν.1) := by
+        = ∑ ν : PartLengthLe n m, A μ ν • C (schurPoly (Fin m) R ν.1) := by
     intro μ
     rw [coe_eq_sum_repr_schurBasis, map_sum]
     exact Finset.sum_congr rfl fun ν _ => by
       simp [hAdef, Algebra.smul_def, MvPolynomial.algebraMap_eq]
-  have hv : ∀ μ : PartIdx n m,
+  have hv : ∀ μ : PartLengthLe n m,
       MvPolynomial.map (C : R →+* MvPolynomial (Fin m) R) ((v μ : MvPolynomial (Fin m) R))
-        = ∑ ρ : PartIdx n m,
+        = ∑ ρ : PartLengthLe n m,
             B μ ρ • MvPolynomial.map (C : R →+* MvPolynomial (Fin m) R)
               (schurPoly (Fin m) R ρ.1) := by
     intro μ
     rw [coe_eq_sum_repr_schurBasis, map_sum]
     exact Finset.sum_congr rfl fun ρ _ => by
       simp [hBdef, Algebra.smul_def, MvPolynomial.algebraMap_eq]
-  have hswap : ∀ ν ρ : PartIdx n m, (A.transpose * B) ν ρ
-      = ∑ μ : PartIdx n m, A μ ν * B μ ρ := by
+  have hswap : ∀ ν ρ : PartLengthLe n m, (A.transpose * B) ν ρ
+      = ∑ μ : PartLengthLe n m, A μ ν * B μ ρ := by
     intro ν ρ
     rw [Matrix.mul_apply]
     rfl
   rw [Fintype.sum_prod_type, cauchyKernelSum]
-  calc ∑ μ : PartIdx n m,
+  calc ∑ μ : PartLengthLe n m,
         C ((u μ : MvPolynomial (Fin m) R))
           * MvPolynomial.map (C : R →+* MvPolynomial (Fin m) R)
               ((v μ : MvPolynomial (Fin m) R))
-      = ∑ μ : PartIdx n m, ∑ ν : PartIdx n m, ∑ ρ : PartIdx n m,
+      = ∑ μ : PartLengthLe n m, ∑ ν : PartLengthLe n m, ∑ ρ : PartLengthLe n m,
           (A μ ν * B μ ρ) • schurPairProd m n R (ν, ρ) := by
         refine Finset.sum_congr rfl fun μ _ => ?_
         rw [hu μ, hv μ, Finset.sum_mul_sum]
         exact Finset.sum_congr rfl fun ν _ => Finset.sum_congr rfl fun ρ _ => by
           rw [schurPairProd, smul_mul_smul_comm]
-    _ = ∑ ν : PartIdx n m, ∑ μ : PartIdx n m, ∑ ρ : PartIdx n m,
+    _ = ∑ ν : PartLengthLe n m, ∑ μ : PartLengthLe n m, ∑ ρ : PartLengthLe n m,
           (A μ ν * B μ ρ) • schurPairProd m n R (ν, ρ) := Finset.sum_comm
-    _ = ∑ ν : PartIdx n m, ∑ ρ : PartIdx n m, ∑ μ : PartIdx n m,
+    _ = ∑ ν : PartLengthLe n m, ∑ ρ : PartLengthLe n m, ∑ μ : PartLengthLe n m,
           (A μ ν * B μ ρ) • schurPairProd m n R (ν, ρ) :=
         Finset.sum_congr rfl fun ν _ => Finset.sum_comm
-    _ = ∑ ν : PartIdx n m, ∑ ρ : PartIdx n m,
+    _ = ∑ ν : PartLengthLe n m, ∑ ρ : PartLengthLe n m,
           ((A.transpose * B) ν ρ) • schurPairProd m n R (ν, ρ) :=
         Finset.sum_congr rfl fun ν _ => Finset.sum_congr rfl fun ρ _ => by
           rw [hswap, Finset.sum_smul]
 
 /-- Two families with the same Cauchy kernel have the same matrix product `Aᵀ B`. -/
 theorem transpose_mul_eq_of_cauchyKernelSum_eq [CommRing R]
-    {u v u' v' : PartIdx n m → symHomogeneousSubmodule m n R}
+    {u v u' v' : PartLengthLe n m → symHomogeneousSubmodule m n R}
     (h : cauchyKernelSum m n R u v = cauchyKernelSum m n R u' v') :
     (schurReprMat m n R u).transpose * schurReprMat m n R v
       = (schurReprMat m n R u').transpose * schurReprMat m n R v' := by
   classical
   rw [cauchyKernelSum_eq_sum_smul, cauchyKernelSum_eq_sum_smul] at h
-  have hzero : ∑ q : PartIdx n m × PartIdx n m,
+  have hzero : ∑ q : PartLengthLe n m × PartLengthLe n m,
       ((((schurReprMat m n R u).transpose * schurReprMat m n R v) q.1 q.2)
         - (((schurReprMat m n R u').transpose * schurReprMat m n R v') q.1 q.2))
           • schurPairProd m n R q = 0 := by
@@ -206,7 +206,7 @@ theorem transpose_mul_eq_of_cauchyKernelSum_eq [CommRing R]
 /-- An equality of Cauchy kernels can be transformed by applying a linear map to the second
 family. -/
 theorem cauchyKernelSum_congr_right [CommRing R]
-    {u v u' v' : PartIdx n m → symHomogeneousSubmodule m n R}
+    {u v u' v' : PartLengthLe n m → symHomogeneousSubmodule m n R}
     (h : cauchyKernelSum m n R u v = cauchyKernelSum m n R u' v')
     (phi : symHomogeneousSubmodule m n R →ₗ[R] symHomogeneousSubmodule m n R) :
     cauchyKernelSum m n R u (fun μ => phi (v μ))
@@ -217,7 +217,7 @@ theorem cauchyKernelSum_congr_right [CommRing R]
 
 /-- The Hall scalar product in terms of the coordinate matrices. -/
 lemma hallInner_eq_matrix [CommRing R]
-    (u v : PartIdx n m → symHomogeneousSubmodule m n R) (μ ν : PartIdx n m) :
+    (u v : PartLengthLe n m → symHomogeneousSubmodule m n R) (μ ν : PartLengthLe n m) :
     hallInner m n R (u μ) (v ν)
       = (schurReprMat m n R u * (schurReprMat m n R v).transpose) μ ν := by
   rw [hallInner_apply, Matrix.mul_apply]

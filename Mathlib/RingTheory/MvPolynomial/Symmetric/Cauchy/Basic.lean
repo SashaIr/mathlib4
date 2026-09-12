@@ -18,7 +18,7 @@ polynomial (degree by degree) form:
 
 the sum on the right being over the families `a : Fin k → ℕ` of total size `n`.  This is
 the coefficient of degree `n` in `y` of the usual generating-function form
-`∏_{i,j} 1 / (1 - x_i y_j) = ∑_lam s_μ(x) s_μ(y)`, since
+`∏_{i,j} 1 / (1 - x_i y_j) = ∑_μ s_μ(x) s_μ(y)`, since
 `∏_i 1 / (1 - x_i t) = ∑_r h_r(x) t^r`.
 
 The proof is by induction on the number `k` of variables `y`, exactly as for the dual Cauchy
@@ -247,14 +247,14 @@ lemma prod_hsymm_eq_hProd (m k : ℕ) (R : Type*) [CommRing R] (d : Fin k →₀
   rw [h1, ← coe_degSorted d, Multiset.map_coe, Multiset.prod_coe, degShape]
   exact prod_map_hsymm_trimZeros m R (degSorted d)
 
-/-- **The Cauchy identity in the dual bases form**: `∑_lam s_μ(x) s_μ(y)` is
-`∑_mu h_ν(x) m_ν(y)`, the sum being over the partitions `ν` of `n` with at most `k`
+/-- **The Cauchy identity in the dual bases form**: `∑_μ s_μ(x) s_μ(y)` is
+`∑_ν h_ν(x) m_ν(y)`, the sum being over the partitions `ν` of `n` with at most `k`
 parts. -/
 theorem cauchy_hProd_monomialSym (m k n : ℕ) (R : Type*) [CommRing R] :
     (∑ μ ∈ partFinset n,
         C (schurPoly (Fin m) R μ) * schurPoly (Fin k) (MvPolynomial (Fin m) R) μ
       : MvPolynomial (Fin k) (MvPolynomial (Fin m) R))
-      = ∑ ν : PartIdx n k, C (hProd m R ν.1) * monomialSym k (MvPolynomial (Fin m) R) ν.1 := by
+      = ∑ ν : PartLengthLe n k, C (hProd m R ν.1) * monomialSym k (MvPolynomial (Fin m) R) ν.1 := by
   classical
   rw [cauchy]
   ext d
@@ -283,11 +283,11 @@ theorem cauchy_hProd_monomialSym (m k n : ℕ) (R : Type*) [CommRing R] :
       Finset.sum_ite_eq' (Finset.Nat.antidiagonalTuple k n) (d : Fin k → ℕ)
         (fun _ => hProd m R (degShape d))]
     simp only [Finset.Nat.mem_antidiagonalTuple]
-  have hR : coeff d (∑ ν : PartIdx n k,
+  have hR : coeff d (∑ ν : PartLengthLe n k,
         C (hProd m R ν.1) * monomialSym k (MvPolynomial (Fin m) R) ν.1)
       = if ∑ j, d j = n then hProd m R (degShape d) else 0 := by
     rw [coeff_sum]
-    have hterm : ∀ ν : PartIdx n k,
+    have hterm : ∀ ν : PartLengthLe n k,
         coeff d (C (hProd m R ν.1) * monomialSym k (MvPolynomial (Fin m) R) ν.1)
           = if ν.1 = degShape d then hProd m R (degShape d) else 0 := by
       intro ν
@@ -309,7 +309,7 @@ theorem cauchy_hProd_monomialSym (m k n : ℕ) (R : Type*) [CommRing R] :
     by_cases hn : ∑ j, d j = n
     · have hν0 : IsPart (degShape d) ∧ (degShape d).sum = n ∧ (degShape d).length ≤ k :=
         ⟨isPart_degShape d, by rw [sum_degShape]; exact hn, length_degShape_le d⟩
-      rw [ite_eq_left hn, Finset.sum_eq_single (⟨degShape d, hν0⟩ : PartIdx n k)]
+      rw [ite_eq_left hn, Finset.sum_eq_single (⟨degShape d, hν0⟩ : PartLengthLe n k)]
       · rw [ite_eq_left rfl]
       · intro ν _ hne
         exact ite_eq_right fun hc => hne (Subtype.ext hc)

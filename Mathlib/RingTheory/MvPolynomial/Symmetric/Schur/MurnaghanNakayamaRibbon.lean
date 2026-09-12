@@ -164,7 +164,7 @@ minus one, times `s_ν`. -/
 theorem psum_mul_schurPoly_sum_ribbon (hμ : IsPart μ) (hlen : μ.length ≤ m)
     (hr : 0 < r) :
     psum (Fin m) R r * schurPoly (Fin m) R μ
-      = ∑ ν : PartIdx (μ.sum + r) m,
+      = ∑ ν : PartLengthLe (μ.sum + r) m,
           if ∃ s k, RibbonOn s k μ ν.1 then
             ((-1 : ℤ) ^ (ribbonHeight μ ν.1 - 1)) • schurPoly (Fin m) R ν.1
           else 0 := by
@@ -174,7 +174,7 @@ theorem psum_mul_schurPoly_sum_ribbon (hμ : IsPart μ) (hlen : μ.length ≤ m)
     (fun (k : Fin m) (hk : k ∈ Finset.univ.filter fun k : Fin m => MNAddable μ r (k : ℕ)) =>
       (⟨mnShape μ r (k : ℕ), isPart_mnShape hμ hr (Finset.mem_filter.1 hk).2,
         sum_mnShape hμ hr,
-        (length_mnShape_le _ _ _).trans (max_le k.isLt hlen)⟩ : PartIdx (μ.sum + r) m))
+        (length_mnShape_le _ _ _).trans (max_le k.isLt hlen)⟩ : PartLengthLe (μ.sum + r) m))
     (fun k hk => ?_) (fun k1 hk1 k2 hk2 heq => ?_) (fun ν hν => ?_) (fun k hk => rfl)
   · exact Finset.mem_filter.2 ⟨Finset.mem_univ _,
       mnPos μ r (k : ℕ), (k : ℕ),

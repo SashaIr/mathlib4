@@ -113,7 +113,7 @@ noncomputable def mulSub (m : ℕ) (R : Type*) [CommRing R] (hab : a + b = n) :
     (mulSub m R hab f g : MvPolynomial (Fin m) R)
       = (f : MvPolynomial (Fin m) R) * (g : MvPolynomial (Fin m) R) := rfl
 
-@[simp] lemma hBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (μ : PartIdx n m) :
+@[simp] lemma hBasis_apply (m n : ℕ) (R : Type*) [CommRing R] (μ : PartLengthLe n m) :
     hBasis m n R μ = hSub m n R μ := by
   rw [hBasis, Module.Basis.mk_apply]
 
@@ -150,7 +150,7 @@ theorem omegaSym_mul [CommRing R] (hab : a + b = n) (hnm : n ≤ m)
       rw [μ.2.2.1] at h1
       rw [ν.2.2.1] at h2
       omega
-    set ρ : PartIdx n m := ⟨mergePart μ.1 ν.1, hρ⟩ with hρdef
+    set ρ : PartLengthLe n m := ⟨mergePart μ.1 ν.1, hρ⟩ with hρdef
     have hmul : mulSub m R hab (hSub m a R μ) (hSub m b R ν) = hSub m n R ρ := by
       apply Subtype.ext
       rw [coe_mulSub, coe_hSub, coe_hSub, coe_hSub, hρdef, hProd_mergePart]
@@ -164,13 +164,13 @@ theorem omegaSym_mul [CommRing R] (hab : a + b = n) (hnm : n ≤ m)
 /-! ### The one-part partitions -/
 
 /-- The partition of `k` with a single part, as an index. -/
-def singIdx (m k : ℕ) (hkm : k ≤ m) : PartIdx k m :=
+def rowPart (m k : ℕ) (hkm : k ≤ m) : PartLengthLe k m :=
   ⟨rowShape k, isPart_rowShape k, sum_rowShape k, by
     rcases Nat.eq_zero_or_pos k with rfl | hk
     · simp [rowShape]
     · exact le_trans (length_rowShape_le k) (by omega)⟩
 
-@[simp] lemma singIdx_val (m k : ℕ) (hkm : k ≤ m) : (singIdx m k hkm).1 = rowShape k := rfl
+@[simp] lemma rowPart_val (m k : ℕ) (hkm : k ≤ m) : (rowPart m k hkm).1 = rowShape k := rfl
 
 @[simp] lemma hProd_rowShape (m : ℕ) (R : Type*) [CommRing R] (k : ℕ) :
     hProd m R (rowShape k) = hsymm (Fin m) R k := by
@@ -197,7 +197,7 @@ lemma pProd_rowShape (m : ℕ) (R : Type*) [CommRing R] {k : ℕ} (hk : 0 < k) :
 degree. -/
 private theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
     ∀ r : ℕ, 0 < r → ∀ hrm : r ≤ m,
-      (omegaSym m r R hrm (pSub m r R (singIdx m r hrm)) : MvPolynomial (Fin m) R)
+      (omegaSym m r R hrm (pSub m r R (rowPart m r hrm)) : MvPolynomial (Fin m) R)
         = (-1) ^ (r + 1) * psum (Fin m) R r := by
   intro r
   induction r using Nat.strong_induction_on with
@@ -207,8 +207,8 @@ private theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
   set T : ℕ → symHomogeneousSubmodule m r R := fun j =>
     if h : 1 ≤ j ∧ j ≤ r then
       mulSub m R (show j + (r - j) = r by omega)
-        (pSub m j R (singIdx m j (by omega)))
-        (hSub m (r - j) R (singIdx m (r - j) (by omega)))
+        (pSub m j R (rowPart m j (by omega)))
+        (hSub m (r - j) R (rowPart m (r - j) (by omega)))
     else 0 with hT
   have hTcoe : ∀ j ∈ Finset.Icc 1 r,
       (T j : MvPolynomial (Fin m) R) = psum (Fin m) R j * hsymm (Fin m) R (r - j) := by
@@ -216,11 +216,11 @@ private theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
     rw [Finset.mem_Icc] at hj
     rw [hT]
     simp only [dite_eq_left (⟨hj.1, hj.2⟩ : 1 ≤ j ∧ j ≤ r), coe_mulSub, coe_pSub, coe_hSub,
-      singIdx_val, hProd_rowShape]
+      rowPart_val, hProd_rowShape]
     rw [pProd_rowShape m R (show 0 < j by omega)]
-  have hA : (r : ℕ) • hSub m r R (singIdx m r hrm) = ∑ j ∈ Finset.Icc 1 r, T j := by
+  have hA : (r : ℕ) • hSub m r R (rowPart m r hrm) = ∑ j ∈ Finset.Icc 1 r, T j := by
     apply Subtype.ext
-    rw [AddSubmonoidClass.coe_nsmul, coe_hSub, singIdx_val, hProd_rowShape, Submodule.coe_sum,
+    rw [AddSubmonoidClass.coe_nsmul, coe_hSub, rowPart_val, hProd_rowShape, Submodule.coe_sum,
       Finset.sum_congr rfl hTcoe]
     exact nsmul_hsymm_eq_sum_psum_mul_hsymm m r R
   have hB : (r : ℕ) • esymm (Fin m) R r
@@ -230,7 +230,7 @@ private theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
         ((omegaSym m r R hrm x : symHomogeneousSubmodule m r R) : MvPolynomial (Fin m) R))
       hA
     simp only [map_nsmul, map_sum, AddSubmonoidClass.coe_nsmul, Submodule.coe_sum,
-      omegaSym_hSub, coe_eSubOfPart, singIdx_val, eProd_rowShape] at hcong
+      omegaSym_hSub, coe_eSubOfPart, rowPart_val, eProd_rowShape] at hcong
     exact hcong
   have hTomega : ∀ j ∈ (Finset.Icc 1 r).erase r,
       (omegaSym m r R hrm (T j) : MvPolynomial (Fin m) R)
@@ -243,14 +243,14 @@ private theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
     rw [hT]
     simp only [dite_eq_left (⟨hj'.1, hj'.2⟩ : 1 ≤ j ∧ j ≤ r)]
     rw [omegaSym_mul, IH j hjr (by omega) (by omega), omegaSym_hSub, coe_eSubOfPart,
-      singIdx_val, eProd_rowShape, mul_assoc]
+      rowPart_val, eProd_rowShape, mul_assoc]
   have hTr : (omegaSym m r R hrm (T r) : MvPolynomial (Fin m) R)
-      = (omegaSym m r R hrm (pSub m r R (singIdx m r hrm)) : MvPolynomial (Fin m) R) := by
-    have hTreq : T r = pSub m r R (singIdx m r hrm) := by
+      = (omegaSym m r R hrm (pSub m r R (rowPart m r hrm)) : MvPolynomial (Fin m) R) := by
+    have hTreq : T r = pSub m r R (rowPart m r hrm) := by
       rw [hT]
       simp only [dite_eq_left (⟨hr, le_refl r⟩ : 1 ≤ r ∧ r ≤ r)]
       apply Subtype.ext
-      rw [coe_mulSub, coe_hSub, singIdx_val, Nat.sub_self, hProd_rowShape, hsymm_zero,
+      rw [coe_mulSub, coe_hSub, rowPart_val, Nat.sub_self, hProd_rowShape, hsymm_zero,
         mul_one, coe_pSub]
     rw [hTreq]
   have hmemr : r ∈ Finset.Icc 1 r := Finset.mem_Icc.2 ⟨hr, le_refl r⟩
@@ -265,7 +265,7 @@ private theorem omegaSym_psum_aux (m : ℕ) (R : Type*) [CommRing R] :
 
 /-- **`omega` acts on the power sums by the sign `(-1)^(r+1)`**. -/
 theorem omegaSym_psum (m : ℕ) (R : Type*) [CommRing R] {r : ℕ} (hr : 0 < r) (hrm : r ≤ m) :
-    (omegaSym m r R hrm (pSub m r R (singIdx m r hrm)) : MvPolynomial (Fin m) R)
+    (omegaSym m r R hrm (pSub m r R (rowPart m r hrm)) : MvPolynomial (Fin m) R)
       = (-1) ^ (r + 1) * psum (Fin m) R r :=
   omegaSym_psum_aux m R r hr hrm
 
@@ -299,10 +299,10 @@ theorem omegaSym_pProd (m : ℕ) (R : Type*) [CommRing R] (μ : List ℕ) :
     have hab : a + l.sum = (a :: l).sum := hsum.symm
     have hmul : (pSub m (a :: l).sum R
           ⟨a :: l, hμ, rfl, le_trans hμ.length_le_sum hle⟩)
-        = mulSub m R hab (pSub m a R (singIdx m a ham))
+        = mulSub m R hab (pSub m a R (rowPart m a ham))
             (pSub m l.sum R ⟨l, hlpart, rfl, le_trans hlpart.length_le_sum hle'⟩) := by
       apply Subtype.ext
-      rw [coe_mulSub, coe_pSub, coe_pSub, coe_pSub, singIdx_val, pProd_rowShape m R ha,
+      rw [coe_mulSub, coe_pSub, coe_pSub, coe_pSub, rowPart_val, pProd_rowShape m R ha,
         pProd_cons]
     rw [hmul, omegaSym_mul, omegaSym_psum m R ha ham, ih hlpart hle']
     have hlen : l.length ≤ l.sum := hlpart.length_le_sum
@@ -315,7 +315,7 @@ theorem omegaSym_pProd (m : ℕ) (R : Type*) [CommRing R] (μ : List ℕ) :
 
 /-- **`omega` acts on the products of power sums by the sign
 `(-1)^(|μ| - length μ)`**. -/
-theorem omegaSym_pSub (m n : ℕ) (R : Type*) [CommRing R] (hnm : n ≤ m) (μ : PartIdx n m) :
+theorem omegaSym_pSub (m n : ℕ) (R : Type*) [CommRing R] (hnm : n ≤ m) (μ : PartLengthLe n m) :
     (omegaSym m n R hnm (pSub m n R μ) : MvPolynomial (Fin m) R)
       = (-1) ^ (n - μ.1.length) * pProd m R μ.1 := by
   obtain ⟨l, hpart, hsum, hlen⟩ := μ

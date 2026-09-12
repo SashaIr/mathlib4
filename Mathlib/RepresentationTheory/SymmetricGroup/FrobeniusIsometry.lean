@@ -90,7 +90,7 @@ lemma sum_comp_cycleTypeList (c : List ℕ → ℚ) :
 
 /-- The cycle type of a permutation of `Fin n`, as a partition of `n` with at most `k`
 parts. -/
-noncomputable def cycleTypeIdx (hnk : n ≤ k) (σ : Perm (Fin n)) : PartIdx n k :=
+noncomputable def cycleTypePart (hnk : n ≤ k) (σ : Perm (Fin n)) : PartLengthLe n k :=
   ⟨cycleTypeList σ, isPart_cycleTypeList σ, sum_cycleTypeList σ,
     le_trans (le_trans (isPart_cycleTypeList σ).length_le_sum
       (le_of_eq (sum_cycleTypeList σ))) hnk⟩
@@ -99,7 +99,7 @@ noncomputable def cycleTypeIdx (hnk : n ≤ k) (σ : Perm (Fin n)) : PartIdx n k
 lemma frobChar_mem_symHomogeneousSubmodule (hnk : n ≤ k) (f : Perm (Fin n) → ℚ) :
     frobChar k f ∈ symHomogeneousSubmodule k n ℚ := by
   refine Submodule.smul_mem _ _ (Submodule.sum_mem _ fun σ _ => Submodule.smul_mem _ _ ?_)
-  exact pProd_mem_symHomogeneousSubmodule (cycleTypeIdx hnk σ)
+  exact pProd_mem_symHomogeneousSubmodule (cycleTypePart hnk σ)
 
 /-- The Frobenius characteristic of a class function on `S_n`, as an element of the module
 of symmetric homogeneous polynomials of degree `n` in `k ≥ n` variables. -/
@@ -115,10 +115,10 @@ noncomputable def frobCharSub (hnk : n ≤ k) (f : Perm (Fin n) → ℚ) :
 power sum basis. -/
 lemma frobCharSub_comp_cycleTypeList (hnk : n ≤ k) (c : List ℕ → ℚ) :
     frobCharSub hnk (fun σ : Perm (Fin n) => c (cycleTypeList σ))
-      = ∑ μ : PartIdx n k, (c μ.1 * ((zcard μ.1 : ℚ))⁻¹) • pSub k n ℚ μ := by
+      = ∑ μ : PartLengthLe n k, (c μ.1 * ((zcard μ.1 : ℚ))⁻¹) • pSub k n ℚ μ := by
   refine Subtype.ext ?_
   rw [coe_frobCharSub, frobChar_comp_cycleTypeList,
-    sum_partFinset_eq_sum_partIdx hnk fun μ => (c μ * ((zcard μ : ℚ))⁻¹) • pProd k ℚ μ]
+    sum_partFinset_eq_sum_partLengthLe hnk fun μ => (c μ * ((zcard μ : ℚ))⁻¹) • pProd k ℚ μ]
   rw [Submodule.coe_sum]
   rfl
 
@@ -141,8 +141,8 @@ theorem hallInner_frobCharSub (hnk : n ≤ k) {f g : Perm (Fin n) → ℚ}
   rw [hfc, hgd, frobCharSub_comp_cycleTypeList, frobCharSub_comp_cycleTypeList]
   simp only [map_sum, map_smul, LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul,
     hallInner_pSub hnk]
-  have hinner : ∀ x : PartIdx n k,
-      (∑ y : PartIdx n k, c y.1 * ((zcard y.1 : ℚ))⁻¹ * if y = x then (zcard y.1 : ℚ) else 0)
+  have hinner : ∀ x : PartLengthLe n k,
+      (∑ y : PartLengthLe n k, c y.1 * ((zcard y.1 : ℚ))⁻¹ * if y = x then (zcard y.1 : ℚ) else 0)
         = c x.1 := by
     intro x
     have hz : (zcard x.1 : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos x.2.1).ne'
@@ -155,7 +155,7 @@ theorem hallInner_frobCharSub (hnk : n ≤ k) {f g : Perm (Fin n) → ℚ}
       exact absurd (Finset.mem_univ x) hx
   rw [Finset.sum_congr rfl fun x _ => by rw [hinner x], classInner,
     sum_comp_cycleTypeList (n := n) (fun μ => c μ * d μ),
-    sum_partFinset_eq_sum_partIdx hnk fun μ => c μ * d μ * ((zcard μ : ℚ))⁻¹]
+    sum_partFinset_eq_sum_partLengthLe hnk fun μ => c μ * d μ * ((zcard μ : ℚ))⁻¹]
   exact Finset.sum_congr rfl fun x _ => by ring
 
 /-- **The Frobenius characteristic is surjective**: every symmetric homogeneous polynomial
@@ -163,14 +163,14 @@ of degree `n` in `k ≥ n` variables is the characteristic of a class function o
 theorem exists_isClassFun_frobCharSub_eq (hnk : n ≤ k) (F : symHomogeneousSubmodule k n ℚ) :
     ∃ f : Perm (Fin n) → ℚ, IsClassFun f ∧ frobCharSub hnk f = F := by
   classical
-  set a : PartIdx n k → ℚ := fun μ => hallInner k n ℚ F (pSubInvZ k n ℚ μ) with ha
+  set a : PartLengthLe n k → ℚ := fun μ => hallInner k n ℚ F (pSubInvZ k n ℚ μ) with ha
   set c : List ℕ → ℚ := fun μ =>
     if h : IsPart μ ∧ μ.sum = n ∧ μ.length ≤ k then (zcard μ : ℚ) * a ⟨μ, h⟩ else 0
     with hcdef
   refine ⟨fun σ => c (cycleTypeList σ), fun σ τ => by
     simp only [cycleTypeList_conj], ?_⟩
   rw [frobCharSub_comp_cycleTypeList hnk c]
-  have hterm : ∀ μ : PartIdx n k, c μ.1 * ((zcard μ.1 : ℚ))⁻¹ = a μ := by
+  have hterm : ∀ μ : PartLengthLe n k, c μ.1 * ((zcard μ.1 : ℚ))⁻¹ = a μ := by
     intro μ
     have hz : (zcard μ.1 : ℚ) ≠ 0 := Nat.cast_ne_zero.2 (zcard_pos μ.2.1).ne'
     rw [hcdef]

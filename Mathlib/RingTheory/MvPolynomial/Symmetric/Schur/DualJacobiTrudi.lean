@@ -230,7 +230,7 @@ lemma omegaSym_jtTermSub {μ : List ℕ} (hnm : μ.sum ≤ m) (hlen : μ.length 
   · have hlenmu : (partOfList (jtArgList μ σ)).length ≤ m := by
       refine le_trans (length_partOfList_le _) ?_
       simp
-    let ν : PartIdx μ.sum m :=
+    let ν : PartLengthLe μ.sum m :=
       ⟨partOfList (jtArgList μ σ), isPart_partOfList _, by
         rw [sum_partOfList, sum_jtArgList hlen hnn], hlenmu⟩
     have hA : jtTermSub m R hlen σ = hSub m μ.sum R ν := by
@@ -257,7 +257,7 @@ theorem schurPoly_conjPart_eq_det {μ : List ℕ} (hμ : IsPart μ) (hnm : μ.su
       = (Matrix.of fun i k : Fin m =>
           esymmInt m R ((μ.getD i 0 : ℤ) + (k : ℕ) - (i : ℕ))).det := by
   have hlen : μ.length ≤ m := le_trans hμ.length_le_sum hnm
-  let μIdx : PartIdx μ.sum m := ⟨μ, hμ, rfl, hlen⟩
+  let μIdx : PartLengthLe μ.sum m := ⟨μ, hμ, rfl, hlen⟩
   have hX : schurSub m μ.sum R μIdx
       = ∑ σ : Equiv.Perm (Fin m),
           (Equiv.Perm.sign σ : ℤ) • jtTermSub m R hlen σ := by
@@ -276,7 +276,7 @@ theorem schurPoly_conjPart_eq_det {μ : List ℕ} (hμ : IsPart μ) (hnm : μ.su
     rfl
   have hL : (omegaSym m μ.sum R hnm (schurSub m μ.sum R μIdx) : MvPolynomial (Fin m) R)
       = schurPoly (Fin m) R (conjPart μ) := by
-    rw [omegaSym_schurSub, coe_schurSub, conjIdx_val]
+    rw [omegaSym_schurSub, coe_schurSub, PartLengthLe.conj_val]
   have hR : (omegaSym m μ.sum R hnm (∑ σ : Equiv.Perm (Fin m),
         (Equiv.Perm.sign σ : ℤ) • jtTermSub m R hlen σ) : MvPolynomial (Fin m) R)
       = ∑ σ : Equiv.Perm (Fin m),

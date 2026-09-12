@@ -62,7 +62,7 @@ variables, of bounded total degree and compatible with setting the last variable
   functions of two conjugate shapes, is an involution and an isometry, exchanges `h` and
   `e`, and acts on `p_μ` by the sign `(-1)^(n - length μ)`.
 * `SymFunc.schurFunc_mul_schurFunc` : **the Littlewood–Richardson rule** for symmetric
-  functions, `s_μ · s_ν = ∑_nu c^ρ_{μ ν} · s_ρ`.
+  functions, `s_μ · s_ν = ∑_ρ c^ρ_{μ ν} · s_ρ`.
 
 ## References
 
@@ -369,59 +369,59 @@ lemma poly_symFuncOfPoly (hn : n ≤ m) (g : symHomogeneousSubmodule n n R)
 /-! ### The classical symmetric functions and the bases of the homogeneous part -/
 
 /-- Conjugation of partitions of `n` is the conjugation of the index set of the bases. -/
-@[simp] lemma partIdxOf_conj (μ : Nat.Partition n) :
-    partIdxOf μ.conj = conjIdx (le_refl n) (partIdxOf μ) :=
+@[simp] lemma toPartLengthLe_conj (μ : Nat.Partition n) :
+    μ.conj.toPartLengthLe = PartLengthLe.conj (le_refl n) (μ.toPartLengthLe) :=
   Subtype.ext (by simp)
 
 /-- The monomial symmetric function `m_μ`, as a homogeneous symmetric function of degree
 `n = |μ|`. -/
 noncomputable def msymFunc (n : ℕ) (R : Type*) [CommRing R] (μ : Nat.Partition n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (mSub n n R (partIdxOf μ))
+    symFuncHomogeneous n R := symFuncOfPoly n R (mSub n n R (μ.toPartLengthLe))
 
 /-- The Schur symmetric function `s_μ`, as a homogeneous symmetric function of degree
 `n = |μ|`. -/
 noncomputable def schurFunc (n : ℕ) (R : Type*) [CommRing R] (μ : Nat.Partition n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (schurSub n n R (partIdxOf μ))
+    symFuncHomogeneous n R := symFuncOfPoly n R (schurSub n n R (μ.toPartLengthLe))
 
 /-- The complete homogeneous symmetric function `h_μ`, as a homogeneous symmetric
 function of degree `n = |μ|`. -/
 noncomputable def hsymFunc (n : ℕ) (R : Type*) [CommRing R] (μ : Nat.Partition n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (hSub n n R (partIdxOf μ))
+    symFuncHomogeneous n R := symFuncOfPoly n R (hSub n n R (μ.toPartLengthLe))
 
 /-- The elementary symmetric function `e_{μ'}`, as a homogeneous symmetric function of
 degree `n = |μ|`. -/
 noncomputable def esymFunc (n : ℕ) (R : Type*) [CommRing R] (μ : Nat.Partition n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (eSub n n R (partIdxOf μ))
+    symFuncHomogeneous n R := symFuncOfPoly n R (eSub n n R (μ.toPartLengthLe))
 
 /-- The power sum symmetric function `p_μ`, as a homogeneous symmetric function of
 degree `n = |μ|`. -/
 noncomputable def psymFunc (n : ℕ) (R : Type*) [CommRing R] (μ : Nat.Partition n) :
-    symFuncHomogeneous n R := symFuncOfPoly n R (pSub n n R (partIdxOf μ))
+    symFuncHomogeneous n R := symFuncOfPoly n R (pSub n n R (μ.toPartLengthLe))
 
 /-- The components of the monomial symmetric function are the monomial symmetric
 polynomials. -/
 @[simp] theorem poly_msymFunc (hn : n ≤ m) (μ : Nat.Partition n) :
     (msymFunc n R μ).1.poly m = monomialSym m R μ.partsList := by
   refine poly_symFuncOfPoly hn _ (monomialSym_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn (partIdxOf μ))) ?_
+    (PartLengthLe.equivOfLe (le_refl n) hn (μ.toPartLengthLe))) ?_
   rw [truncVars_monomialSym hn (Nat.Partition.isPart_partsList μ)
-    (le_of_eq (Nat.Partition.sum_partsList μ)), coe_mSub, coe_partIdxOf]
+    (le_of_eq (Nat.Partition.sum_partsList μ)), coe_mSub, Nat.Partition.coe_toPartLengthLe]
 
 /-- The components of the Schur symmetric function are the Schur polynomials. -/
 @[simp] theorem poly_schurFunc (hn : n ≤ m) (μ : Nat.Partition n) :
     (schurFunc n R μ).1.poly m = schurPoly (Fin m) R μ.partsList := by
   refine poly_symFuncOfPoly hn _ (schurPoly_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn (partIdxOf μ))) ?_
+    (PartLengthLe.equivOfLe (le_refl n) hn (μ.toPartLengthLe))) ?_
   rw [truncVars_schurPoly hn (Nat.Partition.isPart_partsList μ)
-    (le_of_eq (Nat.Partition.sum_partsList μ)), coe_schurSub, coe_partIdxOf]
+    (le_of_eq (Nat.Partition.sum_partsList μ)), coe_schurSub, Nat.Partition.coe_toPartLengthLe]
 
 /-- The components of `h_μ` are the products of complete homogeneous symmetric
 polynomials. -/
 @[simp] theorem poly_hsymFunc (hn : n ≤ m) (μ : Nat.Partition n) :
     (hsymFunc n R μ).1.poly m = hProd m R μ.partsList := by
   refine poly_symFuncOfPoly hn _ (hProd_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn (partIdxOf μ))) ?_
-  have hh := congrArg Subtype.val (truncSub_hSub (R := R) (le_refl n) hn (partIdxOf μ))
+    (PartLengthLe.equivOfLe (le_refl n) hn (μ.toPartLengthLe))) ?_
+  have hh := congrArg Subtype.val (truncSub_hSub (R := R) (le_refl n) hn (μ.toPartLengthLe))
   rw [coe_truncSub, coe_hSub, coe_hSub] at hh
   rw [coe_hSub]
   exact hh
@@ -430,8 +430,8 @@ polynomials. -/
 @[simp] theorem poly_esymFunc (hn : n ≤ m) (μ : Nat.Partition n) :
     (esymFunc n R μ).1.poly m = eProd m R (conjPart μ.partsList) := by
   refine poly_symFuncOfPoly hn _ (eProd_conj_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn (partIdxOf μ))) ?_
-  have he := congrArg Subtype.val (truncSub_eSub (R := R) (le_refl n) hn (partIdxOf μ))
+    (PartLengthLe.equivOfLe (le_refl n) hn (μ.toPartLengthLe))) ?_
+  have he := congrArg Subtype.val (truncSub_eSub (R := R) (le_refl n) hn (μ.toPartLengthLe))
   rw [coe_truncSub, coe_eSub, coe_eSub] at he
   rw [coe_eSub]
   exact he
@@ -440,15 +440,16 @@ polynomials. -/
 @[simp] theorem poly_psymFunc (hn : n ≤ m) (μ : Nat.Partition n) :
     (psymFunc n R μ).1.poly m = pProd m R μ.partsList := by
   refine poly_symFuncOfPoly hn _ (pProd_mem_symHomogeneousSubmodule
-    (partIdxEquiv (le_refl n) hn (partIdxOf μ))) ?_
-  rw [truncVars_pProd hn (Nat.Partition.isPart_partsList μ), coe_pSub, coe_partIdxOf]
+    (PartLengthLe.equivOfLe (le_refl n) hn (μ.toPartLengthLe))) ?_
+  rw [truncVars_pProd hn (Nat.Partition.isPart_partsList μ), coe_pSub,
+    Nat.Partition.coe_toPartLengthLe]
 
 /-- **The monomial symmetric functions of the partitions of `n` form a basis** of the
 homogeneous symmetric functions of degree `n`. -/
 noncomputable def msymFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (Nat.Partition n) R (symFuncHomogeneous n R) :=
   ((mBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm).reindex
-    (natPartitionEquivPartIdx (le_refl n)).symm
+    (natPartitionEquivPartLengthLe (le_refl n)).symm
 
 @[simp] lemma msymFuncBasis_apply (μ : Nat.Partition n) :
     msymFuncBasis n R μ = msymFunc n R μ := by
@@ -460,7 +461,7 @@ homogeneous symmetric functions of degree `n`. -/
 noncomputable def schurFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (Nat.Partition n) R (symFuncHomogeneous n R) :=
   ((schurBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm).reindex
-    (natPartitionEquivPartIdx (le_refl n)).symm
+    (natPartitionEquivPartLengthLe (le_refl n)).symm
 
 @[simp] lemma schurFuncBasis_apply (μ : Nat.Partition n) :
     schurFuncBasis n R μ = schurFunc n R μ := by
@@ -472,7 +473,7 @@ homogeneous symmetric functions of degree `n`. -/
 noncomputable def hsymFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (Nat.Partition n) R (symFuncHomogeneous n R) :=
   ((hBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm).reindex
-    (natPartitionEquivPartIdx (le_refl n)).symm
+    (natPartitionEquivPartLengthLe (le_refl n)).symm
 
 @[simp] lemma hsymFuncBasis_apply (μ : Nat.Partition n) :
     hsymFuncBasis n R μ = hsymFunc n R μ := by
@@ -484,7 +485,7 @@ symmetric functions of degree `n`. -/
 noncomputable def esymFuncBasis (n : ℕ) (R : Type*) [CommRing R] :
     Module.Basis (Nat.Partition n) R (symFuncHomogeneous n R) :=
   ((eBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm).reindex
-    (natPartitionEquivPartIdx (le_refl n)).symm
+    (natPartitionEquivPartLengthLe (le_refl n)).symm
 
 @[simp] lemma esymFuncBasis_apply (μ : Nat.Partition n) :
     esymFuncBasis n R μ = esymFunc n R μ := by
@@ -496,7 +497,7 @@ degree `n` over a ring containing the rationals. -/
 noncomputable def psymFuncBasis (n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] :
     Module.Basis (Nat.Partition n) R (symFuncHomogeneous n R) :=
   ((pBasis n n R).map (symFuncHomogeneousEquiv (le_refl n) R).symm).reindex
-    (natPartitionEquivPartIdx (le_refl n)).symm
+    (natPartitionEquivPartLengthLe (le_refl n)).symm
 
 @[simp] lemma psymFuncBasis_apply [Algebra ℚ R] (μ : Nat.Partition n) :
     psymFuncBasis n R μ = psymFunc n R μ := by
@@ -544,7 +545,7 @@ theorem hallInnerFunc_comm (f g : symFuncHomogeneous n R) :
 theorem hallInnerFunc_schurFunc (μ ν : Nat.Partition n) :
     hallInnerFunc n R (schurFunc n R μ) (schurFunc n R ν) = if μ = ν then 1 else 0 := by
   simp only [hallInnerFunc_apply, schurFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply]
-  simpa only [Equiv.apply_eq_iff_eq] using hallInner_schurSub (partIdxOf μ) (partIdxOf ν)
+  simpa only [Equiv.apply_eq_iff_eq] using hallInner_schurSub (μ.toPartLengthLe) (ν.toPartLengthLe)
 
 /-- **The bases `h` and `m` of symmetric functions are dual** for the Hall scalar
 product. -/
@@ -552,7 +553,7 @@ theorem hallInnerFunc_hsymFunc_msymFunc (μ ν : Nat.Partition n) :
     hallInnerFunc n R (hsymFunc n R μ) (msymFunc n R ν) = if μ = ν then 1 else 0 := by
   simp only [hallInnerFunc_apply, hsymFunc, msymFunc, symFuncOfPoly,
     LinearEquiv.apply_symm_apply]
-  simpa only [Equiv.apply_eq_iff_eq] using hallInner_hSub_mSub (partIdxOf μ) (partIdxOf ν)
+  simpa only [Equiv.apply_eq_iff_eq] using hallInner_hSub_mSub (μ.toPartLengthLe) (ν.toPartLengthLe)
 
 /-! ### The involution `omega` on symmetric functions -/
 
@@ -572,7 +573,7 @@ lemma omegaFunc_apply (f : symFuncHomogeneous n R) :
 @[simp] theorem omegaFunc_schurFunc (μ : Nat.Partition n) :
     omegaFunc n R (schurFunc n R μ) = schurFunc n R μ.conj := by
   simp only [omegaFunc_apply, schurFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply,
-    omegaSym_schurSub, partIdxOf_conj]
+    omegaSym_schurSub, toPartLengthLe_conj]
 
 /-- **`omega` is an involution**. -/
 theorem omegaFunc_omegaFunc (f : symFuncHomogeneous n R) :
@@ -590,12 +591,12 @@ theorem hallInnerFunc_omegaFunc (f g : symFuncHomogeneous n R) :
 functions**: `omega h_μ = e_{μ'}`. -/
 theorem omegaFunc_hsymFunc (μ : Nat.Partition n) :
     omegaFunc n R (hsymFunc n R μ) = esymFunc n R μ.conj := by
-  have hcoe : eSubOfPart n n R (le_refl n) (partIdxOf μ)
-      = eSub n n R (conjIdx (le_refl n) (partIdxOf μ)) := by
+  have hcoe : eSubOfPart n n R (le_refl n) (μ.toPartLengthLe)
+      = eSub n n R (PartLengthLe.conj (le_refl n) (μ.toPartLengthLe)) := by
     refine Subtype.ext ?_
-    rw [coe_eSubOfPart, coe_eSub, conjIdx_val, conjPart_conjPart (partIdxOf μ).2.1]
+    rw [coe_eSubOfPart, coe_eSub, PartLengthLe.conj_val, conjPart_conjPart (μ.toPartLengthLe).2.1]
   simp only [omegaFunc_apply, hsymFunc, esymFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply,
-    omegaSym_hSub, hcoe, partIdxOf_conj]
+    omegaSym_hSub, hcoe, toPartLengthLe_conj]
 
 /-- `omega` exchanges the elementary and the complete homogeneous symmetric functions. -/
 theorem omegaFunc_esymFunc (μ : Nat.Partition n) :
@@ -610,11 +611,11 @@ theorem omegaFunc_psymFunc (μ : Nat.Partition n) :
     omegaFunc n R (psymFunc n R μ)
       = ((-1) ^ (n - Multiset.card μ.parts) : R) • psymFunc n R μ := by
   have key : symFuncHomogeneousEquiv (le_refl n) R (omegaFunc n R (psymFunc n R μ))
-      = ((-1) ^ (n - Multiset.card μ.parts) : R) • pSub n n R (partIdxOf μ) := by
+      = ((-1) ^ (n - Multiset.card μ.parts) : R) • pSub n n R (μ.toPartLengthLe) := by
     simp only [omegaFunc_apply, psymFunc, symFuncOfPoly, LinearEquiv.apply_symm_apply]
     refine Subtype.ext ?_
     rw [SetLike.val_smul, coe_pSub, omegaSym_pSub, MvPolynomial.smul_eq_C_mul, map_pow,
-      map_neg, map_one, coe_partIdxOf, Nat.Partition.length_partsList]
+      map_neg, map_one, Nat.Partition.coe_toPartLengthLe, Nat.Partition.length_partsList]
   refine (symFuncHomogeneousEquiv (le_refl n) R).injective ?_
   rw [key, LinearEquiv.map_smul]
   congr 1
@@ -647,9 +648,9 @@ theorem schurFunc_mul_schurFunc {a b : ℕ} (hab : a + b = n) (μ : Nat.Partitio
     exact Finset.sum_congr rfl fun ρ _ => by
       rw [map_nsmul, SymFunc.polyAlgHom_apply, poly_schurFunc (le_refl n)]
   rw [SymFunc.poly_mul, hsum, poly_schurFunc ha, poly_schurFunc hb,
-    schurPoly_mul_eq_sum_partIdx
+    schurPoly_mul_eq_sum_partLengthLe
       (by rw [Nat.Partition.sum_partsList, Nat.Partition.sum_partsList, hab]) (le_refl n),
-    ← sum_natPartition_eq_sum_partIdx (le_refl n)
+    ← sum_natPartition_eq_sum_partLengthLe (le_refl n)
       (fun l => lrCoeff μ.partsList ν.partsList l • schurPoly (Fin n) R l)]
 
 end SymFunc

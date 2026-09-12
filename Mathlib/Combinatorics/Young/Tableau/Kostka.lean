@@ -19,10 +19,10 @@ list `Young.evalseq (Young.toWord t)` counting how many times each letter occurs
 Since the entries of a tableau increase strictly down the columns, the entry sitting in
 row `i` is at least `i`; hence all the boxes containing a letter `< k` lie in the first
 `k` rows.  Counting boxes gives the classical fact that the shape of a tableau dominates
-its content, so that the Kostka number `K` of a shape `λ` and a content `ν` vanishes
-unless `λ` dominates `ν`.  When the content equals the shape, the tableau is forced to be
-the *superstandard* one, whose `i`-th row consists of `λ i` copies of `i`; in other words
-`K λ λ = 1`.
+its content, so that the Kostka number `K` of a shape `μ` and a content `ν` vanishes
+unless `μ` dominates `ν`.  When the content equals the shape, the tableau is forced to be
+the *superstandard* one, whose `i`-th row consists of `μ i` copies of `i`; in other words
+`K μ μ = 1`.
 
 ## Main definitions
 
@@ -38,8 +38,8 @@ the *superstandard* one, whose `i`-th row consists of `λ i` copies of `i`; in o
   the superstandard tableau of a partition is a tableau of that shape and content.
 * `Young.eq_superTab_of_evalseq_eq` : a tableau whose content equals its shape is the
   superstandard tableau.
-* `Young.kostka_eq_zero_of_not_partdom`, `Young.kostka_self` : `K λ ν = 0` unless `λ`
-  dominates `ν`, and `K λ λ = 1`.
+* `Young.kostka_eq_zero_of_not_partdom`, `Young.kostka_self` : `K μ ν = 0` unless `μ`
+  dominates `ν`, and `K μ μ = 1`.
 * `Young.partdom_evalseq_RS` : the shape of the insertion tableau of a word dominates the
   content of the word.
 -/

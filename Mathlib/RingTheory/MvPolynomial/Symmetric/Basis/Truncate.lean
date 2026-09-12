@@ -273,20 +273,6 @@ end CommSemiring
 
 /-! ### Truncation in a fixed degree -/
 
-/-- The index set of the bases does not depend on the number of variables, as long as
-there are at least `n` of them. -/
-def partIdxEquiv (hm : n ≤ m) (hM : n ≤ M) : PartIdx n m ≃ PartIdx n M where
-  toFun μ := ⟨μ.1, μ.2.1, μ.2.2.1, μ.2.1.length_le_sum.trans (μ.2.2.1.symm ▸ hM)⟩
-  invFun μ := ⟨μ.1, μ.2.1, μ.2.2.1, μ.2.1.length_le_sum.trans (μ.2.2.1.symm ▸ hm)⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-@[simp] lemma partIdxEquiv_coe (hm : n ≤ m) (hM : n ≤ M) (μ : PartIdx n m) :
-    (partIdxEquiv hm hM μ).1 = μ.1 := rfl
-
-@[simp] lemma partIdxEquiv_symm_coe (hm : n ≤ m) (hM : n ≤ M) (μ : PartIdx n M) :
-    ((partIdxEquiv hm hM).symm μ).1 = μ.1 := rfl
-
 /-- The truncation of the symmetric homogeneous polynomials of degree `n` in `M` variables
 to the ones in `m` variables. -/
 noncomputable def truncSub (h : m ≤ M) (n : ℕ) (R : Type*) [CommRing R] :
@@ -301,24 +287,25 @@ noncomputable def truncSub (h : m ≤ M) (n : ℕ) (R : Type*) [CommRing R] :
 /-- Truncation does not change the coordinates in the bases of monomial symmetric
 polynomials. -/
 lemma repr_mBasis_truncSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M)
-    (f : symHomogeneousSubmodule M n R) (μ : PartIdx n m) :
+    (f : symHomogeneousSubmodule M n R) (μ : PartLengthLe n m) :
     (mBasis m n R).repr (truncSub h n R f) μ
-      = (mBasis M n R).repr f (partIdxEquiv hn (hn.trans h) μ) := by
+      = (mBasis M n R).repr f (PartLengthLe.equivOfLe hn (hn.trans h) μ) := by
   rw [repr_mBasis_apply, repr_mBasis_apply, coe_truncSub,
     coeff_shapeContent_truncVars h (μ.2.1.length_le_sum.trans (μ.2.2.1.symm ▸ hn))]
   rfl
 
 /-- Truncation maps the monomial symmetric polynomial of a partition of `n` to the
 monomial symmetric polynomial of the same partition. -/
-theorem truncSub_mSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M) (μ : PartIdx n m) :
-    truncSub h n R (mSub M n R (partIdxEquiv hn (hn.trans h) μ)) = mSub m n R μ := by
+theorem truncSub_mSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M) (μ : PartLengthLe n m) :
+    truncSub h n R (mSub M n R (PartLengthLe.equivOfLe hn (hn.trans h) μ)) = mSub m n R μ := by
   apply (mBasis m n R).repr.injective
   ext ν
   rw [repr_mBasis_truncSub hn h, ← mBasis_apply, ← mBasis_apply, Module.Basis.repr_self,
     Module.Basis.repr_self, Finsupp.single_apply, Finsupp.single_apply]
   by_cases hν : μ = ν
   · rw [ite_eq_left hν, ite_eq_left (by rw [hν])]
-  · rw [ite_eq_right hν, ite_eq_right fun hc => hν ((partIdxEquiv hn (hn.trans h)).injective hc)]
+  · rw [ite_eq_right hν,
+      ite_eq_right fun hc => hν ((PartLengthLe.equivOfLe hn (hn.trans h)).injective hc)]
 
 /-- Truncating twice is truncating once, in a fixed degree. -/
 lemma truncSub_truncSub {R : Type*} [CommRing R] (h1 : k ≤ m) (h2 : m ≤ M)
@@ -332,15 +319,16 @@ on the number of variables. -/
 noncomputable def truncEquiv (hn : n ≤ m) (h : m ≤ M) (R : Type*) [CommRing R] :
     symHomogeneousSubmodule M n R ≃ₗ[R] symHomogeneousSubmodule m n R :=
   LinearEquiv.ofLinearMap (truncSub h n R)
-    ((mBasis m n R).constr R fun μ => mSub M n R (partIdxEquiv hn (hn.trans h) μ))
+    ((mBasis m n R).constr R fun μ => mSub M n R (PartLengthLe.equivOfLe hn (hn.trans h) μ))
     (by
       refine (mBasis m n R).ext fun μ => ?_
       rw [LinearMap.comp_apply, mBasis_apply, ← mBasis_apply, Module.Basis.constr_basis,
         truncSub_mSub hn h, LinearMap.id_apply, mBasis_apply])
     (by
       refine (mBasis M n R).ext fun μ => ?_
-      have hμ : μ = partIdxEquiv hn (hn.trans h) ((partIdxEquiv hn (hn.trans h)).symm μ) :=
-        ((partIdxEquiv hn (hn.trans h)).apply_symm_apply μ).symm
+      have hμ : μ = PartLengthLe.equivOfLe hn (hn.trans h)
+          ((PartLengthLe.equivOfLe hn (hn.trans h)).symm μ) :=
+        ((PartLengthLe.equivOfLe hn (hn.trans h)).apply_symm_apply μ).symm
       rw [LinearMap.comp_apply, mBasis_apply, hμ, truncSub_mSub hn h, ← mBasis_apply,
         Module.Basis.constr_basis, LinearMap.id_apply, ← hμ])
 
@@ -354,17 +342,18 @@ theorem truncVars_monomialSym {R : Type*} [CommRing R] (h : m ≤ M) {μ : List 
     (hμ : IsPart μ) (hn : μ.sum ≤ m) :
     truncVars m M R (monomialSym M R μ) = monomialSym m R μ := by
   simpa using congrArg Subtype.val (truncSub_mSub (R := R) hn h
-    (⟨μ, hμ, rfl, hμ.length_le_sum.trans hn⟩ : PartIdx μ.sum m))
+    (⟨μ, hμ, rfl, hμ.length_le_sum.trans hn⟩ : PartLengthLe μ.sum m))
 
 /-- Truncation maps the Schur polynomial of a partition of `n` to the Schur polynomial of
 the same partition. -/
 theorem truncSub_schurSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M)
-    (μ : PartIdx n m) :
-    truncSub h n R (schurSub M n R (partIdxEquiv hn (hn.trans h) μ)) = schurSub m n R μ := by
+    (μ : PartLengthLe n m) :
+    truncSub h n R (schurSub M n R (PartLengthLe.equivOfLe hn (hn.trans h) μ))
+      = schurSub m n R μ := by
   apply Subtype.ext
-  rw [coe_truncSub, coe_schurSub, coe_schurSub, schurPoly_eq_sum_partIdx, map_sum]
-  rw [schurPoly_eq_sum_partIdx]
-  refine Fintype.sum_equiv (partIdxEquiv hn (hn.trans h)).symm _ _ fun ν => ?_
+  rw [coe_truncSub, coe_schurSub, coe_schurSub, schurPoly_eq_sum_partLengthLe, map_sum]
+  rw [schurPoly_eq_sum_partLengthLe]
+  refine Fintype.sum_equiv (PartLengthLe.equivOfLe hn (hn.trans h)).symm _ _ fun ν => ?_
   rw [map_smul, truncVars_monomialSym h ν.2.1 (ν.2.2.1.symm ▸ hn)]
   rfl
 
@@ -374,26 +363,27 @@ theorem truncVars_schurPoly {R : Type*} [CommRing R] (h : m ≤ M) {μ : List �
     (hμ : IsPart μ) (hn : μ.sum ≤ m) :
     truncVars m M R (schurPoly (Fin M) R μ) = schurPoly (Fin m) R μ := by
   simpa using congrArg Subtype.val (truncSub_schurSub (R := R) hn h
-    (⟨μ, hμ, rfl, hμ.length_le_sum.trans hn⟩ : PartIdx μ.sum m))
+    (⟨μ, hμ, rfl, hμ.length_le_sum.trans hn⟩ : PartLengthLe μ.sum m))
 
 /-- Truncation maps the product of complete homogeneous symmetric polynomials of a
 partition of `n` to the one of the same partition. -/
-theorem truncSub_hSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M) (μ : PartIdx n m) :
-    truncSub h n R (hSub M n R (partIdxEquiv hn (hn.trans h) μ)) = hSub m n R μ := by
+theorem truncSub_hSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M) (μ : PartLengthLe n m) :
+    truncSub h n R (hSub M n R (PartLengthLe.equivOfLe hn (hn.trans h) μ)) = hSub m n R μ := by
   apply Subtype.ext
-  rw [coe_truncSub, coe_hSub, coe_hSub, hProd_eq_sum_partIdx, map_sum, hProd_eq_sum_partIdx]
-  refine Fintype.sum_equiv (partIdxEquiv hn (hn.trans h)).symm _ _ fun ν => ?_
+  rw [coe_truncSub, coe_hSub, coe_hSub, hProd_eq_sum_partLengthLe, map_sum,
+    hProd_eq_sum_partLengthLe]
+  refine Fintype.sum_equiv (PartLengthLe.equivOfLe hn (hn.trans h)).symm _ _ fun ν => ?_
   rw [map_smul, truncVars_schurPoly h ν.2.1 (ν.2.2.1.symm ▸ hn)]
   rfl
 
 /-- Truncation maps the product of elementary symmetric polynomials of a partition of `n`
 to the one of the same partition. -/
-theorem truncSub_eSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M) (μ : PartIdx n m) :
-    truncSub h n R (eSub M n R (partIdxEquiv hn (hn.trans h) μ)) = eSub m n R μ := by
+theorem truncSub_eSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M) (μ : PartLengthLe n m) :
+    truncSub h n R (eSub M n R (PartLengthLe.equivOfLe hn (hn.trans h) μ)) = eSub m n R μ := by
   apply Subtype.ext
-  rw [coe_truncSub, coe_eSub, coe_eSub, eProd_conj_eq_sum_partIdx, map_sum,
-    eProd_conj_eq_sum_partIdx]
-  refine Fintype.sum_equiv (partIdxEquiv hn (hn.trans h)).symm _ _ fun ν => ?_
+  rw [coe_truncSub, coe_eSub, coe_eSub, eProd_conj_eq_sum_partLengthLe, map_sum,
+    eProd_conj_eq_sum_partLengthLe]
+  refine Fintype.sum_equiv (PartLengthLe.equivOfLe hn (hn.trans h)).symm _ _ fun ν => ?_
   rw [map_smul, truncVars_schurPoly h ν.2.1 (ν.2.2.1.symm ▸ hn)]
   rfl
 
@@ -433,27 +423,29 @@ theorem truncVars_pProd {R : Type*} [CommRing R] (h : m ≤ M) {μ : List ℕ}
 
 /-- Truncation does not change the coordinates in the bases of Schur polynomials. -/
 lemma repr_schurBasis_truncSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M)
-    (f : symHomogeneousSubmodule M n R) (μ : PartIdx n m) :
+    (f : symHomogeneousSubmodule M n R) (μ : PartLengthLe n m) :
     (schurBasis m n R).repr (truncSub h n R f) μ
-      = (schurBasis M n R).repr f (partIdxEquiv hn (hn.trans h) μ) := by
+      = (schurBasis M n R).repr f (PartLengthLe.equivOfLe hn (hn.trans h) μ) := by
   classical
   have key : ((Finsupp.lapply μ).comp
-        ((schurBasis m n R).repr : symHomogeneousSubmodule m n R →ₗ[R] (PartIdx n m →₀ R))).comp
+        ((schurBasis m n R).repr :
+          symHomogeneousSubmodule m n R →ₗ[R] (PartLengthLe n m →₀ R))).comp
         (truncSub h n R)
-      = (Finsupp.lapply (partIdxEquiv hn (hn.trans h) μ)).comp
-        ((schurBasis M n R).repr : symHomogeneousSubmodule M n R →ₗ[R] (PartIdx n M →₀ R)) := by
+      = (Finsupp.lapply (PartLengthLe.equivOfLe hn (hn.trans h) μ)).comp
+        ((schurBasis M n R).repr :
+          symHomogeneousSubmodule M n R →ₗ[R] (PartLengthLe n M →₀ R)) := by
     refine (schurBasis M n R).ext fun ν => ?_
-    have hν : ν = partIdxEquiv hn (hn.trans h)
-        ((partIdxEquiv hn (hn.trans h)).symm ν) :=
-      ((partIdxEquiv hn (hn.trans h)).apply_symm_apply ν).symm
+    have hν : ν = PartLengthLe.equivOfLe hn (hn.trans h)
+        ((PartLengthLe.equivOfLe hn (hn.trans h)).symm ν) :=
+      ((PartLengthLe.equivOfLe hn (hn.trans h)).apply_symm_apply ν).symm
     simp only [LinearMap.comp_apply, Finsupp.lapply_apply, LinearEquiv.coe_coe, schurBasis_apply]
     rw [hν, truncSub_schurSub hn h, ← schurBasis_apply, ← schurBasis_apply,
       Module.Basis.repr_self, Module.Basis.repr_self, Finsupp.single_apply,
       Finsupp.single_apply]
-    by_cases hc : (partIdxEquiv hn (hn.trans h)).symm ν = μ
+    by_cases hc : (PartLengthLe.equivOfLe hn (hn.trans h)).symm ν = μ
     · rw [ite_eq_left hc, ite_eq_left (by rw [hc])]
     · refine (ite_eq_right hc).trans (ite_eq_right fun hc' => hc ?_).symm
-      exact (partIdxEquiv hn (hn.trans h)).injective hc'
+      exact (PartLengthLe.equivOfLe hn (hn.trans h)).injective hc'
   exact congrFun (congrArg (fun L : symHomogeneousSubmodule M n R →ₗ[R] R => (L : _ → R)) key) f
 
 /-- **The Hall scalar product does not depend on the number of variables**: it is
@@ -462,7 +454,7 @@ theorem hallInner_truncSub {R : Type*} [CommRing R] (hn : n ≤ m) (h : m ≤ M)
     (f g : symHomogeneousSubmodule M n R) :
     hallInner m n R (truncSub h n R f) (truncSub h n R g) = hallInner M n R f g := by
   rw [hallInner_apply, hallInner_apply]
-  refine Fintype.sum_equiv (partIdxEquiv hn (hn.trans h)) _ _ fun μ => ?_
+  refine Fintype.sum_equiv (PartLengthLe.equivOfLe hn (hn.trans h)) _ _ fun μ => ?_
   rw [repr_schurBasis_truncSub hn h, repr_schurBasis_truncSub hn h]
 
 end MvPolynomial

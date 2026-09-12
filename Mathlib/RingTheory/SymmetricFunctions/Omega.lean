@@ -37,7 +37,7 @@ algebra automorphism of order two.
 
 namespace SymFunc
 
-open MvPolynomial
+open MvPolynomial Young
 
 variable {m M n : ℕ} {R : Type*} [CommRing R]
 
@@ -52,11 +52,11 @@ theorem truncSub_omegaSym (hn : n ≤ m) (h : m ≤ M) (f : symHomogeneousSubmod
     (g := (omegaSym m n R hn).toLinearMap.comp (truncSub h n R)) ?_ f
   refine (schurBasis M n R).ext fun ν => ?_
   simp only [LinearMap.comp_apply, schurBasis_apply, LinearEquiv.coe_coe]
-  set μ := (partIdxEquiv hn (hn.trans h)).symm ν with hμdef
-  have hν : ν = partIdxEquiv hn (hn.trans h) μ :=
-    ((partIdxEquiv hn (hn.trans h)).apply_symm_apply ν).symm
-  have hconj : conjIdx (hn.trans h) (partIdxEquiv hn (hn.trans h) μ)
-      = partIdxEquiv hn (hn.trans h) (conjIdx hn μ) := Subtype.ext rfl
+  set μ := (PartLengthLe.equivOfLe hn (hn.trans h)).symm ν with hμdef
+  have hν : ν = PartLengthLe.equivOfLe hn (hn.trans h) μ :=
+    ((PartLengthLe.equivOfLe hn (hn.trans h)).apply_symm_apply ν).symm
+  have hconj : PartLengthLe.conj (hn.trans h) (PartLengthLe.equivOfLe hn (hn.trans h) μ)
+      = PartLengthLe.equivOfLe hn (hn.trans h) (PartLengthLe.conj hn μ) := Subtype.ext rfl
   rw [hν, omegaSym_schurSub, hconj, truncSub_schurSub, truncSub_schurSub, omegaSym_schurSub]
 
 /-- The component in `m ≥ n` variables of `omega f` is the image under `omega` of the
@@ -96,7 +96,8 @@ theorem omegaFunc_zero_eq (f : symFuncHomogeneous 0 R) : omegaFunc 0 R f = f := 
   have hid : omegaSym 0 0 R (le_refl 0) = LinearEquiv.refl R (symHomogeneousSubmodule 0 0 R) := by
     refine LinearEquiv.toLinearMap_injective ((schurBasis 0 0 R).ext fun ν => ?_)
     have hnil : ν.1 = [] := List.eq_nil_of_length_eq_zero (Nat.le_zero.1 ν.2.2.2)
-    have hconj : conjIdx (le_refl 0) ν = ν := Subtype.ext (by rw [conjIdx_val, hnil]; rfl)
+    have hconj : PartLengthLe.conj (le_refl 0) ν = ν :=
+      Subtype.ext (by rw [PartLengthLe.conj_val, hnil]; rfl)
     simp only [LinearEquiv.coe_coe, schurBasis_apply, omegaSym_schurSub, hconj,
       LinearEquiv.refl_apply]
   refine (symFuncHomogeneousEquiv (le_refl 0) R).injective ?_

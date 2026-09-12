@@ -25,9 +25,9 @@ partition `Equiv.Perm.cycleTypeList`.
 
 * `Equiv.Perm.cycleTypeList σ` : the cycle type of `σ : Equiv.Perm (Fin n)`, as a weakly
   decreasing list of positive integers summing to `n`.
-* `Young.zcard l` : the integer `z_λ = ∏_i i ^ m_i · m_i !`, where `m_i` is the number of
-  parts of `λ` equal to `i`; it is the cardinality of the centralizer of a permutation of
-  cycle type `λ`.
+* `Young.zcard l` : the integer `z_μ = ∏_i i ^ m_i · m_i !`, where `m_i` is the number of
+  parts of `μ` equal to `i`; it is the cardinality of the centralizer of a permutation of
+  cycle type `μ`.
 
 ## Main results
 
@@ -38,8 +38,8 @@ partition `Equiv.Perm.cycleTypeList`.
 * `Equiv.Perm.exists_cycleTypeList_eq` : every partition of `n` is the cycle type of some
   permutation.
 * `Equiv.Perm.card_cycleTypeList_mul_zcard` : the number of permutations of `Fin n` of cycle
-  type `λ`, times `z_λ`, is `n !`.
-* `Equiv.Perm.sum_one_div_zcard` : `∑_{λ ⊢ n} 1 / z_λ = 1`.
+  type `μ`, times `z_μ`, is `n !`.
+* `Equiv.Perm.sum_one_div_zcard` : `∑_{μ ⊢ n} 1 / z_μ = 1`.
 -/
 
 @[expose] public section
@@ -144,8 +144,8 @@ end Equiv.Perm
 
 namespace Young
 
-/-- `z_λ = ∏_i i ^ m_i · m_i !`, where `m_i` is the number of parts of `λ` equal to `i`.
-It is the cardinality of the centralizer of a permutation of cycle type `λ`. -/
+/-- `z_μ = ∏_i i ^ m_i · m_i !`, where `m_i` is the number of parts of `μ` equal to `i`.
+It is the cardinality of the centralizer of a permutation of cycle type `μ`. -/
 noncomputable def zcard (l : List ℕ) : ℕ :=
   ∏ i ∈ l.toFinset, i ^ l.count i * Nat.factorial (l.count i)
 
@@ -154,7 +154,7 @@ lemma zcard_pos {l : List ℕ} (h : IsPart l) : 0 < zcard l := by
   have hi' : 0 < i := h.pos_of_mem (List.mem_toFinset.1 hi)
   exact Nat.mul_pos (pow_pos hi' _) (Nat.factorial_pos _)
 
-/-- Splitting off the parts equal to `1` from `z_λ`. -/
+/-- Splitting off the parts equal to `1` from `z_μ`. -/
 lemma zcard_eq (l : List ℕ) (hl : IsPart l) :
     zcard l = Nat.factorial (l.count 1) * (bigParts l).prod *
       ∏ j ∈ (bigParts l).toFinset, Nat.factorial ((bigParts l).count j) := by
@@ -194,7 +194,7 @@ namespace Equiv.Perm
 variable {n : ℕ}
 
 /-- **The number of permutations of a given cycle type.**  The permutations of `Fin n`
-with cycle type the partition `λ` of `n` number `n ! / z_λ`. -/
+with cycle type the partition `μ` of `n` number `n ! / z_μ`. -/
 theorem card_cycleTypeList_mul_zcard {l : List ℕ} (hl : IsPart l) (hn : l.sum = n) :
     #{σ : Perm (Fin n) | cycleTypeList σ = l} * zcard l = n ! := by
   have hset : ({σ : Perm (Fin n) | cycleTypeList σ = l} : Finset (Perm (Fin n))) =
@@ -213,7 +213,7 @@ theorem card_cycleTypeList_mul_zcard {l : List ℕ} (hl : IsPart l) (hn : l.sum 
     omega
   rw [hset, zcard_eq l hl, ← hcnt, hmain, Fintype.card_fin]
 
-/-- The classical identity `∑_{λ ⊢ n} 1 / z_λ = 1`. -/
+/-- The classical identity `∑_{μ ⊢ n} 1 / z_μ = 1`. -/
 theorem sum_one_div_zcard (n : ℕ) : ∑ l ∈ partFinset n, (1 : ℚ) / zcard l = 1 := by
   have hcard : ∑ l ∈ partFinset n, #{σ : Perm (Fin n) | cycleTypeList σ = l} = n ! := by
     rw [← Finset.card_eq_sum_card_fiberwise (fun σ _ => cycleTypeList_mem_partFinset σ),
@@ -245,7 +245,7 @@ lemma count_one_cycleTypeList (σ : Perm (Fin n)) :
   rw [Fintype.card_fin]
   omega
 
-/-- **`z_λ` is the order of the centralizer** of a permutation of cycle type `λ`. -/
+/-- **`z_μ` is the order of the centralizer** of a permutation of cycle type `μ`. -/
 theorem nat_card_centralizer_eq_zcard (σ : Perm (Fin n)) :
     Nat.card (Subgroup.centralizer {σ}) = zcard (cycleTypeList σ) := by
   have hb : bigParts (cycleTypeList σ) = σ.cycleType :=

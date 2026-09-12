@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.CompleteHomogeneou
 A Lean 4 port of the inverse Kostka numbers `'K^-1(la, ν)` of `theories/MPoly/Schur_altdef.v`
 from [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-The Kostka numbers give the expansion `h_ν = ∑_nu K_{ρ ν} s_ρ` of a product of complete
+The Kostka numbers give the expansion `h_ν = ∑_ρ K_{ρ ν} s_ρ` of a product of complete
 homogeneous symmetric polynomials in the Schur basis
 (`MvPolynomial.hProd_eq_sum_kostka`).  Since `K_{ρ ν}` vanishes unless `ν` is dominated
 by `ρ`, and `K_{ν ν} = 1`, the Kostka matrix is unitriangular for the dominance order,
@@ -32,7 +32,7 @@ polynomials.
 * `MvPolynomial.sum_kostka_mul_kostkaInv` : the two matrices are inverse to each other.
 * `MvPolynomial.partdom_of_kostkaInv_ne_zero`, `MvPolynomial.kostkaInv_self` : the inverse
   Kostka matrix is again unitriangular for the dominance order.
-* `MvPolynomial.schurPoly_eq_sum_kostkaInv` : `s_μ = ∑_mu K⁻¹_{μ ν} h_ν`, over any
+* `MvPolynomial.schurPoly_eq_sum_kostkaInv` : `s_μ = ∑_ν K⁻¹_{μ ν} h_ν`, over any
   commutative ring and in any number of variables.
 -/
 
@@ -46,25 +46,16 @@ open List MvPolynomial
 
 variable {n : ℕ} {R : Type*}
 
-/-! ### Partitions of `n`, as an index type and as a finite set of lists -/
-
-/-- A partition of `n`, as an element of the index type `PartIdx n n`. -/
-def partIdxOfMem {μ : List ℕ} (hμ : IsPart μ) (hsum : μ.sum = n) : PartIdx n n :=
-  ⟨μ, hμ, hsum, hsum ▸ hμ.length_le_sum⟩
-
-@[simp] lemma partIdxOfMem_val {μ : List ℕ} (hμ : IsPart μ) (hsum : μ.sum = n) :
-    (partIdxOfMem hμ hsum).1 = μ := rfl
-
 /-! ### The Kostka matrix as a change of basis -/
 
 /-- The matrix of the basis of Schur polynomials against the basis of the products of
 complete homogeneous symmetric polynomials is the Kostka matrix. -/
-lemma schurBasis_toMatrix_hBasis (ν μ : PartIdx n n) :
+lemma schurBasis_toMatrix_hBasis (ν μ : PartLengthLe n n) :
     (schurBasis n n ℤ).toMatrix (hBasis n n ℤ) ν μ = (kostka ν.1 μ.1 : ℤ) := by
   have hexp : hBasis n n ℤ μ
-      = ∑ ν' : PartIdx n n, (kostka ν'.1 μ.1 : ℤ) • schurBasis n n ℤ ν' := by
+      = ∑ ν' : PartLengthLe n n, (kostka ν'.1 μ.1 : ℤ) • schurBasis n n ℤ ν' := by
     refine Subtype.ext ?_
-    rw [coe_hBasis, hProd_eq_sum_partIdx μ]
+    rw [coe_hBasis, hProd_eq_sum_partLengthLe μ]
     push_cast
     exact Finset.sum_congr rfl fun ν' _ => by rw [coe_schurBasis]
   rw [Module.Basis.toMatrix_apply, hexp, map_sum]
@@ -78,12 +69,12 @@ It is zero unless both `μ` and `ν` are partitions of `n`. -/
 noncomputable def kostkaInv (n : ℕ) (μ ν : List ℕ) : ℤ :=
   if hμ : IsPart μ ∧ μ.sum = n then
     if hν : IsPart ν ∧ ν.sum = n then
-      (hBasis n n ℤ).toMatrix (schurBasis n n ℤ) (partIdxOfMem hν.1 hν.2)
-        (partIdxOfMem hμ.1 hμ.2)
+      (hBasis n n ℤ).toMatrix (schurBasis n n ℤ) (PartLengthLe.ofList hν.1 hν.2)
+        (PartLengthLe.ofList hμ.1 hμ.2)
     else 0
   else 0
 
-lemma kostkaInv_apply (μ ν : PartIdx n n) :
+lemma kostkaInv_apply (μ ν : PartLengthLe n n) :
     kostkaInv n μ.1 ν.1 = (hBasis n n ℤ).toMatrix (schurBasis n n ℤ) ν μ := by
   rw [kostkaInv, dite_eq_left ⟨μ.2.1, μ.2.2.1⟩, dite_eq_left ⟨ν.2.1, ν.2.2.1⟩]
   rfl
@@ -99,9 +90,9 @@ lemma kostkaInv_eq_zero_of_right {μ ν : List ℕ} (h : ¬ (IsPart ν ∧ ν.su
 /-! ### Orthogonality -/
 
 /-- **The Kostka matrix and the inverse Kostka matrix are inverse to each other**, in the
-form indexed by `PartIdx n n`. -/
-theorem sum_kostka_mul_kostkaInv_partIdx (ρ μ : PartIdx n n) :
-    ∑ ν : PartIdx n n, (kostka ρ.1 ν.1 : ℤ) * kostkaInv n μ.1 ν.1
+form indexed by `PartLengthLe n n`. -/
+theorem sum_kostka_mul_kostkaInv_partLengthLe (ρ μ : PartLengthLe n n) :
+    ∑ ν : PartLengthLe n n, (kostka ρ.1 ν.1 : ℤ) * kostkaInv n μ.1 ν.1
       = if ρ = μ then 1 else 0 := by
   have h := congrFun (congrFun
     (Module.Basis.toMatrix_mul_toMatrix_flip (schurBasis n n ℤ) (hBasis n n ℤ)) ρ) μ
@@ -114,10 +105,10 @@ theorem sum_kostka_mul_kostkaInv {ρ μ : List ℕ} (hρ : IsPart ρ) (hρsum : 
     (hμ : IsPart μ) (hμsum : μ.sum = n) :
     ∑ ν ∈ partFinset n, (kostka ρ ν : ℤ) * kostkaInv n μ ν
       = if ρ = μ then 1 else 0 := by
-  rw [sum_partFinset_eq_sum_partIdx (m := n) le_rfl]
-  have hkey := sum_kostka_mul_kostkaInv_partIdx (partIdxOfMem hρ hρsum)
-    (partIdxOfMem hμ hμsum)
-  simp only [partIdxOfMem_val] at hkey
+  rw [sum_partFinset_eq_sum_partLengthLe (m := n) le_rfl]
+  have hkey := sum_kostka_mul_kostkaInv_partLengthLe (PartLengthLe.ofList hρ hρsum)
+    (PartLengthLe.ofList hμ hμsum)
+  simp only [PartLengthLe.ofList_val] at hkey
   rw [hkey]
   exact if_congr ⟨fun hh => congrArg Subtype.val hh, fun hh => Subtype.ext hh⟩ rfl rfl
 
@@ -136,15 +127,15 @@ theorem partdom_of_kostkaInv_ne_zero {μ ν : List ℕ} (h : kostkaInv n μ ν �
   · exact absurd (kostkaInv_eq_zero_of_right hν) h
   by_contra hdom
   set T := Finset.univ.filter
-    (fun k : PartIdx n n => kostkaInv n μ k.1 ≠ 0 ∧ ¬ Partdom μ k.1) with hT
-  have hTne : T.Nonempty := ⟨partIdxOfMem hν.1 hν.2, by simp [hT, h, hdom]⟩
+    (fun k : PartLengthLe n n => kostkaInv n μ k.1 ≠ 0 ∧ ¬ Partdom μ k.1) with hT
+  have hTne : T.Nonempty := ⟨PartLengthLe.ofList hν.1 hν.2, by simp [hT, h, hdom]⟩
   obtain ⟨k, hkT, hkmin⟩ := Finset.exists_min_image T (fun k => domWeight n k.1) hTne
   obtain ⟨-, hk0, hkdom⟩ := Finset.mem_filter.1 hkT
-  have hkne : k ≠ partIdxOfMem hμ.1 hμ.2 := fun he => hkdom (he ▸ Partdom.refl μ)
-  have horth := sum_kostka_mul_kostkaInv_partIdx k (partIdxOfMem hμ.1 hμ.2)
-  simp only [partIdxOfMem_val] at horth
+  have hkne : k ≠ PartLengthLe.ofList hμ.1 hμ.2 := fun he => hkdom (he ▸ Partdom.refl μ)
+  have horth := sum_kostka_mul_kostkaInv_partLengthLe k (PartLengthLe.ofList hμ.1 hμ.2)
+  simp only [PartLengthLe.ofList_val] at horth
   rw [ite_eq_right hkne] at horth
-  have hsingle : ∀ ν' ∈ (Finset.univ : Finset (PartIdx n n)), ν' ≠ k →
+  have hsingle : ∀ ν' ∈ (Finset.univ : Finset (PartLengthLe n n)), ν' ≠ k →
       (kostka k.1 ν'.1 : ℤ) * kostkaInv n μ ν'.1 = 0 := by
     intro ν' _ hne
     by_cases hB : kostkaInv n μ ν'.1 = 0
@@ -165,10 +156,11 @@ theorem partdom_of_kostkaInv_ne_zero {μ ν : List ℕ} (h : kostkaInv n μ ν �
 theorem kostkaInv_self {μ : List ℕ} (hμ : IsPart μ) (hsum : μ.sum = n) :
     kostkaInv n μ μ = 1 := by
   classical
-  have horth := sum_kostka_mul_kostkaInv_partIdx (partIdxOfMem hμ hsum)
-    (partIdxOfMem hμ hsum)
-  simp only [partIdxOfMem_val, ite_true] at horth
-  have hsingle : ∀ ν' ∈ (Finset.univ : Finset (PartIdx n n)), ν' ≠ partIdxOfMem hμ hsum →
+  have horth := sum_kostka_mul_kostkaInv_partLengthLe (PartLengthLe.ofList hμ hsum)
+    (PartLengthLe.ofList hμ hsum)
+  simp only [PartLengthLe.ofList_val, ite_true] at horth
+  have hsingle : ∀ ν' ∈ (Finset.univ : Finset (PartLengthLe n n)),
+      ν' ≠ PartLengthLe.ofList hμ hsum →
       (kostka μ ν'.1 : ℤ) * kostkaInv n μ ν'.1 = 0 := by
     intro ν' _ hne
     by_cases hB : kostkaInv n μ ν'.1 = 0
@@ -177,40 +169,40 @@ theorem kostkaInv_self {μ : List ℕ} (hμ : IsPart μ) (hsum : μ.sum = n) :
     · rw [hK, Nat.cast_zero, zero_mul]
     exact absurd (Subtype.ext (Partdom.antisymm ν'.2.1 hμ (partdom_of_kostka_ne_zero hK)
       (partdom_of_kostkaInv_ne_zero hB))) hne
-  rw [Finset.sum_eq_single (partIdxOfMem hμ hsum) hsingle
-    (fun hcon => absurd (Finset.mem_univ (partIdxOfMem hμ hsum)) hcon)] at horth
-  simp only [partIdxOfMem_val] at horth
+  rw [Finset.sum_eq_single (PartLengthLe.ofList hμ hsum) hsingle
+    (fun hcon => absurd (Finset.mem_univ (PartLengthLe.ofList hμ hsum)) hcon)] at horth
+  simp only [PartLengthLe.ofList_val] at horth
   rwa [kostka_self hμ, Nat.cast_one, one_mul] at horth
 
 /-! ### The expansion of a Schur polynomial -/
 
 /-- **The expansion of a Schur polynomial in the products of complete homogeneous symmetric
-polynomials**, `s_μ = ∑_mu K⁻¹_{μ ν} h_ν`. -/
+polynomials**, `s_μ = ∑_ν K⁻¹_{μ ν} h_ν`. -/
 theorem schurPoly_eq_sum_kostkaInv [CommRing R] (m : ℕ) {μ : List ℕ} (hμ : IsPart μ)
     (hsum : μ.sum = n) :
     schurPoly (Fin m) R μ
       = ∑ ν ∈ partFinset n, (kostkaInv n μ ν : R) • hProd m R ν := by
   classical
-  rw [sum_partFinset_eq_sum_partIdx (m := n) le_rfl]
-  have hh : ∀ ν : PartIdx n n, hProd m R ν.1
-      = ∑ ρ : PartIdx n n, (kostka ρ.1 ν.1 : R) • schurPoly (Fin m) R ρ.1 := by
+  rw [sum_partFinset_eq_sum_partLengthLe (m := n) le_rfl]
+  have hh : ∀ ν : PartLengthLe n n, hProd m R ν.1
+      = ∑ ρ : PartLengthLe n n, (kostka ρ.1 ν.1 : R) • schurPoly (Fin m) R ρ.1 := by
     intro ν
-    rw [hProd_eq_sum_kostka m ν.2.1, ν.2.2.1, sum_partFinset_eq_sum_partIdx (m := n) le_rfl]
+    rw [hProd_eq_sum_kostka m ν.2.1, ν.2.2.1, sum_partFinset_eq_sum_partLengthLe (m := n) le_rfl]
   simp_rw [hh, Finset.smul_sum, smul_smul]
   rw [Finset.sum_comm]
   simp_rw [← Finset.sum_smul]
-  have hcoef : ∀ ρ : PartIdx n n,
-      ∑ ν : PartIdx n n, (kostkaInv n μ ν.1 : R) * (kostka ρ.1 ν.1 : R)
-        = if ρ = partIdxOfMem hμ hsum then 1 else 0 := by
+  have hcoef : ∀ ρ : PartLengthLe n n,
+      ∑ ν : PartLengthLe n n, (kostkaInv n μ ν.1 : R) * (kostka ρ.1 ν.1 : R)
+        = if ρ = PartLengthLe.ofList hμ hsum then 1 else 0 := by
     intro ρ
     have := congrArg (fun z : ℤ => (z : R))
-      (sum_kostka_mul_kostkaInv_partIdx ρ (partIdxOfMem hμ hsum))
+      (sum_kostka_mul_kostkaInv_partLengthLe ρ (PartLengthLe.ofList hμ hsum))
     push_cast at this
     rw [← this]
     exact Finset.sum_congr rfl fun ν _ => mul_comm _ _
   simp_rw [hcoef, ite_smul, one_smul, zero_smul]
-  rw [Finset.sum_ite_eq' Finset.univ (partIdxOfMem hμ hsum)
-    (fun ρ : PartIdx n n => schurPoly (Fin m) R ρ.1)]
+  rw [Finset.sum_ite_eq' Finset.univ (PartLengthLe.ofList hμ hsum)
+    (fun ρ : PartLengthLe n n => schurPoly (Fin m) R ρ.1)]
   simp
 
 end MvPolynomial

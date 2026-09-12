@@ -21,8 +21,11 @@ Here we package conjugation of partitions as an explicit `Equiv`.
 ## Main results
 
 * `Young.conjPartEquiv` : conjugation is an involutive bijection of the partitions of `n`.
-* `Young.conjPartEquivLengthLe` : conjugation is a bijection between the partitions of `n`
-  with at most `k` parts and the partitions of `n` all of whose parts are at most `k`.
+
+The companion bijection for partitions with a bounded number of parts,
+`Young.conjPartEquivLengthLe`, is in
+`Mathlib.Combinatorics.Enumerative.Partition.List.LengthLe`, where the type of those
+partitions is defined.
 -/
 
 @[expose] public section
@@ -63,26 +66,5 @@ def conjPartEquiv (n : ℕ) :
 
 @[simp] lemma conjPartEquiv_apply {n : ℕ} (p : {p : List ℕ // IsPart p ∧ p.sum = n}) :
     ((conjPartEquiv n) p).1 = conjPart p.1 := rfl
-
-/-- Conjugation is a bijection between the partitions of `n` with at most `k` parts and the
-partitions of `n` all of whose parts are at most `k`.  In particular these two sets of
-partitions are equinumerous. -/
-def conjPartEquivLengthLe (n k : ℕ) :
-    {p : List ℕ // IsPart p ∧ p.sum = n ∧ p.length ≤ k} ≃
-      {p : List ℕ // IsPart p ∧ p.sum = n ∧ ∀ i ∈ p, i ≤ k} where
-  toFun p :=
-    ⟨conjPart p.1, isPart_conjPart p.2.1, by rw [sum_conjPart]; exact p.2.2.1, by
-      rw [(isPart_conjPart p.2.1).forall_mem_le_iff, headD_conjPart p.2.1]
-      exact p.2.2.2⟩
-  invFun p :=
-    ⟨conjPart p.1, isPart_conjPart p.2.1, by rw [sum_conjPart]; exact p.2.2.1, by
-      rw [length_conjPart p.2.1]
-      exact (p.2.1.forall_mem_le_iff k).1 p.2.2.2⟩
-  left_inv p := Subtype.ext (conjPart_conjPart p.2.1)
-  right_inv p := Subtype.ext (conjPart_conjPart p.2.1)
-
-@[simp] lemma conjPartEquivLengthLe_apply {n k : ℕ}
-    (p : {p : List ℕ // IsPart p ∧ p.sum = n ∧ p.length ≤ k}) :
-    ((conjPartEquivLengthLe n k) p).1 = conjPart p.1 := rfl
 
 end Young

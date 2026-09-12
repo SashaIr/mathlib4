@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.DualPieriSchur
 Following `theories/MPoly/Cauchy.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove the dual Cauchy identity
 
-`∏_{j < k} ∏_{i < m} (1 + x_i y_j) = ∑_lam s_μ(x) * s_{μ'}(y)`,
+`∏_{j < k} ∏_{i < m} (1 + x_i y_j) = ∑_μ s_μ(x) * s_{μ'}(y)`,
 
 where the sum is over all partitions `μ` of size at most `m * k` (the terms attached to
 the partitions that are not contained in the `m × k` rectangle vanish).

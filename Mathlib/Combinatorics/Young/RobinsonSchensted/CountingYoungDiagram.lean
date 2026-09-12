@@ -10,19 +10,19 @@ public import Mathlib.Combinatorics.Young.HookLength.HookYoungDiagram
 public import Mathlib.Combinatorics.Enumerative.Partition.YoungDiagram
 
 /-!
-# The identity `∑_λ (f^λ)² = n!` for partitions and Young diagrams
+# The identity `∑_μ (f^μ)² = n!` for partitions and Young diagrams
 
 `Mathlib.Combinatorics.Young.RobinsonSchensted.Counting` proves the classical enumeration
-`∑_λ (f^λ)² = n!` with the shapes `λ` given as weakly decreasing lists.  This file restates
+`∑_μ (f^μ)² = n!` with the shapes `μ` given as weakly decreasing lists.  This file restates
 it with the bundled types: the sum runs over `Nat.Partition n`, respectively over the Young
-diagrams with `n` boxes, and `f^λ` is `YoungDiagram.numStdTab`.
+diagrams with `n` boxes, and `f^μ` is `YoungDiagram.numStdTab`.
 
 ## Main results
 
 * `Nat.Partition.numStdTab_youngDiagram` : the number of standard tableaux of the diagram of a
   partition is the number of standard tableaux of its list of parts.
-* `Nat.Partition.sum_sq_numStdTab` : `∑_λ (f^λ)² = n!`, summed over the partitions of `n`.
-* `YoungDiagram.sum_sq_numStdTab` : `∑_λ (f^λ)² = n!`, summed over the Young diagrams with
+* `Nat.Partition.sum_sq_numStdTab` : `∑_μ (f^μ)² = n!`, summed over the partitions of `n`.
+* `YoungDiagram.sum_sq_numStdTab` : `∑_μ (f^μ)² = n!`, summed over the Young diagrams with
   `n` boxes.
 -/
 
@@ -40,8 +40,8 @@ standard Young tableaux of its list of parts. -/
     p.youngDiagram.numStdTab = Young.numStdTab p.partsList := by
   rw [YoungDiagram.numStdTab, rowLens_youngDiagram]
 
-/-- **`∑_λ (f^λ)² = n!`**: the sum, over the partitions `λ` of `n`, of the squares of the
-numbers of standard Young tableaux of shape `λ`, is `n!`. -/
+/-- **`∑_μ (f^μ)² = n!`**: the sum, over the partitions `μ` of `n`, of the squares of the
+numbers of standard Young tableaux of shape `μ`, is `n!`. -/
 theorem sum_sq_numStdTab (n : ℕ) :
     ∑ p : Partition n, p.youngDiagram.numStdTab ^ 2 = Nat.factorial n := by
   simpa using Young.sum_sq_numStdTab n
@@ -54,8 +54,8 @@ namespace YoungDiagram
 instance fintypeCardEq (n : ℕ) : Fintype {μ : YoungDiagram // μ.card = n} :=
   Fintype.ofEquiv _ (Nat.Partition.equivYoungDiagramCard n)
 
-/-- **`∑_λ (f^λ)² = n!`**: the sum, over the Young diagrams `λ` with `n` boxes, of the squares
-of the numbers of standard Young tableaux of shape `λ`, is `n!`. -/
+/-- **`∑_μ (f^μ)² = n!`**: the sum, over the Young diagrams `μ` with `n` boxes, of the squares
+of the numbers of standard Young tableaux of shape `μ`, is `n!`. -/
 theorem sum_sq_numStdTab (n : ℕ) :
     ∑ μ : {μ : YoungDiagram // μ.card = n}, (μ : YoungDiagram).numStdTab ^ 2 =
       Nat.factorial n := by

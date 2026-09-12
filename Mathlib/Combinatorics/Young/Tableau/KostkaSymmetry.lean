@@ -11,7 +11,7 @@ public import Mathlib.GroupTheory.Perm.Sign
 /-!
 # Symmetry of the Kostka numbers
 
-The Kostka number `K_{λ,c}` counting the tableaux of shape `λ` and content `c` does not
+The Kostka number `K_{μ,c}` counting the tableaux of shape `μ` and content `c` does not
 depend on the order of the letters: it is invariant under permuting the content vector.
 This is the combinatorial heart of the symmetry of the Schur polynomials.
 

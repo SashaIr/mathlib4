@@ -13,12 +13,12 @@ public import Mathlib.Combinatorics.Enumerative.Partition.Ribbon
 /-!
 # The Murnaghan-Nakayama rule for the characters of the symmetric group
 
-The Frobenius character formula `p_{cycleType σ} = ∑_λ χ^λ(σ) s_λ` of
+The Frobenius character formula `p_{cycleType σ} = ∑_μ χ^μ(σ) s_μ` of
 `Mathlib/RepresentationTheory/SymmetricGroup/SchurCharacter.lean` turns the
-Murnaghan-Nakayama rule for symmetric polynomials, `p_r · s_λ = ∑ (-1)^height s_ν` (the sum being
-over the shapes `ν` obtained from `λ` by adding a ribbon of `r` boxes), into a recursion for the
+Murnaghan-Nakayama rule for symmetric polynomials, `p_r · s_μ = ∑ (-1)^height s_ν` (the sum being
+over the shapes `ν` obtained from `μ` by adding a ribbon of `r` boxes), into a recursion for the
 values of the Schur class functions: removing a part `r` from the cycle type expresses `χ^ν` as the
-signed sum of the `χ^λ` over the shapes `λ` obtained from `ν` by removing a ribbon of `r` boxes.
+signed sum of the `χ^μ` over the shapes `μ` obtained from `ν` by removing a ribbon of `r` boxes.
 
 As a consequence the Schur class functions take integer values.
 
@@ -65,9 +65,9 @@ theorem pProd_cycleTypeList_eq_sum_of_le (hnk : n ≤ k) (σ : Perm (Fin n)) :
     pProd k ℚ (cycleTypeList σ)
       = ∑ μ : Nat.Partition n, schurChar μ σ • schurPoly (Fin k) ℚ μ.partsList := by
   refine eq_of_truncVars_eq (le_refl n) hnk
-    (pProd_mem_symHomogeneousSubmodule (cycleTypeIdx hnk σ))
+    (pProd_mem_symHomogeneousSubmodule (cycleTypePart hnk σ))
     (Submodule.sum_mem _ fun μ _ => Submodule.smul_mem _ _
-      (schurPoly_mem_symHomogeneousSubmodule (natPartitionEquivPartIdx hnk μ))) ?_
+      (schurPoly_mem_symHomogeneousSubmodule (natPartitionEquivPartLengthLe hnk μ))) ?_
   rw [truncVars_pProd hnk (isPart_cycleTypeList σ), map_sum,
     pProd_cycleTypeList_eq_sum σ]
   refine Finset.sum_congr rfl fun μ _ => ?_
@@ -117,7 +117,7 @@ lemma sum_ite_mnShape_smul (hr : 0 < r) (hN : n + r = N) (μ : Nat.Partition n) 
 
 /-- **The Murnaghan-Nakayama rule for the characters of the symmetric group**: if the cycle
 type of `σ ∈ S_N` is obtained from the one of `τ ∈ S_n` by adding a part `r`, then the value
-`χ^ν(σ)` is the signed sum of the values `χ^λ(τ)` over the shapes `λ` from which `ν` is
+`χ^ν(σ)` is the signed sum of the values `χ^μ(τ)` over the shapes `μ` from which `ν` is
 obtained by adding a ribbon of `r` boxes, the sign being `(-1)` to the height of the
 ribbon. -/
 theorem schurChar_mnRule (hr : 0 < r) (hN : n + r = N)
@@ -158,16 +158,17 @@ theorem schurChar_mnRule (hr : 0 < r) (hN : n + r = N)
       push_cast
       ring_nf
     · rw [ite_eq_right hadd, ite_eq_right hadd, smul_zero]
-  have hzero : ∑ ρ : PartIdx N N,
-      (schurChar ((natPartitionEquivPartIdx (le_refl N)).symm ρ) σ
-        - c ((natPartitionEquivPartIdx (le_refl N)).symm ρ)) • schurPoly (Fin N) ℚ ρ.1 = 0 := by
-    rw [← Fintype.sum_equiv (natPartitionEquivPartIdx (le_refl N))
+  have hzero : ∑ ρ : PartLengthLe N N,
+      (schurChar ((natPartitionEquivPartLengthLe (le_refl N)).symm ρ) σ
+        - c ((natPartitionEquivPartLengthLe (le_refl N)).symm ρ))
+          • schurPoly (Fin N) ℚ ρ.1 = 0 := by
+    rw [← Fintype.sum_equiv (natPartitionEquivPartLengthLe (le_refl N))
       (fun ρ : Nat.Partition N => (schurChar ρ σ - c ρ) • schurPoly (Fin N) ℚ ρ.partsList) _
       (fun ρ => by simp)]
     simp only [sub_smul, Finset.sum_sub_distrib, key, sub_self]
   have hli := linearIndependent_schurPoly N N ℚ
   rw [Fintype.linearIndependent_iff] at hli
-  have := hli _ hzero (partIdxOf ν)
+  have := hli _ hzero (ν.toPartLengthLe)
   simpa using sub_eq_zero.1 this
 
 /-! ### The rule in the language of ribbons -/
@@ -207,8 +208,8 @@ lemma sum_ite_mnShape_eq_ite_ribbon {μ ν : List ℕ} (hμ : IsPart μ) (hν : 
 open scoped Classical in
 /-- **The Murnaghan-Nakayama rule for characters, in the language of ribbons**: if the
 cycle type of `σ ∈ S_N` is obtained from the one of `τ ∈ S_n` by adding a part `r`, then
-`χ^ν(σ)` is the sum of the values `χ^λ(τ)`, over the partitions `λ` of `n` such that the
-skew shape `ν / λ` is a ribbon, with the sign `(-1)` to the number of rows of the ribbon
+`χ^ν(σ)` is the sum of the values `χ^μ(τ)`, over the partitions `μ` of `n` such that the
+skew shape `ν / μ` is a ribbon, with the sign `(-1)` to the number of rows of the ribbon
 minus one. -/
 theorem schurChar_mnRule_ribbon (hr : 0 < r) (hN : n + r = N)
     (τ : Perm (Fin n)) (σ : Perm (Fin N))

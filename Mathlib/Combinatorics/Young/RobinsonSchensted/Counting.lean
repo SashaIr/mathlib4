@@ -22,7 +22,7 @@ is the classical enumeration
 
 `#{(P, Q) : P, Q standard tableaux of the same shape with n boxes} = n!`
 
-which is the counting form of the identity `∑_λ (f^λ)² = n!`.
+which is the counting form of the identity `∑_μ (f^μ)² = n!`.
 
 ## Main results
 
@@ -31,8 +31,8 @@ which is the counting form of the identity `∑_λ (f^λ)² = n!`.
   standard words of length `n`.
 * `Young.card_stdTabPair` : there are `n!` pairs of standard tableaux of the same shape
   with `n` boxes.
-* `Young.sum_sq_numStdTab` : `∑_λ (f^λ)² = n!`, the sum being over the partitions `λ`
-  of `n` and `f^λ` denoting the number of standard tableaux of shape `λ`.
+* `Young.sum_sq_numStdTab` : `∑_μ (f^μ)² = n!`, the sum being over the partitions `μ`
+  of `n` and `f^μ` denoting the number of standard tableaux of shape `μ`.
 -/
 
 @[expose] public section
@@ -91,12 +91,12 @@ theorem RS_RSQ_bijOn_stdWord (n : ℕ) :
     exact ⟨w, ⟨hw, hlen⟩, hfw⟩
 
 /-- There are `n!` pairs of standard tableaux of the same shape with `n` boxes; this is
-the counting form of the identity `∑_λ (f^λ)² = n!`. -/
+the counting form of the identity `∑_μ (f^μ)² = n!`. -/
 theorem card_stdTabPair (n : ℕ) : Nat.card (stdTabPair n) = Nat.factorial n := by
   rw [← card_stdWord n]
   exact (Nat.card_congr (RS_RSQ_bijOn_stdWord n).equiv).symm
 
-/-! ### The identity `∑_λ (f^λ)² = n!` -/
+/-! ### The identity `∑_μ (f^μ)² = n!` -/
 
 /-- The number `f^μ` of standard tableaux of shape `μ`. -/
 noncomputable def numStdTab (μ : List ℕ) : ℕ :=

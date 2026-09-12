@@ -52,27 +52,27 @@ variable {m : ℕ} {R : Type*} [CommRing R]
 
 /-- A symmetric homogeneous polynomial of degree `n` is a combination of the monomial
 symmetric polynomials of the partitions of `n` with at most `m` parts. -/
-theorem eq_sum_monomialSym_partsFinset {n : ℕ} {p : MvPolynomial (Fin m) R}
+theorem eq_sum_monomialSym_partFinsetLengthLe {n : ℕ} {p : MvPolynomial (Fin m) R}
     (hsym : p.IsSymmetric) (hhom : p.IsHomogeneous n) :
-    p = ∑ μ ∈ partsFinset n m, coeff (shapeContent m μ) p • monomialSym m R μ := by
+    p = ∑ μ ∈ partFinsetLengthLe n m, coeff (shapeContent m μ) p • monomialSym m R μ := by
   classical
-  have hsub : p.support.image degShape ⊆ partsFinset n m := by
+  have hsub : p.support.image degShape ⊆ partFinsetLengthLe n m := by
     intro ν hν
     obtain ⟨d, hd, rfl⟩ := Finset.mem_image.1 hν
-    refine mem_partsFinset.2 ⟨isPart_degShape d, ?_, length_degShape_le d⟩
+    refine mem_partFinsetLengthLe.2 ⟨isPart_degShape d, ?_, length_degShape_le d⟩
     rw [sum_degShape d]
     exact sum_eq_of_isHomogeneous hhom hd
-  have hzero : ∀ μ ∈ partsFinset n m, μ ∉ p.support.image degShape →
+  have hzero : ∀ μ ∈ partFinsetLengthLe n m, μ ∉ p.support.image degShape →
       coeff (shapeContent m μ) p • monomialSym m R μ = 0 := by
     intro μ hμ hnotin
     have hc : coeff (shapeContent m μ) p = 0 := by
       by_contra hne
       exact hnotin (Finset.mem_image.2 ⟨shapeContent m μ, mem_support_iff.2 hne,
-        degShape_shapeContent (mem_partsFinset.1 hμ).1 (mem_partsFinset.1 hμ).2.2⟩)
+        degShape_shapeContent (mem_partFinsetLengthLe.1 hμ).1 (mem_partFinsetLengthLe.1 hμ).2.2⟩)
     rw [hc, zero_smul]
   calc p = ∑ μ ∈ p.support.image degShape, coeff (shapeContent m μ) p • monomialSym m R μ :=
         eq_sum_monomialSym hsym
-    _ = ∑ μ ∈ partsFinset n m, coeff (shapeContent m μ) p • monomialSym m R μ :=
+    _ = ∑ μ ∈ partFinsetLengthLe n m, coeff (shapeContent m μ) p • monomialSym m R μ :=
         Finset.sum_subset hsub hzero
 
 /-! ### The exponent vector of an assignment of the parts to the variables -/
@@ -179,8 +179,8 @@ noncomputable def pCoeff (m : ℕ) (μ ν : List ℕ) : ℕ :=
 /-- **The expansion of `p_μ` in the monomial symmetric polynomials**. -/
 theorem pProd_eq_sum_monomialSym (μ : List ℕ) :
     pProd m R μ
-      = ∑ ν ∈ partsFinset μ.sum m, (pCoeff m μ ν : R) • monomialSym m R ν := by
-  rw [eq_sum_monomialSym_partsFinset (pProd_isSymmetric μ) (isHomogeneous_pProd μ)]
+      = ∑ ν ∈ partFinsetLengthLe μ.sum m, (pCoeff m μ ν : R) • monomialSym m R ν := by
+  rw [eq_sum_monomialSym_partFinsetLengthLe (pProd_isSymmetric μ) (isHomogeneous_pProd μ)]
   exact Finset.sum_congr rfl fun ν _ => by rw [coeff_pProd, pCoeff]
 
 /-! ### Triangularity for the dominance order -/

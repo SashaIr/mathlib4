@@ -17,7 +17,7 @@ The coefficients of the Schur polynomial `s_μ` are Kostka numbers, so the resul
 about `s_μ`: the monomial `x ^ d` occurs only if the shape `μ` dominates the content `d`, and the
 monomial of content `μ` itself occurs exactly once.  In other words
 
-`s_λ = m_λ + (terms of content strictly dominated by λ)`.
+`s_μ = m_μ + (terms of content strictly dominated by μ)`.
 
 ## Main definitions
 

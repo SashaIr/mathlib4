@@ -5,7 +5,7 @@ Authors: Alessandro Iraci, Aristotle (Harmonic)
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.Partition.List.Finset
+public import Mathlib.Combinatorics.Enumerative.Partition.List.LengthLe
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Basis.Monomial
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LinearIndependent
@@ -21,7 +21,7 @@ homogeneous polynomials of degree `n` in `m` variables.
 
 Linear independence is `MvPolynomial.linearIndependent_schurPoly`.  Spanning follows from two
 ingredients: a symmetric polynomial is a combination of monomial symmetric polynomials
-(`MvPolynomial.eq_sum_monomialSym`) and, by the unitriangularity `s_λ = m_λ + (lower terms)`, each
+(`MvPolynomial.eq_sum_monomialSym`) and, by the unitriangularity `s_μ = m_μ + (lower terms)`, each
 monomial symmetric polynomial is a combination of Schur polynomials
 (`MvPolynomial.monomialSym_mem_span_schurPoly`).
 
@@ -44,31 +44,6 @@ open List MvPolynomial
 
 variable {m : ℕ} {R : Type*}
 
-/-- The index set of the Schur basis: the partitions of `n` with at most `m` parts. -/
-abbrev PartIdx (n m : ℕ) : Type := {p : List ℕ // IsPart p ∧ p.sum = n ∧ p.length ≤ m}
-
-/-- A partition of `n` has at most `n` parts, so as soon as `n ≤ m` the index set of the
-bases in `m` variables is exactly the set `Nat.Partition n` of partitions of `n`. -/
-def natPartitionEquivPartIdx {n : ℕ} (hnm : n ≤ m) : Nat.Partition n ≃ PartIdx n m :=
-  (listPartEquivNatPartition n).symm.trans (Equiv.subtypeEquivRight fun p =>
-    ⟨fun h => ⟨h.1, h.2, h.1.length_le_sum.trans (by rw [h.2]; exact hnm)⟩,
-      fun h => ⟨h.1, h.2.1⟩⟩)
-
-@[simp] lemma coe_natPartitionEquivPartIdx {n : ℕ} (hnm : n ≤ m) (p : Nat.Partition n) :
-    (natPartitionEquivPartIdx hnm p : List ℕ) = p.partsList := rfl
-
-@[simp] lemma partsList_natPartitionEquivPartIdx_symm {n : ℕ} (hnm : n ≤ m) (q : PartIdx n m) :
-    ((natPartitionEquivPartIdx hnm).symm q).partsList = q.1 :=
-  sortDesc_coe q.2.1
-
-/-- The index of a partition of `n` among the bases in `n` variables: a partition of `n`
-has at most `n` parts. -/
-abbrev partIdxOf {n : ℕ} (μ : Nat.Partition n) : PartIdx n n :=
-  natPartitionEquivPartIdx (le_refl n) μ
-
-@[simp] lemma coe_partIdxOf {n : ℕ} (μ : Nat.Partition n) :
-    (partIdxOf μ : List ℕ) = μ.partsList := rfl
-
 /-- The submodule of the symmetric homogeneous polynomials of degree `n` in `m`
 variables. -/
 noncomputable def symHomogeneousSubmodule (m n : ℕ) (R : Type*) [CommSemiring R] :
@@ -84,7 +59,7 @@ lemma isHomogeneous_schurPoly_of_sum [CommSemiring R] {n : ℕ} {μ : List ℕ}
   rw [← hsum]
   exact isHomogeneous_schurPoly μ
 
-lemma schurPoly_mem_symHomogeneousSubmodule [CommSemiring R] {n : ℕ} (ν : PartIdx n m) :
+lemma schurPoly_mem_symHomogeneousSubmodule [CommSemiring R] {n : ℕ} (ν : PartLengthLe n m) :
     schurPoly (Fin m) R ν.1 ∈ symHomogeneousSubmodule m n R :=
   ⟨isHomogeneous_schurPoly_of_sum ν.2.2.1, schurPoly_isSymmetric ν.1⟩
 
@@ -108,9 +83,9 @@ with at most `m` parts. -/
 theorem monomialSym_mem_span_schurPoly [CommRing R] (n : ℕ) {μ : List ℕ}
     (hμ : IsPart μ) (hsum : μ.sum = n) (hlen : μ.length ≤ m) :
     monomialSym m R μ ∈
-      Submodule.span R (Set.range fun ν : PartIdx n m => schurPoly (Fin m) R ν.1) := by
+      Submodule.span R (Set.range fun ν : PartLengthLe n m => schurPoly (Fin m) R ν.1) := by
   classical
-  set W := Submodule.span R (Set.range fun ν : PartIdx n m => schurPoly (Fin m) R ν.1) with hW
+  set W := Submodule.span R (Set.range fun ν : PartLengthLe n m => schurPoly (Fin m) R ν.1) with hW
   suffices H : ∀ w : ℕ, ∀ μ : List ℕ, IsPart μ → μ.sum = n → μ.length ≤ m →
       domWeight n μ = w → monomialSym m R μ ∈ W from H _ μ hμ hsum hlen rfl
   intro w
@@ -176,39 +151,6 @@ theorem monomialSym_mem_span_schurPoly [CommRing R] (n : ℕ) {μ : List ℕ}
 
 /-! ### The expansion of a Schur polynomial in the monomial symmetric polynomials -/
 
-instance fintypePartIdx (n m : ℕ) : Fintype (PartIdx n m) :=
-  Fintype.ofEquiv {q : {p : List ℕ // IsPart p ∧ p.sum = n} // q.1.length ≤ m}
-    { toFun := fun q => ⟨q.1.1, q.1.2.1, q.1.2.2, q.2⟩
-      invFun := fun p => ⟨⟨p.1, p.2.1, p.2.2.1⟩, p.2.2.2⟩
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
-
-/-- The partitions of `n` with at most `m` parts, as a finite set of lists. -/
-noncomputable def partsFinset (n m : ℕ) : Finset (List ℕ) :=
-  Finset.univ.image (fun p : PartIdx n m => p.1)
-
-lemma mem_partsFinset {n m : ℕ} {l : List ℕ} :
-    l ∈ partsFinset n m ↔ IsPart l ∧ l.sum = n ∧ l.length ≤ m := by
-  rw [partsFinset, Finset.mem_image]
-  constructor
-  · rintro ⟨q, -, rfl⟩
-    exact q.2
-  · intro h
-    exact ⟨⟨l, h⟩, Finset.mem_univ _, rfl⟩
-
-/-- When `n ≤ m`, every partition of `n` has at most `m` parts. -/
-lemma partsFinset_eq_partFinset (n m : ℕ) (hnm : n ≤ m) : partsFinset n m = partFinset n := by
-  ext l
-  rw [mem_partsFinset, mem_partFinset]
-  refine ⟨fun h => ⟨h.1, h.2.1⟩, fun h => ⟨h.1, h.2, ?_⟩⟩
-  exact le_trans (le_trans h.1.length_le_sum (le_of_eq h.2)) hnm
-
-/-- A sum over the partitions of `n` with at most `m` parts, as a sum over `PartIdx n m`. -/
-lemma sum_partFinset_eq_sum_partIdx {n : ℕ} {M : Type*} [AddCommMonoid M] (hnm : n ≤ m)
-    (f : List ℕ → M) : ∑ l ∈ partFinset n, f l = ∑ μ : PartIdx n m, f μ.1 := by
-  rw [← partsFinset_eq_partFinset n m hnm, partsFinset,
-    Finset.sum_image fun x _ y _ h => Subtype.ext h]
-
 lemma finContent_shapeContent {μ : List ℕ} (hlen : μ.length ≤ m) :
     finContent m (shapeContent m μ) = fun i => μ.getD i 0 := by
   funext i
@@ -217,39 +159,39 @@ lemma finContent_shapeContent {μ : List ℕ} (hlen : μ.length ≤ m) :
   · rw [finContent, dite_eq_right hi, List.getD_eq_default _ _ (by omega)]
 
 /-- **The Schur polynomial is the sum of the Kostka numbers times the monomial symmetric
-polynomials**: `s_μ = ∑_mu K_{μ ν} m_ν`, the sum being over the partitions `ν` of
+polynomials**: `s_μ = ∑_ν K_{μ ν} m_ν`, the sum being over the partitions `ν` of
 the size of `μ` with at most `m` parts. -/
 theorem schurPoly_eq_sum_kostkaNum_monomialSym [CommRing R] (μ : List ℕ) :
     schurPoly (Fin m) R μ
-      = ∑ ν ∈ partsFinset μ.sum m,
+      = ∑ ν ∈ partFinsetLengthLe μ.sum m,
           (kostkaNum m μ (fun i => ν.getD i 0) : R) • monomialSym m R ν := by
   classical
   set p := schurPoly (Fin m) R μ with hp
   have hsym : p.IsSymmetric := schurPoly_isSymmetric μ
   have hhom : p.IsHomogeneous μ.sum := isHomogeneous_schurPoly μ
-  have hcoeff : ∀ ν ∈ partsFinset μ.sum m,
+  have hcoeff : ∀ ν ∈ partFinsetLengthLe μ.sum m,
       coeff (shapeContent m ν) p = (kostkaNum m μ (fun i => ν.getD i 0) : R) := by
     intro ν hν
-    rw [hp, coeff_schurPoly_eq_kostkaNum, finContent_shapeContent (mem_partsFinset.1 hν).2.2]
-  have hsub : p.support.image degShape ⊆ partsFinset μ.sum m := by
+    rw [hp, coeff_schurPoly_eq_kostkaNum, finContent_shapeContent (mem_partFinsetLengthLe.1 hν).2.2]
+  have hsub : p.support.image degShape ⊆ partFinsetLengthLe μ.sum m := by
     intro ρ hρ
     obtain ⟨d, hd, rfl⟩ := Finset.mem_image.1 hρ
-    refine mem_partsFinset.2 ⟨isPart_degShape d, ?_, length_degShape_le d⟩
+    refine mem_partFinsetLengthLe.2 ⟨isPart_degShape d, ?_, length_degShape_le d⟩
     rw [sum_degShape d]
     exact sum_eq_of_isHomogeneous hhom hd
-  have hzero : ∀ ν ∈ partsFinset μ.sum m, ν ∉ p.support.image degShape →
+  have hzero : ∀ ν ∈ partFinsetLengthLe μ.sum m, ν ∉ p.support.image degShape →
       coeff (shapeContent m ν) p • monomialSym m R ν = 0 := by
     intro ν hν hnotin
     have : coeff (shapeContent m ν) p = 0 := by
       by_contra hne
       exact hnotin (Finset.mem_image.2 ⟨shapeContent m ν, mem_support_iff.2 hne,
-        degShape_shapeContent (mem_partsFinset.1 hν).1 (mem_partsFinset.1 hν).2.2⟩)
+        degShape_shapeContent (mem_partFinsetLengthLe.1 hν).1 (mem_partFinsetLengthLe.1 hν).2.2⟩)
     rw [this, zero_smul]
   calc p = ∑ ν ∈ p.support.image degShape, coeff (shapeContent m ν) p • monomialSym m R ν :=
         eq_sum_monomialSym hsym
-    _ = ∑ ν ∈ partsFinset μ.sum m, coeff (shapeContent m ν) p • monomialSym m R ν :=
+    _ = ∑ ν ∈ partFinsetLengthLe μ.sum m, coeff (shapeContent m ν) p • monomialSym m R ν :=
         Finset.sum_subset hsub hzero
-    _ = ∑ ν ∈ partsFinset μ.sum m,
+    _ = ∑ ν ∈ partFinsetLengthLe μ.sum m,
           (kostkaNum m μ (fun i => ν.getD i 0) : R) • monomialSym m R ν :=
         Finset.sum_congr rfl fun ν hν => by rw [hcoeff ν hν]
 
@@ -259,7 +201,7 @@ theorem schurPoly_eq_sum_kostkaNum_monomialSym [CommRing R] (μ : List ℕ) :
 most `m` parts span the module of symmetric homogeneous polynomials of degree `n` in `m`
 variables. -/
 theorem span_schurPoly [CommRing R] (m n : ℕ) :
-    Submodule.span R (Set.range fun ν : PartIdx n m => schurPoly (Fin m) R ν.1)
+    Submodule.span R (Set.range fun ν : PartLengthLe n m => schurPoly (Fin m) R ν.1)
       = symHomogeneousSubmodule m n R := by
   classical
   refine le_antisymm (Submodule.span_le.2 ?_) fun p hp => ?_
@@ -276,11 +218,11 @@ theorem span_schurPoly [CommRing R] (m n : ℕ) :
 
 /-- The Schur polynomial of a partition of `n` with at most `m` parts, as an element of the
 module of symmetric homogeneous polynomials of degree `n`. -/
-noncomputable def schurSub (m n : ℕ) (R : Type*) [CommRing R] (ν : PartIdx n m) :
+noncomputable def schurSub (m n : ℕ) (R : Type*) [CommRing R] (ν : PartLengthLe n m) :
     symHomogeneousSubmodule m n R :=
   ⟨schurPoly (Fin m) R ν.1, schurPoly_mem_symHomogeneousSubmodule ν⟩
 
-@[simp] lemma coe_schurSub (m n : ℕ) (R : Type*) [CommRing R] (ν : PartIdx n m) :
+@[simp] lemma coe_schurSub (m n : ℕ) (R : Type*) [CommRing R] (ν : PartLengthLe n m) :
     (schurSub m n R ν : MvPolynomial (Fin m) R) = schurPoly (Fin m) R ν.1 := rfl
 
 lemma linearIndependent_schurSub (m n : ℕ) (R : Type*) [CommRing R] :
@@ -308,10 +250,10 @@ lemma span_schurSub (m n : ℕ) (R : Type*) [CommRing R] :
 polynomials of degree `n` in `m` variables, indexed by the partitions of `n` with at most
 `m` parts. -/
 noncomputable def schurBasis (m n : ℕ) (R : Type*) [CommRing R] :
-    Module.Basis (PartIdx n m) R (symHomogeneousSubmodule m n R) :=
+    Module.Basis (PartLengthLe n m) R (symHomogeneousSubmodule m n R) :=
   Module.Basis.mk (linearIndependent_schurSub m n R) (span_schurSub m n R)
 
-lemma coe_schurBasis (m n : ℕ) (R : Type*) [CommRing R] (ν : PartIdx n m) :
+lemma coe_schurBasis (m n : ℕ) (R : Type*) [CommRing R] (ν : PartLengthLe n m) :
     (schurBasis m n R ν : MvPolynomial (Fin m) R) = schurPoly (Fin m) R ν.1 := by
   rw [schurBasis, Module.Basis.mk_apply, coe_schurSub]
 
@@ -319,7 +261,7 @@ lemma coe_schurBasis (m n : ℕ) (R : Type*) [CommRing R] (ν : PartIdx n m) :
 variables is the number of partitions of `n` with at most `m` parts. -/
 theorem finrank_symHomogeneousSubmodule (m n : ℕ) (R : Type*) [CommRing R]
     [StrongRankCondition R] :
-    Module.finrank R (symHomogeneousSubmodule m n R) = Fintype.card (PartIdx n m) :=
+    Module.finrank R (symHomogeneousSubmodule m n R) = Fintype.card (PartLengthLe n m) :=
   Module.finrank_eq_card_basis (schurBasis m n R)
 
 end MvPolynomial

@@ -17,9 +17,9 @@ Combining the combinatorial Littlewood–Richardson rule of
 `Mathlib/Combinatorics/Young/LittlewoodRichardson/Rule.lean` with the tableau definition of
 the Schur polynomials gives the classical product formula
 
-`s_λ · s_ν = ∑_ρ c^ρ_{λν} · s_ρ`,
+`s_μ · s_ν = ∑_ρ c^ρ_{μν} · s_ρ`,
 
-the sum being over the partitions `ρ` of `|λ| + |ν|` and `c^ρ_{λν}` being the
+the sum being over the partitions `ρ` of `|μ| + |ν|` and `c^ρ_{μν}` being the
 Littlewood–Richardson coefficient `Young.lrCoeff`.
 
 ## Main results
@@ -28,7 +28,7 @@ Littlewood–Richardson coefficient `Young.lrCoeff`.
   tableaux of shapes `μ` and `ν` with a given plactic product is the Littlewood–
   Richardson coefficient of the shape of that product.
 * `MvPolynomial.schurPoly_mul_schurPoly` : the Littlewood–Richardson rule
-  `s_λ · s_ν = ∑_ρ c^ρ_{λν} · s_ρ`.
+  `s_μ · s_ν = ∑_ρ c^ρ_{μν} · s_ρ`.
 -/
 
 @[expose] public section

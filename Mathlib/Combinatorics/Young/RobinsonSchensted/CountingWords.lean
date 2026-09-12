@@ -13,11 +13,11 @@ public import Mathlib.Combinatorics.Young.RobinsonSchensted.Counting
 Applying the bijection `Young.RS_RSQ_bijOn` to the words of length `n` over the alphabet
 `Fin m` gives the classical identity
 
-`∑_λ K_λ(m) · f^λ = m ^ n`,
+`∑_μ K_μ(m) · f^μ = m ^ n`,
 
-the sum being over the partitions `λ` of `n`, where `K_λ(m)` is the number of tableaux of
-shape `λ` with entries in `Fin m` and `f^λ` is the number of standard tableaux of shape
-`λ`.
+the sum being over the partitions `μ` of `n`, where `K_μ(m)` is the number of tableaux of
+shape `μ` with entries in `Fin m` and `f^μ` is the number of standard tableaux of shape
+`μ`.
 
 ## Main definitions
 
@@ -30,7 +30,7 @@ shape `λ` with entries in `Fin m` and `f^λ` is the number of standard tableaux
 * `Young.card_word` : there are `m ^ n` words of length `n` over `Fin m`.
 * `Young.RS_RSQ_bijOn_word` : the Robinson–Schensted correspondence restricted to the
   words of length `n` over `Fin m`.
-* `Young.sum_numTab_mul_numStdTab` : `∑_λ K_λ(m) · f^λ = m ^ n`.
+* `Young.sum_numTab_mul_numStdTab` : `∑_μ K_μ(m) · f^μ = m ^ n`.
 -/
 
 @[expose] public section
@@ -85,7 +85,7 @@ theorem card_tabPair (m n : ℕ) : Nat.card (tabPair m n) = m ^ n := by
 instance finite_tabPair (m n : ℕ) : Finite (tabPair m n) :=
   Finite.of_equiv _ (RS_RSQ_bijOn_word m n).equiv
 
-/-! ### The identity `∑_λ K_λ(m) · f^λ = m ^ n` -/
+/-! ### The identity `∑_μ K_μ(m) · f^μ = m ^ n` -/
 
 /-- The number `K_μ(m)` of tableaux of shape `μ` with entries in `Fin m`. -/
 noncomputable def numTab (m : ℕ) (μ : List ℕ) : ℕ :=
@@ -119,8 +119,8 @@ def tabPairFiberEquiv (m n : ℕ) (μ : Nat.Partition n) :
   left_inv p := rfl
   right_inv q := rfl
 
-/-- The Robinson–Schensted identity `∑_λ K_λ(m) · f^λ = m ^ n`, the sum being over the
-partitions `λ` of `n`. -/
+/-- The Robinson–Schensted identity `∑_μ K_μ(m) · f^μ = m ^ n`, the sum being over the
+partitions `μ` of `n`. -/
 theorem sum_numTab_mul_numStdTab (m n : ℕ) :
     ∑ μ : Nat.Partition n, numTab m μ.partsList * numStdTab μ.partsList = m ^ n := by
   have h1 : Nat.card (tabPair m n) = ∑ μ : Nat.Partition n,

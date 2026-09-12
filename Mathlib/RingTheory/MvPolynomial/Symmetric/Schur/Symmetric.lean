@@ -14,10 +14,10 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
 
 Following `theories/MPoly/Schur_mpoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we prove that the Schur polynomial
-`s_λ` in `m` variables is a symmetric polynomial.
+`s_μ` in `m` variables is a symmetric polynomial.
 
-The coefficient of a monomial `x^d` in `s_λ` is the Kostka number counting the tableaux of
-shape `λ` and content `d`, and the Kostka numbers are invariant under permuting the
+The coefficient of a monomial `x^d` in `s_μ` is the Kostka number counting the tableaux of
+shape `μ` and content `d`, and the Kostka numbers are invariant under permuting the
 letters (`Young.kostkaNum_permContent`), which is the combinatorial heart of the matter.
 
 ## Main results

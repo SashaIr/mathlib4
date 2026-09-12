@@ -52,8 +52,8 @@ lemma isUnit_natCast_of_ne_zero [Algebra ℚ R] {c : ℕ} (hc : c ≠ 0) : IsUni
   have h2 := h1.map (algebraMap ℚ R)
   rwa [map_natCast] at h2
 
-lemma linearIndependent_monomialSym_partIdx (m n : ℕ) (R : Type*) [CommRing R] :
-    LinearIndependent R fun μ : PartIdx n m => monomialSym m R μ.1 := by
+lemma linearIndependent_monomialSym_partLengthLe (m n : ℕ) (R : Type*) [CommRing R] :
+    LinearIndependent R fun μ : PartLengthLe n m => monomialSym m R μ.1 := by
   classical
   rw [linearIndependent_iff']
   intro s g hg μ hμ
@@ -73,15 +73,15 @@ lemma linearIndependent_monomialSym_partIdx (m n : ℕ) (R : Type*) [CommRing R]
   exact hcoeff
 
 /-- The expansion of `p_μ` in the monomial symmetric polynomials, indexed by
-`PartIdx n m`. -/
-lemma pProd_eq_sum_partIdx {n : ℕ} (μ : PartIdx n m) :
+`PartLengthLe n m`. -/
+lemma pProd_eq_sum_partLengthLe {n : ℕ} (μ : PartLengthLe n m) :
     pProd m R μ.1
-      = ∑ ν : PartIdx n m, (pCoeff m μ.1 ν.1 : R) • monomialSym m R ν.1 := by
+      = ∑ ν : PartLengthLe n m, (pCoeff m μ.1 ν.1 : R) • monomialSym m R ν.1 := by
   classical
-  rw [pProd_eq_sum_monomialSym μ.1, μ.2.2.1, partsFinset,
+  rw [pProd_eq_sum_monomialSym μ.1, μ.2.2.1, partFinsetLengthLe,
     Finset.sum_image fun x _ y _ h => Subtype.ext h]
 
-lemma pProd_mem_symHomogeneousSubmodule {n : ℕ} (μ : PartIdx n m) :
+lemma pProd_mem_symHomogeneousSubmodule {n : ℕ} (μ : PartLengthLe n m) :
     pProd m R μ.1 ∈ symHomogeneousSubmodule m n R := by
   refine ⟨?_, pProd_isSymmetric μ.1⟩
   have h := isHomogeneous_pProd (m := m) (R := R) μ.1
@@ -92,29 +92,29 @@ lemma pProd_mem_symHomogeneousSubmodule {n : ℕ} (μ : PartIdx n m) :
 /-- **The products of power sums are linearly independent** over a ring containing the
 rationals: the `p_μ` for `μ` a partition of `n` with at most `m` parts. -/
 theorem linearIndependent_pProd (m n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] :
-    LinearIndependent R fun μ : PartIdx n m => pProd m R μ.1 := by
+    LinearIndependent R fun μ : PartLengthLe n m => pProd m R μ.1 := by
   classical
   rw [Fintype.linearIndependent_iff]
   intro g hg μ
-  have hexp : ∑ ν : PartIdx n m, g ν • pProd m R ν.1
-      = ∑ ρ : PartIdx n m,
-          (∑ ν : PartIdx n m, g ν * (pCoeff m ν.1 ρ.1 : R)) • monomialSym m R ρ.1 := by
-    simp only [pProd_eq_sum_partIdx, Finset.smul_sum, Finset.sum_smul, smul_smul]
+  have hexp : ∑ ν : PartLengthLe n m, g ν • pProd m R ν.1
+      = ∑ ρ : PartLengthLe n m,
+          (∑ ν : PartLengthLe n m, g ν * (pCoeff m ν.1 ρ.1 : R)) • monomialSym m R ρ.1 := by
+    simp only [pProd_eq_sum_partLengthLe, Finset.smul_sum, Finset.sum_smul, smul_smul]
     exact Finset.sum_comm
-  have hcoef : ∀ ρ : PartIdx n m, ∑ ν : PartIdx n m, g ν * (pCoeff m ν.1 ρ.1 : R) = 0 :=
-    Fintype.linearIndependent_iff.1 (linearIndependent_monomialSym_partIdx m n R) _
+  have hcoef : ∀ ρ : PartLengthLe n m, ∑ ν : PartLengthLe n m, g ν * (pCoeff m ν.1 ρ.1 : R) = 0 :=
+    Fintype.linearIndependent_iff.1 (linearIndependent_monomialSym_partLengthLe m n R) _
       (by rw [← hexp, hg])
   by_contra hne
   obtain ⟨ρ, hρt, hmin⟩ := Finset.exists_min_image
-    (Finset.univ.filter fun ν : PartIdx n m => g ν ≠ 0) (fun ν => domWeight n ν.1)
+    (Finset.univ.filter fun ν : PartLengthLe n m => g ν ≠ 0) (fun ν => domWeight n ν.1)
     ⟨μ, Finset.mem_filter.2 ⟨Finset.mem_univ _, hne⟩⟩
   obtain ⟨-, hρ0⟩ := Finset.mem_filter.1 hρt
-  have hsingle : ∀ ν ∈ (Finset.univ : Finset (PartIdx n m)), ν ≠ ρ →
+  have hsingle : ∀ ν ∈ (Finset.univ : Finset (PartLengthLe n m)), ν ≠ ρ →
       g ν * (pCoeff m ν.1 ρ.1 : R) = 0 := by
     intro ν _ hνne
     by_cases hgmu : g ν = 0
     · rw [hgmu, zero_mul]
-    · have hνt : ν ∈ Finset.univ.filter fun ν : PartIdx n m => g ν ≠ 0 :=
+    · have hνt : ν ∈ Finset.univ.filter fun ν : PartLengthLe n m => g ν ≠ 0 :=
         Finset.mem_filter.2 ⟨Finset.mem_univ _, hgmu⟩
       have hzero : pCoeff m ν.1 ρ.1 = 0 := by
         by_contra hk
@@ -138,9 +138,9 @@ linear combination of the products of power sums. -/
 theorem monomialSym_mem_span_pProd [Algebra ℚ R] (n : ℕ) {μ : List ℕ} (hμ : IsPart μ)
     (hsum : μ.sum = n) (hlen : μ.length ≤ m) :
     monomialSym m R μ
-      ∈ Submodule.span R (Set.range fun ν : PartIdx n m => pProd m R ν.1) := by
+      ∈ Submodule.span R (Set.range fun ν : PartLengthLe n m => pProd m R ν.1) := by
   classical
-  set W := Submodule.span R (Set.range fun ν : PartIdx n m => pProd m R ν.1) with hW
+  set W := Submodule.span R (Set.range fun ν : PartLengthLe n m => pProd m R ν.1) with hW
   suffices H : ∀ k : ℕ, ∀ ρ : List ℕ, IsPart ρ → ρ.sum = n → ρ.length ≤ m →
       (n + 1) * n - domWeight n ρ ≤ k → monomialSym m R ρ ∈ W by
     exact H _ μ hμ hsum hlen le_rfl
@@ -150,14 +150,14 @@ theorem monomialSym_mem_span_pProd [Algebra ℚ R] (n : ℕ) {μ : List ℕ} (h�
     intro ρ hρ hρsum hρlen hk
     have hexp := pProd_eq_sum_monomialSym (R := R) (m := m) ρ
     rw [hρsum] at hexp
-    have hmem : ρ ∈ partsFinset n m := mem_partsFinset.2 ⟨hρ, hρsum, hρlen⟩
-    have hsplit := Finset.add_sum_erase (partsFinset n m)
+    have hmem : ρ ∈ partFinsetLengthLe n m := mem_partFinsetLengthLe.2 ⟨hρ, hρsum, hρlen⟩
+    have hsplit := Finset.add_sum_erase (partFinsetLengthLe n m)
       (fun ν => (pCoeff m ρ ν : R) • monomialSym m R ν) hmem
-    have hrest : ∀ ν ∈ (partsFinset n m).erase ρ,
+    have hrest : ∀ ν ∈ (partFinsetLengthLe n m).erase ρ,
         (pCoeff m ρ ν : R) • monomialSym m R ν ∈ W := by
       intro ν hν
       have hνne : ν ≠ ρ := Finset.ne_of_mem_erase hν
-      obtain ⟨hνpart, hνsum, hνlen⟩ := mem_partsFinset.1 (Finset.mem_of_mem_erase hν)
+      obtain ⟨hνpart, hνsum, hνlen⟩ := mem_partFinsetLengthLe.1 (Finset.mem_of_mem_erase hν)
       by_cases hk0 : pCoeff m ρ ν = 0
       · rw [hk0, Nat.cast_zero, zero_smul]
         exact Submodule.zero_mem _
@@ -177,7 +177,7 @@ theorem monomialSym_mem_span_pProd [Algebra ℚ R] (n : ℕ) {μ : List ℕ} (h�
         exact Submodule.smul_mem _ _
           (ih ((n + 1) * n - domWeight n ν) (by omega) ν hνpart hνsum hνlen le_rfl)
     have hkey : (pCoeff m ρ ρ : R) • monomialSym m R ρ
-        = pProd m R ρ - ∑ ν ∈ (partsFinset n m).erase ρ,
+        = pProd m R ρ - ∑ ν ∈ (partFinsetLengthLe n m).erase ρ,
             (pCoeff m ρ ν : R) • monomialSym m R ν :=
       eq_sub_of_add_eq (hsplit.trans hexp.symm)
     obtain ⟨u, hu⟩ := isUnit_natCast_of_ne_zero (R := R) (pCoeff_self_ne_zero (m := m) hρlen)
@@ -194,27 +194,27 @@ theorem monomialSym_mem_span_pProd [Algebra ℚ R] (n : ℕ) {μ : List ℕ} (h�
 /-- **The products of power sums span** the module of symmetric homogeneous polynomials of
 degree `n` in `m` variables, over a ring containing the rationals. -/
 theorem span_pProd [Algebra ℚ R] (m n : ℕ) :
-    Submodule.span R (Set.range fun μ : PartIdx n m => pProd m R μ.1)
+    Submodule.span R (Set.range fun μ : PartLengthLe n m => pProd m R μ.1)
       = symHomogeneousSubmodule m n R := by
   classical
   refine le_antisymm (Submodule.span_le.2 ?_) fun p hp => ?_
   · rintro q ⟨μ, rfl⟩
     exact pProd_mem_symHomogeneousSubmodule μ
   · obtain ⟨hhom, hsym⟩ := hp
-    rw [eq_sum_monomialSym_partsFinset hsym hhom]
+    rw [eq_sum_monomialSym_partFinsetLengthLe hsym hhom]
     refine Submodule.sum_mem _ fun ν hν => ?_
-    obtain ⟨hνpart, hνsum, hνlen⟩ := mem_partsFinset.1 hν
+    obtain ⟨hνpart, hνsum, hνlen⟩ := mem_partFinsetLengthLe.1 hν
     exact Submodule.smul_mem _ _ (monomialSym_mem_span_pProd n hνpart hνsum hνlen)
 
 /-! ### The basis -/
 
 /-- The product `p_μ`, as an element of the module of symmetric homogeneous polynomials
 of degree `n`. -/
-noncomputable def pSub (m n : ℕ) (R : Type*) [CommRing R] (μ : PartIdx n m) :
+noncomputable def pSub (m n : ℕ) (R : Type*) [CommRing R] (μ : PartLengthLe n m) :
     symHomogeneousSubmodule m n R :=
   ⟨pProd m R μ.1, pProd_mem_symHomogeneousSubmodule μ⟩
 
-@[simp] lemma coe_pSub (m n : ℕ) (R : Type*) [CommRing R] (μ : PartIdx n m) :
+@[simp] lemma coe_pSub (m n : ℕ) (R : Type*) [CommRing R] (μ : PartLengthLe n m) :
     (pSub m n R μ : MvPolynomial (Fin m) R) = pProd m R μ.1 := rfl
 
 lemma linearIndependent_pSub (m n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] :
@@ -242,11 +242,11 @@ lemma span_pSub (m n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] :
 polynomials of degree `n` in `m` variables over a ring containing the rationals, indexed
 by the partitions of `n` with at most `m` parts. -/
 noncomputable def pBasis (m n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R] :
-    Module.Basis (PartIdx n m) R (symHomogeneousSubmodule m n R) :=
+    Module.Basis (PartLengthLe n m) R (symHomogeneousSubmodule m n R) :=
   Module.Basis.mk (linearIndependent_pSub m n R) (span_pSub m n R)
 
 @[simp] lemma coe_pBasis (m n : ℕ) (R : Type*) [CommRing R] [Algebra ℚ R]
-    (μ : PartIdx n m) :
+    (μ : PartLengthLe n m) :
     (pBasis m n R μ : MvPolynomial (Fin m) R) = pProd m R μ.1 := by
   rw [pBasis, Module.Basis.mk_apply, coe_pSub]
 

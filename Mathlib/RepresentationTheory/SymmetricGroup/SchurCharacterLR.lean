@@ -14,8 +14,8 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.LRSymmetry
 
 Continuing the port of Coq-Combi's `SymGroup/Frobenius_char.v`, we transport the
 Littlewood–Richardson rule for Schur polynomials along the Frobenius characteristic: the
-induction product of the Schur class functions `χ^λ` of `S_m` and `χ^ν` of `S_n` is the
-sum, over the partitions `ρ` of `m + n`, of `c^ρ_{λν}` copies of `χ^ρ` (Coq:
+induction product of the Schur class functions `χ^μ` of `S_m` and `χ^ν` of `S_n` is the
+sum, over the partitions `ρ` of `m + n`, of `c^ρ_{μν}` copies of `χ^ρ` (Coq:
 `LR_rule_irrSG`).
 
 ## Main results
@@ -23,7 +23,7 @@ sum, over the partitions `ρ` of `m + n`, of `c^ρ_{λν}` copies of `χ^ρ` (Co
 * `Equiv.Perm.frobChar_schurChar_of_le` : the Frobenius characteristic of `schurChar μ` is the
   Schur polynomial `s_μ`, in any number `k ≥ n` of variables.
 * `Equiv.Perm.indProd_schurChar` : **the Littlewood–Richardson rule for characters**,
-  `χ^λ ⊙ χ^ν = ∑_ρ c^ρ_{λν} χ^ρ`.
+  `χ^μ ⊙ χ^ν = ∑_ρ c^ρ_{μν} χ^ρ`.
 -/
 
 @[expose] public section
@@ -51,7 +51,7 @@ polynomial `s_μ`, in any number `k ≥ n` of variables. -/
 theorem frobChar_schurChar_of_le (hnk : n ≤ k) (μ : Nat.Partition n) :
     frobChar k (schurChar μ) = schurPoly (Fin k) ℚ μ.partsList := by
   refine eq_of_truncVars_eq (le_refl n) hnk (frobChar_mem_symHomogeneousSubmodule hnk _)
-    (schurPoly_mem_symHomogeneousSubmodule (natPartitionEquivPartIdx hnk μ)) ?_
+    (schurPoly_mem_symHomogeneousSubmodule (natPartitionEquivPartLengthLe hnk μ)) ?_
   rw [truncVars_frobChar hnk, frobChar_schurChar,
     truncVars_schurPoly hnk (Nat.Partition.isPart_partsList μ)
       (le_of_eq (Nat.Partition.sum_partsList μ))]
@@ -76,9 +76,9 @@ theorem indProd_schurChar (μ : Nat.Partition m) (ν : Nat.Partition n) :
     (isClassFun_sum Finset.univ _ fun ρ _ => (isClassFun_schurChar ρ).smul _) ?_
   rw [frobChar_indProd, frobChar_schurChar_of_le (Nat.le_add_right m n),
     frobChar_schurChar_of_le (Nat.le_add_left n m), frobChar_sum]
-  rw [schurPoly_mul_eq_sum_partIdx
+  rw [schurPoly_mul_eq_sum_partLengthLe
       (by rw [Nat.Partition.sum_partsList, Nat.Partition.sum_partsList]) (le_refl (m + n)),
-    ← sum_natPartition_eq_sum_partIdx (le_refl (m + n))
+    ← sum_natPartition_eq_sum_partLengthLe (le_refl (m + n))
       (fun l => lrCoeff μ.partsList ν.partsList l • schurPoly (Fin (m + n)) ℚ l)]
   refine Finset.sum_congr rfl fun ρ _ => ?_
   rw [frobChar_smul, frobChar_schurChar_of_le (le_refl (m + n)),

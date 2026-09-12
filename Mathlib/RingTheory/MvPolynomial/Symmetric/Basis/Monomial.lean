@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Kostka
 
 Following `theories/MPoly/sympoly.v` of
 [Coq-Combi](https://github.com/math-comp/Coq-Combi), we introduce the monomial symmetric
-polynomials `m_λ` in `m` variables and prove that they span (indeed form a basis of) the
+polynomials `m_μ` in `m` variables and prove that they span (indeed form a basis of) the
 symmetric polynomials.
 
 The shape `degShape d` of an exponent vector `d : Fin m →₀ ℕ` is the partition obtained by

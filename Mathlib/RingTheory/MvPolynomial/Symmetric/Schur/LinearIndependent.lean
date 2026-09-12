@@ -15,9 +15,9 @@ Following `theories/MPoly/Schur_mpoly.v` and `theories/MPoly/sympoly.v` of
 partitions of `n` with at most `m` parts are linearly independent in the polynomial ring
 in `m` variables.
 
-The proof is the classical unitriangularity argument: `s_λ = m_λ + (monomials of content
-strictly dominated by λ)`, so extracting the coefficient of the monomial `x^λ` for a
-partition `λ` which is maximal for the dominance order among those occurring in a
+The proof is the classical unitriangularity argument: `s_μ = m_μ + (monomials of content
+strictly dominated by μ)`, so extracting the coefficient of the monomial `x^μ` for a
+partition `μ` which is maximal for the dominance order among those occurring in a
 vanishing linear combination shows that its coefficient vanishes.
 
 ## Main results

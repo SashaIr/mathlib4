@@ -53,7 +53,7 @@ noncomputable def LRtabCoeff (Q₁ Q₂ : List (List ℕ)) (ν : List ℕ) : ℕ
 
 /-- The shape of a tableau of the Littlewood–Richardson support of `Q₁` and `Q₂` is a
 partition of `sizeTab Q₁ + sizeTab Q₂` with at most that many parts. -/
-lemma shape_mem_partIdx (Q : LRsupport Q₁ Q₂) :
+lemma shape_mem_partLengthLe (Q : LRsupport Q₁ Q₂) :
     IsPart (shape Q.1) ∧ (shape Q.1).sum = sizeTab Q₁ + sizeTab Q₂ ∧
       (shape Q.1).length ≤ sizeTab Q₁ + sizeTab Q₂ := by
   have hpart : IsPart (shape Q.1) := isPart_shape_of_isStdTab Q.2.1.1
@@ -68,16 +68,16 @@ theorem LRtabCoeff_eq_lrCoeff (hQ₁ : IsStdTab Q₁) (hQ₂ : IsStdTab Q₂) {�
     LRtabCoeff Q₁ Q₂ ν = lrCoeff (shape Q₁) (shape Q₂) ν := by
   classical
   set n := sizeTab Q₁ + sizeTab Q₂ with hn
-  set g : LRsupport Q₁ Q₂ → PartIdx n n := fun Q => ⟨shape Q.1, shape_mem_partIdx Q⟩
-  have hcard : ∀ ν : PartIdx n n,
+  set g : LRsupport Q₁ Q₂ → PartLengthLe n n := fun Q => ⟨shape Q.1, shape_mem_partLengthLe Q⟩
+  have hcard : ∀ ν : PartLengthLe n n,
       ∑ _Q : {Q : LRsupport Q₁ Q₂ // g Q = ν}, schurPoly (Fin n) ℤ ν.1
         = Fintype.card {Q : LRsupport Q₁ Q₂ // g Q = ν} • schurPoly (Fin n) ℤ ν.1 := by
     intro ν
     simp [Finset.card_univ]
-  have hmul : ∑ ν : PartIdx n n,
+  have hmul : ∑ ν : PartLengthLe n n,
       Fintype.card {Q : LRsupport Q₁ Q₂ // g Q = ν} • schurPoly (Fin n) ℤ ν.1
-      = ∑ ν : PartIdx n n, lrCoeff (shape Q₁) (shape Q₂) ν.1 • schurPoly (Fin n) ℤ ν.1 := by
-    rw [← schurPoly_mul_eq_sum_partIdx (R := ℤ)
+      = ∑ ν : PartLengthLe n n, lrCoeff (shape Q₁) (shape Q₂) ν.1 • schurPoly (Fin n) ℤ ν.1 := by
+    rw [← schurPoly_mul_eq_sum_partLengthLe (R := ℤ)
       (by rw [hn, ← sizeTab, ← sizeTab] : (shape Q₁).sum + (shape Q₂).sum = n) le_rfl,
       schurPoly_mul_eq_sum_LRtriple (R := ℤ) hQ₁ hQ₂,
       ← Fintype.sum_fiberwise g (fun Q => schurPoly (Fin n) ℤ (shape Q.1))]
@@ -86,7 +86,7 @@ theorem LRtabCoeff_eq_lrCoeff (hQ₁ : IsStdTab Q₁) (hQ₂ : IsStdTab Q₂) {�
     refine Finset.sum_congr rfl fun Q _ => ?_
     exact congrArg (schurPoly (Fin n) ℤ) (congrArg Subtype.val Q.2).symm
   have hνlen : ν.length ≤ n := by rw [← hsum]; exact hν.length_le_sum
-  set νIdx : PartIdx n n := ⟨ν, hν, hsum, hνlen⟩
+  set νIdx : PartLengthLe n n := ⟨ν, hν, hsum, hνlen⟩
   have hfun := congrFun (eq_of_sum_nsmul_schurPoly_eq hmul) νIdx
   have hequiv : {Q : LRsupport Q₁ Q₂ // shape Q.1 = ν} ≃ {Q : LRsupport Q₁ Q₂ // g Q = νIdx} :=
     Equiv.subtypeEquivRight fun Q =>
@@ -99,7 +99,7 @@ lemma LRtabCoeff_eq_zero {ν : List ℕ} (h : ¬ (IsPart ν ∧ ν.sum = sizeTab
     LRtabCoeff Q₁ Q₂ ν = 0 := by
   rw [LRtabCoeff, Nat.card_eq_zero]
   refine Or.inl ⟨fun Q => ?_⟩
-  obtain ⟨hpart, hsum, -⟩ := shape_mem_partIdx Q.1
+  obtain ⟨hpart, hsum, -⟩ := shape_mem_partLengthLe Q.1
   exact h ⟨Q.2 ▸ hpart, Q.2 ▸ hsum⟩
 
 /-- **The number of tableaux of a given shape in the Littlewood–Richardson support depends on

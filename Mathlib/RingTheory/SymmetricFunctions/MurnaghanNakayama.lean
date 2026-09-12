@@ -97,7 +97,7 @@ theorem psymFunc_mul_schurFunc {a r : ℕ} (hr : 0 < r) (μ : Nat.Partition a) :
   have key := psum_mul_schurPoly_sum_ribbon (R := R) (m := a + r) (r := r)
     (Nat.Partition.isPart_partsList μ) hlen hr
   rw [Nat.Partition.sum_partsList μ] at key
-  rw [key, ← sum_natPartition_eq_sum_partIdx (le_refl (a + r))
+  rw [key, ← sum_natPartition_eq_sum_partLengthLe (le_refl (a + r))
     (fun l => if ∃ s k, RibbonOn s k μ.partsList l then
       ((-1 : ℤ) ^ (Young.ribbonHeight μ.partsList l - 1)) • schurPoly (Fin (a + r)) R l else 0)]
   exact Finset.sum_congr rfl fun ν _ => (if_congr Iff.rfl rfl rfl).symm

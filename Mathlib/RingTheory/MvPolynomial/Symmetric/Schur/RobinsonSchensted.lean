@@ -11,20 +11,20 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.Schur.Basic
 /-!
 # The Robinson–Schensted expansion of a power of the sum of the variables
 
-Refining the counting identity `∑_λ K_λ(m) · f^λ = m ^ n` of
+Refining the counting identity `∑_μ K_μ(m) · f^μ = m ^ n` of
 `Mathlib/Combinatorics/Young/RobinsonSchensted/CountingWords.lean` at the level of monomials,
 the Robinson–Schensted correspondence yields the polynomial identity
 
-`(x_1 + ⋯ + x_m) ^ n = ∑_λ f^λ · s_λ`,
+`(x_1 + ⋯ + x_m) ^ n = ∑_μ f^μ · s_μ`,
 
-the sum being over the partitions `λ` of `n`, where `f^λ` is the number of standard
-tableaux of shape `λ` and `s_λ` is the Schur polynomial of shape `λ`.
+the sum being over the partitions `μ` of `n`, where `f^μ` is the number of standard
+tableaux of shape `μ` and `s_μ` is the Schur polynomial of shape `μ`.
 
 ## Main results
 
 * `MvPolynomial.sum_monomial_word` : `(∑ i, X i) ^ n` is the sum of the monomials of the words of
   length `n`.
-* `MvPolynomial.sum_numStdTab_smul_schurPoly` : the identity `∑_λ f^λ · s_λ = (∑ i, X i) ^ n`.
+* `MvPolynomial.sum_numStdTab_smul_schurPoly` : the identity `∑_μ f^μ · s_μ = (∑ i, X i) ^ n`.
 -/
 
 @[expose] public section
@@ -150,11 +150,11 @@ def tabPairSFiberEquiv (n : ℕ) (μ : Nat.Partition n) :
   left_inv p := rfl
   right_inv q := rfl
 
-/-! ### The identity `∑_λ f^λ · s_λ = (x_1 + ⋯ + x_m) ^ n` -/
+/-! ### The identity `∑_μ f^μ · s_μ = (x_1 + ⋯ + x_m) ^ n` -/
 
 /-- **The Robinson–Schensted expansion**: the `n`-th power of the sum of the variables is
-the sum, over the partitions `λ` of `n`, of `f^λ` copies of the Schur polynomial `s_λ`,
-where `f^λ` is the number of standard tableaux of shape `λ`. -/
+the sum, over the partitions `μ` of `n`, of `f^μ` copies of the Schur polynomial `s_μ`,
+where `f^μ` is the number of standard tableaux of shape `μ`. -/
 theorem sum_numStdTab_smul_schurPoly (n : ℕ) :
     ∑ μ : Nat.Partition n, numStdTab μ.partsList • schurPoly σ R μ.partsList
       = (∑ i : σ, X i) ^ n := by

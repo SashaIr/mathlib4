@@ -13,16 +13,16 @@ public import Mathlib.Combinatorics.Young.HookLength.Formula
 A Lean 4 port of `theories/HookFormula/Frobenius_ident.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
 
-Combining the Robinson–Schensted enumeration `∑_λ (f^λ)² = n !` of
+Combining the Robinson–Schensted enumeration `∑_μ (f^μ)² = n !` of
 `Mathlib/Combinatorics/Young/RobinsonSchensted/Counting.lean` with the hook length formula
-`f^λ · ∏ h(i, j) = n !` of `Mathlib/Combinatorics/Young/HookLength/Formula.lean` gives the
+`f^μ · ∏ h(i, j) = n !` of `Mathlib/Combinatorics/Young/HookLength/Formula.lean` gives the
 *Frobenius identity*
 
-`n ! = ∑_{λ ⊢ n} (n ! / ∏_{(i, j) ∈ λ} h(i, j))²`,
+`n ! = ∑_{μ ⊢ n} (n ! / ∏_{(i, j) ∈ μ} h(i, j))²`,
 
 or, dividing by `(n !)²` in the rationals,
 
-`1 / n ! = ∑_{λ ⊢ n} 1 / (∏_{(i, j) ∈ λ} h(i, j))²`.
+`1 / n ! = ∑_{μ ⊢ n} 1 / (∏_{(i, j) ∈ μ} h(i, j))²`.
 
 ## Main results
 
@@ -51,8 +51,8 @@ lemma cast_numStdTab_partsList (n : ℕ) (μ : Nat.Partition n) :
     Nat.Partition.sum_partsList]
 
 /-- **The Frobenius identity** (Coq `Frobenius_ident`): `n !` is the sum over the
-partitions `λ` of `n` of the squares of `n !` divided by the product of the hook lengths
-of `λ`. -/
+partitions `μ` of `n` of the squares of `n !` divided by the product of the hook lengths
+of `μ`. -/
 theorem factorial_eq_sum_sq_factorial_div_hookProd (n : ℕ) :
     Nat.factorial n =
       ∑ μ : Nat.Partition n, (Nat.factorial n / hookProd μ.partsList) ^ 2 := by
@@ -65,8 +65,8 @@ theorem factorial_eq_sum_sq_factorial_div_hookProd (n : ℕ) :
     _ = _ := Finset.sum_congr rfl fun μ _ ↦ by rw [h μ]
 
 /-- **The Frobenius identity** in its rational form (Coq `Frobenius_ident_rat`): the sum
-over the partitions `λ` of `n` of the inverses of the squares of the products of the hook
-lengths of `λ` is `1 / n !`. -/
+over the partitions `μ` of `n` of the inverses of the squares of the products of the hook
+lengths of `μ` is `1 / n !`. -/
 theorem inv_factorial_eq_sum_inv_sq_hookProd (n : ℕ) :
     (1 : ℚ) / (Nat.factorial n : ℚ) =
       ∑ μ : Nat.Partition n, 1 / (hookProd μ.partsList : ℚ) ^ 2 := by
