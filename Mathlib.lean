@@ -5104,6 +5104,17 @@ public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.GroupTheory.Perm.Subgroup
 public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Biclosed
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Bruhat
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.CycleType
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Inversions
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Presentation
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Rank
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.RankCharacterization
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.SwapRelations
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.Tower
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.WeakOrder
+public import Mathlib.GroupTheory.Perm.SymmetricGroup.WeakOrderLattice
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Presentation
 public import Mathlib.GroupTheory.PresentedGroup
