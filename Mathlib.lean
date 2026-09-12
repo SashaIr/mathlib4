@@ -7427,6 +7427,11 @@ public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Support
 public import Mathlib.RingTheory.SurjectiveOnStalks
+public import Mathlib.RingTheory.SymmetricFunctions.Basic
+public import Mathlib.RingTheory.SymmetricFunctions.Grading
+public import Mathlib.RingTheory.SymmetricFunctions.LittlewoodRichardson
+public import Mathlib.RingTheory.SymmetricFunctions.MurnaghanNakayama
+public import Mathlib.RingTheory.SymmetricFunctions.Omega
 public import Mathlib.RingTheory.Teichmuller
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
