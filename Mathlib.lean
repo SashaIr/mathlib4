@@ -3885,8 +3885,10 @@ public import Mathlib.Combinatorics.Young.Greene.YoungDiagram
 public import Mathlib.Combinatorics.Young.Plactic.Basic
 public import Mathlib.Combinatorics.Young.Plactic.Map
 public import Mathlib.Combinatorics.Young.Plactic.Monoid
+public import Mathlib.Combinatorics.Young.Plactic.Restrict
 public import Mathlib.Combinatorics.Young.Plactic.RestrictGe
 public import Mathlib.Combinatorics.Young.Plactic.RobinsonSchensted
+public import Mathlib.Combinatorics.Young.Plactic.Standardization
 public import Mathlib.Combinatorics.Young.Plactic.Yamanouchi
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.AlphabetMap
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.Bijection
@@ -3896,9 +3898,12 @@ public import Mathlib.Combinatorics.Young.RobinsonSchensted.CountingWords
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.RecordingStandardization
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.RecordingTableau
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.RestrictRecording
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Reverse
 public import Mathlib.Combinatorics.Young.RobinsonSchensted.ReverseInsertion
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Symmetry
 public import Mathlib.Combinatorics.Young.SemistandardTableau
 public import Mathlib.Combinatorics.Young.Tableau.Basic
 public import Mathlib.Combinatorics.Young.Tableau.Conjugate
@@ -3914,9 +3919,12 @@ public import Mathlib.Combinatorics.Young.Tableau.Skew
 public import Mathlib.Combinatorics.Young.Tableau.Standard
 public import Mathlib.Combinatorics.Young.Tableau.StandardRestrict
 public import Mathlib.Combinatorics.Young.Tableau.StandardYamanouchi
+public import Mathlib.Combinatorics.Young.Tableau.Standardize
 public import Mathlib.Combinatorics.Young.Word.InverseStandard
 public import Mathlib.Combinatorics.Young.Word.InverseStandardCat
+public import Mathlib.Combinatorics.Young.Word.InverseStandardFilter
 public import Mathlib.Combinatorics.Young.Word.ShiftedShuffle
+public import Mathlib.Combinatorics.Young.Word.ShiftedShufflePlactic
 public import Mathlib.Combinatorics.Young.Word.Standardization
 public import Mathlib.Combinatorics.Young.Word.StandardizationCongr
 public import Mathlib.Combinatorics.Young.Word.Yamanouchi
