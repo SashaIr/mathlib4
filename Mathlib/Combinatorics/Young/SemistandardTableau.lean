@@ -34,6 +34,13 @@ for all pairs `(i, j) ∉ μ` and to satisfy the row-weak and column-strict cond
 - `SemistandardYoungTableau.highestWeight (μ : YoungDiagram)`: the semistandard Young tableau whose
   `i`th row consists entirely of `i`s, for each `i`.
 
+## Main results
+
+- `SemistandardYoungTableau.entry_le_entry`: the entries increase weakly down-and-right.
+- `SemistandardYoungTableau.le_entry`: the entries of the `i`th row are at least `i`.
+- `SemistandardYoungTableau.highestWeight_le`: `highestWeight μ` is the pointwise smallest
+  semistandard Young tableau of shape `μ`.
+
 ## Tags
 
 Semistandard Young tableau
@@ -127,6 +134,20 @@ theorem col_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j 
   · rw [h]
   · exact le_of_lt (T.col_strict h cell)
 
+theorem entry_le_entry {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j1 j2 : ℕ}
+    (hi : i1 ≤ i2) (hj : j1 ≤ j2) (hcell : (i2, j2) ∈ μ) : T i1 j1 ≤ T i2 j2 :=
+  (T.col_weak hi (μ.up_left_mem le_rfl hj hcell)).trans (T.row_weak_of_le hj hcell)
+
+/-- Since the entries of a column increase strictly, the entries of the `i`-th row of a
+semistandard Young tableau are at least `i`. -/
+theorem le_entry {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i j : ℕ}
+    (hcell : (i, j) ∈ μ) : i ≤ T i j := by
+  induction i with
+  | zero => exact Nat.zero_le _
+  | succ i ih =>
+    exact (ih (μ.up_left_mem (Nat.le_succ i) le_rfl hcell)).trans_lt
+      (T.col_strict (Nat.lt_succ_self i) hcell)
+
 /-- The "highest weight" SSYT of a given shape has all i's in row i, for each i. -/
 def highestWeight (μ : YoungDiagram) : SemistandardYoungTableau μ where
   entry i j := if (i, j) ∈ μ then i else 0
@@ -140,6 +161,15 @@ def highestWeight (μ : YoungDiagram) : SemistandardYoungTableau μ where
 theorem highestWeight_apply {μ : YoungDiagram} {i j : ℕ} :
     highestWeight μ i j = if (i, j) ∈ μ then i else 0 :=
   rfl
+
+/-- The highest weight tableau is the pointwise smallest semistandard Young tableau of its
+shape. -/
+theorem highestWeight_le {μ : YoungDiagram} (T : SemistandardYoungTableau μ) (i j : ℕ) :
+    highestWeight μ i j ≤ T i j := by
+  rw [highestWeight_apply]
+  split
+  · exact T.le_entry ‹_›
+  · exact Nat.zero_le _
 
 instance {μ : YoungDiagram} : Inhabited (SemistandardYoungTableau μ) :=
   ⟨highestWeight μ⟩
