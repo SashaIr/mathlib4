@@ -3678,6 +3678,8 @@ public import Mathlib.Combinatorics.Enumerative.DyckWord.List
 public import Mathlib.Combinatorics.Enumerative.DyckWord.Rotation
 public import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
+public import Mathlib.Combinatorics.Enumerative.IntegerComposition
+public import Mathlib.Combinatorics.Enumerative.IntegerVector
 public import Mathlib.Combinatorics.Enumerative.OrderedTree
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Enumerative.Partition.Conj
