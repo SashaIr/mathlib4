@@ -3678,6 +3678,7 @@ public import Mathlib.Combinatorics.Enumerative.DyckWord.List
 public import Mathlib.Combinatorics.Enumerative.DyckWord.Rotation
 public import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
+public import Mathlib.Combinatorics.Enumerative.OrderedTree
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
@@ -3692,6 +3693,11 @@ public import Mathlib.Combinatorics.Enumerative.SetPartition.Bell
 public import Mathlib.Combinatorics.Enumerative.SetPartition.Ordered
 public import Mathlib.Combinatorics.Enumerative.SetPartition.Stirling
 public import Mathlib.Combinatorics.Enumerative.Stirling
+public import Mathlib.Combinatorics.Enumerative.Tamari.Basic
+public import Mathlib.Combinatorics.Enumerative.Tamari.Bijection
+public import Mathlib.Combinatorics.Enumerative.Tamari.Lattice
+public import Mathlib.Combinatorics.Enumerative.Tamari.Order
+public import Mathlib.Combinatorics.Enumerative.Tamari.Vector
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.Graph.Delete

@@ -11,6 +11,7 @@ public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Finite.Lattice
 public import Mathlib.Order.SupIndep
 
 /-!
@@ -831,6 +832,18 @@ lemma card_mod_card_parts_le : #s % #P.parts ≤ #P.parts := by
     rw [Finset.card_eq_zero, parts_eq_empty_iff, bot_eq_empty, ← Finset.card_eq_zero] at h
     rw [h]
   · exact (Nat.mod_lt _ h).le
+
+/-- The set partitions of a `Finset`, ordered by refinement, form a lattice. -/
+noncomputable instance instLattice : Lattice (Finpartition s) := Finite.toLattice _
+
+/-- The join of two partitions is the finest partition coarser than both. -/
+theorem sup_eq_iff {P Q R : Finpartition s} :
+    P ⊔ Q = R ↔ P ≤ R ∧ Q ≤ R ∧ ∀ T : Finpartition s, P ≤ T → Q ≤ T → R ≤ T := by
+  constructor
+  · rintro rfl
+    exact ⟨le_sup_left, le_sup_right, fun _ h h' => sup_le h h'⟩
+  · rintro ⟨hP, hQ, hmin⟩
+    exact le_antisymm (sup_le hP hQ) (hmin _ le_sup_left le_sup_right)
 
 section SetSetoid
 
