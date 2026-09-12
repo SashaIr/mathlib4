@@ -234,6 +234,20 @@ protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
   ⟨⟨transpose, transpose, fun _ => by simp, fun _ => by simp⟩, by simp⟩
 
+/-! Transposition preserves the number of cells. -/
+@[simp]
+theorem card_transpose (μ : YoungDiagram) : μ.transpose.card = μ.card := by
+  have : μ.transpose.cells = μ.cells.map ⟨Prod.swap, Prod.swap_injective⟩ := by
+    ext ⟨i, j⟩
+    simp only [mem_cells, mem_transpose, Finset.mem_map, Function.Embedding.coeFn_mk,
+      Prod.swap_prod_mk]
+    refine ⟨fun h => ⟨(j, i), h, rfl⟩, ?_⟩
+    rintro ⟨⟨a, b⟩, hab, hswap⟩
+    rw [Prod.ext_iff] at hswap
+    obtain ⟨rfl, rfl⟩ := hswap
+    exact hab
+  rw [YoungDiagram.card, YoungDiagram.card, this, Finset.card_map]
+
 end Transpose
 
 section Rows
@@ -349,6 +363,54 @@ theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colL
 
 end Columns
 
+section RowLenColLen
+
+/-! ### Rows and columns together
+
+A Young diagram is determined by its row lengths, and containment of Young diagrams is the
+pointwise comparison of row lengths (equivalently, of column lengths).
+-/
+
+/-- Rows below the last nonempty one are empty. -/
+theorem rowLen_eq_zero_of_colLen_zero_le {μ : YoungDiagram} {i : ℕ} (hi : μ.colLen 0 ≤ i) :
+    μ.rowLen i = 0 := by
+  by_contra hc
+  have : (i, 0) ∈ μ := mem_iff_lt_rowLen.2 (Nat.pos_of_ne_zero hc)
+  exact absurd (mem_iff_lt_colLen.1 this) (by omega)
+
+/-- Columns to the right of the last nonempty one are empty. -/
+theorem colLen_eq_zero_of_rowLen_zero_le {μ : YoungDiagram} {j : ℕ} (hj : μ.rowLen 0 ≤ j) :
+    μ.colLen j = 0 := by
+  rw [← rowLen_transpose]
+  exact rowLen_eq_zero_of_colLen_zero_le (by rwa [colLen_transpose])
+
+/-- A Young diagram is determined by its row lengths. -/
+theorem eq_of_rowLen_eq {μ ν : YoungDiagram} (h : ∀ i, μ.rowLen i = ν.rowLen i) : μ = ν := by
+  ext ⟨i, j⟩
+  simp only [mem_cells, mem_iff_lt_rowLen, h i]
+
+/-- A Young diagram is determined by its column lengths. -/
+theorem eq_of_colLen_eq {μ ν : YoungDiagram} (h : ∀ j, μ.colLen j = ν.colLen j) : μ = ν := by
+  ext ⟨i, j⟩
+  simp only [mem_cells, mem_iff_lt_colLen, h j]
+
+/-- Containment of Young diagrams is the pointwise comparison of row lengths. -/
+theorem le_iff_rowLen_le {μ ν : YoungDiagram} : μ ≤ ν ↔ ∀ i, μ.rowLen i ≤ ν.rowLen i := by
+  constructor
+  · intro hle i
+    by_contra hc
+    have hmem : (i, ν.rowLen i) ∈ μ := mem_iff_lt_rowLen.2 (by omega)
+    exact absurd (mem_iff_lt_rowLen.1 (hle hmem)) (lt_irrefl _)
+  · intro h x hx
+    exact mem_iff_lt_rowLen.2 (lt_of_lt_of_le (mem_iff_lt_rowLen.1 hx) (h x.1))
+
+/-- Containment of Young diagrams is the pointwise comparison of column lengths. -/
+theorem le_iff_colLen_le {μ ν : YoungDiagram} : μ ≤ ν ↔ ∀ j, μ.colLen j ≤ ν.colLen j := by
+  rw [← transpose_le_iff, le_iff_rowLen_le]
+  simp [rowLen_transpose]
+
+end RowLenColLen
+
 section RowLens
 
 /-! ### The list of row lengths of a Young diagram
@@ -371,6 +433,16 @@ theorem get_rowLens {μ : YoungDiagram} {i : Nat} {h : i < μ.rowLens.length} :
 @[simp]
 theorem length_rowLens {μ : YoungDiagram} : μ.rowLens.length = μ.colLen 0 := by
   simp only [rowLens, List.length_map, List.length_range]
+
+/-- The `i`-th entry of the list of row lengths, with the convention that out-of-range entries
+are `0`. -/
+theorem getD_rowLens (μ : YoungDiagram) (i : ℕ) : μ.rowLens.getD i 0 = μ.rowLen i := by
+  rw [List.getD_eq_getElem?_getD]
+  rcases Nat.lt_or_ge i μ.rowLens.length with hi | hi
+  · rw [List.getElem?_eq_getElem hi, Option.getD_some, get_rowLens]
+  · rw [List.getElem?_eq_none hi, Option.getD_none]
+    rw [length_rowLens] at hi
+    exact (rowLen_eq_zero_of_colLen_zero_le hi).symm
 
 theorem rowLens_sorted (μ : YoungDiagram) : μ.rowLens.SortedGE :=
   (List.pairwise_le_range.map _ μ.rowLen_anti).sortedGE
@@ -410,6 +482,23 @@ protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
   · simp
   · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
 
+/-- The number of cells of the diagram built from a list of row lengths is the sum of that
+list. -/
+protected theorem card_cellsOfRowLens (w : List ℕ) :
+    (YoungDiagram.cellsOfRowLens w).card = w.sum := by
+  induction w with
+  | nil => simp [YoungDiagram.cellsOfRowLens]
+  | cons a w ih =>
+    rw [YoungDiagram.cellsOfRowLens, Finset.card_union_of_disjoint, Finset.card_map, ih,
+      Finset.card_product, Finset.card_singleton, Finset.card_range, one_mul, List.sum_cons]
+    refine Finset.disjoint_left.2 ?_
+    rintro ⟨x, y⟩ hx hy
+    simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_map,
+      Function.Embedding.prodMap, Function.Embedding.coeFn_mk] at hx hy
+    obtain ⟨⟨u, v⟩, _, huv⟩ := hy
+    simp at huv
+    omega
+
 /-- Young diagram from a sorted list -/
 def ofRowLens (w : List ℕ) (hw : w.SortedGE) : YoungDiagram where
   cells := YoungDiagram.cellsOfRowLens w
@@ -447,6 +536,11 @@ theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_
   ext ⟨i, j⟩
   simp only [mem_cells, mem_ofRowLens, length_rowLens, get_rowLens]
   simpa [← mem_iff_lt_colLen, mem_iff_lt_rowLen] using j.zero_le.trans_lt
+
+/-- The number of cells of a Young diagram is the sum of its row lengths. -/
+theorem card_eq_sum_rowLens (μ : YoungDiagram) : μ.card = μ.rowLens.sum := by
+  conv_lhs => rw [← ofRowLens_to_rowLens_eq_self (μ := μ)]
+  exact YoungDiagram.card_cellsOfRowLens _
 
 /-- The `rightInv` direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.SortedGE} (hpos : ∀ x ∈ w, 0 < x) :

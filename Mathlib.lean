@@ -3680,6 +3680,7 @@ public import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 public import Mathlib.Combinatorics.Enumerative.OrderedTree
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Combinatorics.Enumerative.Partition.Conj
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
 public import Mathlib.Combinatorics.Enumerative.Partition.List.Basic
@@ -3694,7 +3695,13 @@ public import Mathlib.Combinatorics.Enumerative.Partition.List.Included
 public import Mathlib.Combinatorics.Enumerative.Partition.List.LengthLe
 public import Mathlib.Combinatorics.Enumerative.Partition.List.MinMax
 public import Mathlib.Combinatorics.Enumerative.Partition.List.Multiset
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Ribbon.Connected
+public import Mathlib.Combinatorics.Enumerative.Partition.List.Ribbon.Defs
 public import Mathlib.Combinatorics.Enumerative.Partition.List.TrimZeros
+public import Mathlib.Combinatorics.Enumerative.Partition.List.VerticalStrip
+public import Mathlib.Combinatorics.Enumerative.Partition.List.YoungDiagram
+public import Mathlib.Combinatorics.Enumerative.Partition.Ribbon
+public import Mathlib.Combinatorics.Enumerative.Partition.YoungDiagram
 public import Mathlib.Combinatorics.Enumerative.Pentagonal
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.Basic
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.EulerFunction
@@ -3864,6 +3871,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
 public import Mathlib.Combinatorics.Tiling.Tile
+public import Mathlib.Combinatorics.Young.BigOperators
 public import Mathlib.Combinatorics.Young.SemistandardTableau
 public import Mathlib.Combinatorics.Young.YoungDiagram
 public import Mathlib.Computability.Ackermann
