@@ -3684,6 +3684,10 @@ public import Mathlib.Combinatorics.Enumerative.Pentagonal.EulerFunction
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.PowerSeries
 public import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 public import Mathlib.Combinatorics.Enumerative.Schroder
+public import Mathlib.Combinatorics.Enumerative.SetPartition.Basic
+public import Mathlib.Combinatorics.Enumerative.SetPartition.Bell
+public import Mathlib.Combinatorics.Enumerative.SetPartition.Ordered
+public import Mathlib.Combinatorics.Enumerative.SetPartition.Stirling
 public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 public import Mathlib.Combinatorics.Graph.Basic
