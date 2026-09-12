@@ -3698,6 +3698,7 @@ public import Mathlib.Combinatorics.Enumerative.Tamari.Bijection
 public import Mathlib.Combinatorics.Enumerative.Tamari.Lattice
 public import Mathlib.Combinatorics.Enumerative.Tamari.Order
 public import Mathlib.Combinatorics.Enumerative.Tamari.Vector
+public import Mathlib.Combinatorics.ErdosSzekeresList
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.Graph.Delete
