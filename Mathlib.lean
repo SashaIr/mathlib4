@@ -6710,6 +6710,10 @@ public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
 public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Character
+public import Mathlib.RepresentationTheory.CharacterTheory.Decomposition
+public import Mathlib.RepresentationTheory.CharacterTheory.FDRepSimple
+public import Mathlib.RepresentationTheory.CharacterTheory.PermutationRepresentation
+public import Mathlib.RepresentationTheory.CharacterTheory.VirtualCharacter
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.Continuous.Basic
@@ -6749,6 +6753,14 @@ public import Mathlib.RepresentationTheory.Semisimple
 public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.RepresentationTheory.Submodule
 public import Mathlib.RepresentationTheory.Subrepresentation
+public import Mathlib.RepresentationTheory.SymmetricGroup.FrobeniusCharacteristic
+public import Mathlib.RepresentationTheory.SymmetricGroup.FrobeniusIsometry
+public import Mathlib.RepresentationTheory.SymmetricGroup.LinearCharacters
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacter
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterIrreducible
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterLR
+public import Mathlib.RepresentationTheory.SymmetricGroup.SchurCharacterMN
+public import Mathlib.RepresentationTheory.SymmetricGroup.YoungSubgroup
 public import Mathlib.RepresentationTheory.Tannaka
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
