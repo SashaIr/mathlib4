@@ -3872,7 +3872,16 @@ public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
 public import Mathlib.Combinatorics.Tiling.Tile
 public import Mathlib.Combinatorics.Young.BigOperators
+public import Mathlib.Combinatorics.Young.Greene.ColumnDefs
+public import Mathlib.Combinatorics.Young.Greene.ColumnTableau
+public import Mathlib.Combinatorics.Young.Greene.Defs
+public import Mathlib.Combinatorics.Young.Greene.Tableau
+public import Mathlib.Combinatorics.Young.Plactic.Basic
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Injective
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.Insertion
+public import Mathlib.Combinatorics.Young.RobinsonSchensted.InsertionTableau
 public import Mathlib.Combinatorics.Young.SemistandardTableau
+public import Mathlib.Combinatorics.Young.Tableau.Basic
 public import Mathlib.Combinatorics.Young.YoungDiagram
 public import Mathlib.Computability.Ackermann
 public import Mathlib.Computability.AkraBazzi.AkraBazzi
