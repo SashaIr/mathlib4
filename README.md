@@ -7,10 +7,10 @@ Mathlib, and what we would like maintainers to decide.*
 
 ## 1. What this project is
 
-This is a port to Mathlib of [Coq-Combi](https://github.com/math-comp/Coq-Combi)
-([F. Hivert et al.](https://dl.acm.org/doi/10.1145/3703595.3705885)), the Coq/mathcomp development of the combinatorics of integer partitions,
+This is a port to Mathlib of [Coq-Combi](https://github.com/math-comp/Coq-Combi), the Coq/mathcomp development of the combinatorics of integer partitions,
 Young tableaux and symmetric functions, together with the representation-theoretic results that
-crown it. It also includes an extra commit to define q-analogs. In its current state it is
+crown it. The work is described in detail in [F. Hivert et al.](https://dl.acm.org/doi/10.1145/3703595.3705885).
+The PR also includes an extra commit to define q-analogs. In its current state it is
 
 * **190 new modules**, about **47 000 added lines**, and **15 pre-existing files** that it extends
   or adapts (no file is deleted from Mathlib);
